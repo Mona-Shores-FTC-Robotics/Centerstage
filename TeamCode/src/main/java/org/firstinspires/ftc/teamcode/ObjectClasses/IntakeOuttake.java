@@ -37,8 +37,8 @@ public class IntakeOuttake {
     boolean safeToRotate = false;
     boolean rotating = false;
 
-    public IntakeOuttake(LinearOpMode mode) {
-        activeOpMode = mode;
+    public IntakeOuttake() {
+        activeOpMode = Robot.getInstance();
     }
 
     public void init(HardwareMap ahwMap, LinearOpMode opMode) {

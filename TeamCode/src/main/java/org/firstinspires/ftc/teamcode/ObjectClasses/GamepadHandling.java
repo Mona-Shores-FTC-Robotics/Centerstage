@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class GamepadHandling {
     LinearOpMode activeOpMode;
-
     public GamepadHandling(LinearOpMode activeOpMode) {
         this.activeOpMode = activeOpMode;
     }

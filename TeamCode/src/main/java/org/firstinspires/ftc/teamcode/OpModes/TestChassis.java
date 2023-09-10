@@ -9,14 +9,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 import java.util.ArrayList;
 
 @TeleOp(name = "Test Chassis", group =  "Chassis Bot")
 
 public class TestChassis extends LinearOpMode {
-    DriveTrain MecDrive = new DriveTrain(this);
-    org.firstinspires.ftc.teamcode.ObjectClasses.Gyro Gyro = new Gyro(this);
+
+    Robot robot = Robot.getInstance();
+    Gyro gyro = Robot.getInstance().getGyro();
+    DriveTrain MecDrive = Robot.getInstance().getDriveTrain();
+
     //    GamepadHandling GamePads = new GamepadHandling(this);
     private final ElapsedTime runtime = new ElapsedTime();
     Gamepad currentGamepad1 = new Gamepad();
@@ -26,7 +30,7 @@ public class TestChassis extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        robot.init();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
 
         boolean manualControl = false;
@@ -46,8 +50,6 @@ public class TestChassis extends LinearOpMode {
         double F = 12;
         double F_INCREMENT = 1;
 
-        MecDrive.init(hardwareMap, this);
-        Gyro.init(hardwareMap);
         MecDrive.driveMotor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Status", "Initialized");

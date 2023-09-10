@@ -29,12 +29,9 @@ public class Arm {
     boolean safeToRotate = false;
     boolean rotating = false;
 
-    public Arm(LinearOpMode mode) {
-        activeOpMode = mode;
+    public Arm() {
+        activeOpMode = Robot.getInstance();
     }
-
-
-
     public void init(HardwareMap ahwMap, LinearOpMode opMode) {
         activeOpMode = opMode;
         arm = ahwMap.servo.get("turret_servo");

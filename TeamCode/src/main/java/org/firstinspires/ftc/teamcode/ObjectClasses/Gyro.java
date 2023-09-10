@@ -50,8 +50,8 @@ public class Gyro {
     LinearOpMode activeOpMode;
 
     /* Constructor */
-    public Gyro(LinearOpMode mode) {
-        activeOpMode = mode;
+    public Gyro() {
+        activeOpMode = Robot.getInstance();
     }
 
     /* Initialize Hardware interfaces */

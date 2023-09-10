@@ -64,8 +64,8 @@ public class Lift {
     boolean outputShifted = false;
 
     /* Constructor     */
-    public Lift(LinearOpMode opMode) {
-        activeOpMode = opMode;
+    public Lift() {
+        activeOpMode = Robot.getInstance();
     }
 
     /* Initialization */

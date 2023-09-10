@@ -10,16 +10,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name = "Chassis Bot", group = "Basic Chassis")
 public class BasicChassis extends LinearOpMode{
 
-    DriveTrain MecDrive = new DriveTrain(this);
-    Gyro Gyro = new Gyro(this);
+    Robot robot = Robot.getInstance();
+    Gyro gyro = Robot.getInstance().getGyro();
+    DriveTrain drivetrain = Robot.getInstance().getDriveTrain();
 
 //    GamepadHandling GamePads = new GamepadHandling(this);
     private final ElapsedTime runtime = new ElapsedTime();
-
 
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
@@ -29,14 +30,7 @@ public class BasicChassis extends LinearOpMode{
     @Override
     public void runOpMode() {
 
-        //These should be unnecessary...
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad currentGamepad2 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
-        Gamepad previousGamepad2 = new Gamepad();
-
-        MecDrive.init(hardwareMap,this);
-        Gyro.init(hardwareMap);
+        robot.init();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -56,18 +50,17 @@ public class BasicChassis extends LinearOpMode{
 
             // Read sensors and perform sensor calculations
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Gyro.UpdateGyro(runtime);
+                gyro.UpdateGyro(runtime);
             }
 
             // Rumble Control
             // Replace comment with call to rumble control method
 
             // Driver Controls
-            MecDrive.driveModeSelection(currentGamepad1,Gyro.turnAngle,Gyro.tiltAngle,Gyro.tiltVelocity,Gyro.tiltAccel);
+            drivetrain.driveModeSelection(currentGamepad1,gyro.turnAngle,gyro.tiltAngle,gyro.tiltVelocity,gyro.tiltAccel);
 
             // Operator Controls
             // Replace this comment with methods for operator controls
         }
-
     }
 }
