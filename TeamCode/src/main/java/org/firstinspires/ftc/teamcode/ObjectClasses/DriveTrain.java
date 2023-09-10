@@ -58,19 +58,15 @@ public class DriveTrain {
     private HardwareMap hwMap = null;
 
     /* Constructor */
-    public DriveTrain(LinearOpMode opMode) {
-        activeOpMode = opMode;
-    }
-
     public DriveTrain() {
-        activeOpMode = Robot.getInstance();
+
     }
 
     /* METHOD: Initialize Hardware interfaces */
-    public void init(HardwareMap ahwMap, LinearOpMode opMode) {
+    public void init() {
         // Save reference to Hardware map
-        hwMap = ahwMap;
-        activeOpMode = opMode;
+        hwMap = Robot.getInstance().getHardwareMap();
+        activeOpMode = Robot.getInstance().getActiveOpMode();
 
         // Define and Initialize Motors
         DcMotorSimple.Direction fwd = DcMotorSimple.Direction.FORWARD;
@@ -78,7 +74,7 @@ public class DriveTrain {
         DcMotorSimple.Direction driveMotorDirections[] = {rvrs, fwd, rvrs, fwd};
 
         for (int i = 0; i < 4; i++ ){
-            driveMotor[i] = ahwMap.get(DcMotorEx.class, driveMotorNames[i]);
+            driveMotor[i] = hwMap.get(DcMotorEx.class, driveMotorNames[i]);
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);

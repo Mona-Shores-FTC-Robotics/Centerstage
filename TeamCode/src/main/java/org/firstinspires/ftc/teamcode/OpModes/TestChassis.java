@@ -30,7 +30,7 @@ public class TestChassis extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.initialize();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
 
         boolean manualControl = false;

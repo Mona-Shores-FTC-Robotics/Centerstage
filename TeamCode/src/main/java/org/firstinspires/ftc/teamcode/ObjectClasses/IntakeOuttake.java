@@ -38,11 +38,12 @@ public class IntakeOuttake {
     boolean rotating = false;
 
     public IntakeOuttake() {
-        activeOpMode = Robot.getInstance();
+        activeOpMode = Robot.getInstance().getActiveOpMode();
     }
 
-    public void init(HardwareMap ahwMap, LinearOpMode opMode) {
-        activeOpMode = opMode;
+    public void init() {
+        activeOpMode = Robot.getInstance().getActiveOpMode();
+        HardwareMap ahwMap = Robot.getInstance().getHardwareMap();
         pivot = ahwMap.servo.get("pivot");
         leftIntake = ahwMap.servo.get("Left Intake");
         rightIntake = ahwMap.servo.get("Right Intake");

@@ -65,13 +65,13 @@ public class Lift {
 
     /* Constructor     */
     public Lift() {
-        activeOpMode = Robot.getInstance();
+        activeOpMode = Robot.getInstance().getActiveOpMode();
     }
 
     /* Initialization */
-    public void init (HardwareMap hwMap, LinearOpMode opMode){
-        activeOpMode = opMode;
-        lift = hwMap.get(DcMotorEx.class, "lift");
+    public void init (){
+        activeOpMode = Robot.getInstance().getActiveOpMode();
+        lift = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, "lift");
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
         lift.setPower(0);

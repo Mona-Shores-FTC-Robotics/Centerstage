@@ -51,13 +51,13 @@ public class Gyro {
 
     /* Constructor */
     public Gyro() {
-        activeOpMode = Robot.getInstance();
+        activeOpMode = Robot.getInstance().getActiveOpMode();
     }
 
     /* Initialize Hardware interfaces */
-    public void init(HardwareMap ahwMap) {
+    public void init() {
         // Save reference to Hardware map
-        hwMap = ahwMap;
+        hwMap = Robot.getInstance().getHardwareMap();
 
         /*
         // code for old control hub IMU

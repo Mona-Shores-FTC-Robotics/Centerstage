@@ -5,13 +5,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name = "Basic Teleop", group = "Robot")
 public class BasicTeleop extends LinearOpMode{
 
-    Robot robot = Robot.getInstance();
+    Robot robot = Robot.createInstance(this);
 
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
@@ -29,7 +31,7 @@ public class BasicTeleop extends LinearOpMode{
 
         }
 
-        robot.runtime().reset();
+        robot.getRuntime().reset();
         while (opModeIsActive()){
             //Store the previous loop's gamepad values.
             previousGamepad1 = GamepadHandling.copy(currentGamepad1);

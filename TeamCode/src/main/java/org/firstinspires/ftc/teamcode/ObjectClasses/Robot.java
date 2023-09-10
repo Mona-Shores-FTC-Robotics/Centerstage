@@ -1,14 +1,19 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class Robot extends LinearOpMode {
+import dalvik.system.DelegateLastClassLoader;
+
+public class Robot {
 
     private static Robot robot = null;
 
-    private final ElapsedTime runtime = new ElapsedTime();
+    private static ElapsedTime runtime;
     private static LinearOpMode activeOpMode;
+    private static HardwareMap hardwareMap;
+
     private static DriveTrain drivetrain;
     private static Arm arm;
     private static Lift lift;
@@ -16,8 +21,11 @@ public class Robot extends LinearOpMode {
     private static IntakeOuttake intake;
 
     /* Constructor */
-    private Robot() {
-        activeOpMode = this;
+    private Robot(LinearOpMode opMode) {
+        activeOpMode = opMode;
+        hardwareMap = activeOpMode.hardwareMap;
+        runtime = new ElapsedTime();
+
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
@@ -38,45 +46,59 @@ public class Robot extends LinearOpMode {
         }
     }
 
+    public static synchronized Robot createInstance(LinearOpMode opMode) {
+        if (robot == null) {
+            robot = new Robot(opMode);
+        }
+        return robot;
+    }
+
     // Static method to create instance of Singleton class
     public static synchronized Robot getInstance() {
         if (robot == null) {
-            robot = new Robot();
+           //error
         }
         return robot;
     }
 
     //Method to give us access to the runtime object
-    public ElapsedTime runtime() {
+    public ElapsedTime getRuntime() {
         return runtime;
     }
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+    public LinearOpMode getActiveOpMode() {
+        return activeOpMode;
+    }
+
+    public HardwareMap getHardwareMap() {
+        return hardwareMap;
     }
 
     public Gyro getGyro()  {
         return gyro;
     }
 
+
+
     public DriveTrain getDriveTrain()  {
         return drivetrain;
     }
 
     public void initialize() {
+        runtime.reset();
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
-                drivetrain.init(this.hardwareMap, activeOpMode);
-                lift.init(this.hardwareMap, activeOpMode);
-                arm.init(this.hardwareMap, activeOpMode);
-                gyro.init(this.hardwareMap);
-                intake.init(this.hardwareMap, activeOpMode);
+                drivetrain.init();
+                lift.init();
+                arm.init();
+                gyro.init();
+                intake.init();
                 break;
             }
             case ROBOT_CHASSIS:
             {
-                drivetrain.init(this.hardwareMap, activeOpMode);
+                drivetrain.init();
                 break;
             }
             default:

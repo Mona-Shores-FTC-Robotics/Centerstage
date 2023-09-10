@@ -8,8 +8,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name = "Teleop", group = "Robot")
 public class TELEOP_Robot extends LinearOpMode{
-
-    Robot robot = Robot.getInstance();
+    Robot robot = Robot.createInstance(this);
 
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
@@ -18,7 +17,7 @@ public class TELEOP_Robot extends LinearOpMode{
 
     @Override
     public void runOpMode() {
-        robot.init();
+        robot.initialize();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -27,7 +26,7 @@ public class TELEOP_Robot extends LinearOpMode{
 
         }
 
-        robot.runtime().reset();
+        robot.getRuntime().reset();
         while (opModeIsActive()){
             //Store the previous loop's gamepad values.
             previousGamepad1 = GamepadHandling.copy(currentGamepad1);

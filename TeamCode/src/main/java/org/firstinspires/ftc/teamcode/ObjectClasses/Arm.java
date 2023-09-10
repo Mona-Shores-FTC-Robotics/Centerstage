@@ -30,11 +30,11 @@ public class Arm {
     boolean rotating = false;
 
     public Arm() {
-        activeOpMode = Robot.getInstance();
+
     }
-    public void init(HardwareMap ahwMap, LinearOpMode opMode) {
-        activeOpMode = opMode;
-        arm = ahwMap.servo.get("turret_servo");
+    public void init() {
+        activeOpMode = Robot.getInstance().getActiveOpMode();
+        arm = Robot.getInstance().getHardwareMap().servo.get("turret_servo");
         //set arm at intake position
         armTargetPosition = armPosition = ArmPositions.INTAKE;
         arm.setPosition(armTargetPosition.value);
