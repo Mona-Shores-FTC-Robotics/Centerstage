@@ -63,9 +63,8 @@ public class DriveTrain {
     }
 
     /* METHOD: Initialize Hardware interfaces */
-    public void init() {
+    public void init(HardwareMap hwMap) {
         // Save reference to Hardware map
-        hwMap = Robot.getInstance().getHardwareMap();
         activeOpMode = Robot.getInstance().getActiveOpMode();
 
         // Define and Initialize Motors

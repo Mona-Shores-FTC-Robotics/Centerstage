@@ -84,12 +84,12 @@ public class Robot {
         return drivetrain;
     }
 
-    public void initialize() {
+    public void initialize(HardwareMap hwMap) {
         runtime.reset();
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
-                drivetrain.init();
+                drivetrain.init(hwMap);
                 lift.init();
                 arm.init();
                 gyro.init();
@@ -98,7 +98,7 @@ public class Robot {
             }
             case ROBOT_CHASSIS:
             {
-                drivetrain.init();
+                drivetrain.init(hwMap);
                 break;
             }
             default:

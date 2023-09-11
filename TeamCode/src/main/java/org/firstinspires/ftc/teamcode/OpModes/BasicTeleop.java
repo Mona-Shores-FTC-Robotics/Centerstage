@@ -22,7 +22,7 @@ public class BasicTeleop extends LinearOpMode{
 
     @Override
     public void runOpMode() {
-        robot.initialize();
+        robot.initialize(hardwareMap);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
