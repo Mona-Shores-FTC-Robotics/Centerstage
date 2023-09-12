@@ -12,13 +12,15 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name = "Chassis Teleop", group = "Basic Chassis")
+@TeleOp(name = "Chassis Only Teleop", group = "Basic Chassis")
 public class BasicChassis extends LinearOpMode{
 
     Robot robot = Robot.createInstance(this);
     ElapsedTime runtime = robot.getRuntime();
     Gyro gyro = robot.getGyro();
     DriveTrain drivetrain = robot.getDriveTrain();
+
+
 
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();

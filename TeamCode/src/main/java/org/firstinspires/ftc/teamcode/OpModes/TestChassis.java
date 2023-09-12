@@ -102,88 +102,88 @@ public class TestChassis extends LinearOpMode {
                 telemetry.addData("Drive Method", "Power Control");
                 MecDrive.mecanumDrivePowerControl();
             }
-            else if (autoControl && ((runtime.seconds() - testRunStart) < 1)){
-
-                maxSpeed = timeTo200 =  distTraveled = null;
-
-                for (int i = 0; i < 4; i++){
-                    maximumSpeed[i] = Math.max(60 * MecDrive.driveMotor[i].getVelocity() / MecDrive.TICKS_PER_REV, maximumSpeed[i]);
-                    distanceTraveled[i] = MecDrive.driveMotor[i].getCurrentPosition() / MecDrive.TICKS_PER_REV;
-                    if (maximumSpeed[i] < 200) {
-                        timeTo200RPM[i] = runtime.seconds() - testRunStart;
-                    }
-
-                    maxSpeed = maxSpeed +  String.valueOf(Math.round(maximumSpeed[i])) + ", ";
-                    timeTo200 = timeTo200 +  String.valueOf(Math.round(100.0*timeTo200RPM[i])/100.0) + ", ";
-                    distTraveled = distTraveled +  String.valueOf(Math.round(10.0*distanceTraveled[i])/10.0) + ", ";
-                }
-            }
-            else if (currentGamepad1.y){  // 1 second of speed control driving
-                for (int i = 0; i < 4; i++){
-                    maximumSpeed[i] = 0;
-                    timeTo200RPM[i] = 0;
-                    MecDrive.driveMotor[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                }
-                autoControl = true;
-                testRunStart = runtime.seconds();
-                MecDrive.drive = autoDriveInput;
-                MecDrive.strafe = MecDrive.turn = 0;
-                if (driveMethodSpeedControl) {
-                    MecDrive.mecanumDriveSpeedControl();
-                }
-                else {
-                    MecDrive.mecanumDrivePowerControl();
-                }
-
-            }
-            else if (currentGamepad1.x){ // 1 second of speed control strafing
-                autoControl = true;
-                testRunStart = runtime.seconds();
-                MecDrive.strafe = autoDriveInput;
-                MecDrive.drive = MecDrive.turn = 0;
-                MecDrive.mecanumDriveSpeedControl();
-                for (int i = 0; i < 4; i++){
-                    maximumSpeed[i] = 0;
-                    timeTo200RPM[i] = 0;
-                }
-            }
-            else if (currentGamepad1.a){  // 1 second of power control driving
-                autoControl = true;
-                testRunStart = runtime.seconds();
-                MecDrive.drive = autoDriveInput;
-                MecDrive.strafe = MecDrive.turn = 0;
-                MecDrive.mecanumDrivePowerControl();
-                for (int i = 0; i < 4; i++){
-                    maximumSpeed[i] = 0;
-                    timeTo200RPM[i] = 0;
-                }
-            }
-            else if (currentGamepad1.b){ // 1 second of power control strafing
-                autoControl = true;
-                testRunStart = runtime.seconds();
-                MecDrive.strafe = autoDriveInput;
-                MecDrive.drive = MecDrive.turn = 0;
-                MecDrive.mecanumDrivePowerControl();
-                for (int i = 0; i < 4; i++){
-                    maximumSpeed[i] = 0;
-                    timeTo200RPM[i] = 0;
-                }
-            }
-            else if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up){
-                autoDriveInput = Math.min(1, autoDriveInput + .1);
-            }
-            else if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down){
-                autoDriveInput = Math.max(-1, autoDriveInput - .1);
-            }
-            else if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right){
-                F = F + F_INCREMENT;
-                for (int i = 0; i < 4; i++){
-                    MecDrive.driveMotor[i].setVelocityPIDFCoefficients(P, I, D, F);
-                }
-            }
-            else if(currentGamepad1.dpad_left && !previousGamepad1.dpad_left){
-                F = Math.max(0, F - F_INCREMENT);
-            }
+//            else if (autoControl && ((runtime.seconds() - testRunStart) < 1)){
+//
+//                maxSpeed = timeTo200 =  distTraveled = null;
+//
+//                for (int i = 0; i < 4; i++){
+//                    maximumSpeed[i] = Math.max(60 * MecDrive.driveMotor[i].getVelocity() / MecDrive.TICKS_PER_REV, maximumSpeed[i]);
+//                    distanceTraveled[i] = MecDrive.driveMotor[i].getCurrentPosition() / MecDrive.TICKS_PER_REV;
+//                    if (maximumSpeed[i] < 200) {
+//                        timeTo200RPM[i] = runtime.seconds() - testRunStart;
+//                    }
+//
+//                    maxSpeed = maxSpeed +  String.valueOf(Math.round(maximumSpeed[i])) + ", ";
+//                    timeTo200 = timeTo200 +  String.valueOf(Math.round(100.0*timeTo200RPM[i])/100.0) + ", ";
+//                    distTraveled = distTraveled +  String.valueOf(Math.round(10.0*distanceTraveled[i])/10.0) + ", ";
+//                }
+//            }
+//            else if (currentGamepad1.y){  // 1 second of speed control driving
+//                for (int i = 0; i < 4; i++){
+//                    maximumSpeed[i] = 0;
+//                    timeTo200RPM[i] = 0;
+//                    MecDrive.driveMotor[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//                }
+//                autoControl = true;
+//                testRunStart = runtime.seconds();
+//                MecDrive.drive = autoDriveInput;
+//                MecDrive.strafe = MecDrive.turn = 0;
+//                if (driveMethodSpeedControl) {
+//                    MecDrive.mecanumDriveSpeedControl();
+//                }
+//                else {
+//                    MecDrive.mecanumDrivePowerControl();
+//                }
+//
+//            }
+//            else if (currentGamepad1.x){ // 1 second of speed control strafing
+//                autoControl = true;
+//                testRunStart = runtime.seconds();
+//                MecDrive.strafe = autoDriveInput;
+//                MecDrive.drive = MecDrive.turn = 0;
+//                MecDrive.mecanumDriveSpeedControl();
+//                for (int i = 0; i < 4; i++){
+//                    maximumSpeed[i] = 0;
+//                    timeTo200RPM[i] = 0;
+//                }
+//            }
+//            else if (currentGamepad1.a){  // 1 second of power control driving
+//                autoControl = true;
+//                testRunStart = runtime.seconds();
+//                MecDrive.drive = autoDriveInput;
+//                MecDrive.strafe = MecDrive.turn = 0;
+//                MecDrive.mecanumDrivePowerControl();
+//                for (int i = 0; i < 4; i++){
+//                    maximumSpeed[i] = 0;
+//                    timeTo200RPM[i] = 0;
+//                }
+//            }
+//            else if (currentGamepad1.b){ // 1 second of power control strafing
+//                autoControl = true;
+//                testRunStart = runtime.seconds();
+//                MecDrive.strafe = autoDriveInput;
+//                MecDrive.drive = MecDrive.turn = 0;
+//                MecDrive.mecanumDrivePowerControl();
+//                for (int i = 0; i < 4; i++){
+//                    maximumSpeed[i] = 0;
+//                    timeTo200RPM[i] = 0;
+//                }
+//            }
+//            else if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up){
+//                autoDriveInput = Math.min(1, autoDriveInput + .1);
+//            }
+//            else if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down){
+//                autoDriveInput = Math.max(-1, autoDriveInput - .1);
+//            }
+//            else if (currentGamepad1.dpad_right && !previousGamepad1.dpad_right){
+//                F = F + F_INCREMENT;
+//                for (int i = 0; i < 4; i++){
+//                    MecDrive.driveMotor[i].setVelocityPIDFCoefficients(P, I, D, F);
+//                }
+//            }
+//            else if(currentGamepad1.dpad_left && !previousGamepad1.dpad_left){
+//                F = Math.max(0, F - F_INCREMENT);
+//            }
             else {
                 MecDrive.drive = MecDrive.strafe = MecDrive.turn = 0;
                 MecDrive.mecanumDrivePowerControl();

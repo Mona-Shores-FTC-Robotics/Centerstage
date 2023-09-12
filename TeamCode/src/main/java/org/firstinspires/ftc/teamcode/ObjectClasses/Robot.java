@@ -53,36 +53,6 @@ public class Robot {
         return robot;
     }
 
-    // Static method to create instance of Singleton class
-    public static synchronized Robot getInstance() {
-        if (robot == null) {
-           //error
-        }
-        return robot;
-    }
-
-    //Method to give us access to the runtime object
-    public ElapsedTime getRuntime() {
-        return runtime;
-    }
-
-    public LinearOpMode getActiveOpMode() {
-        return activeOpMode;
-    }
-
-    public HardwareMap getHardwareMap() {
-        return hardwareMap;
-    }
-
-    public Gyro getGyro()  {
-        return gyro;
-    }
-
-
-
-    public DriveTrain getDriveTrain()  {
-        return drivetrain;
-    }
 
     public void initialize(HardwareMap hwMap) {
         runtime.reset();
@@ -105,5 +75,28 @@ public class Robot {
                 break;
         }
     }
+
+
+    /** Getters **/
+    // Static method to get single instance of Robot
+    public static synchronized Robot getInstance() {
+        if (robot == null) {
+            //error
+        }
+        return robot;
+    }
+
+    public ElapsedTime getRuntime() {
+        return runtime;
+    }
+    public LinearOpMode getActiveOpMode() {
+        return activeOpMode;
+    }
+    public HardwareMap getHardwareMap() {return hardwareMap;}
+    public Gyro getGyro()  {
+        return gyro;
+    }
+    public DriveTrain getDriveTrain()  {return drivetrain;}
+
 }
 
