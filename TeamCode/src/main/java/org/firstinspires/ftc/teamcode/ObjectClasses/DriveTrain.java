@@ -77,8 +77,7 @@ public class DriveTrain {
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
-         //   if ((double) (i) % 2 == 1 ) driveMotor[i].setDirection(DcMotorSimple.Direction.FORWARD);
-           // else if ((double) (i) % 2 == 0) driveMotor[i].setDirection(DcMotorSimple.Direction.REVERSE);
+
             // add if need to set PID: driveMotor[i].setVelocityPIDFCoefficients(P,I,D,F);
         }
 

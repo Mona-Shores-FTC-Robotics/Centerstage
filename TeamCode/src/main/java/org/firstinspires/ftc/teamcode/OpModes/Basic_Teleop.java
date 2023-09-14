@@ -10,14 +10,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name = "Test Chassis", group =  "Chassis Bot")
+@TeleOp(name = "Basic_Teleop")
 
-public class TestChassis extends LinearOpMode {
+public class Basic_Teleop extends LinearOpMode {
 
     Robot robot = Robot.createInstance(this);
-
-    //Gyro gyro = Robot.getInstance().getGyro();
-    //DriveTrain MecDrive = Robot.getInstance().getDriveTrain();
 
     private DriveTrain MecDrive;
 
@@ -33,23 +30,7 @@ public class TestChassis extends LinearOpMode {
         robot.initialize(hardwareMap);
         MecDrive = Robot.getInstance().getDriveTrain();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
-
         boolean manualControl = false;
-        boolean autoControl = false;
-
-        double testRunStart = -2;
-        double maximumSpeed[] = {0, 0, 0, 0};
-        double timeTo200RPM[] = {0, 0, 0, 0};
-        double distanceTraveled[] = {0, 0, 0, 0};
-        String maxSpeed = null;
-        String timeTo200 = null;
-        String distTraveled = null;
-        double autoDriveInput = 1;
-        double P = 10;
-        double I = 3;
-        double D = 0;
-        double F = 12;
-        double F_INCREMENT = 1;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -67,17 +48,15 @@ public class TestChassis extends LinearOpMode {
             currentGamepad1 = GamepadHandling.copy(gamepad1);
             currentGamepad2 = GamepadHandling.copy(gamepad2);
 
-
+            /** Driver Controls**/
+            //Left Bumper switches between Speed Control and Power Control
             if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
                 driveMethodSpeedControl = !driveMethodSpeedControl;
             }
 
-
-            MecDrive.drive = - currentGamepad1.left_stick_y;
-            MecDrive.strafe = currentGamepad1.left_stick_x;
-            MecDrive.turn = currentGamepad1.right_stick_x;
-
-            if (Math.abs(currentGamepad1.left_stick_x) + Math.abs(currentGamepad1.left_stick_y)+Math.abs(currentGamepad1.right_stick_x) > .1){
+            //Checks whether the Driver sticks have moved
+            if (GamepadHandling.gamepadIsActive(currentGamepad1))
+            {
                 manualControl = true;
                 MecDrive.drive = - currentGamepad1.left_stick_y;
                 MecDrive.strafe = currentGamepad1.left_stick_x;
@@ -87,11 +66,9 @@ public class TestChassis extends LinearOpMode {
                 manualControl = false;
             }
 
-            telemetry.addData("Speed Control", driveMethodSpeedControl);
-            telemetry.addData("Power Control", !driveMethodSpeedControl);
 
+            //Call the approriate method to drive the robot
             if(driveMethodSpeedControl && manualControl){
-
                 MecDrive.mecanumDriveSpeedControl();
             }
             else if(manualControl) {
@@ -103,12 +80,12 @@ public class TestChassis extends LinearOpMode {
                 MecDrive.mecanumDrivePowerControl();
             }
 
+
+            //Telemetry
+            telemetry.addData("Speed Control", driveMethodSpeedControl);
+            telemetry.addData("Power Control", !driveMethodSpeedControl);
             telemetry.addData("ticks", MecDrive.driveMotor[0].getCurrentPosition());
             telemetry.addData("PIDF Coefficients", MecDrive.driveMotor[0].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
-            telemetry.addData("input power", autoDriveInput);
-            telemetry.addData("maximum speed", maxSpeed);
-            telemetry.addData("time to reach 200 rpm", timeTo200);
-            telemetry.addData("Wheel Rotations", distTraveled);
             telemetry.update();
         }
     }

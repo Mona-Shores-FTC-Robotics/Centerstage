@@ -22,7 +22,6 @@ public class GamepadHandling {
         pad.right_bumper = gamepad.right_bumper;
         pad.left_bumper = gamepad.left_bumper;
 
-
         pad.right_trigger = gamepad.right_trigger;
         pad.left_trigger = gamepad.left_trigger;
 
@@ -43,5 +42,11 @@ public class GamepadHandling {
         pad.dpad_down = gamepad.dpad_down;
 
         return pad;
+    }
+
+    public static Boolean gamepadIsActive(@NonNull Gamepad gamepad) {
+        if (Math.abs(gamepad.left_stick_x) + Math.abs(gamepad.left_stick_y) + Math.abs(gamepad.right_stick_x) > .1) {
+            return true;
+        } else return false;
     }
 }
