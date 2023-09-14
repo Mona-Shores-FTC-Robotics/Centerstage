@@ -74,7 +74,7 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
 
 
         }
-
+        teamPropVision.webcam.stopStreaming();
         telemetry.addData("Final Team Element Location", finalTeamPropVision);
         telemetry.update();
 
@@ -129,6 +129,6 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
             telemetry.addData("PIDF Coefficients", MecDrive.driveMotor[0].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
             telemetry.update();
         }
-        teamPropVision.webcam.stopStreaming();
+
     }
 }
