@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 @TeleOp(name = "TeleOp_Test_OpenCVDetection")
 
@@ -19,7 +20,7 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
 
     private DriveTrain MecDrive;
 
-    private Vision teamPropVision = new Vision();
+    private Vision vision = new Vision();
     private int finalTeamPropVision;
 
     //    GamepadHandling GamePads = new GamepadHandling(this);
@@ -32,7 +33,7 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.initialize(hardwareMap);
-        teamPropVision.init(hardwareMap);
+        vision.init(hardwareMap);
 
         MecDrive = Robot.getInstance().getDriveTrain();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
@@ -52,31 +53,31 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
             currentGamepad2 = GamepadHandling.copy(gamepad2);
 
             if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
-                if (teamPropVision.channelToExtract<2) {
-                    teamPropVision.channelToExtract++;
+                if (vision.channelToExtract<2) {
+                    vision.channelToExtract++;
                 } else
                 {
-                    teamPropVision.channelToExtract=0;
+                    vision.channelToExtract=0;
                 }
 
             }
 
 
-            telemetry.addData("left square Max", teamPropVision.LeftMax);
-            telemetry.addData("middle square Max", teamPropVision.MiddleMax);
-            telemetry.addData("right square Max", teamPropVision.RightMax);
-            telemetry.addData("Team Element Location", teamPropVision.TeamPropLocation);
-            telemetry.addData("Channel Being Extracted", teamPropVision.channelToExtract);
+            telemetry.addData("left square Max", vision.LeftMax);
+            telemetry.addData("middle square Max", vision.MiddleMax);
+            telemetry.addData("right square Max", vision.RightMax);
+            telemetry.addData("Team Element Location", vision.TeamPropLocation);
+            telemetry.addData("Channel Being Extracted", vision.channelToExtract);
             telemetry.update();
-            finalTeamPropVision = teamPropVision.TeamPropLocation;
-
-
-
+            finalTeamPropVision = vision.TeamPropLocation;
 
         }
-        teamPropVision.webcam.stopStreaming();
+        vision.webcam.stopStreaming();
         telemetry.addData("Final Team Element Location", finalTeamPropVision);
         telemetry.update();
+
+        vision.changePipeline();
+        vision.webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
 
         runtime.reset();
 

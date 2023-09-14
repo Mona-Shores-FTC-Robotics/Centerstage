@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.PipeDetectionPipeline;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -66,7 +67,8 @@ public class Vision {
         int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hwMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        webcam.setPipeline(new Vision.pipeLine());
+        webcam.setPipeline(new Vision.teamPropPipeLine());
+
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
@@ -80,7 +82,11 @@ public class Vision {
         });
     }
 
-    class pipeLine extends OpenCvPipeline
+    public void changePipeline() {
+        webcam.setPipeline(new PipeDetectionPipeline());
+    }
+
+    class teamPropPipeLine extends OpenCvPipeline
     {
         boolean viewportPaused;
 
