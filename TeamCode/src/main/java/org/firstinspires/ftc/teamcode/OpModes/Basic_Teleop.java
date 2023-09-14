@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 
 @TeleOp(name = "Basic_Teleop")
 
@@ -17,6 +18,9 @@ public class Basic_Teleop extends LinearOpMode {
     Robot robot = Robot.createInstance(this);
 
     private DriveTrain MecDrive;
+
+    private Vision teamPropVision;
+    private int finalTeamPropVision;
 
     //    GamepadHandling GamePads = new GamepadHandling(this);
     private final ElapsedTime runtime = new ElapsedTime();
@@ -28,6 +32,8 @@ public class Basic_Teleop extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.initialize(hardwareMap);
+        teamPropVision.init(hardwareMap);
+
         MecDrive = Robot.getInstance().getDriveTrain();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
         boolean manualControl = false;
@@ -36,9 +42,19 @@ public class Basic_Teleop extends LinearOpMode {
         telemetry.update();
 
         while (opModeInInit()) {
-        }
+            telemetry.addData("left square green channel", teamPropVision.LeftMax);
+            telemetry.addData("middle square green channel", teamPropVision.MiddleMax);
+            telemetry.addData("right square green channel", teamPropVision.RightMax);
+            telemetry.addData("Team Element Location", teamPropVision.TeamPropLocation);
+            telemetry.update();
+            finalTeamPropVision = teamPropVision.TeamPropLocation;
+          }
+        teamPropVision.webcam.stopStreaming();
+        telemetry.addData("Final Team Element Location", finalTeamPropVision);
+        telemetry.update();
 
         runtime.reset();
+
         while (opModeIsActive()) {
             //Store the previous loop's gamepad values.
             previousGamepad1 = GamepadHandling.copy(currentGamepad1);
