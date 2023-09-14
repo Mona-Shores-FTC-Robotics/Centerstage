@@ -35,6 +35,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
@@ -58,8 +59,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Autonomous(name="Basic_Auto")
-public class Basic_Auto extends LinearOpMode
+@TeleOp(name="TeleOp_Test_Tag_Alignment")
+public class TeleOp_Test_Tag_Alignment extends LinearOpMode
 {
     Robot robot = Robot.createInstance(this);
     private DriveTrain MecDrive;
@@ -72,7 +73,7 @@ public class Basic_Auto extends LinearOpMode
     String LiveViewStatus;
 
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 32; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -169,6 +170,7 @@ public class Basic_Auto extends LinearOpMode
                 telemetry.addData("Range",  "%5.1f inches", desiredTagBlue.ftcPose.range);
                 telemetry.addData("Bearing","%3.0f degrees", desiredTagBlue.ftcPose.bearing);
                 telemetry.addData("Yaw","%3.0f degrees", desiredTagBlue.ftcPose.yaw);
+
             }
 
             if (targetRedID7Found) {
@@ -224,7 +226,6 @@ public class Basic_Auto extends LinearOpMode
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
             telemetry.update();
-            sleep(10);
         }
         visionPortal.close();
     }
@@ -271,9 +272,9 @@ public class Basic_Auto extends LinearOpMode
         // Next, create a VisionPortal.
 
         aprilTagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(false)
-                .setDrawCubeProjection(false)
-                .setDrawTagOutline(true)
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagOutline(false)
                 //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
@@ -290,13 +291,13 @@ public class Basic_Auto extends LinearOpMode
            }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(320, 240));
+        builder.setCameraResolution(new Size(640 , 480));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
         // Set and enable the processor.
         builder.addProcessor(aprilTagProcessor);
@@ -304,7 +305,6 @@ public class Basic_Auto extends LinearOpMode
 
         // Build the Vision Portal, using the above settings.
         visionPortal = builder.build();
-
     }
 
     /*

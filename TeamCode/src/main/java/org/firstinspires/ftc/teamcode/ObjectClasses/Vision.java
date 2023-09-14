@@ -23,6 +23,8 @@ public class Vision {
     public double MiddleMax;
     public double RightMax;
 
+    public int channelToExtract = 0;
+
 
     //private variables
     private final int RectLX = 5;
@@ -96,11 +98,14 @@ public class Vision {
             MiddleCrop = input.submat(rectM);
             RightCrop = input.submat(rectR);
 
+            // channel 2 = red
             // channel 1 = green
+            // channel 0 = blue
 
-            Core.extractChannel(LeftCrop, LeftCrop, 1);
-            Core.extractChannel(MiddleCrop, MiddleCrop, 1);
-            Core.extractChannel(RightCrop, RightCrop, 1);
+
+            Core.extractChannel(LeftCrop, LeftCrop, channelToExtract);
+            Core.extractChannel(MiddleCrop, MiddleCrop, channelToExtract);
+            Core.extractChannel(RightCrop, RightCrop, channelToExtract);
 
             LeftMinMax = Core.minMaxLoc(LeftCrop);
             MiddleMinMax = Core.minMaxLoc(MiddleCrop);
@@ -124,7 +129,7 @@ public class Vision {
                 // team element = Right
                 TeamPropLocation = 2;
             }
-
+            Core.extractChannel(outPut, outPut, channelToExtract);
             return outPut;
 
 

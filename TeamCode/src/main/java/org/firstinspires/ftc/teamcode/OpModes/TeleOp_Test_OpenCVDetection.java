@@ -11,15 +11,15 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 
-@TeleOp(name = "Basic_Teleop")
+@TeleOp(name = "TeleOp_Test_OpenCVDetection")
 
-public class Basic_Teleop extends LinearOpMode {
+public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
 
     Robot robot = Robot.createInstance(this);
 
     private DriveTrain MecDrive;
 
-    private Vision teamPropVision;
+    private Vision teamPropVision = new Vision();
     private int finalTeamPropVision;
 
     //    GamepadHandling GamePads = new GamepadHandling(this);
@@ -42,14 +42,39 @@ public class Basic_Teleop extends LinearOpMode {
         telemetry.update();
 
         while (opModeInInit()) {
-            telemetry.addData("left square green channel", teamPropVision.LeftMax);
-            telemetry.addData("middle square green channel", teamPropVision.MiddleMax);
-            telemetry.addData("right square green channel", teamPropVision.RightMax);
+
+            //Store the previous loop's gamepad values.
+            previousGamepad1 = GamepadHandling.copy(currentGamepad1);
+            previousGamepad2 = GamepadHandling.copy(currentGamepad2);
+
+            //Store the gamepad values to be used for this iteration of the loop.
+            currentGamepad1 = GamepadHandling.copy(gamepad1);
+            currentGamepad2 = GamepadHandling.copy(gamepad2);
+
+            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
+                if (teamPropVision.channelToExtract<2) {
+                    teamPropVision.channelToExtract++;
+                } else
+                {
+                    teamPropVision.channelToExtract=0;
+                }
+
+            }
+
+
+            telemetry.addData("left square Max", teamPropVision.LeftMax);
+            telemetry.addData("middle square Max", teamPropVision.MiddleMax);
+            telemetry.addData("right square Max", teamPropVision.RightMax);
             telemetry.addData("Team Element Location", teamPropVision.TeamPropLocation);
+            telemetry.addData("Channel Being Extracted", teamPropVision.channelToExtract);
             telemetry.update();
             finalTeamPropVision = teamPropVision.TeamPropLocation;
-          }
-        teamPropVision.webcam.stopStreaming();
+
+
+
+
+        }
+
         telemetry.addData("Final Team Element Location", finalTeamPropVision);
         telemetry.update();
 
@@ -104,5 +129,6 @@ public class Basic_Teleop extends LinearOpMode {
             telemetry.addData("PIDF Coefficients", MecDrive.driveMotor[0].getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER));
             telemetry.update();
         }
+        teamPropVision.webcam.stopStreaming();
     }
 }
