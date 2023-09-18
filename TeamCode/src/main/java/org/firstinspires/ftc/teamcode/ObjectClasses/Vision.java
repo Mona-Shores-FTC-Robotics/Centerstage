@@ -86,6 +86,10 @@ public class Vision {
         webcam.setPipeline(new PipeDetectionPipeline());
     }
 
+    public void checkTeamProp() {
+    }
+
+
     class teamPropPipeLine extends OpenCvPipeline
     {
         boolean viewportPaused;

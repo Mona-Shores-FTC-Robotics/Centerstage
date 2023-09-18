@@ -19,6 +19,7 @@ public class Robot {
     private static Lift lift;
     private static Gyro gyro;
     private static IntakeOuttake intake;
+    private static Vision vision;
 
     /* Constructor */
     private Robot(LinearOpMode opMode) {
@@ -40,6 +41,11 @@ public class Robot {
             {
                 drivetrain = new DriveTrain();
                 break;
+            }
+            case ROBOT_VISION:
+            {
+                drivetrain = new DriveTrain();
+                vision = new Vision();
             }
             default:
                 break;
@@ -71,6 +77,13 @@ public class Robot {
                 drivetrain.init(hwMap);
                 break;
             }
+            case ROBOT_VISION:
+            {
+                drivetrain.init(hwMap);
+                vision.init(hwMap);
+                break;
+            }
+
             default:
                 break;
         }
@@ -97,6 +110,7 @@ public class Robot {
         return gyro;
     }
     public DriveTrain getDriveTrain()  {return drivetrain;}
+    public Vision getVision()  {return vision;}
 
 }
 

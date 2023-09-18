@@ -14,14 +14,19 @@ public final class Constants {
   private static final RobotType ROBOT = RobotType.ROBOT_CHASSIS;
 
   public enum RobotType {
-    ROBOT_2023,
-    ROBOT_CHASSIS
+        ROBOT_2023,
+        ROBOT_CHASSIS,
+        ROBOT_VISION
   }
 
   public static RobotType getRobot() {
      if (ROBOT == RobotType.ROBOT_2023) {
         return RobotType.ROBOT_2023;
-      } else {
+      } else if (ROBOT == RobotType.ROBOT_VISION)
+     {
+         return RobotType.ROBOT_VISION;
+     }
+     else {
         return RobotType.ROBOT_CHASSIS;
       }
   }

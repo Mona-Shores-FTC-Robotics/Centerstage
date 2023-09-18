@@ -19,7 +19,6 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
     Robot robot = Robot.createInstance(this);
 
     private DriveTrain MecDrive;
-
     private Vision vision = new Vision();
     private int finalTeamPropVision;
 
@@ -59,10 +58,7 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
                 {
                     vision.channelToExtract=0;
                 }
-
             }
-
-
             telemetry.addData("left square Max", vision.LeftMax);
             telemetry.addData("middle square Max", vision.MiddleMax);
             telemetry.addData("right square Max", vision.RightMax);
