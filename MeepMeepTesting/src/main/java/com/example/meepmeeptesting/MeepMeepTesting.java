@@ -1,9 +1,9 @@
 package com.example.meepmeeptesting;
 
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -11,9 +11,6 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-
 import javax.imageio.ImageIO;
 
 
@@ -70,6 +67,7 @@ public class MeepMeepTesting {
         redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RedLeftStartPose)
                 .splineToLinearHeading( RedLeftSpikeLocation, Math.toRadians(180))
                 .build());
+
 
         blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BlueLeftStartPose)
                 .splineToLinearHeading(mirrorAcrossXAxis(RedRightSpikeLocation), Math.toRadians(0))
