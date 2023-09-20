@@ -11,6 +11,8 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
@@ -81,8 +83,10 @@ public class MeepMeepTesting {
                .splineToLinearHeading(mirrorAcrossXAxis(RedLeftSpikeLocation), Math.toRadians(0))
                 .build());
 
+        String filePath = "Centerstage.png";
+        System.out.println(new File(".").getAbsolutePath());
         Image img = null;
-        try { img = ImageIO.read(new File("C:\\Centerstage.png")); }
+        try { img = ImageIO.read(new File(filePath)); }
         catch (IOException e) {}
 
         meepMeep.setBackground(img)
