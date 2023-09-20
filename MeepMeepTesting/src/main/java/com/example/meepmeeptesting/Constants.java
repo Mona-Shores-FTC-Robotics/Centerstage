@@ -44,9 +44,14 @@ public final class Constants {
     public static double THREE_QUARTER_TILE = TILE*.75;
 
     public static double FACE_TOWARD_RED = Math.toRadians(0);
-    public static double FACE_TOWARD_BLUE = Math.toRadians(180);
-    public static double FACE_TOWARD_FRONTSTAGE = Math.toRadians(270);
+    public static double FACE_45_DEGREES = Math.toRadians(45);
     public static double FACE_TOWARD_BACKSTAGE = Math.toRadians(90);
+    public static double FACE_135_DEGREES = Math.toRadians(135);
+    public static double FACE_TOWARD_BLUE = Math.toRadians(180);
+    public static double FACE_225_DEGREES = Math.toRadians(225);
+    public static double FACE_TOWARD_FRONTSTAGE = Math.toRadians(270);
+    public static double FACE_315_DEGREES = Math.toRadians(315);
+
 
     public static Pose2d BLUE_BACKDROP = new Pose2d(-TILE-HALF_TILE, 2*TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKDROP = new Pose2d(mirrorAcrossXAxis(BLUE_BACKDROP), FACE_TOWARD_BACKSTAGE);
@@ -58,6 +63,14 @@ public final class Constants {
 
     public static Pose2d RED_RIGHT_SPIKE_LOCATION = new Pose2d(TILE+HALF_TILE,HALF_TILE, FACE_TOWARD_BLUE);
     public static Pose2d BLUE_LEFT_SPIKE_LOCATION = new Pose2d(mirrorAcrossXAxis(RED_RIGHT_SPIKE_LOCATION), FACE_TOWARD_RED);
+
+    public static Pose2d RED_SPIKE_1 = new Pose2d(TILE+HALF_TILE,-TILE-QUARTER_TILE, FACE_TOWARD_BLUE);
+    public static Pose2d RED_SPIKE_2 = new Pose2d(TILE+HALF_TILE,HALF_TILE, FACE_TOWARD_BLUE);
+    public static Pose2d RED_SPIKE_3 = new Pose2d(TILE+HALF_TILE, -TILE-THREE_QUARTER_TILE, FACE_TOWARD_BLUE);
+
+    public static Pose2d BLUE_SPIKE_1 = new Pose2d(-TILE-HALF_TILE,-TILE-QUARTER_TILE, FACE_TOWARD_RED);
+    public static Pose2d BLUE_SPIKE_2 = new Pose2d(-TILE,-HALF_TILE, FACE_TOWARD_BLUE);
+    public static Pose2d BLUE_SPIKE_3 = new Pose2d(-TILE-HALF_TILE,-TILE-THREE_QUARTER_TILE, FACE_TOWARD_RED);
 
     public static Pose2d RED_LEFT_SPIKE_LOCATION = new Pose2d(RED_RIGHT_SPIKE_LOCATION.position.x, RED_RIGHT_SPIKE_LOCATION.position.y-(TILE*2), FACE_TOWARD_BLUE);
     public static Pose2d BLUE_RIGHT_SPIKE_LOCATION =  new Pose2d(mirrorAcrossXAxis(RED_LEFT_SPIKE_LOCATION), FACE_TOWARD_RED);

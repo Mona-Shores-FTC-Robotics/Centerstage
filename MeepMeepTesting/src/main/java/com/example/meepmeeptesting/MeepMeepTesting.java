@@ -129,22 +129,40 @@ public class MeepMeepTesting {
     {
         blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
                 .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+                .stopAndAdd(dropPixel())
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
         redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
-                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, Math.toRadians(180))
+                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+                .stopAndAdd(dropPixel())
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
         redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
-                .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(RED_SPIKE_3.position.x, RED_SPIKE_3.position.y, FACE_225_DEGREES), FACE_225_DEGREES)
+                .stopAndAdd(dropPixel())
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR.position.x, RED_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .lineToY(RED_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build());
 
         blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
-                .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(BLUE_SPIKE_1.position.x, BLUE_SPIKE_1.position.y, FACE_45_DEGREES), FACE_45_DEGREES)
+                .stopAndAdd(dropPixel())
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .lineToY(BLUE_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build());
     }
 
@@ -168,18 +186,22 @@ public class MeepMeepTesting {
                 .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
+
         redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
-                .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+                .splineToLinearHeading(new Pose2d(RED_SPIKE_1.position.x, RED_SPIKE_1.position.y, FACE_135_DEGREES), FACE_TOWARD_BACKSTAGE)
                 .stopAndAdd(dropPixel())
-                .splineToLinearHeading(RED_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR.position.x, RED_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(RED_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build());
 
         blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
-                .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, FACE_TOWARD_RED)
+                .splineToLinearHeading(new Pose2d(BLUE_SPIKE_3.position.x, BLUE_SPIKE_3.position.y, FACE_315_DEGREES), FACE_315_DEGREES)
                 .stopAndAdd(dropPixel())
-                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_RED), FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_RED)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(BLUE_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
