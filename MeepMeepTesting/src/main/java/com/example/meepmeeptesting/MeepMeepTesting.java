@@ -1,9 +1,9 @@
 package com.example.meepmeeptesting;
 
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -11,7 +11,6 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 
 
@@ -69,6 +68,7 @@ public class MeepMeepTesting {
                 .splineToLinearHeading( RedLeftSpikeLocation, Math.toRadians(180))
                 .build());
 
+
         blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BlueLeftStartPose)
                 .splineToLinearHeading(mirrorAcrossXAxis(RedRightSpikeLocation), Math.toRadians(0))
                 .build());
@@ -81,8 +81,10 @@ public class MeepMeepTesting {
                .splineToLinearHeading(mirrorAcrossXAxis(RedLeftSpikeLocation), Math.toRadians(0))
                 .build());
 
+        String filePath = "Centerstage.png";
+        System.out.println(new File(".").getAbsolutePath());
         Image img = null;
-        try { img = ImageIO.read(new File("C:\\Centerstage.png")); }
+        try { img = ImageIO.read(new File(filePath)); }
         catch (IOException e) {}
 
         meepMeep.setBackground(img)
