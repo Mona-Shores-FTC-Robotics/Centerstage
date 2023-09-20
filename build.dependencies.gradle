@@ -21,6 +21,7 @@ dependencies {
     implementation 'com.acmerobotics.roadrunner:core:1.0.0-beta3'
     implementation 'com.acmerobotics.roadrunner:actions:1.0.0-beta3'
     implementation 'com.acmerobotics.dashboard:dashboard:0.4.12'
+
     implementation('com.acmerobotics.dashboard:dashboard:0.4.12') {
         exclude group: 'org.firstinspires.ftc'
     }

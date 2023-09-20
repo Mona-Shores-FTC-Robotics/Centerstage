@@ -1,85 +1,49 @@
 package com.example.meepmeeptesting;
-
-
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-
+import static com.example.meepmeeptesting.Constants.*;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-
-
 public class MeepMeepTesting {
+
+    public static RoadRunnerBotEntity blueLeftBot;
+    public static RoadRunnerBotEntity redLeftBot;
+    public static RoadRunnerBotEntity blueRightBot;
+    public static RoadRunnerBotEntity redRightBot;
+
+    enum teamPropLocation {LEFT, CENTER, RIGHT}
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.RIGHT;
+
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(800);
+        MeepMeep meepMeep = new MeepMeep(1200);
 
-        RoadRunnerBotEntity blueLeftBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .build();
+        //This method makes 4 robots (2 red robots and 2 blue robots)
+        MakeRobots(meepMeep);
 
-        RoadRunnerBotEntity blueRightBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .build();
+        if (teamPropLocationFinal == teamPropLocation.LEFT)
+        {
+            teamPropLeftRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+        }
 
-        RoadRunnerBotEntity redLeftBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
-                .build();
+        if (teamPropLocationFinal == teamPropLocation.CENTER)
+        {
+            teamPropCenterRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+        }
 
-        RoadRunnerBotEntity redRightBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
-                .build();
-
-        double WIDTH_OF_ROBOT_INCHES = 18.0;
-        double LENGTH_OF_ROBOT_INCHES = 18.0;
-
-        double HALF_WIDTH_FIELD_INCHES = 72.0;
-        double HALF_LENGTH_FIELD_INCHES = 72.0;
-
-        double WIDTH_OF_TILE_INCHES = 23.5;
-        double LENGTH_OF_TILE_INCHES = 23.5;
-
-        Pose2d RedRightSpikeLocation=new Pose2d(WIDTH_OF_TILE_INCHES+WIDTH_OF_TILE_INCHES/2,LENGTH_OF_TILE_INCHES/2,Math.toRadians(180));
-
-        Pose2d RedRightStartPose = new Pose2d(HALF_WIDTH_FIELD_INCHES-(WIDTH_OF_ROBOT_INCHES/2), LENGTH_OF_TILE_INCHES/2, Math.toRadians(180));
-
-        Pose2d BlueLeftStartPose = new Pose2d(-HALF_WIDTH_FIELD_INCHES+(WIDTH_OF_ROBOT_INCHES/2),LENGTH_OF_TILE_INCHES/2,Math.toRadians(0));
-
-        Pose2d BlueRightStartPose = new Pose2d(-HALF_WIDTH_FIELD_INCHES+(WIDTH_OF_ROBOT_INCHES/2), (-LENGTH_OF_TILE_INCHES/2)-LENGTH_OF_TILE_INCHES, Math.toRadians(0));
-
-        Pose2d RedLeftStartPose = new Pose2d(+HALF_WIDTH_FIELD_INCHES-(WIDTH_OF_ROBOT_INCHES/2),(-LENGTH_OF_TILE_INCHES/2)-LENGTH_OF_TILE_INCHES,Math.toRadians(180));
-
-        Pose2d RedLeftSpikeLocation = new Pose2d(RedRightSpikeLocation.position.x, RedRightSpikeLocation.position.y-(WIDTH_OF_TILE_INCHES*2), Math.toRadians(180));
-
-        redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RedLeftStartPose)
-                .splineToLinearHeading( RedLeftSpikeLocation, Math.toRadians(180))
-                .build());
-
-
-        blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BlueLeftStartPose)
-                .splineToLinearHeading(mirrorAcrossXAxis(RedRightSpikeLocation), Math.toRadians(0))
-                .build());
-
-        redRightBot.runAction(redRightBot.getDrive().actionBuilder(RedRightStartPose)
-                        .splineToLinearHeading(RedRightSpikeLocation, Math.toRadians(180))
-                .build());
-
-       blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BlueRightStartPose)
-               .splineToLinearHeading(mirrorAcrossXAxis(RedLeftSpikeLocation), Math.toRadians(0))
-                .build());
+        if (teamPropLocationFinal == teamPropLocation.RIGHT)
+        {
+            teamPropRightRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+        }
 
         String filePath = "Centerstage.png";
         System.out.println(new File(".").getAbsolutePath());
@@ -97,9 +61,136 @@ public class MeepMeepTesting {
 
     }
 
+    private static void MakeRobots( MeepMeep meepMeep ) {
+        blueLeftBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setColorScheme(new ColorSchemeBlueDark())
+                .build();
 
-    public static Pose2d mirrorAcrossXAxis(Pose2d input) {
-        Pose2d output = new Pose2d(-input.position.x, input.position.y, Math.toRadians(0));
-        return output;
+        blueRightBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setColorScheme(new ColorSchemeBlueLight())
+                .build();
+
+        redLeftBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setColorScheme(new ColorSchemeRedLight())
+                .build();
+
+        redRightBot = new DefaultBotBuilder(meepMeep)
+                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setColorScheme(new ColorSchemeRedLight())
+                .build();
     }
+
+    static void teamPropCenterRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
+{
+    blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+            .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+            .turnTo(FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+            .strafeTo(BLUE_BACKSTAGE_PARK)
+            .turnTo(FACE_TOWARD_FRONTSTAGE)
+            .build());
+
+    redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+            .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, Math.toRadians(180))
+            .turnTo(FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+            .strafeTo(RED_BACKSTAGE_PARK)
+            .turnTo(FACE_TOWARD_FRONTSTAGE)
+            .build());
+
+    redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+            .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+            .splineToLinearHeading(RED_SAFE_STRAFE , FACE_TOWARD_BLUE)
+            .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_2, FACE_TOWARD_BLUE) , FACE_TOWARD_BLUE)
+            .splineToLinearHeading(RED_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+            .build());
+
+    blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+            .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, FACE_TOWARD_RED)
+            .splineToLinearHeading(BLUE_SAFE_STRAFE , FACE_TOWARD_RED)
+            .splineToLinearHeading(new Pose2d(BLUE_NEUTRAL_PIXEL_2, FACE_TOWARD_RED), FACE_TOWARD_RED)
+            .splineToLinearHeading(BLUE_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+            .build());
 }
+
+
+    static void teamPropLeftRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
+    {
+        blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build());
+
+        redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, Math.toRadians(180))
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build());
+
+        redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, Math.toRadians(180))
+                .build());
+
+        blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, Math.toRadians(0))
+                .build());
+    }
+
+    static void teamPropRightRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
+    {
+        blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+                .stopAndAdd(dropPixel())
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build());
+
+        redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+                .stopAndAdd(dropPixel())
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build());
+
+        redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+                .stopAndAdd(dropPixel())
+                .splineToLinearHeading(RED_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+                .lineToY(RED_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build());
+
+        blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, FACE_TOWARD_RED)
+                .stopAndAdd(dropPixel())
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_RED), FACE_TOWARD_RED)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .lineToY(BLUE_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build());
+    }
+
+    static Action dropPixel()
+    {
+        SleepAction sleep = new SleepAction(.1);
+        return sleep;
+    }
+
+}
+
