@@ -11,10 +11,14 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 
-public final class Constants {
+public class Constants {
 
-  //private static final RobotType ROBOT = RobotType.ROBOT_2023;
-  private static final RobotType ROBOT = RobotType.ROBOT_CHASSIS;
+  private static RobotType robot = RobotType.ROBOT_CHASSIS;
+
+  public static void setRobot(RobotType type)
+  {
+      robot = type;
+  }
 
   public enum RobotType {
         ROBOT_2023,
@@ -23,9 +27,9 @@ public final class Constants {
   }
 
   public static RobotType getRobot() {
-     if (ROBOT == RobotType.ROBOT_2023) {
+     if (robot == RobotType.ROBOT_2023) {
         return RobotType.ROBOT_2023;
-      } else if (ROBOT == RobotType.ROBOT_VISION)
+      } else if (robot == RobotType.ROBOT_VISION)
      {
          return RobotType.ROBOT_VISION;
      }
@@ -33,8 +37,6 @@ public final class Constants {
         return RobotType.ROBOT_CHASSIS;
       }
   }
-
-
 
     double ROBOT_LENGTH = 18.0;
     double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;
