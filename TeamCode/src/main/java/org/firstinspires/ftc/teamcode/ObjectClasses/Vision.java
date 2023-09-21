@@ -83,7 +83,7 @@ public class Vision {
     public enum DeliverLocation {
         LEFT,
         CENTER,
-        RIGHT;
+        RIGHT
     }
 
     private DeliverLocation deliverLocation = DeliverLocation.CENTER;
@@ -323,6 +323,9 @@ public class Vision {
         // If Right Bumper is being pressed, AND we have found one of the blue audience wall AprilTags, drive there automatically
         // If Left Bumper is being pressed, AND we have found one of the red audience wall AprilTags, drive there automatically
         // If neither tag is found or we aren't pushing a bumper, then drive normally
+
+
+
         if (DriveToBlueAudienceWallTag() || DriveToRedAudienceWallTag()) {
             //set the manual control flag to false so ew know that we are doing automated driving
             Robot.getInstance().getDriveTrain().setManualDriveControlFlag(false);
@@ -340,7 +343,7 @@ public class Vision {
             //no april tag is being driven to (either because we didn't see them or the user didn't hold down the bumpers) - so we set manual drive control to true
             Robot.getInstance().getDriveTrain().setManualDriveControlFlag(true);
             Robot.getInstance().getDriveTrain().setPreventCrashFlag(false);
-            // let the driver go at max speed again since backdrop apriltag is not in sight
+            // let the driver go at max speed again since backdrop AprilTag is not in sight
             Robot.getInstance().getDriveTrain().setDriveSpeedFactor(1.0);
         }
 
@@ -450,7 +453,7 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                // set the drive/turn strafe values for autodriving
+                // set the drive/turn strafe values for AutoDriving
 
                 Robot.getInstance().getDriveTrain().setDrive(drive);
                 Robot.getInstance().getDriveTrain().setTurn(turn);
