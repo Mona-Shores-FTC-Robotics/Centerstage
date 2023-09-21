@@ -49,13 +49,12 @@ public class InitVisionProcessor implements VisionProcessor {
 
     private Mat hsvMat       = new Mat();
 
-    private Mat maskedRedMat1 = new Mat();
-    private Mat maskedRedMat2 = new Mat();
-
+    private Mat maskedRedMat = new Mat();
     private Mat maskedBlueMat = new Mat();
 
     private Mat binaryRedMat1      = new Mat();
     private Mat binaryRedMat2      = new Mat();
+    private Mat binaryRedMatFinal      = new Mat();
     private Mat binaryBlueMat = new Mat();
 
     private Mat leftZoneRed;
@@ -87,7 +86,7 @@ public class InitVisionProcessor implements VisionProcessor {
     //set default alliance to Blue
     public AllianceColor allianceColorFinal = AllianceColor.BLUE;
 
-    enum SideOfField {BACKSTAGE, FRONTSTAGE}
+    public enum SideOfField {BACKSTAGE, FRONTSTAGE}
 
     //set default side of field to BACKSTAGE
     public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
@@ -156,23 +155,21 @@ public class InitVisionProcessor implements VisionProcessor {
          */
         Core.inRange(hsvMat, lowerRed1, upperRed1, binaryRedMat1);
         Core.inRange(hsvMat, lowerRed2, upperRed2, binaryRedMat2);
+        Core.bitwise_or(binaryRedMat1, binaryRedMat2, binaryRedMatFinal);
 
         Core.inRange(hsvMat, lowerBlue, upperBlue, binaryBlueMat);
 
-
         //Took this from an example, im not quite sure this part is right
-        maskedRedMat1.release();
-        maskedRedMat2.release();
+        maskedRedMat.release();
         maskedBlueMat.release();
 
-        Core.bitwise_and(frame, frame, maskedRedMat1, binaryRedMat1);
-        Core.bitwise_and(maskedRedMat1, maskedRedMat1, maskedRedMat2, binaryRedMat2);
+        Core.bitwise_and(frame, frame, maskedRedMat, binaryRedMatFinal);
         Core.bitwise_and(frame, frame, maskedBlueMat, binaryBlueMat);
 
         //this is to check specific zones to determine where the team prop is
-        leftZoneRed  = maskedRedMat2.submat(rectL);
-        centerZoneRed = maskedRedMat2.submat(rectM);
-        rightZoneRed  = maskedRedMat2.submat(rectR);
+        leftZoneRed  = maskedRedMat.submat(rectL);
+        centerZoneRed = maskedRedMat.submat(rectM);
+        rightZoneRed  = maskedRedMat.submat(rectR);
 
         leftZoneBlue  = maskedBlueMat.submat(rectL);
         centerZoneBlue = maskedBlueMat.submat(rectM);
@@ -192,14 +189,49 @@ public class InitVisionProcessor implements VisionProcessor {
             percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.RED;
+            maskedRedMat.copyTo(frame);
+            telemetry.addData("[Lower Red Scalar1]", lowerRed1);
+            telemetry.addData("[Upper Red Scalar1]", upperRed1);
+            telemetry.addData("[Lower Red Scalar2]", lowerRed2);
+            telemetry.addData("[Upper Red Scalar2]", upperRed2);
+
+            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
+            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
+            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
+
+            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
+            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
+            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
+
         } else if (percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.BLUE;
+            maskedBlueMat.copyTo(frame);
+            telemetry.addData("[Lower Blue Scalar]", lowerBlue);
+            telemetry.addData("[Upper Blue Scalar]", upperBlue);
+
+            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
+            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
+            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
+
+            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
+            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
+            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
         }
         else {
             telemetry.addLine("No Alliance Found - defaulting to Blue Alliance");
+            //Neither red nor blue meet the detection threshold, so put the HSV filtered image on the screen
+            hsvMat.copyTo(frame);
+
+            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
+            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
+            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
+
+            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
+            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
+            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
         }
 
         if (allianceColorFinal == AllianceColor.RED) {
@@ -233,9 +265,6 @@ public class InitVisionProcessor implements VisionProcessor {
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             }
         }
-
-        telemetry.addData("[Lower Blue Scalar]", lowerBlue);
-        telemetry.addData("[Upper Blue Scalar]", upperBlue);
 
         /*
          * Different from OpenCvPipeline, you cannot return

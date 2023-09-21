@@ -75,12 +75,14 @@ public class Robot {
             case ROBOT_CHASSIS:
             {
                 drivetrain.init(hwMap);
+                gyro.init();
                 break;
             }
             case ROBOT_VISION:
             {
                 drivetrain.init(hwMap);
                 vision.init(hwMap);
+                gyro.init();
                 break;
             }
 

@@ -35,8 +35,6 @@ public class Gyro {
     private final RevHubOrientationOnRobot hubOrientation =
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, // direction of control hub logo on robot
                     RevHubOrientationOnRobot.UsbFacingDirection.LEFT); // direction of USB ports on robot
- //   public Orientation lastAngles = new Orientation();
- //   public double currAngle = 0.0;
 
     private int deltaLength = 5; // Number of readings used for calculating velocity and acceleration
     public LinkedList<Orientation> angles = new LinkedList<>();
@@ -59,20 +57,6 @@ public class Gyro {
         // Save reference to Hardware map
         hwMap = Robot.getInstance().getHardwareMap();
 
-        /*
-        // code for old control hub IMU
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json";
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hwMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-         */
-
-        // code for new control hub imu
         imu = hwMap.get(IMU.class, "imu");
         imu.initialize(new IMU.Parameters(hubOrientation));
         imu.resetYaw();
@@ -102,30 +86,8 @@ public class Gyro {
         }
     }
 
-    /*
-    public void resetAngle() {
-        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        currAngle = 0;
+    public void resetYaw() {
+        imu.resetYaw();
     }
-
-    public double getAngle() {
-        Orientation orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double deltaAngle = orientation.firstAngle - lastAngles.firstAngle;
-        if (deltaAngle > 180) {
-            deltaAngle -= 360;
-        } else if (deltaAngle <= -180) {
-            deltaAngle += 360;
-        }
-        currAngle += deltaAngle;
-        lastAngles = orientation;
-        return currAngle;
-    }
-
-    public double getAbsoluteAngle() {
-        originalOrientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        double absoluteAngle = originalOrientation.firstAngle;
-        return absoluteAngle;
-    }
-     */
 
 }

@@ -84,18 +84,9 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
                 manualControl = false;
             }
 
-
             //Call the approriate method to drive the robot
             if(driveMethodSpeedControl && manualControl){
                 MecDrive.mecanumDriveSpeedControl();
-            }
-            else if(manualControl) {
-                telemetry.addData("Drive Method", "Power Control");
-                MecDrive.mecanumDrivePowerControl();
-            }
-            else {
-                MecDrive.drive = MecDrive.strafe = MecDrive.turn = 0;
-                MecDrive.mecanumDrivePowerControl();
             }
 
 

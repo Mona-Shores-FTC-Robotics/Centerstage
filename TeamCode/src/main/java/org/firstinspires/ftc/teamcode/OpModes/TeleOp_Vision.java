@@ -33,9 +33,15 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
+import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
+import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @TeleOp(name="TeleOp_Vision")
@@ -43,55 +49,90 @@ public class TeleOp_Vision extends LinearOpMode
 {
     Robot robot = Robot.createInstance(this);
     VisionPortal visionPortal;
+    DriveTrain driveTrain;
+    Gyro gyro;
 
-    private DcMotorEx leftFrontDrive   = null;  //  Used to control the left front drive wheel
-    private DcMotorEx rightFrontDrive  = null;  //  Used to control the right front drive wheel
-    private DcMotorEx leftBackDrive    = null;  //  Used to control the left back drive wheel
-    private DcMotorEx rightBackDrive   = null;  //  Used to control the right back drive wheel
+    //Set defaults in case vision doesn't work
+    private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
+    private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
+    private InitVisionProcessor.SideOfField sideOfFieldAfterInit = InitVisionProcessor.SideOfField.BACKSTAGE;
 
-
-    private double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-    private double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-    private double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-
+    private final ElapsedTime runtime = new ElapsedTime();
 
     @Override public void runOpMode()
     {
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION); //This OpMode uses the robot with a Chassis and a Camera
+        //This OpMode uses the robot with a Chassis, Camera, and Gyro
+        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+
         robot.initialize(hardwareMap);
         visionPortal = Robot.getInstance().getVision().getVisionPortal();
-
+        driveTrain = Robot.getInstance().getDriveTrain();
+        gyro = Robot.getInstance().getGyro();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        double  drive           = 0;        // Desired forward power/speed (-1 to +1)
-        double  strafe          = 0;        // Desired strafe power/speed (-1 to +1)
-        double  turn            = 0;        // Desired turning power/speed (-1 to +1)
-
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must match the names assigned during the robot configuration.
-        // step (using the FTC Robot Controller app on the phone).
-        leftFrontDrive  = robot.getDriveTrain().driveMotor[0]; //LFDrive
-        rightFrontDrive = robot.getDriveTrain().driveMotor[1]; //RFDrive
-        leftBackDrive  = robot.getDriveTrain().driveMotor[2]; //LBDrive
-        rightBackDrive = robot.getDriveTrain().driveMotor[3]; //RBDrive
+        Gamepad currentGamepad1 = new Gamepad();
+        Gamepad currentGamepad2 = new Gamepad();
+        Gamepad previousGamepad1 = new Gamepad();
+        Gamepad previousGamepad2 = new Gamepad();
 
         while (opModeInInit()) {
-            telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-            telemetry.addData(">", "Touch Play to start OpMode");
-            telemetry.addLine("");
+            //Even though this is a teleop mode, this will test vision for now - this will need to be changed later
+            teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
+            allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
+            sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
+
+            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+            telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+            telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
+            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCemterPercent());
+            telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
+            telemetry.update();
 
             Robot.getInstance().getVision().Frames_Per_Second();
 
             telemetry.update();
         }
+
         waitForStart();
+
+        telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
+        telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
+        telemetry.addData("Side of Field After Init", sideOfFieldAfterInit);
+        telemetry.update();
 
         // After Init switch the vision processing to Apriltags
         visionPortal.setProcessorEnabled(robot.getVision().getInitVisionProcessor(), false);
         visionPortal.setProcessorEnabled(robot.getVision().getAprilTagProcessor(), true);
 
+        runtime.reset();
+
         while (opModeIsActive())
         {
+            //Store the previous loop's gamepad values.
+            previousGamepad1 = GamepadHandling.copy(currentGamepad1);
+            previousGamepad2 = GamepadHandling.copy(currentGamepad2);
+
+            //Store the gamepad values to be used for this iteration of the loop.
+            currentGamepad1 = GamepadHandling.copy(gamepad1);
+            currentGamepad2 = GamepadHandling.copy(gamepad2);
+
+            //Update Gyro values
+            gyro.UpdateGyro(runtime);
+
+            /** Driver Controls**/
+            //Start button toggles field oriented control
+            if(currentGamepad1.start && !previousGamepad1.start){
+                if (driveTrain.getFieldOrientedControlFlag()) {
+                    //drive normally - not in field oriented control
+                    driveTrain.setFieldOrientedControlFlag(false);
+                } else
+                {
+                    //drive in field oriented control
+                    Robot.getInstance().getGyro().resetYaw();
+                    driveTrain.setFieldOrientedControlFlag(true);
+                }
+            }
+
             // Look for April Tags
             Robot.getInstance().getVision().LookForAprilTags();
 

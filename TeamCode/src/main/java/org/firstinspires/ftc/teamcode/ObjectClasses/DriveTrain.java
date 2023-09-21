@@ -17,6 +17,7 @@ public class DriveTrain {
     final double D = 0; // default = 0
     final double I = 0; // default = 3
     final double F = 0; // default = 0
+
     private final double STRAFE_FACTOR = 1.2;
     private final double STARTING_RAMP_VALUE = 1.0;
     private final double RAMP_INCREMENT = 0.0;
@@ -45,7 +46,12 @@ public class DriveTrain {
     public double strafe = 0.0;
     public double turn = 0.0;
 
+    double DRIVE_SPEED_FACTOR = 1.0;
+    double STRAFE_SPEED_FACTOR = 1.0;
+    double TURN_SPEED_FACTOR = 1.0;
+
     private boolean manualDriveControlFlag = true;
+    private boolean fieldOrientedControlFlag = false;
 
     /* Private OpMode objects and variables */
     private double ramp = STARTING_RAMP_VALUE;
@@ -60,8 +66,6 @@ public class DriveTrain {
     private HardwareMap hwMap = null;
 
     Gamepad driverGamepad;
-
-
 
     /* Constructor */
     public DriveTrain() {
@@ -96,6 +100,7 @@ public class DriveTrain {
     public void drive(){
         Gamepad driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
 
+        //can we just add the speed factor here instead of doing it in field control only?
         double driveInput = -driverGamepad.left_stick_y;
         double strafeInput = driverGamepad.left_stick_x;
         double turnInput = driverGamepad.right_stick_x;
@@ -106,9 +111,16 @@ public class DriveTrain {
                 Math.abs(turnInput) > STICK_DEAD_ZONE)
         {
             setManualDriveControlFlag(true);
+
             setDrive(driveInput);
             setTurn(turnInput);
             setStrafe(strafeInput);
+
+            if (fieldOrientedControlFlag==true)
+            {
+                //change the drive/strafe/turn values to FOC style
+                fieldOrientedControl();
+            }
 
             //call the drive function with the drive/turn/strafe values set based on the driver controls
             mecanumDriveSpeedControl();
@@ -125,28 +137,7 @@ public class DriveTrain {
         }
     }
 
-    /** fieldOrientedControl takes inputs from the gamepad and the angle of the robot.
-     * These inputs are used to calculate the drive, strafe and turn inputs needed for the MecanumDrive method.
-     */
-    public void fieldOrientedControl (double forward, double sideways, double turning, double robotAngle){  // remove turning input
-        // Consider moving these constants to top of class
-        robotAngle = robotAngle * Math.PI / 180;
-        double DRIVE_SPEED_FACTOR = 1.0;
-        double STRAFE_SPEED_FACTOR = 1.0;
-        double TURN_SPEED_FACTOR = 1.0; // delete line
-
-        double magnitude = Math.sqrt(Math.pow(forward, 2) + Math.pow(sideways, 2));
-        double driveAngle = Math.copySign(Math.acos(forward/magnitude), Math.asin(-sideways));
-        double deltaAngle = robotAngle-driveAngle;
-
-        drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
-        strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
-        turn = TURN_SPEED_FACTOR * turning; // Delete line
-
-    }
-
     public void mecanumDriveSpeedControl() {
-
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
@@ -166,7 +157,6 @@ public class DriveTrain {
             activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
         }
     }
-
 
     // turns to a specified angle based on driver inputs.
     public  boolean turnToAngleCalc(boolean right, boolean fwd, boolean left, boolean back, LinkedList<Double> robotAngle){
@@ -189,6 +179,27 @@ public class DriveTrain {
         else {return false;}
     }
 
+    /** fieldOrientedControl takes inputs from the gamepad and the angle of the robot.
+     * These inputs are used to calculate the drive, strafe and turn inputs needed for the MecanumDrive method.
+     */
+    public void fieldOrientedControl (){
+        // Consider moving these constants to top of class
+        double robotAngle = Robot.getInstance().getGyro().turnAngle.get(0);
+
+        double magnitude = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
+        double driveAngle = Math.copySign(Math.acos(drive/magnitude), Math.asin(-strafe));
+        double deltaAngle = robotAngle-driveAngle;
+
+        drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
+        strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
+        turn = TURN_SPEED_FACTOR * turn;
+    }
+
+    public void resetFieldOrientedControl() {
+
+    }
+
+
     public void setDrive(double input_drive) {
         drive = input_drive;
     }
@@ -207,6 +218,14 @@ public class DriveTrain {
 
     public boolean getManualDriveControlFlag() {
         return manualDriveControlFlag;
+    }
+
+    public void setFieldOrientedControlFlag(boolean flag) {
+        fieldOrientedControlFlag = flag;
+    }
+
+    public boolean getFieldOrientedControlFlag() {
+        return fieldOrientedControlFlag;
     }
 
 }
