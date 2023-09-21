@@ -7,25 +7,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.LinkedList;
 
 public class DriveTrain {
     // DriveTrain tuning constants
-    final double P = 1; // default = 10
-    final double D = 0; // default = 0
-    final double I = 0; // default = 3
-    final double F = 0; // default = 0
-
-    private final double STRAFE_FACTOR = 1.2;
-    private final double STARTING_RAMP_VALUE = 1.0;
-    private final double RAMP_INCREMENT = 0.0;
-    private final double MAX_TIP = 10.0;
     private final double STICK_DEAD_ZONE = .1;
-    private final double AUTO_TURN_MAX_SPEED = 1.0;
-    private final double ALLOWED_TURN_ERROR = .5;
-    private final double TURN_TO_ANGLE_FACTOR = 1.0 / 180.0;
 
     // DriveTrain physical constants
     private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
@@ -38,34 +23,28 @@ public class DriveTrain {
     /* Public OpMode objects and variables. */
     public DcMotorEx driveMotor[] = new DcMotorEx[4]; // {leftfront, rightfront, leftback, rightback}
     public final String driveMotorNames [] = {"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
-    public double driveMotorPower[] = {0.0,0.0,0.0,0.0};
     public double driveMotorTargetSpeed[] = {0.0,0.0,0.0,0.0};
-    public int driveMotorTargetPosition[] = {0,0,0,0};
 
     public double drive = 0.0;
     public double strafe = 0.0;
     public double turn = 0.0;
 
-    double DRIVE_SPEED_FACTOR = 1.0;
-    double STRAFE_SPEED_FACTOR = 1.0;
-    double TURN_SPEED_FACTOR = 1.0;
+    private double DRIVE_SPEED_FACTOR = 1.0;
+    private double STRAFE_SPEED_FACTOR = 1.0;
+    private double TURN_SPEED_FACTOR = 1.0;
+
+    private double autoDriveSpeedFactor = 1.0;
+    private double autoStrafeSpeedFactor = 1.0;
+    private double autoTurnSpeedFactor = 1.0;
 
     private boolean manualDriveControlFlag = true;
     private boolean fieldOrientedControlFlag = false;
+    private boolean preventCrashFlag = false;
 
-    /* Private OpMode objects and variables */
-    private double ramp = STARTING_RAMP_VALUE;
-    private String runningToPosition = "Not Running";
-    private boolean tipRecoveryFlag = false;
-    private boolean turning = false;
-    private double targetAngle = 0.0;
-    private double angleDelta = 0.0;
-
-    private final ElapsedTime runToPositionPeriod = new ElapsedTime();
     private LinearOpMode activeOpMode;
-    private HardwareMap hwMap = null;
+    private Gamepad driverGamepad;
 
-    Gamepad driverGamepad;
+
 
     /* Constructor */
     public DriveTrain() {
@@ -94,11 +73,9 @@ public class DriveTrain {
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
         }
-
     }
 
     public void drive(){
-        Gamepad driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
 
         //can we just add the speed factor here instead of doing it in field control only?
         double driveInput = -driverGamepad.left_stick_y;
@@ -112,14 +89,27 @@ public class DriveTrain {
         {
             setManualDriveControlFlag(true);
 
-            setDrive(driveInput);
-            setTurn(turnInput);
-            setStrafe(strafeInput);
-
             if (fieldOrientedControlFlag==true)
             {
+                // set the drive/turn/strafe without speed adjustment (will be set after calcs for FOC)
+                setDrive(driveInput);
+                setTurn(turnInput);
+                setStrafe(strafeInput);
+
                 //change the drive/strafe/turn values to FOC style
                 fieldOrientedControl();
+            } else {
+                if (preventCrashFlag)
+                {
+                    // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
+                    setDrive(driveInput*autoDriveSpeedFactor);
+                    setTurn(turnInput*autoTurnSpeedFactor);
+                    setStrafe(strafeInput*autoStrafeSpeedFactor);
+                } else {
+                    setDrive(driveInput * DRIVE_SPEED_FACTOR);
+                    setTurn(turnInput * TURN_SPEED_FACTOR);
+                    setStrafe(strafeInput * STRAFE_SPEED_FACTOR);
+                }
             }
 
             //call the drive function with the drive/turn/strafe values set based on the driver controls
@@ -158,27 +148,6 @@ public class DriveTrain {
         }
     }
 
-    // turns to a specified angle based on driver inputs.
-    public  boolean turnToAngleCalc(boolean right, boolean fwd, boolean left, boolean back, LinkedList<Double> robotAngle){
-        if (fwd) {targetAngle = 0;}
-        else if (left) {targetAngle = 90;}
-        else if (back) {targetAngle = 180;}
-        else if (right) {targetAngle = -90;}
-
-        angleDelta = targetAngle - robotAngle.get(0);
-        if (angleDelta > 180) {angleDelta -= 360;}
-        else if (angleDelta < -180) {angleDelta += 360;}
-
-        if (Math.abs(angleDelta) > ALLOWED_TURN_ERROR){ // convert to else if
-            turn = - angleDelta * TURN_TO_ANGLE_FACTOR * AUTO_TURN_MAX_SPEED;
-            drive = 0;
-            strafe = 0;
-
-            return true;
-        }
-        else {return false;}
-    }
-
     /** fieldOrientedControl takes inputs from the gamepad and the angle of the robot.
      * These inputs are used to calculate the drive, strafe and turn inputs needed for the MecanumDrive method.
      */
@@ -190,15 +159,19 @@ public class DriveTrain {
         double driveAngle = Math.copySign(Math.acos(drive/magnitude), Math.asin(-strafe));
         double deltaAngle = robotAngle-driveAngle;
 
-        drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
-        strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
-        turn = TURN_SPEED_FACTOR * turn;
+        if (preventCrashFlag)
+        {
+            // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
+            drive = autoDriveSpeedFactor * magnitude * Math.cos(deltaAngle);
+            strafe = autoStrafeSpeedFactor * magnitude * Math.sin(deltaAngle);
+            turn = autoTurnSpeedFactor * turn;
+
+        } else {
+            drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
+            strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
+            turn = TURN_SPEED_FACTOR * turn;
+        }
     }
-
-    public void resetFieldOrientedControl() {
-
-    }
-
 
     public void setDrive(double input_drive) {
         drive = input_drive;
@@ -228,4 +201,19 @@ public class DriveTrain {
         return fieldOrientedControlFlag;
     }
 
+    public void setDriveSpeedFactor(double factor) {
+        autoDriveSpeedFactor = factor;
+    }
+
+    public void setStrafeSpeedFactor(double factor) {
+        autoStrafeSpeedFactor = factor;
+    }
+
+    public void setTurnSpeedFactor(double factor) {
+        autoTurnSpeedFactor = factor;
+    }
+
+    public void setPreventCrashFlag(boolean b) {
+        preventCrashFlag = b;
+    }
 }

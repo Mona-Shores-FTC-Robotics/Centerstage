@@ -41,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 
@@ -132,6 +133,19 @@ public class TeleOp_Vision extends LinearOpMode
                     driveTrain.setFieldOrientedControlFlag(true);
                 }
             }
+
+            /** Operator Controls**/
+            // the X/Y/B buttons set the deliver location to left, center, or right
+            if(currentGamepad2.x && !previousGamepad2.x){
+               Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.LEFT);
+            }
+            if(currentGamepad2.y && !previousGamepad2.y){
+                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.CENTER);
+            }
+            if(currentGamepad2.b && !previousGamepad1.b){
+                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
+            }
+
 
             // Look for April Tags
             Robot.getInstance().getVision().LookForAprilTags();

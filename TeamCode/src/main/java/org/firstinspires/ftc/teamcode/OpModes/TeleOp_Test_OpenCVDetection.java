@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -31,8 +32,9 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        //This OpMode uses the robot with a Chassis, Camera, and Gyro
+        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
         robot.initialize(hardwareMap);
-        vision.init(hardwareMap);
 
         MecDrive = Robot.getInstance().getDriveTrain();
         boolean driveMethodSpeedControl = false; // false = power control, true = speed control
@@ -67,28 +69,7 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
             currentGamepad2 = GamepadHandling.copy(gamepad2);
 
             /** Driver Controls**/
-            //Left Bumper switches between Speed Control and Power Control
-            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
-                driveMethodSpeedControl = !driveMethodSpeedControl;
-            }
-
-            //Checks whether the Driver sticks have moved
-            if (GamepadHandling.gamepadIsActive(currentGamepad1))
-            {
-                manualControl = true;
-                MecDrive.drive = - currentGamepad1.left_stick_y;
-                MecDrive.strafe = currentGamepad1.left_stick_x;
-                MecDrive.turn = currentGamepad1.right_stick_x;
-            }
-            else {
-                manualControl = false;
-            }
-
-            //Call the approriate method to drive the robot
-            if(driveMethodSpeedControl && manualControl){
-                MecDrive.mecanumDriveSpeedControl();
-            }
-
+            MecDrive.drive();
 
             //Telemetry
             telemetry.addData("Speed Control", driveMethodSpeedControl);
