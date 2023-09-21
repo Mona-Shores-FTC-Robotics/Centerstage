@@ -58,7 +58,6 @@ public class MeepMeepTesting {
                 .addEntity(redLeftBot)
                 .addEntity(blueRightBot)
                 .start();
-
     }
 
     private static void MakeRobots( MeepMeep meepMeep ) {

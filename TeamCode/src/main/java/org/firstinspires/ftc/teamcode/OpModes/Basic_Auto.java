@@ -22,6 +22,7 @@ public class Basic_Auto extends LinearOpMode {
 
     private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
     private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
+    private InitVisionProcessor.SideOfField sideOfFieldAfterInit = InitVisionProcessor.SideOfField.BACKSTAGE;
 
     private final ElapsedTime runtime = new ElapsedTime();
     Gamepad currentGamepad1 = new Gamepad();
@@ -42,6 +43,7 @@ public class Basic_Auto extends LinearOpMode {
         while (opModeInInit()) {
             teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
             allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
+            sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
 
             //Store the previous loop's gamepad values.
             previousGamepad1 = GamepadHandling.copy(currentGamepad1);
@@ -54,12 +56,13 @@ public class Basic_Auto extends LinearOpMode {
             telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
             telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
             telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
-            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCemterPercent());
+            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCenterPercent());
             telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
             telemetry.update();
         }
         telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
         telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
+        telemetry.addData("Side of Field After Init", sideOfFieldAfterInit);
         telemetry.update();
 
         runtime.reset();

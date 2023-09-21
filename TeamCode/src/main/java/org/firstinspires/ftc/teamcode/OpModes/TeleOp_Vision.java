@@ -85,7 +85,7 @@ public class TeleOp_Vision extends LinearOpMode
             telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
             telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
             telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
-            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCemterPercent());
+            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCenterPercent());
             telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
             telemetry.update();
 
@@ -155,6 +155,7 @@ public class TeleOp_Vision extends LinearOpMode
 
             // Add April Tag Telemetry
             Robot.getInstance().getVision().telemetryAprilTag();
+            Robot.getInstance().getVision().Frames_Per_Second();
 
             telemetry.update();
 

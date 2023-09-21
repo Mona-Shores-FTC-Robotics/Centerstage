@@ -281,6 +281,21 @@ public class InitVisionProcessor implements VisionProcessor {
         Imgproc.rectangle(frame, rectM, rectangleColor, 2);
         Imgproc.rectangle(frame, rectR, rectangleColor, 2);
 
+        //Release all the mats - is this necessary?
+        hsvMat.release();
+        maskedRedMat.release();
+        maskedBlueMat.release();
+        binaryRedMat1.release();
+        binaryRedMat2.release();
+        binaryRedMatFinal.release();
+        binaryBlueMat.release();
+        leftZoneRed.release();
+        centerZoneRed.release();
+        rightZoneRed.release();
+        leftZoneBlue.release();
+        centerZoneBlue.release();
+        rightZoneBlue.release();
+
         return null;
     }
 
@@ -298,7 +313,7 @@ public class InitVisionProcessor implements VisionProcessor {
         return percentLeftZoneBlue;
     }
 
-    public double getCemterPercent() {
+    public double getCenterPercent() {
         if (allianceColorFinal == AllianceColor.RED) {
             return percentCenterZoneRed;
         } else if (allianceColorFinal == AllianceColor.BLUE) {
