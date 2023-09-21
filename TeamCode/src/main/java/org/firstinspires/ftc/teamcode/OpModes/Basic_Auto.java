@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 @Autonomous(name = "Basic_Auto")
@@ -17,9 +18,9 @@ public class Basic_Auto extends LinearOpMode {
     Robot robot = Robot.createInstance(this);
     MecanumDrive roadRunnerDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-    private int finalTeamPropVision;
+    private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
+    private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
 
-    //    GamepadHandling GamePads = new GamepadHandling(this);
     private final ElapsedTime runtime = new ElapsedTime();
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
@@ -34,6 +35,8 @@ public class Basic_Auto extends LinearOpMode {
         telemetry.update();
 
         while (opModeInInit()) {
+            teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
+            allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
 
             //Store the previous loop's gamepad values.
             previousGamepad1 = GamepadHandling.copy(currentGamepad1);
@@ -43,22 +46,15 @@ public class Basic_Auto extends LinearOpMode {
             currentGamepad1 = GamepadHandling.copy(gamepad1);
             currentGamepad2 = GamepadHandling.copy(gamepad2);
 
-            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
-                {
-                    robot.getVision().checkTeamProp();
-                }
-            }
-            telemetry.addData("left square Max", robot.getVision().LeftMax);
-            telemetry.addData("middle square Max", robot.getVision().MiddleMax);
-            telemetry.addData("right square Max", robot.getVision().RightMax);
-            telemetry.addData("Team Element Location", robot.getVision().TeamPropLocation);
-            telemetry.addData("Channel Being Extracted", robot.getVision().channelToExtract);
+            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+            telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+            telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
+            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCemterPercent());
+            telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
             telemetry.update();
-            finalTeamPropVision = robot.getVision().TeamPropLocation;
-
         }
-        robot.getVision().webcam.stopStreaming();
-        telemetry.addData("Final Team Element Location", finalTeamPropVision);
+        telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
+        telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
         telemetry.update();
 
         runtime.reset();

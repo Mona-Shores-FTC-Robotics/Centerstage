@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Sebastian Erives
+ * Copyright (c) 2023 Sebastian Erives
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,17 +23,17 @@
 
 package org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground;
 
+import android.graphics.Canvas;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvPipeline;
 
-@Disabled
-public class SimpleThresholdPipeline extends OpenCvPipeline {
+public class SimpleThresholdProcessor implements VisionProcessor {
 
     /*
      * These are our variables that will be
@@ -100,12 +100,16 @@ public class SimpleThresholdPipeline extends OpenCvPipeline {
         }
     }
 
-    public SimpleThresholdPipeline(Telemetry telemetry) {
+    public SimpleThresholdProcessor(Telemetry telemetry) {
         this.telemetry = telemetry;
     }
 
     @Override
-    public Mat processFrame(Mat input) {
+    public void init(int width, int height, CameraCalibration calibration) {
+    }
+
+    @Override
+    public Object processFrame(Mat frame, long captureTimeNanos) {
         /*
          * Converts our input mat from RGB to
          * specified color space by the enum.
@@ -116,7 +120,7 @@ public class SimpleThresholdPipeline extends OpenCvPipeline {
          * Takes our "input" mat as an input, and outputs
          * to a separate Mat buffer "ycrcbMat"
          */
-        Imgproc.cvtColor(input, ycrcbMat, colorSpace.cvtCode);
+        Imgproc.cvtColor(frame, ycrcbMat, colorSpace.cvtCode);
 
         /*
          * This is where our thresholding actually happens.
@@ -148,7 +152,7 @@ public class SimpleThresholdPipeline extends OpenCvPipeline {
          * the range) and will discard any other pixel outside the
          * range (RGB 0, 0, 0. All discarded pixels will be black)
          */
-        Core.bitwise_and(input, input, maskedInputMat, binaryMat);
+        Core.bitwise_and(frame, frame, maskedInputMat, binaryMat);
 
         /**
          * Add some nice and informative telemetry messages
@@ -160,15 +164,17 @@ public class SimpleThresholdPipeline extends OpenCvPipeline {
         telemetry.update();
 
         /*
-         * The Mat returned from this method is the
-         * one displayed on the viewport.
-         *
-         * To visualize our threshold, we'll return
-         * the "masked input mat" which shows the
-         * pixel from the input Mat that were inside
-         * the threshold range.
+         * Different from OpenCvPipeline, you cannot return
+         * a Mat from processFrame. Therefore, we will take
+         * advantage of the fact that anything drawn onto the
+         * passed `frame` object will be displayed on the
+         * viewport. We will just return null here.
          */
-        return maskedInputMat;
+        maskedInputMat.copyTo(frame);
+        return null;
     }
 
+    @Override
+    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+    }
 }

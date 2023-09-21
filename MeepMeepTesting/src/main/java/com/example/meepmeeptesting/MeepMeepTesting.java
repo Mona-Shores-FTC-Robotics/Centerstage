@@ -22,10 +22,10 @@ public class MeepMeepTesting {
     public static RoadRunnerBotEntity redRightBot;
 
     enum teamPropLocation {LEFT, CENTER, RIGHT}
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.RIGHT;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.LEFT;
 
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(1200);
+        MeepMeep meepMeep = new MeepMeep(800);
 
         //This method makes 4 robots (2 red robots and 2 blue robots)
         MakeRobots(meepMeep);

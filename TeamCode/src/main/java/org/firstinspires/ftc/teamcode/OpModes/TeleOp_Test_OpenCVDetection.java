@@ -51,29 +51,9 @@ public class TeleOp_Test_OpenCVDetection extends LinearOpMode {
             currentGamepad1 = GamepadHandling.copy(gamepad1);
             currentGamepad2 = GamepadHandling.copy(gamepad2);
 
-            if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper){
-                if (vision.channelToExtract<2) {
-                    vision.channelToExtract++;
-                } else
-                {
-                    vision.channelToExtract=0;
-                }
-            }
-            telemetry.addData("left square Max", vision.LeftMax);
-            telemetry.addData("middle square Max", vision.MiddleMax);
-            telemetry.addData("right square Max", vision.RightMax);
-            telemetry.addData("Team Element Location", vision.TeamPropLocation);
-            telemetry.addData("Channel Being Extracted", vision.channelToExtract);
-            telemetry.update();
-            finalTeamPropVision = vision.TeamPropLocation;
-
         }
-        vision.webcam.stopStreaming();
         telemetry.addData("Final Team Element Location", finalTeamPropVision);
         telemetry.update();
-
-        vision.changePipeline();
-        vision.webcam.startStreaming(800, 448, OpenCvCameraRotation.UPRIGHT);
 
         runtime.reset();
 
