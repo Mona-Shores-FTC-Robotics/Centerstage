@@ -74,6 +74,7 @@ public class Vision {
         {
             this.isDetected = true;
         }
+
         public void storeDetection(AprilTagDetection detect)
         {
             this.detection = detect;
@@ -323,8 +324,6 @@ public class Vision {
         // If Right Bumper is being pressed, AND we have found one of the blue audience wall AprilTags, drive there automatically
         // If Left Bumper is being pressed, AND we have found one of the red audience wall AprilTags, drive there automatically
         // If neither tag is found or we aren't pushing a bumper, then drive normally
-
-
 
         if (DriveToBlueAudienceWallTag() || DriveToRedAudienceWallTag()) {
             //set the manual control flag to false so ew know that we are doing automated driving
