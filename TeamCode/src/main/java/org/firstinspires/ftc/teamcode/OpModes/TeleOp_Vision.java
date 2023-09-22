@@ -134,6 +134,7 @@ public class TeleOp_Vision extends LinearOpMode
                 }
             }
 
+
             /** Operator Controls**/
             // the X/Y/B buttons set the deliver location to left, center, or right
             if(currentGamepad2.x && !previousGamepad2.x){
