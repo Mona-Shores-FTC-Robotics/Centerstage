@@ -104,7 +104,7 @@ public class Vision {
 
     }
 
-    public void init(HardwareMap hwMap) {
+    public void init() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
@@ -123,7 +123,7 @@ public class Vision {
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(hwMap.get(WebcamName.class, "Webcam 1"))
+                .setCamera(Robot.getInstance().getHardwareMap().get(WebcamName.class, "Webcam 1"))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setCameraResolution(new Size(640 , 480))
                 .enableLiveView(true)

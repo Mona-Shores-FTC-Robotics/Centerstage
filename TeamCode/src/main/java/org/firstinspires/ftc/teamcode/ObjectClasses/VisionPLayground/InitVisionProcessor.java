@@ -81,22 +81,21 @@ public class InitVisionProcessor implements VisionProcessor {
         }
     }
 
-    public enum AllianceColor {BLUE, RED;}
 
-    //set default alliance to Blue
-    public AllianceColor allianceColorFinal = AllianceColor.BLUE;
-
+    /** Track Alliance Color, Side of Field, and Team Prop Location with vision**/
+    public enum AllianceColor {BLUE, RED}
     public enum SideOfField {BACKSTAGE, FRONTSTAGE}
-
-    //set default side of field to BACKSTAGE
-    public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
-
     public enum TeamPropLocation {LEFT, CENTER, RIGHT}
+
+    //These variables store vision's final decision
+    //TODO: make sure these values if determined in auto can be accessed in Teleop
+
+    public static AllianceColor allianceColorFinal = AllianceColor.BLUE;
+    public static SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
     public static TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER.CENTER;
 
-    public static TeamPropLocation redTeamPropLocation = null;
-    public static TeamPropLocation blueTteamPropLocation = null;
 
+    //TODO: Can we resize these areas of interest and make them dynamic with the resolution?
     private final int RectLX = 5;
     private final int RectLY = 150;
     private final int RectMX = 113;
@@ -114,7 +113,7 @@ public class InitVisionProcessor implements VisionProcessor {
     private final Rect rectL = new Rect(RectLX, RectLY, RectLwidth, RectLheight);
     private final Rect rectM = new Rect(RectMX, RectMY, RectMwidth, RectMheight);
     private final Rect rectR = new Rect(RectRX, RectRY, RectRwidth, RectRheight);
-    private final Scalar rectangleColor = new Scalar(0, 255, 0);
+    private final Scalar rectangleColor = new Scalar(170, 255, 0);
 
     private double percentLeftZoneRed;
     private double percentCenterZoneRed;
@@ -124,6 +123,7 @@ public class InitVisionProcessor implements VisionProcessor {
     private double percentCenterZoneBlue;
     private double percentRightZoneBlue;
 
+    //TODO: this number needs to be tuned based on reality
     private int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 30;
 
     public InitVisionProcessor(Telemetry telemetry) {
@@ -153,85 +153,103 @@ public class InitVisionProcessor implements VisionProcessor {
          * 0 represents our pixels that were outside the bounds
          * 255 represents our pixels that are inside the bounds
          */
+
+        /** The Red HSV values wrap around so we have to this twice and then use "OR" functionality to put it together **/
+        //TODO: This seems to work, but the values for red might need to be tweaked
         Core.inRange(hsvMat, lowerRed1, upperRed1, binaryRedMat1);
         Core.inRange(hsvMat, lowerRed2, upperRed2, binaryRedMat2);
         Core.bitwise_or(binaryRedMat1, binaryRedMat2, binaryRedMatFinal);
 
+        //TODO: These values seem out of whack for blue. Likely need to adjust lowerBlue and upperBlue Scalars
         Core.inRange(hsvMat, lowerBlue, upperBlue, binaryBlueMat);
 
         //Took this from an example, im not quite sure this part is right
         maskedRedMat.release();
         maskedBlueMat.release();
 
+        /**
+         * This takes our original frame capture and does an AND operation with the binary Mat
+         *
+         * In essence, this means that all the pixels in the original mat are set to zero (0,0,0)
+         * except for those that appear white in our thresholding above.
+         *
+         * This is useful to display to the user, but it might be better to use the masked Mats for doing our calculations
+         */
+
         Core.bitwise_and(frame, frame, maskedRedMat, binaryRedMatFinal);
         Core.bitwise_and(frame, frame, maskedBlueMat, binaryBlueMat);
 
         //this is to check specific zones to determine where the team prop is
-        leftZoneRed  = maskedRedMat.submat(rectL);
-        centerZoneRed = maskedRedMat.submat(rectM);
-        rightZoneRed  = maskedRedMat.submat(rectR);
+        //using the binary mats that have white pixels.
+        leftZoneRed  = binaryRedMatFinal.submat(rectL);
+        centerZoneRed = binaryRedMatFinal.submat(rectM);
+        rightZoneRed  = binaryRedMatFinal.submat(rectR);
 
-        leftZoneBlue  = maskedBlueMat.submat(rectL);
-        centerZoneBlue = maskedBlueMat.submat(rectM);
-        rightZoneBlue  = maskedBlueMat.submat(rectR);
+        leftZoneBlue  = binaryBlueMat.submat(rectL);
+        centerZoneBlue = binaryBlueMat.submat(rectM);
+        rightZoneBlue  = binaryBlueMat.submat(rectR);
 
-        //Determine where the team prop is located
-        percentLeftZoneRed = (Core.sumElems(leftZoneRed).val[1] / rectL.area() / 255) * 100 ;
-        percentCenterZoneRed = (Core.sumElems(centerZoneRed).val[1] / rectM.area() / 255) * 100 ;
-        percentRightZoneRed= (Core.sumElems(rightZoneRed).val[1] / rectR.area() / 255) * 100 ;
+        /**
+         * Determine where the team prop is located because we are using submats of the binary mats
+         * the values stored are white (255,255,255) if they were in range or black (0, 0, 0) if not
+         *
+         * To determine a percent of the zone that is white, we add up all the pixel values from one channel
+         * (should not matter which) and divide by 255, then divide by the area, then multiply by 100.
+         *
+         * so if we had a 5x5 grid (25 pixels) with 5 white pixels, we would get (255*5/255)/25) *100 == 20%
+         */
 
-        percentLeftZoneBlue = (Core.sumElems(leftZoneBlue).val[1] / rectL.area() / 255) * 100 ;
-        percentCenterZoneBlue = (Core.sumElems(centerZoneBlue).val[1] / rectM.area() / 255) * 100 ;
-        percentRightZoneBlue= (Core.sumElems(rightZoneBlue).val[1] / rectR.area() / 255) * 100 ;
+        percentLeftZoneRed = ((Core.sumElems(leftZoneRed).val[0] / 255) / rectL.area() ) * 100;
+        percentCenterZoneRed = ((Core.sumElems(centerZoneRed).val[0] / 255) / rectM.area()) * 100;
+        percentRightZoneRed= ((Core.sumElems(rightZoneRed).val[0] / 255 ) / rectR.area()) * 100;
 
-        if (percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-            percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-            percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
-        {
-            allianceColorFinal = AllianceColor.RED;
-            maskedRedMat.copyTo(frame);
-            telemetry.addData("[Lower Red Scalar1]", lowerRed1);
-            telemetry.addData("[Upper Red Scalar1]", upperRed1);
-            telemetry.addData("[Lower Red Scalar2]", lowerRed2);
-            telemetry.addData("[Upper Red Scalar2]", upperRed2);
+        percentLeftZoneBlue = ((Core.sumElems(leftZoneBlue).val[0] / 255) / rectL.area()) * 100;
+        percentCenterZoneBlue = ((Core.sumElems(centerZoneBlue).val[0] / 255) / rectM.area()) * 100;
+        percentRightZoneBlue= ((Core.sumElems(rightZoneBlue).val[0] / 255) / rectR.area()) * 100;
 
-            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
-            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
-            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
+        /**
+         * How can we determine if we are on the Red or Blue Alliance
+         * Step 1: add up the percentages of blue in the three zones and the percentages of red in each zone
+         * Step 2: pick alliance based on which has more
+         * Step 3: double check against a threshold per zone to make sure there is enough for it to be our prop*
+         */
 
-            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
-            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
-            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
+        double sumOfBlueZonePercentages = percentLeftZoneBlue + percentCenterZoneBlue + percentRightZoneBlue;
+        double sumOfRedZonePercentages = percentCenterZoneRed + percentCenterZoneRed + percentRightZoneRed;
 
-        } else if (percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-                percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-                percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
-        {
-            allianceColorFinal = AllianceColor.BLUE;
-            maskedBlueMat.copyTo(frame);
-            telemetry.addData("[Lower Blue Scalar]", lowerBlue);
-            telemetry.addData("[Upper Blue Scalar]", upperBlue);
+        if (sumOfRedZonePercentages >= sumOfBlueZonePercentages) {
+            if (    percentLeftZoneRed > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                    percentCenterZoneRed > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                    percentRightZoneRed > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION) {
+                allianceColorFinal = AllianceColor.RED;
+                maskedRedMat.copyTo(frame);
 
-            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
-            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
-            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
+                telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
+                telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
+                telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
 
-            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
-            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
-            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
-        }
-        else {
-            telemetry.addLine("No Alliance Found - defaulting to Blue Alliance");
-            //Neither red nor blue meet the detection threshold, so put the HSV filtered image on the screen
-            hsvMat.copyTo(frame);
+            } else
+            {
+                telemetry.addLine("WARNING - Red Alliance Does not Meet Threshold in one spike area");
+                //copy the binary mat instead of the masked mat to help with debugging
+                binaryRedMatFinal.copyTo(frame);
+            }
+        } else {
+            if (    percentLeftZoneBlue > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                    percentCenterZoneBlue > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                    percentRightZoneBlue > TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION) {
+                allianceColorFinal = AllianceColor.BLUE;
+                maskedBlueMat.copyTo(frame);
 
-            telemetry.addData("[Percent Red for Left Zone]", percentLeftZoneRed);
-            telemetry.addData("[Percent Red for Center Zone]", percentCenterZoneRed);
-            telemetry.addData("[Percent Red for Right Zone]", percentRightZoneRed);
-
-            telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
-            telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
-            telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
+                telemetry.addData("[Percent Blue for Left Zone]", percentLeftZoneBlue);
+                telemetry.addData("[Percent Blue for Center Zone]", percentCenterZoneBlue);
+                telemetry.addData("[Percent Blue for Right Zone]", percentRightZoneBlue);
+            } else
+            {
+                telemetry.addLine("WARNING - Blue Alliance Does not Meet Threshold in one spike area");
+                //copy the binary mat instead of the masked mat to help debug
+                binaryRedMatFinal.copyTo(frame);
+            }
         }
 
         if (allianceColorFinal == AllianceColor.RED) {

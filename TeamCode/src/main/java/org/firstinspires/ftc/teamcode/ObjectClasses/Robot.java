@@ -46,6 +46,7 @@ public class Robot {
             {
                 drivetrain = new DriveTrain();
                 vision = new Vision();
+                gyro = new Gyro();
             }
             default:
                 break;
@@ -81,7 +82,7 @@ public class Robot {
             case ROBOT_VISION:
             {
                 drivetrain.init(hwMap);
-                vision.init(hwMap);
+                vision.init();
                 gyro.init();
                 break;
             }
