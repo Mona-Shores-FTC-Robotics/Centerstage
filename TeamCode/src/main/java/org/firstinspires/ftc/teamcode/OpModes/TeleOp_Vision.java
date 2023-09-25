@@ -68,7 +68,7 @@ public class TeleOp_Vision extends LinearOpMode
         visionPortal = Robot.getInstance().getVision().getVisionPortal();
         driveTrain = Robot.getInstance().getDriveTrain();
         gyro = Robot.getInstance().getGyro();
-        this.telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
+//        this.telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();

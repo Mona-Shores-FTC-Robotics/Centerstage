@@ -15,7 +15,7 @@ public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
-    private double P = 11.4; // default = 10
+    private double P = 14; // default = 10
     private double D = 0; // default = 0
     private double I = 0; // default = 3
     private double F = 0; // default = 0
@@ -117,7 +117,14 @@ public class DriveTrain {
                 if (backdropSafetyZoneFlag)
                 {
                     // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
-                    drive = driveInput*autoDriveSpeedFactor;
+                    if (driveInput>0) {
+                        drive = driveInput * autoDriveSpeedFactor;
+                    } else if (driveInput <0)
+                    {
+                        drive = driveInput;
+                    }
+
+
                     strafe = strafeInput*autoStrafeSpeedFactor;
                     turn = turnInput*autoTurnSpeedFactor;
 
