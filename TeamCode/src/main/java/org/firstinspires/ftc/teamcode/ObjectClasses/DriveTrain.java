@@ -6,16 +6,15 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
-    final double P = 11.4; // default = 10
-    final double D = 0; // default = 0
-    final double I = 0; // default = 3
-    final double F = 0; // default = 0
+    private double P = 11.4; // default = 10
+    private double D = 0; // default = 0
+    private double I = 0; // default = 3
+    private double F = 0; // default = 0
 
     // DriveTrain physical constants
     private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
@@ -39,9 +38,9 @@ public class DriveTrain {
     public double aStrafe = 0.0;
     public double aTurn = 0.0;
 
-    private double DRIVE_SPEED_FACTOR = 1;
-    private double STRAFE_SPEED_FACTOR = 1;
-    private double TURN_SPEED_FACTOR = 1;
+    private final double DRIVE_SPEED_FACTOR = 1;
+    private final double STRAFE_SPEED_FACTOR = 1;
+    private final double TURN_SPEED_FACTOR = 1;
 
     private double autoDriveSpeedFactor = 1.0;
     private double autoStrafeSpeedFactor = 1.0;
@@ -49,12 +48,10 @@ public class DriveTrain {
 
     private boolean manualDriveControlFlag = true;
     private boolean fieldOrientedControlFlag = false;
-    private boolean preventCrashFlag = false;
+    private boolean backdropSafetyZoneFlag = false;
 
     private LinearOpMode activeOpMode;
     private Gamepad driverGamepad;
-
-
 
     /* Constructor */
     public DriveTrain() {
@@ -102,20 +99,19 @@ public class DriveTrain {
             if (fieldOrientedControlFlag==true)
             {
                 // set the drive/turn/strafe without speed adjustment (will be set after calcs for FOC)
-                setDrive(driveInput);
-                setTurn(turnInput);
-                setStrafe(strafeInput);
+                drive = driveInput;
+                turn = turnInput;
+                strafe = strafeInput;
 
                 //change the drive/strafe/turn values to FOC style
                 fieldOrientedControl();
             } else {
-                if (preventCrashFlag)
+                if (backdropSafetyZoneFlag)
                 {
                     // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
                     drive = driveInput*autoDriveSpeedFactor;
                     strafe = strafeInput*autoStrafeSpeedFactor;
                     turn = turnInput*autoTurnSpeedFactor;
-
 
                 } else {
                     drive = driveInput;
@@ -196,12 +192,11 @@ public class DriveTrain {
     public void fieldOrientedControl (){
         // Consider moving these constants to top of class
         double robotAngle = Robot.getInstance().getGyro().turnAngle.get(0);
-
         double magnitude = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
         double driveAngle = Math.copySign(Math.acos(drive/magnitude), Math.asin(-strafe));
         double deltaAngle = robotAngle-driveAngle;
 
-        if (preventCrashFlag)
+        if (backdropSafetyZoneFlag)
         {
             // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
             drive = autoDriveSpeedFactor * magnitude * Math.cos(deltaAngle);
@@ -215,11 +210,9 @@ public class DriveTrain {
         }
     }
 
-    public void setDrive(double input_drive) {
-        aDrive = input_drive;
-    }
-    public void setStrafe(double input_strafe) { aStrafe = input_strafe;}
-    public void setTurn(double input_turn) {  aTurn = input_turn;  }
+    public void setAutoDrive(double autoDrive) { aDrive = autoDrive;}
+    public void setAutoStrafe(double autoStrafe) { aStrafe = autoStrafe;}
+    public void setAutoTurn(double autoTurn) {  aTurn = autoTurn;  }
 
     public void setManualDriveControlFlag(boolean flag) {
         manualDriveControlFlag = flag;
@@ -249,8 +242,8 @@ public class DriveTrain {
         autoTurnSpeedFactor = factor;
     }
 
-    public void setPreventCrashFlag(boolean b) {
-        preventCrashFlag = b;
+    public void setBackdropSafetyZone(boolean b) {
+        backdropSafetyZoneFlag = b;
     }
 
 

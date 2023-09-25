@@ -27,30 +27,12 @@ public class Robot {
         hardwareMap = opMode.hardwareMap;
         runtime = new ElapsedTime();
 
-        switch (Constants.getRobot()) {
-            case ROBOT_2023:
-            {
-                drivetrain = new DriveTrain();
-                lift = new Lift();
-                arm = new Arm();
-                gyro = new Gyro();
-                intake = new IntakeOuttake();
-                break;
-            }
-            case ROBOT_CHASSIS:
-            {
-                drivetrain = new DriveTrain();
-                break;
-            }
-            case ROBOT_VISION:
-            {
-                drivetrain = new DriveTrain();
-                gyro = new Gyro();
-                vision = new Vision();
-            }
-            default:
-                break;
-        }
+        drivetrain = new DriveTrain();
+        lift = new Lift();
+        arm = new Arm();
+        gyro = new Gyro();
+        intake = new IntakeOuttake();
+        vision = new Vision();
     }
 
     public static synchronized Robot createInstance(LinearOpMode opMode) {

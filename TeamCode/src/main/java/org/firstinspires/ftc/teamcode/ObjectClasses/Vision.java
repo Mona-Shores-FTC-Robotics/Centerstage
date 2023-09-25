@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Vision.AprilTagID.*;
 import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -33,7 +32,6 @@ public class Vision {
     final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
 
     private boolean autoDrive = false;
-    private boolean safetyZone = true;
 
     public enum AprilTagID {
         BLUE_BACKDROP_LEFT (1),
@@ -114,12 +112,12 @@ public class Vision {
 
         // Initialize the AprilTag Processor
         aprilTagProcessor = new AprilTagProcessor.Builder()
-//                .setDrawAxes(true)
-//                .setDrawCubeProjection(true)
-                //.setDrawTagOutline(true)
+                .setDrawAxes(false)
+                .setDrawCubeProjection(false)
+                .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES) // this really messed things up!!!!
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                 // ... these parameters are fx, fy, cx, cy.
                 //.setLensIntrinsics(1394.6027293299926, 1394.6027293299926, 995.588675691456, 599.3212928484164)
                 .build();
@@ -218,12 +216,8 @@ public class Vision {
                     telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") Unknown");
                     telemetry.addLine("Center " + JavaUtil.formatNumber(myAprilTagDetection.center.x, 6, 0) + "" + JavaUtil.formatNumber(myAprilTagDetection.center.y, 6, 0) + " (pixels)");
                 }
-            } // end for() loop
-
-
-
-        } // end if != null
-
+            }
+        }
         telemetry.addLine("");
         telemetry.addLine("key:");
         telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
@@ -252,97 +246,37 @@ public class Vision {
         }
 
         // Tell driver when we see the large/small audience wall AprilTags - tell them they can hit the bumpers to drive to the small targets
-        if (BLUE_AUDIENCE_WALL_LARGE.isDetected) {
-            telemetry.addData(">", "HOLD Right-Bumper to Drive to Small Blue Target (using Large Blue target if we don't see small) \n");
-            telemetry.addData("Large Target", "ID %d (%s)", BLUE_AUDIENCE_WALL_LARGE.id, BLUE_AUDIENCE_WALL_LARGE.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.yaw);
-        } else if (BLUE_AUDIENCE_WALL_SMALL.isDetected){
-            telemetry.addData("Large Target", "ID %d (%s)", BLUE_AUDIENCE_WALL_SMALL.id, BLUE_AUDIENCE_WALL_SMALL.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw);
-        }
+       if (BLUE_AUDIENCE_WALL_LARGE.isDetected) {
+            telemetry.addData(">", "HOLD Right-Bumper to Drive to Small Blue Target \n");
+       }
 
-        if (RED_AUDIENCE_WALL_LARGE.isDetected) {
-            telemetry.addData(">", "HOLD Left-Bumper to Drive to Red Target\n");
-            telemetry.addData("Large Target", "ID %d (%s)", RED_AUDIENCE_WALL_LARGE.id, RED_AUDIENCE_WALL_LARGE.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", RED_AUDIENCE_WALL_LARGE.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", RED_AUDIENCE_WALL_LARGE.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", RED_AUDIENCE_WALL_LARGE.detection.ftcPose.yaw);
-        } else if (RED_AUDIENCE_WALL_SMALL.isDetected){
-            telemetry.addData("Large Target", "ID %d (%s)", RED_AUDIENCE_WALL_SMALL.id, RED_AUDIENCE_WALL_SMALL.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", RED_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", RED_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw);
-        }
+       if (RED_AUDIENCE_WALL_LARGE.isDetected) {
+            telemetry.addData(">", "HOLD Left-Bumper to Drive to Small Red Target\n");
+       }
 
-        if (BLUE_BACKDROP_LEFT.isDetected) {
-            telemetry.addData(">", "Attempting to prevent driver from crashing into backdrop!\n");
-            telemetry.addData("Blue Left Backdrop Target", "ID %d (%s)", BLUE_BACKDROP_LEFT.id, BLUE_BACKDROP_LEFT.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", BLUE_BACKDROP_LEFT.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", BLUE_BACKDROP_LEFT.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", BLUE_BACKDROP_LEFT.detection.ftcPose.yaw);
-        } else if (BLUE_BACKDROP_CENTER.isDetected) {
-            telemetry.addData("Blue Center Backdrop Target", "ID %d (%s)", BLUE_BACKDROP_CENTER.id, BLUE_BACKDROP_CENTER.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", BLUE_BACKDROP_CENTER.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", BLUE_BACKDROP_CENTER.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", BLUE_BACKDROP_CENTER.detection.ftcPose.yaw);
-        }
-        else if (BLUE_BACKDROP_RIGHT.isDetected){
-            telemetry.addData("Blue Right Backdrop Target", "ID %d (%s)", BLUE_BACKDROP_RIGHT.id, BLUE_BACKDROP_RIGHT.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", BLUE_BACKDROP_RIGHT.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", BLUE_BACKDROP_RIGHT.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", BLUE_BACKDROP_RIGHT.detection.ftcPose.yaw);
-        }
-
-        if (RED_BACKDROP_LEFT.isDetected) {
-            telemetry.addData(">", "Attempting to prevent driver from crashing into backdrop!\n");
-            telemetry.addData("Red Left Backdrop Target", "ID %d (%s)", RED_BACKDROP_LEFT.id, RED_BACKDROP_LEFT.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", RED_BACKDROP_LEFT.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", RED_BACKDROP_LEFT.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", RED_BACKDROP_LEFT.detection.ftcPose.yaw);
-        }
-        if (RED_BACKDROP_CENTER.isDetected) {
-            telemetry.addData("Red Center Backdrop Target", "ID %d (%s)", RED_BACKDROP_CENTER.id, RED_BACKDROP_CENTER.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", RED_BACKDROP_CENTER.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", RED_BACKDROP_CENTER.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", RED_BACKDROP_CENTER.detection.ftcPose.yaw);
-        }
-        if (RED_BACKDROP_RIGHT.isDetected) {
-            telemetry.addData("Red Right Backdrop Target", "ID %d (%s)", RED_BACKDROP_RIGHT.id, RED_BACKDROP_RIGHT.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", RED_BACKDROP_RIGHT.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", RED_BACKDROP_RIGHT.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", RED_BACKDROP_RIGHT.detection.ftcPose.yaw);
-        }
-
-        // If Right Bumper is being pressed, AND we have found one of the blue audience wall AprilTags, drive there automatically
-        // If Left Bumper is being pressed, AND we have found one of the red audience wall AprilTags, drive there automatically
-        // If neither tag is found or we aren't pushing a bumper, then drive normally
         autoDrive = false;
-        safetyZone = false;
+        Robot.getInstance().getDriveTrain().setBackdropSafetyZone(false);
+
         DriveToBlueAudienceWallTag();
         DriveToRedAudienceWallTag();
-        AutoDriveToBackdropBlue();
-        AutoDriveToBackdropRed();
+
+        if (!autoDrive) {
+            AutoDriveToBackdropBlue();
+            AutoDriveToBackdropRed();
+        }
 
         if (autoDrive) {
             //set the manual control flag to false so ew know that we are doing automated driving
             Robot.getInstance().getDriveTrain().setManualDriveControlFlag(false);
-            if ( safetyZone==true)
-            {
-                Robot.getInstance().getDriveTrain().setPreventCrashFlag(true);
-            }
         } else {
             //no april tag is being driven to (either because we didn't see them or the user didn't hold down the bumpers) - so we set manual drive control to true
             Robot.getInstance().getDriveTrain().setManualDriveControlFlag(true);
-            Robot.getInstance().getDriveTrain().setPreventCrashFlag(false);
+            Robot.getInstance().getDriveTrain().setBackdropSafetyZone(false);
             Robot.getInstance().getDriveTrain().setDriveSpeedFactor(1.0);
         }
     }
 
-    private boolean DriveToRedAudienceWallTag() {
+    private void DriveToRedAudienceWallTag() {
         if (Robot.getInstance().getActiveOpMode().gamepad1.left_bumper && (RED_AUDIENCE_WALL_LARGE.isDetected || RED_AUDIENCE_WALL_SMALL.isDetected)) {
             //if we can see the small april tag use that for navigation
             if (RED_AUDIENCE_WALL_SMALL.isDetected && RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range < 35) {
@@ -356,9 +290,9 @@ public class Vision {
                     double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                     double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                    Robot.getInstance().getDriveTrain().setDrive(drive);
-                    Robot.getInstance().getDriveTrain().setTurn(turn);
-                    Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                    Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                    Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                    Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                     telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -375,20 +309,17 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             autoDrive = true;
-
-            return true;
         }
-        return false;
     }
 
-    private boolean DriveToBlueAudienceWallTag() {
+    private void DriveToBlueAudienceWallTag() {
         if (Robot.getInstance().getActiveOpMode().gamepad1.right_bumper && (BLUE_AUDIENCE_WALL_LARGE.isDetected || BLUE_AUDIENCE_WALL_SMALL.isDetected)) {
 
             //if we can see the small april tag use that for navigation
@@ -403,9 +334,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
@@ -422,24 +353,19 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             autoDrive = true;
-            return true;
         }
-        return false;
     }
 
-
-
-
-    private boolean AutoDriveToBackdropBlue() {
+    private void AutoDriveToBackdropBlue() {
         if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected) {
-            safetyZone=true;
+            Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
             //if we can see the middle april tag use that for navigation
             if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -452,10 +378,9 @@ public class Vision {
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 // set the drive/turn strafe values for AutoDriving
-
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
 //                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -471,9 +396,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -491,9 +416,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -501,16 +426,14 @@ public class Vision {
                 telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             autoDrive = true;
-            return true;
         }
-        return false;
     }
 
 
 
-    private boolean AutoDriveToBackdropRed() {
+    private void AutoDriveToBackdropRed() {
         if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_CENTER.isDetected || RED_BACKDROP_RIGHT.isDetected) {
-            safetyZone=true;
+            Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
             //if we can see the middle april tag use that for navigation
             if (getDeliverLocation().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -522,9 +445,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -540,9 +463,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -560,9 +483,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setDrive(drive);
-                Robot.getInstance().getDriveTrain().setTurn(turn);
-                Robot.getInstance().getDriveTrain().setStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
@@ -570,9 +493,7 @@ public class Vision {
                 telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             autoDrive = true;
-            return true;
         }
-        return false;
     }
 
 
@@ -585,5 +506,18 @@ public class Vision {
     {
         return deliverLocation;
     }
+
+
+    private void tagTelemetry(AprilTagID tag)
+    {
+        if (tag.isDetected) {
+            telemetry.addData("Target", "ID %d (%s)", tag.id, tag.detection.metadata.name);
+            telemetry.addData("Range", "%5.1f inches", tag.detection.ftcPose.range);
+            telemetry.addData("Bearing", "%3.0f degrees", tag.detection.ftcPose.bearing);
+            telemetry.addData("Yaw", "%3.0f degrees", tag.detection.ftcPose.yaw);
+    }
+}
+
+
 
 }

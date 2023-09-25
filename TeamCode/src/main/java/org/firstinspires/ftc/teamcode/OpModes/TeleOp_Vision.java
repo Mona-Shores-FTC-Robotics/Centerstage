@@ -49,7 +49,6 @@ import org.firstinspires.ftc.vision.VisionPortal;
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
-
     Robot robot = Robot.createInstance(this);
     VisionPortal visionPortal;
     DriveTrain driveTrain;
@@ -64,12 +63,12 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
-
+        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
         robot.initialize(Robot.getInstance().getHardwareMap());
         visionPortal = Robot.getInstance().getVision().getVisionPortal();
         driveTrain = Robot.getInstance().getDriveTrain();
         gyro = Robot.getInstance().getGyro();
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        this.telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Gamepad currentGamepad1 = new Gamepad();
         Gamepad currentGamepad2 = new Gamepad();

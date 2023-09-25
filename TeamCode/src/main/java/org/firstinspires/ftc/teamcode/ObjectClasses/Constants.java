@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 public class Constants {
 
-  private static RobotType robot = RobotType.ROBOT_VISION;
+  public static RobotType robot;
 
   public static void setRobot(RobotType type)
   {
@@ -68,8 +68,5 @@ public class Constants {
         Vector2d output = new Vector2d(-input.position.x, input.position.y);
         return output;
     }
-
-
-
 
 }
