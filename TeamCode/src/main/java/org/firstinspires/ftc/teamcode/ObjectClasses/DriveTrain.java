@@ -12,6 +12,11 @@ public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
+    final double P = 11.4; // default = 10
+    final double D = 0; // default = 0
+    final double I = 0; // default = 3
+    final double F = 0; // default = 0
+
     // DriveTrain physical constants
     private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
     public final double TICKS_PER_REV = 537.7;
@@ -24,14 +29,19 @@ public class DriveTrain {
     public DcMotorEx driveMotor[] = new DcMotorEx[4]; // {leftfront, rightfront, leftback, rightback}
     public final String driveMotorNames [] = {"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
     public double driveMotorTargetSpeed[] = {0.0,0.0,0.0,0.0};
+    public double driveMotorPower[] = {0.0,0.0,0.0,0.0};
 
     public double drive = 0.0;
     public double strafe = 0.0;
     public double turn = 0.0;
 
-    private double DRIVE_SPEED_FACTOR = 1.0;
-    private double STRAFE_SPEED_FACTOR = 1.0;
-    private double TURN_SPEED_FACTOR = 1.0;
+    public double aDrive = 0.0;
+    public double aStrafe = 0.0;
+    public double aTurn = 0.0;
+
+    private double DRIVE_SPEED_FACTOR = 1;
+    private double STRAFE_SPEED_FACTOR = 1;
+    private double TURN_SPEED_FACTOR = 1;
 
     private double autoDriveSpeedFactor = 1.0;
     private double autoStrafeSpeedFactor = 1.0;
@@ -52,7 +62,7 @@ public class DriveTrain {
     }
 
     /* METHOD: Initialize Hardware interfaces */
-    public void init(HardwareMap hwMap) {
+    public void init() {
         // Save reference to Hardware map
         activeOpMode = Robot.getInstance().getActiveOpMode();
 
@@ -68,7 +78,7 @@ public class DriveTrain {
         DcMotorSimple.Direction driveMotorDirections[] = {rvrs, fwd, rvrs, fwd};
 
         for (int i = 0; i < 4; i++ ){
-            driveMotor[i] = hwMap.get(DcMotorEx.class, driveMotorNames[i]);
+            driveMotor[i] = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, driveMotorNames[i]);
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
@@ -102,13 +112,15 @@ public class DriveTrain {
                 if (preventCrashFlag)
                 {
                     // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
-                    setDrive(driveInput*autoDriveSpeedFactor);
-                    setTurn(turnInput*autoTurnSpeedFactor);
-                    setStrafe(strafeInput*autoStrafeSpeedFactor);
+                    drive = driveInput*autoDriveSpeedFactor;
+                    strafe = strafeInput*autoStrafeSpeedFactor;
+                    turn = turnInput*autoTurnSpeedFactor;
+
+
                 } else {
-                    setDrive(driveInput * DRIVE_SPEED_FACTOR);
-                    setTurn(turnInput * TURN_SPEED_FACTOR);
-                    setStrafe(strafeInput * STRAFE_SPEED_FACTOR);
+                    drive = driveInput;
+                    strafe = strafeInput;
+                    turn = turnInput;
                 }
             }
 
@@ -117,7 +129,7 @@ public class DriveTrain {
 
         } else if (!getManualDriveControlFlag()) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
-            mecanumDriveSpeedControl();
+            moveRobot(aDrive, aStrafe, aTurn);
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             drive = 0;
@@ -142,9 +154,39 @@ public class DriveTrain {
         activeOpMode.telemetry.addData("turn input", turn);
 
         for (int i = 0; i < 4; i++ ){
+            driveMotor[i].setVelocityPIDFCoefficients(P,I,D,F);
             driveMotor[i].setVelocity(driveMotorTargetSpeed[i]);
-            activeOpMode.telemetry.addData("Motor " + i + " Target Speed", Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV));
-            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
+            //activeOpMode.telemetry.addData("Motor " + i + " Target Speed", Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV));
+            //activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
+            // add if need to set PID:
+        }
+    }
+
+    public void mecanumDrivePowerControl (){
+        // Put Mecanum Drive math and motor commands here.
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
+
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+
+        driveMotorPower[0] = leftFrontPower;
+        driveMotorPower[1] = rightFrontPower;
+        driveMotorPower[2] = leftBackPower;
+        driveMotorPower[3] = rightBackPower;
+
+        activeOpMode.telemetry.addData("drive input", drive);
+        activeOpMode.telemetry.addData("strafe input", strafe);
+        activeOpMode.telemetry.addData("turn input", turn);
+
+        for (int i = 0; i < 4; i++ ) {
+            driveMotor[i].setPower(driveMotorPower[i]);
+//            caption = "Motor " + i + " Power";
+//            activeOpMode.telemetry.addData(caption, Math.round(100.0 * driveMotorPower[i])/100.0);
+//            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
         }
     }
 
@@ -174,16 +216,10 @@ public class DriveTrain {
     }
 
     public void setDrive(double input_drive) {
-        drive = input_drive;
+        aDrive = input_drive;
     }
-
-    public void setStrafe(double input_strafe) {
-        strafe = input_strafe;
-    }
-
-    public void setTurn(double input_turn) {
-        strafe = input_turn;
-    }
+    public void setStrafe(double input_strafe) { aStrafe = input_strafe;}
+    public void setTurn(double input_turn) {  aTurn = input_turn;  }
 
     public void setManualDriveControlFlag(boolean flag) {
         manualDriveControlFlag = flag;
@@ -215,5 +251,33 @@ public class DriveTrain {
 
     public void setPreventCrashFlag(boolean b) {
         preventCrashFlag = b;
+    }
+
+
+
+    public void moveRobot(double x, double y, double yaw) {
+        // Calculate wheel powers.
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
+
+        // Normalize wheel powers to be less than 1.0
+        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+        max = Math.max(max, Math.abs(leftBackPower));
+        max = Math.max(max, Math.abs(rightBackPower));
+
+        if (max > 1.0) {
+            leftFrontPower /= max;
+            rightFrontPower /= max;
+            leftBackPower /= max;
+            rightBackPower /= max;
+        }
+
+        // Send powers to the wheels.
+        driveMotor[0].setPower(leftFrontPower);
+        driveMotor[1].setPower(rightFrontPower);
+        driveMotor[2].setPower(leftBackPower);
+        driveMotor[3].setPower(rightBackPower);
     }
 }

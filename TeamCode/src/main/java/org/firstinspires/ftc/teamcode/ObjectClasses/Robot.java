@@ -24,7 +24,7 @@ public class Robot {
     /* Constructor */
     private Robot(LinearOpMode opMode) {
         activeOpMode = opMode;
-        hardwareMap = activeOpMode.hardwareMap;
+        hardwareMap = opMode.hardwareMap;
         runtime = new ElapsedTime();
 
         switch (Constants.getRobot()) {
@@ -45,8 +45,8 @@ public class Robot {
             case ROBOT_VISION:
             {
                 drivetrain = new DriveTrain();
-                vision = new Vision();
                 gyro = new Gyro();
+                vision = new Vision();
             }
             default:
                 break;
@@ -66,7 +66,7 @@ public class Robot {
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
-                drivetrain.init(hwMap);
+                drivetrain.init();
                 lift.init();
                 arm.init();
                 gyro.init();
@@ -75,13 +75,13 @@ public class Robot {
             }
             case ROBOT_CHASSIS:
             {
-                drivetrain.init(hwMap);
+                drivetrain.init();
                 gyro.init();
                 break;
             }
             case ROBOT_VISION:
             {
-                drivetrain.init(hwMap);
+                drivetrain.init();
                 vision.init();
                 gyro.init();
                 break;
@@ -108,7 +108,7 @@ public class Robot {
     public LinearOpMode getActiveOpMode() {
         return activeOpMode;
     }
-    public HardwareMap getHardwareMap() {return hardwareMap;}
+    public HardwareMap getHardwareMap() {return activeOpMode.hardwareMap;}
     public Gyro getGyro()  {
         return gyro;
     }

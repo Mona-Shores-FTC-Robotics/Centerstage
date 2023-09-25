@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
@@ -48,6 +49,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
+
     Robot robot = Robot.createInstance(this);
     VisionPortal visionPortal;
     DriveTrain driveTrain;
@@ -62,10 +64,8 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        //This OpMode uses the robot with a Chassis, Camera, and Gyro
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
-        robot.initialize(hardwareMap);
+        robot.initialize(Robot.getInstance().getHardwareMap());
         visionPortal = Robot.getInstance().getVision().getVisionPortal();
         driveTrain = Robot.getInstance().getDriveTrain();
         gyro = Robot.getInstance().getGyro();
@@ -82,15 +82,12 @@ public class TeleOp_Vision extends LinearOpMode
             allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
             sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
 
-            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", robot.getVision().getInitVisionProcessor().getSideOfField());
             telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
-            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCenterPercent());
-            telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
-            telemetry.update();
-
-            Robot.getInstance().getVision().Frames_Per_Second();
-
+            telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getLeftPercent(), 4, 1));
+            telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getCenterPercent(), 4, 1));
+            telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getRightPercent(), 4, 1));
             telemetry.update();
         }
 
@@ -156,8 +153,10 @@ public class TeleOp_Vision extends LinearOpMode
 
             // Add April Tag Telemetry
             Robot.getInstance().getVision().telemetryAprilTag();
-            Robot.getInstance().getVision().Frames_Per_Second();
 
+
+            telemetry.addLine("Gyro Readings");
+            telemetry.addLine("Yaw Angle in Degrees" + JavaUtil.formatNumber(gyro.getYawDegrees(), 4, 0));
             telemetry.update();
 
         }

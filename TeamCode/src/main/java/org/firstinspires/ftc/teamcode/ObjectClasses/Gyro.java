@@ -49,11 +49,12 @@ public class Gyro {
 
     /* Constructor */
     public Gyro() {
-        activeOpMode = Robot.getInstance().getActiveOpMode();
+
     }
 
     /* Initialize Hardware interfaces */
     public void init() {
+        activeOpMode = Robot.getInstance().getActiveOpMode();
         // Save reference to Hardware map
         hwMap = Robot.getInstance().getHardwareMap();
 
@@ -75,6 +76,8 @@ public class Gyro {
         turnAngle.add(0, (double) angles.get(0).firstAngle);
         tiltAngle.add(0, (double) angles.get(0).thirdAngle);  // This angle will vary based on the orientation of the control hub.
 
+
+
         if(readTime.get(0) != readTime.get(calcLocation)) {
             tiltVelocity.add(0, (tiltAngle.get(0) - tiltAngle.get(calcLocation)) / (readTime.get(0).seconds() - readTime.get(calcLocation).seconds()));
             tiltAccel.add(0, (tiltVelocity.get(0) - tiltAngle.get(calcLocation)) / (readTime.get(0).seconds() - readTime.get(calcLocation).seconds()));
@@ -89,5 +92,11 @@ public class Gyro {
     public void resetYaw() {
         imu.resetYaw();
     }
+
+    public double getYawDegrees() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    }
+
+
 
 }

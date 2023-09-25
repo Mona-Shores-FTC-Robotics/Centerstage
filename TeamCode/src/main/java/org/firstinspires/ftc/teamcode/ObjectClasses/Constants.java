@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 public class Constants {
 
-  private static RobotType robot = RobotType.ROBOT_CHASSIS;
+  private static RobotType robot = RobotType.ROBOT_VISION;
 
   public static void setRobot(RobotType type)
   {
