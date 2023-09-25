@@ -38,7 +38,7 @@ public class IntakeOuttake {
     boolean rotating = false;
 
     public IntakeOuttake() {
-        activeOpMode = Robot.getInstance().getActiveOpMode();
+
     }
 
     public void init() {

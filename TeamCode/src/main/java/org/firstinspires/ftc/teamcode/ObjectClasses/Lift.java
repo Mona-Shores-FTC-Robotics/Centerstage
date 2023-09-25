@@ -65,7 +65,7 @@ public class Lift {
 
     /* Constructor     */
     public Lift() {
-        activeOpMode = Robot.getInstance().getActiveOpMode();
+
     }
 
     /* Initialization */

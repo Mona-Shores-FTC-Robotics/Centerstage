@@ -48,10 +48,10 @@ public class Robot {
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
+                gyro.init();
                 drivetrain.init();
                 lift.init();
                 arm.init();
-                gyro.init();
                 intake.init();
                 break;
             }

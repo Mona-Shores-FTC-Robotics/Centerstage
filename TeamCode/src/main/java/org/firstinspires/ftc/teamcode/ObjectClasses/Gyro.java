@@ -28,7 +28,7 @@ public class Gyro {
 
     HardwareMap hwMap = null;
     // BNO055IMU imu;
-    IMU imu;
+   public IMU imu;
     private ElapsedTime turnPeriod = new ElapsedTime();
 
     //gyro members

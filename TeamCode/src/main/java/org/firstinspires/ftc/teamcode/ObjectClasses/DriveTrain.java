@@ -2,10 +2,14 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import static java.lang.Math.abs;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class DriveTrain {
     // DriveTrain tuning constants
@@ -69,7 +73,10 @@ public class DriveTrain {
         // Manual Control is allowed at init
         setManualDriveControlFlag(true);
 
-        // Define and Initialize Motors
+
+        //MecanumDrive drivetrain = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0,0,0));
+
+//        // Define and Initialize Motors
         DcMotorSimple.Direction fwd = DcMotorSimple.Direction.FORWARD;
         DcMotorSimple.Direction rvrs = DcMotorSimple.Direction.REVERSE;
         DcMotorSimple.Direction driveMotorDirections[] = {rvrs, fwd, rvrs, fwd};
@@ -77,6 +84,7 @@ public class DriveTrain {
         for (int i = 0; i < 4; i++ ){
             driveMotor[i] = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, driveMotorNames[i]);
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            driveMotor[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
         }
