@@ -197,9 +197,9 @@ public class DriveTrain {
 
         for (int i = 0; i < 4; i++ ) {
             driveMotor[i].setPower(driveMotorPower[i]);
-//            caption = "Motor " + i + " Power";
-//            activeOpMode.telemetry.addData(caption, Math.round(100.0 * driveMotorPower[i])/100.0);
-//            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
+            String caption = "Motor " + i + " Power";
+            activeOpMode.telemetry.addData(caption, Math.round(100.0 * driveMotorPower[i])/100.0);
+            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
         }
     }
 
