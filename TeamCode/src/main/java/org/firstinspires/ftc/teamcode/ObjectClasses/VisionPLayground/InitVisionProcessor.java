@@ -46,8 +46,8 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar lowerBlue = new Scalar(58.1, 114.8, 0);
     public Scalar upperBlue = new Scalar(120.4, 255, 255);
 
-    public Scalar lowerStageDoor = new Scalar(0, 109.1, 0);
-    public Scalar upperStageDoor = new Scalar(60.9, 255, 255);
+    public Scalar lowerStageDoor = new Scalar(97.8, 143.1, 28.3);
+    public Scalar upperStageDoor = new Scalar(147.3, 164.3, 110.5);
 
     public ColorSpace colorSpace = ColorSpace.HSV;
 
@@ -263,15 +263,16 @@ public class InitVisionProcessor implements VisionProcessor {
         {
             allianceColorFinal = AllianceColor.RED;
             maskedRedMat.copyTo(frame);
-        } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+           } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.BLUE;
            maskedBlueMat.copyTo(frame);
-        }
+          }
         else {
             telemetry.addLine("No Alliance Found - defaulting to Blue Alliance");
+            maskedStageDoorMat.copyTo(frame);
         }
 
         if (allianceColorFinal == AllianceColor.RED) {
