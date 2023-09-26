@@ -102,8 +102,15 @@ public class GamepadHandling {
         previousOperatorGamepad = GamepadHandling.copy(currentOperatorGamepad);
     }
 
-    public static void storeActualGamepadValuesAsCurrentGamepads() {
+    public static void storeCurrentGamepadValues() {
         currentDriverGamepad = GamepadHandling.copy(driverGamepad);
         currentOperatorGamepad = GamepadHandling.copy(operatorGamepad);
+    }
+
+    public static Gamepad getCurrentDriverGamepad() {
+        return currentDriverGamepad;
+    }
+    public static Gamepad getOperatorGamepad() {
+        return currentOperatorGamepad;
     }
 }

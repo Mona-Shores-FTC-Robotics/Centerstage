@@ -282,7 +282,9 @@ public class Vision {
             //no april tag is being driven to (either because we didn't see them or the user didn't hold down the bumpers) - so we set manual drive control to true
             Robot.getInstance().getDriveTrain().setManualDriveControlFlag(true);
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(false);
-            Robot.getInstance().getDriveTrain().setDriveSpeedFactor(1.0);
+            Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(1.0);
+            Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(1.0);
+            Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(1.0);
         }
     }
 
@@ -376,6 +378,7 @@ public class Vision {
     private void AutoDriveToBackdropBlue() {
         if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected) {
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
+
             //if we can see the middle april tag use that for navigation
             if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -392,9 +395,6 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-//                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
-
                 telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else if (getDeliverLocation().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -410,8 +410,10 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
+                // set the s for if the driver takes over control near the backdrop
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
 
                 telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -431,7 +433,9 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
 
                 telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -460,7 +464,9 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
 
                 telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else if (getDeliverLocation().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected) {
@@ -478,7 +484,9 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
 
                 telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -498,14 +506,15 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
                 // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
 
                 telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
             autoDrive = true;
         }
     }
-
 
     public void setDeliverLocation(DeliverLocation d)
     {
@@ -517,17 +526,5 @@ public class Vision {
         return deliverLocation;
     }
 
-
-    private void tagTelemetry(AprilTagID tag)
-    {
-        if (tag.isDetected) {
-            telemetry.addData("Target", "ID %d (%s)", tag.id, tag.detection.metadata.name);
-            telemetry.addData("Range", "%5.1f inches", tag.detection.ftcPose.range);
-            telemetry.addData("Bearing", "%3.0f degrees", tag.detection.ftcPose.bearing);
-            telemetry.addData("Yaw", "%3.0f degrees", tag.detection.ftcPose.yaw);
-    }
 }
 
-
-
-}

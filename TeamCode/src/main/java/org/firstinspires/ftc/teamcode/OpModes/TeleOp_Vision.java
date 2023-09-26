@@ -76,10 +76,10 @@ public class TeleOp_Vision extends LinearOpMode
         {
             //Store the previous loop's gamepad values and new current gamepad values
             GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeActualGamepadValuesAsCurrentGamepads();
+            GamepadHandling.storeCurrentGamepadValues();
 
             //Update Gyro values
-            robot.getGyro().UpdateGyro(Robot.getInstance().getTeleOpRuntime());
+            robot.getGyro().UpdateGyro(robot.getTeleOpRuntime());
 
             //Process the Driver Controls
             GamepadHandling.DriverControls();

@@ -46,9 +46,9 @@ public class DriveTrain {
     private final double STRAFE_SPEED_FACTOR = 1;
     private final double TURN_SPEED_FACTOR = 1;
 
-    private double autoDriveSpeedFactor = 1.0;
-    private double autoStrafeSpeedFactor = 1.0;
-    private double autoTurnSpeedFactor = 1.0;
+    private double safetyDriveSpeedFactor = 1.0;
+    private double safetyStrafeSpeedFactor = 1.0;
+    private double safetyTurnSpeedFactor = 1.0;
 
     private boolean manualDriveControlFlag = true;
     private boolean fieldOrientedControlFlag = false;
@@ -56,6 +56,10 @@ public class DriveTrain {
 
     private LinearOpMode activeOpMode;
     private Gamepad driverGamepad;
+
+    private double driveInput;
+    private double strafeInput;
+    private double turnInput;
 
     /* Constructor */
     public DriveTrain() {
@@ -68,15 +72,9 @@ public class DriveTrain {
         activeOpMode = Robot.getInstance().getActiveOpMode();
 
         //set the driverGamepad so we can use the shortname throughout this class
-        driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
+        driverGamepad = GamepadHandling.getCurrentDriverGamepad();
 
-        // Manual Control is allowed at init
-        setManualDriveControlFlag(true);
-
-
-        //MecanumDrive drivetrain = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0,0,0));
-
-//        // Define and Initialize Motors
+        // Define and Initialize Motors
         DcMotorSimple.Direction fwd = DcMotorSimple.Direction.FORWARD;
         DcMotorSimple.Direction rvrs = DcMotorSimple.Direction.REVERSE;
         DcMotorSimple.Direction driveMotorDirections[] = {rvrs, fwd, rvrs, fwd};
@@ -93,47 +91,26 @@ public class DriveTrain {
 
     public void drive(){
 
-        //can we just add the speed factor here instead of doing it in field control only?
-        double driveInput = -driverGamepad.left_stick_y;
-        double strafeInput = driverGamepad.left_stick_x;
-        double turnInput = driverGamepad.right_stick_x;
+        driveInput = -driverGamepad.left_stick_y;
+        strafeInput = driverGamepad.left_stick_x;
+        turnInput = driverGamepad.right_stick_x;
 
-        //Check if the driver sticks are being moved at all so we can cancel any automated driving
-        if (    Math.abs(driveInput) > STICK_DEAD_ZONE ||
-                Math.abs(strafeInput) > STICK_DEAD_ZONE ||
-                Math.abs(turnInput) > STICK_DEAD_ZONE)
+        //Check if driver controls are active so we can cancel automated driving if they are
+        if (GamepadHandling.gamepadIsActive(driverGamepad))
         {
             setManualDriveControlFlag(true);
 
             if (fieldOrientedControlFlag==true)
             {
-                // set the drive/turn/strafe without speed adjustment (will be set after calcs for FOC)
-                drive = driveInput;
-                turn = turnInput;
-                strafe = strafeInput;
-
-                //change the drive/strafe/turn values to FOC style
+                //TODO figure out how to add the safety code to field oriented control driving
                 fieldOrientedControl();
             } else {
-                if (backdropSafetyZoneFlag)
-                {
-                    // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
-                    if (driveInput>0) {
-                        drive = driveInput * autoDriveSpeedFactor;
-                    } else if (driveInput <0)
-                    {
-                        drive = driveInput;
-                    }
+                drive = driveInput;
+                strafe = strafeInput;
+                turn = turnInput;
 
-
-                    strafe = strafeInput*autoStrafeSpeedFactor;
-                    turn = turnInput*autoTurnSpeedFactor;
-
-                } else {
-                    drive = driveInput;
-                    strafe = strafeInput;
-                    turn = turnInput;
-                }
+                //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
+                CheckBackdropSafetyZone();
             }
 
             //call the drive function with the drive/turn/strafe values set based on the driver controls
@@ -148,6 +125,20 @@ public class DriveTrain {
             strafe = 0;
             turn = 0;
             mecanumDrivePowerControl();
+        }
+    }
+
+    private void CheckBackdropSafetyZone() {
+        //this flag is set while looking for AprilTags
+        if (backdropSafetyZoneFlag)
+        {
+            // Only modify if the driver was trying to go forward
+            // The size of the adjustments are based on how far away we are from the backdrop AprilTags
+            if (driveInput>0) {
+                drive = driveInput * safetyDriveSpeedFactor;
+                strafe = strafeInput*safetyStrafeSpeedFactor;
+                turn = turnInput*safetyTurnSpeedFactor;
+            }
         }
     }
 
@@ -176,6 +167,8 @@ public class DriveTrain {
     }
 
     public void mecanumDrivePowerControl (){
+        //TODO Should we be trying to do some sort of ramping?
+
         // Put Mecanum Drive math and motor commands here.
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
@@ -240,23 +233,17 @@ public class DriveTrain {
         return fieldOrientedControlFlag;
     }
 
-    public void setDriveSpeedFactor(double factor) {
-        autoDriveSpeedFactor = factor;
+    public void setSafeyDriveSpeedFactor(double factor) { safetyDriveSpeedFactor = factor;}
+
+    public void setSafetyStrafeSpeedFactor(double factor) { safetyStrafeSpeedFactor = factor; }
+
+    public void setSafetyTurnSpeedFactor(double factor) {
+        safetyTurnSpeedFactor = factor;
     }
 
-    public void setStrafeSpeedFactor(double factor) {
-        autoStrafeSpeedFactor = factor;
+    public void setBackdropSafetyZone(boolean flag) {
+        backdropSafetyZoneFlag = flag;
     }
-
-    public void setTurnSpeedFactor(double factor) {
-        autoTurnSpeedFactor = factor;
-    }
-
-    public void setBackdropSafetyZone(boolean b) {
-        backdropSafetyZoneFlag = b;
-    }
-
-
 
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
