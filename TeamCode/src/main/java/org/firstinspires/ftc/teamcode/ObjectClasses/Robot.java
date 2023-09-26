@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 import dalvik.system.DelegateLastClassLoader;
 
 public class Robot {
@@ -24,11 +26,13 @@ public class Robot {
     private static IntakeOuttake intake;
     private static Vision vision;
     private static GamepadHandling gamepadHandling;
+    private static Telemetry telemetry;
 
     /* Constructor */
     private Robot(LinearOpMode opMode) {
         activeOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
+        telemetry = opMode.telemetry;
 
         teleOpRuntime = new ElapsedTime();
 
@@ -51,8 +55,9 @@ public class Robot {
 
     public void initialize(HardwareMap hwMap) {
 
-        //set up the telemetry
-        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
+        //Make the telemetry print to both the Driver Station and to the Dashboard
+        //TODO investigate how this is supposed to work
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         switch (Constants.getRobot()) {
             case ROBOT_2023:
