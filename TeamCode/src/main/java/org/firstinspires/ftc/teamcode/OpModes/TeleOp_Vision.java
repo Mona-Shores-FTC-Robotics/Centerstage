@@ -48,14 +48,14 @@ public class TeleOp_Vision extends LinearOpMode
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
         //Initialize the Robot
-        robot.initialize(Robot.getInstance().getHardwareMap());
+        robot.initialize(robot.getHardwareMap());
 
         //initialize the Gamepads
         GamepadHandling.init();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            Robot.getInstance().getVision().getInitVisionProcessor().telemetryForInitProcessing();
+            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
 
             //TODO write code to allow user to override alliance color and sideOfField determined by vision
 
@@ -63,14 +63,14 @@ public class TeleOp_Vision extends LinearOpMode
         }
 
         //Display the initVision telemetry a final time
-        Robot.getInstance().getVision().getInitVisionProcessor().telemetryForInitProcessing();
+        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
         telemetry.update();
 
         //After Init switch the vision processing to AprilTags
-        Robot.getInstance().getVision().SwitchToAprilTagProcessor();
+        robot.getVision().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
-        Robot.getInstance().getTeleOpRuntime().reset();
+        robot.getTeleOpRuntime().reset();
 
         while (opModeIsActive())
         {
@@ -79,7 +79,7 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.storeActualGamepadValuesAsCurrentGamepads();
 
             //Update Gyro values
-            Robot.getInstance().getGyro().UpdateGyro(Robot.getInstance().getTeleOpRuntime());
+            robot.getGyro().UpdateGyro(Robot.getInstance().getTeleOpRuntime());
 
             //Process the Driver Controls
             GamepadHandling.DriverControls();
@@ -88,17 +88,17 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.OperatorControls();
 
             //Look for AprilTags
-            Robot.getInstance().getVision().LookForAprilTags();
+            robot.getVision().LookForAprilTags();
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            Robot.getInstance().getDriveTrain().drive();
+            robot.getDriveTrain().drive();
 
             //Add AprilTag Telemetry
-            Robot.getInstance().getVision().telemetryAprilTag();
+            robot.getVision().telemetryAprilTag();
 
             telemetry.update();
 
         }
-        Robot.getInstance().getVision().getVisionPortal().close();
+        robot.getVision().getVisionPortal().close();
     }
 }
