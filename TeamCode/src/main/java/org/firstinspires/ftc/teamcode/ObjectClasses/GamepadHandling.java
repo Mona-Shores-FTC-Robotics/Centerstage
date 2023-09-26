@@ -2,13 +2,30 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class GamepadHandling {
-    LinearOpMode activeOpMode;
-    public GamepadHandling(LinearOpMode activeOpMode) {
-        this.activeOpMode = activeOpMode;
+
+    private static Gamepad currentDriverGamepad;
+    private static Gamepad currentOperatorGamepad;
+    private static Gamepad previousDriverGamepad;
+    private static Gamepad previousOperatorGamepad;
+
+    private static Gamepad driverGamepad;
+    private static Gamepad operatorGamepad;
+
+    public GamepadHandling() {
+
+    }
+
+    public static void init() {
+        currentDriverGamepad = new Gamepad();
+        currentOperatorGamepad = new Gamepad();
+        previousDriverGamepad = new Gamepad();
+        previousOperatorGamepad = new Gamepad();
+
+        driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
+        operatorGamepad = Robot.getInstance().getActiveOpMode().gamepad2;
     }
 
     @NonNull
@@ -48,5 +65,45 @@ public class GamepadHandling {
         if (Math.abs(gamepad.left_stick_x) + Math.abs(gamepad.left_stick_y) + Math.abs(gamepad.right_stick_x) > .1) {
             return true;
         } else return false;
+    }
+
+    public static void DriverControls() {
+        DriveTrain drivetrain = Robot.getInstance().getDriveTrain();
+
+        //Start button toggles field oriented control
+        if (currentDriverGamepad.start && !previousDriverGamepad.start) {
+            if (Robot.getInstance().getDriveTrain().getFieldOrientedControlFlag()) {
+                //drive normally - not in field oriented control
+                drivetrain.setFieldOrientedControlFlag(false);
+            } else {
+                //drive in field oriented control
+                Robot.getInstance().getGyro().resetYaw();
+                drivetrain.setFieldOrientedControlFlag(true);
+            }
+        }
+    }
+
+    public static void OperatorControls() {
+
+    // the X/Y/B buttons set the deliver location to left, center, or right
+            if(currentOperatorGamepad.x && !previousOperatorGamepad.x){
+        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.LEFT);
+    }
+            if(currentOperatorGamepad.y && !previousOperatorGamepad.y){
+        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.CENTER);
+    }
+            if(currentOperatorGamepad.b && !previousOperatorGamepad.b){
+        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
+    }
+}
+
+    public static void storeGamepadValuesFromLastLoop() {
+        previousDriverGamepad = GamepadHandling.copy(currentDriverGamepad);
+        previousOperatorGamepad = GamepadHandling.copy(currentOperatorGamepad);
+    }
+
+    public static void storeActualGamepadValuesAsCurrentGamepads() {
+        currentDriverGamepad = GamepadHandling.copy(driverGamepad);
+        currentOperatorGamepad = GamepadHandling.copy(operatorGamepad);
     }
 }

@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -90,6 +91,9 @@ public class Gyro {
             tiltVelocity.add(0, 0.0);
             tiltAccel.add(0, 0.0);
         }
+
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Gyro Readings");
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle in Degrees" + JavaUtil.formatNumber(getYawDegrees(), 4, 0));
     }
 
     public void resetYaw() {
@@ -99,7 +103,5 @@ public class Gyro {
     public double getYawDegrees() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
-
-
 
 }

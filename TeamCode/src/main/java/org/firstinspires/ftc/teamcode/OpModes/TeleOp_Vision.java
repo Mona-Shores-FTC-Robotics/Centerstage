@@ -29,136 +29,76 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
-import org.firstinspires.ftc.teamcode.ObjectClasses.DriveTrain;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
-import org.firstinspires.ftc.vision.VisionPortal;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
+    /** Create the robot **/
     Robot robot = Robot.createInstance(this);
-    VisionPortal visionPortal;
-    DriveTrain driveTrain;
-    Gyro gyro;
-
-    //Set defaults in case vision doesn't work
-    private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
-    private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
-    private InitVisionProcessor.SideOfField sideOfFieldAfterInit = InitVisionProcessor.SideOfField.BACKSTAGE;
-
-    private final ElapsedTime runtime = new ElapsedTime();
 
     @Override public void runOpMode()
     {
+        //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
-        robot.initialize(Robot.getInstance().getHardwareMap());
-        visionPortal = Robot.getInstance().getVision().getVisionPortal();
-        driveTrain = Robot.getInstance().getDriveTrain();
-        gyro = Robot.getInstance().getGyro();
-//        this.telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad currentGamepad2 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
-        Gamepad previousGamepad2 = new Gamepad();
+        //Initialize the Robot
+        robot.initialize(Robot.getInstance().getHardwareMap());
+
+        //initialize the Gamepads
+        GamepadHandling.init();
 
         while (opModeInInit()) {
-            //Even though this is a teleop mode, this will test vision for now - this will need to be changed later
-            teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
-            allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
-            sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
+            // Add Vision Init Processor Telemetry
+            Robot.getInstance().getVision().getInitVisionProcessor().telemetryForInitProcessing();
 
-            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", robot.getVision().getInitVisionProcessor().getSideOfField());
-            telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getLeftPercent(), 4, 1));
-            telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getCenterPercent(), 4, 1));
-            telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(robot.getVision().getInitVisionProcessor().getRightPercent(), 4, 1));
+            //TODO: write code to allow user to override alliance color and sideOfField determined by vision
+
             telemetry.update();
         }
 
-        waitForStart();
-
-        telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
-        telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
-        telemetry.addData("Side of Field After Init", sideOfFieldAfterInit);
+        //Display the initVision telemetry a final time
+        Robot.getInstance().getVision().getInitVisionProcessor().telemetryForInitProcessing();
         telemetry.update();
 
-        // After Init switch the vision processing to Apriltags
-        visionPortal.setProcessorEnabled(robot.getVision().getInitVisionProcessor(), false);
-        visionPortal.setProcessorEnabled(robot.getVision().getAprilTagProcessor(), true);
+        //After Init switch the vision processing to AprilTags
+        Robot.getInstance().getVision().SwitchToAprilTagProcessor();
 
-        runtime.reset();
+        //Start the TeleOp Timer
+        Robot.getInstance().getTeleOpRuntime().reset();
 
         while (opModeIsActive())
         {
-            //Store the previous loop's gamepad values.
-            previousGamepad1 = GamepadHandling.copy(currentGamepad1);
-            previousGamepad2 = GamepadHandling.copy(currentGamepad2);
-
-            //Store the gamepad values to be used for this iteration of the loop.
-            currentGamepad1 = GamepadHandling.copy(gamepad1);
-            currentGamepad2 = GamepadHandling.copy(gamepad2);
+            //Store the previous loop's gamepad values and new current gamepad values
+            GamepadHandling.storeGamepadValuesFromLastLoop();
+            GamepadHandling.storeActualGamepadValuesAsCurrentGamepads();
 
             //Update Gyro values
-            gyro.UpdateGyro(runtime);
+            Robot.getInstance().getGyro().UpdateGyro(Robot.getInstance().getTeleOpRuntime());
 
-            /** Driver Controls**/
-            //Start button toggles field oriented control
-            if(currentGamepad1.start && !previousGamepad1.start){
-                if (driveTrain.getFieldOrientedControlFlag()) {
-                    //drive normally - not in field oriented control
-                    driveTrain.setFieldOrientedControlFlag(false);
-                } else
-                {
-                    //drive in field oriented control
-                    Robot.getInstance().getGyro().resetYaw();
-                    driveTrain.setFieldOrientedControlFlag(true);
-                }
-            }
+            //Process the Driver Controls
+            GamepadHandling.DriverControls();
 
+            //Process the Operator Controls
+            GamepadHandling.OperatorControls();
 
-            /** Operator Controls**/
-            // the X/Y/B buttons set the deliver location to left, center, or right
-            if(currentGamepad2.x && !previousGamepad2.x){
-               Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.LEFT);
-            }
-            if(currentGamepad2.y && !previousGamepad2.y){
-                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.CENTER);
-            }
-            if(currentGamepad2.b && !previousGamepad1.b){
-                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
-            }
-
-
-            // Look for April Tags
+            //Look for AprilTags
             Robot.getInstance().getVision().LookForAprilTags();
 
-            // Drive the Robot (manual if driver controls are active - or automatically if flag set)
+            //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             Robot.getInstance().getDriveTrain().drive();
 
-            // Add April Tag Telemetry
+            //Add AprilTag Telemetry
             Robot.getInstance().getVision().telemetryAprilTag();
 
-
-            telemetry.addLine("Gyro Readings");
-            telemetry.addLine("Yaw Angle in Degrees" + JavaUtil.formatNumber(gyro.getYawDegrees(), 4, 0));
             telemetry.update();
 
         }
-        visionPortal.close();
+        Robot.getInstance().getVision().getVisionPortal().close();
     }
 }

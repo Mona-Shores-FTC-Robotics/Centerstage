@@ -28,6 +28,8 @@ import android.graphics.Canvas;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -37,20 +39,54 @@ import org.opencv.imgproc.Imgproc;
 
 public class InitVisionProcessor implements VisionProcessor {
 
+    /** InitVisionProcessor Constants **/
+    //This constant defines how much of a spike zone has to be the prop color for it to count as being detected
+    private final int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 8;
+
+    //This constant defines how much of a stage door zone needs to be yellow to count as being detected
+    private final int STAGE_DOOR_THRESHOLD = 6;
+
+    /** Our Default Values **/
+    public AllianceColor allianceColorFinal = AllianceColor.BLUE;
+    public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
+    public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
+
+    public void telemetryForInitProcessing() {
+        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+
+        telemetry.addData("Alliance Color", getAllianceColorFinal());
+        telemetry.addData("Side of the Field", getSideOfField());
+        telemetry.addData("Team Prop Location", getTeamPropLocationFinal());
+        telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getLeftPercent(), 4, 1));
+        telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getCenterPercent(), 4, 1));
+        telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getRightPercent(), 4, 1));
+        telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(percentLeftStageDoorZone, 4, 1));
+        telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(percentRightStageDoorZone, 4, 1));
+    }
+
+    /** Our Vision enums **/
+    public enum AllianceColor {BLUE, RED}
+    public enum SideOfField {BACKSTAGE, FRONTSTAGE}
+    public enum TeamPropLocation {LEFT, CENTER, RIGHT}
+
+    /** Scalars for filtering out certain pixel HSV ranges **/
+    //Red1
     public Scalar lowerRed1 = new Scalar(0, 100, 20);
     public Scalar upperRed1 = new Scalar(12.8, 255, 255);
 
+    //Red2
     public Scalar lowerRed2 = new Scalar(160, 100, 20);
     public Scalar upperRed2 = new Scalar(179, 255, 255);
 
+    //Blue Filter
     public Scalar lowerBlue = new Scalar(58.1, 114.8, 0);
     public Scalar upperBlue = new Scalar(120.4, 255, 255);
 
+    //Stage Door Filter (yellow)
     public Scalar lowerStageDoor = new Scalar(97.8, 143.1, 28.3);
     public Scalar upperStageDoor = new Scalar(147.3, 164.3, 110.5);
 
-    public ColorSpace colorSpace = ColorSpace.HSV;
-
+    /** Matrices to store the camera images we are changing **/
     private Mat hsvMat       = new Mat();
 
     private Mat maskedRedMat = new Mat();
@@ -63,17 +99,17 @@ public class InitVisionProcessor implements VisionProcessor {
     private Mat binaryBlueMat = new Mat();
     private Mat binaryStageDoorMat = new Mat();
 
+    // Submatrices to store smaller portions of the screen so we can locate where things are
     private Mat leftZoneRed;
     private Mat centerZoneRed;
     private Mat rightZoneRed;
+
     private Mat leftZoneBlue;
     private Mat centerZoneBlue;
     private Mat rightZoneBlue;
 
     private Mat leftStageDoorZone;
     private Mat rightStageDoorZone;
-
-    private Telemetry telemetry = null;
 
     enum ColorSpace {
         RGB(Imgproc.COLOR_RGBA2RGB),
@@ -90,59 +126,31 @@ public class InitVisionProcessor implements VisionProcessor {
         }
     }
 
-    public enum AllianceColor {BLUE, RED}
+    public ColorSpace colorSpace = ColorSpace.HSV;
 
-    //set default alliance to Blue
-    public AllianceColor allianceColorFinal = AllianceColor.BLUE;
-
-    public enum SideOfField {BACKSTAGE, FRONTSTAGE}
-
-    //set default side of field to BACKSTAGE
-    public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
-
-    //set
-    public enum StageDoor {LEFT_SIDE, RIGHT_SIDE}
-    public StageDoor stageDoorLocation = StageDoor.LEFT_SIDE;
-
-    public enum TeamPropLocation {LEFT, CENTER, RIGHT}
-    public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
-
-    private int RectLX;
-    private int RectLY;
-    private int RectMX;
-    private int RectMY;
-    private int RectRX;
-    private int RectRY;
-
-    private int RectLwidth;
-    private int RectLheight;
-    private int RectMwidth;
-    private int RectMheight;
-    private int RectRwidth;
-    private int RectRheight;
-
-    private int RectLeftSideOfFieldX;
-    private int RectLeftSideOfFieldY;
-    private int RectLeftSideOfFieldWidth;
-    private int RectLeftSideOfFieldHeight;
-
-    private int RectRightSideOfFieldX;
-    private int RectRightSideOfFieldY;
-    private int RectRightSideOfFieldWidth;
-    private int RectRightSideOfFieldHeight;
-
+    /** variables for our five rectangles **/
+    private int RectLX, RectLY, RectLwidth, RectLheight;
     private Rect rectL;
+
+    private int RectMX, RectMY, RectMwidth, RectMheight;
     private Rect rectM;
+
+    private int RectRX, RectRY, RectRwidth, RectRheight;
     private Rect rectR;
+
+    private int RectLeftSideOfFieldX, RectLeftSideOfFieldY, RectLeftSideOfFieldWidth, RectLeftSideOfFieldHeight;
     private Rect rectLeftSideOfField;
+
+    private int RectRightSideOfFieldX, RectRightSideOfFieldY, RectRightSideOfFieldWidth, RectRightSideOfFieldHeight;
     private Rect rectRightSideOfField;
 
-
+    /** Rectangle colors **/
     private Scalar rectangleColorRed = new Scalar(255, 0, 0);
     private Scalar rectangleColorBlue = new Scalar(0, 0, 255);
     private Scalar rectangleColorGreen = new Scalar(0, 255, 0);
     private Scalar rectangleColorWhite = new Scalar(255, 255, 255);
 
+    /** Percentage variables **/
     private double percentLeftZoneRed;
     private double percentCenterZoneRed;
     private double percentRightZoneRed;
@@ -154,12 +162,7 @@ public class InitVisionProcessor implements VisionProcessor {
     private double percentLeftStageDoorZone;
     private double percentRightStageDoorZone;
 
-
-    private int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 8;
-    private int STAGE_DOOR_THRESHOLD = 15;
-
-    public InitVisionProcessor(Telemetry telemetry) {
-        this.telemetry = telemetry;
+    public InitVisionProcessor() {
     }
 
     @Override
@@ -271,7 +274,7 @@ public class InitVisionProcessor implements VisionProcessor {
            maskedBlueMat.copyTo(frame);
           }
         else {
-            telemetry.addLine("No Alliance Found - defaulting to Blue Alliance");
+            Robot.getInstance().getActiveOpMode().telemetry.addLine("No Alliance Found - printing the maskedStageDoor Mat");
             maskedStageDoorMat.copyTo(frame);
         }
 
@@ -287,7 +290,7 @@ public class InitVisionProcessor implements VisionProcessor {
                 // Team Prop is on th Right
                 teamPropLocationFinal = TeamPropLocation.RIGHT;
             } else {
-                telemetry.addLine("Can't figure out where the red prop is located - default to center");
+                Robot.getInstance().getActiveOpMode().telemetry.addLine("Can't figure out where the red prop is located - default to center");
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             }
 
@@ -313,7 +316,7 @@ public class InitVisionProcessor implements VisionProcessor {
                 // Team Prop is on the Right
                 teamPropLocationFinal = TeamPropLocation.RIGHT;
             } else {
-                telemetry.addLine("Can't figure out where the blue prop is located - default to center");
+                Robot.getInstance().getActiveOpMode().telemetry.addLine("Can't figure out where the blue prop is located - default to center");
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             }
 

@@ -33,6 +33,16 @@ public class Vision {
 
     private boolean autoDrive = false;
 
+    public void SwitchToAprilTagProcessor() {
+        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
+        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), true);
+    }
+
+    public void SwitchToInitVisionProcessor() {
+        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), true);
+        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), false);
+    }
+
     public enum AprilTagID {
         BLUE_BACKDROP_LEFT (1),
         BLUE_BACKDROP_CENTER (2),
@@ -108,7 +118,7 @@ public class Vision {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
-        initVisionProcessor = new InitVisionProcessor(telemetry);
+        initVisionProcessor = new InitVisionProcessor();
 
         // Initialize the AprilTag Processor
         aprilTagProcessor = new AprilTagProcessor.Builder()

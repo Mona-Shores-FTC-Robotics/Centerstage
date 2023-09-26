@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -10,7 +13,7 @@ public class Robot {
 
     private static Robot robot = null;
 
-    private static ElapsedTime runtime;
+    private static ElapsedTime teleOpRuntime;
     private static LinearOpMode activeOpMode;
     private static HardwareMap hardwareMap;
 
@@ -20,12 +23,14 @@ public class Robot {
     private static Gyro gyro;
     private static IntakeOuttake intake;
     private static Vision vision;
+    private static GamepadHandling gamepadHandling;
 
     /* Constructor */
     private Robot(LinearOpMode opMode) {
         activeOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
-        runtime = new ElapsedTime();
+
+        teleOpRuntime = new ElapsedTime();
 
         drivetrain = new DriveTrain();
         lift = new Lift();
@@ -33,6 +38,8 @@ public class Robot {
         gyro = new Gyro();
         intake = new IntakeOuttake();
         vision = new Vision();
+        gamepadHandling = new GamepadHandling();
+
     }
 
     public static synchronized Robot createInstance(LinearOpMode opMode) {
@@ -42,9 +49,11 @@ public class Robot {
         return robot;
     }
 
-
     public void initialize(HardwareMap hwMap) {
-        runtime.reset();
+
+        //set up the telemetry
+        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
+
         switch (Constants.getRobot()) {
             case ROBOT_2023:
             {
@@ -84,8 +93,8 @@ public class Robot {
         return robot;
     }
 
-    public ElapsedTime getRuntime() {
-        return runtime;
+    public ElapsedTime getTeleOpRuntime() {
+        return teleOpRuntime;
     }
     public LinearOpMode getActiveOpMode() {
         return activeOpMode;
