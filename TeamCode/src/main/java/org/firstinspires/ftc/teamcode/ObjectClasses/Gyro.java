@@ -36,6 +36,7 @@ public class Gyro {
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, // direction of control hub logo on robot
                     RevHubOrientationOnRobot.UsbFacingDirection.LEFT); // direction of USB ports on robot
 
+
     private int deltaLength = 5; // Number of readings used for calculating velocity and acceleration
     public LinkedList<Orientation> angles = new LinkedList<>();
     public LinkedList<Double> turnAngle = new LinkedList<>();
@@ -54,11 +55,15 @@ public class Gyro {
 
     /* Initialize Hardware interfaces */
     public void init() {
+
+        IMU.Parameters myIMUparameters;
+
         activeOpMode = Robot.getInstance().getActiveOpMode();
         // Save reference to Hardware map
         hwMap = Robot.getInstance().getHardwareMap();
 
         imu = hwMap.get(IMU.class, "imu");
+
         imu.initialize(new IMU.Parameters(hubOrientation));
         imu.resetYaw();
     }
@@ -69,14 +74,12 @@ public class Gyro {
         int calcLocation = Math.min(deltaLength, angles.size());
 
         readTime.add(0,runtime);
-        angles.add(0, imu.getRobotOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES));  //getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,AngleUnit.DEGREES));
+        angles.add(0, imu.getRobotOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES));
         YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
         AngularVelocity veloc = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
 
         turnAngle.add(0, (double) angles.get(0).firstAngle);
         tiltAngle.add(0, (double) angles.get(0).thirdAngle);  // This angle will vary based on the orientation of the control hub.
-
-
 
         if(readTime.get(0) != readTime.get(calcLocation)) {
             tiltVelocity.add(0, (tiltAngle.get(0) - tiltAngle.get(calcLocation)) / (readTime.get(0).seconds() - readTime.get(calcLocation).seconds()));

@@ -205,24 +205,17 @@ public class DriveTrain {
      * These inputs are used to calculate the drive, strafe and turn inputs needed for the MecanumDrive method.
      */
     public void fieldOrientedControl (){
-        // Consider moving these constants to top of class
-        double robotAngle = Robot.getInstance().getGyro().turnAngle.get(0);
+
+        double heading = Robot.getInstance().getGyro().getYawDegrees();
+
         double magnitude = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
         double driveAngle = Math.copySign(Math.acos(drive/magnitude), Math.asin(-strafe));
-        double deltaAngle = robotAngle-driveAngle;
+        double deltaAngle = heading-driveAngle;
 
-        if (backdropSafetyZoneFlag)
-        {
-            // for now we are only changing the autoDriveSpeedFactor based on range to apriltag of backdrop
-            drive = autoDriveSpeedFactor * magnitude * Math.cos(deltaAngle);
-            strafe = autoStrafeSpeedFactor * magnitude * Math.sin(deltaAngle);
-            turn = autoTurnSpeedFactor * turn;
+        drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
+        strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
+        turn = TURN_SPEED_FACTOR * turn;
 
-        } else {
-            drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
-            strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
-            turn = TURN_SPEED_FACTOR * turn;
-        }
     }
 
     public void setAutoDrive(double autoDrive) { aDrive = autoDrive;}
