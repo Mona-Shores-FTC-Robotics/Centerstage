@@ -85,7 +85,8 @@ public class DriveTrain {
             driveMotor[i] = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, driveMotorNames[i]);
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             driveMotor[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            //driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            driveMotor[i].setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
         }
     }
@@ -136,7 +137,7 @@ public class DriveTrain {
             }
 
             //call the drive function with the drive/turn/strafe values set based on the driver controls
-            mecanumDriveSpeedControl();
+            mecanumDrivePowerControl();
 
         } else if (!getManualDriveControlFlag()) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
@@ -146,7 +147,7 @@ public class DriveTrain {
             drive = 0;
             strafe = 0;
             turn = 0;
-            mecanumDriveSpeedControl();
+            mecanumDrivePowerControl();
         }
     }
 
