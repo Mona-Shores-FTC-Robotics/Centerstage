@@ -167,9 +167,10 @@ public class DriveTrain {
         for (int i = 0; i < 4; i++ ){
             driveMotor[i].setVelocityPIDFCoefficients(P,I,D,F);
             driveMotor[i].setVelocity(driveMotorTargetSpeed[i]);
-            //activeOpMode.telemetry.addData("Motor " + i + " Target Speed", Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV));
-            //activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
-            // add if need to set PID:
+
+            activeOpMode.telemetry.addData("Motor " + i + " Target Speed", Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV));
+            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
+
         }
     }
 
