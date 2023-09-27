@@ -57,7 +57,7 @@ public class Robot {
 
         //Make the telemetry print to both the Driver Station and to the Dashboard
         //TODO investigate how this is supposed to work
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         switch (Constants.getRobot()) {
             case ROBOT_2023:

@@ -39,6 +39,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
+
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
 
@@ -53,6 +54,8 @@ public class TeleOp_Vision extends LinearOpMode
         //initialize the Gamepads
         GamepadHandling.init();
 
+        telemetry.setAutoClear(true);
+        telemetry.clearAll();
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
@@ -100,5 +103,7 @@ public class TeleOp_Vision extends LinearOpMode
 
         }
         robot.getVision().getVisionPortal().close();
+        telemetry.clearAll();
+
     }
 }

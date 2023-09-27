@@ -15,7 +15,7 @@ public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
-    private double P = 14; // default = 10
+    private double P = 10; // default = 10
     private double D = 0; // default = 0
     private double I = 0; // default = 3
     private double F = 0; // default = 0
@@ -90,10 +90,10 @@ public class DriveTrain {
     }
 
     public void drive(){
-
-        driveInput = -driverGamepad.left_stick_y;
-        strafeInput = driverGamepad.left_stick_x;
-        turnInput = driverGamepad.right_stick_x;
+        driverGamepad = GamepadHandling.getCurrentDriverGamepad();
+        driveInput = -GamepadHandling.getCurrentDriverGamepad().left_stick_y;
+        strafeInput = GamepadHandling.getCurrentDriverGamepad().left_stick_x;
+        turnInput = GamepadHandling.getCurrentDriverGamepad().right_stick_x;
 
         //Check if driver controls are active so we can cancel automated driving if they are
         if (GamepadHandling.gamepadIsActive(driverGamepad))
@@ -114,7 +114,7 @@ public class DriveTrain {
             }
 
             //call the drive function with the drive/turn/strafe values set based on the driver controls
-            mecanumDrivePowerControl();
+            mecanumDriveSpeedControl();
 
         } else if (!getManualDriveControlFlag()) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
@@ -124,7 +124,7 @@ public class DriveTrain {
             drive = 0;
             strafe = 0;
             turn = 0;
-            mecanumDrivePowerControl();
+            mecanumDriveSpeedControl();
         }
     }
 
