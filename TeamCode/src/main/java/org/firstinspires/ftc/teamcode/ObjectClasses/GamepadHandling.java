@@ -7,12 +7,16 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class GamepadHandling {
 
     private static Gamepad currentDriverGamepad;
-    private static Gamepad currentOperatorGamepad;
+    static Gamepad currentOperatorGamepad;
     private static Gamepad previousDriverGamepad;
     private static Gamepad previousOperatorGamepad;
 
     private static Gamepad driverGamepad;
     private static Gamepad operatorGamepad;
+
+    public static double motorFwd = 0.0;
+    public static double motorRev = 0.0;
+
 
     public GamepadHandling() {
 
@@ -92,11 +96,17 @@ public class GamepadHandling {
             if(currentOperatorGamepad.y && !previousOperatorGamepad.y){
         Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.CENTER);
     }
-            if(currentOperatorGamepad.b && !previousOperatorGamepad.b){
-        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
+            if(currentOperatorGamepad.b && !previousOperatorGamepad.b) {
+                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
     }
-}
 
+
+
+}
+    public static void mechTest() {
+
+
+    }
     public static void storeGamepadValuesFromLastLoop() {
         previousDriverGamepad = GamepadHandling.copy(currentDriverGamepad);
         previousOperatorGamepad = GamepadHandling.copy(currentOperatorGamepad);

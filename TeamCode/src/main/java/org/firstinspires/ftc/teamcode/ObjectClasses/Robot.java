@@ -43,6 +43,7 @@ public class Robot {
         intake = new IntakeOuttake();
         vision = new Vision();
         gamepadHandling = new GamepadHandling();
+        //testIntake = new TestIntake();
 
     }
 
