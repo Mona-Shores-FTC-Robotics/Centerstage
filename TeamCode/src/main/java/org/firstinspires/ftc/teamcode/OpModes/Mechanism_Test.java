@@ -47,7 +47,7 @@ public class Mechanism_Test extends LinearOpMode
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        Constants.setRobot(Constants.RobotType.ROBOT_MECHANISM);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

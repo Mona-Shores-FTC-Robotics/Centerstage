@@ -23,7 +23,8 @@ public class Constants {
   public enum RobotType {
         ROBOT_2023,
         ROBOT_CHASSIS,
-        ROBOT_VISION
+        ROBOT_VISION,
+        ROBOT_MECHANISM
   }
 
   public static RobotType getRobot() {
@@ -32,6 +33,8 @@ public class Constants {
       } else if (robot == RobotType.ROBOT_VISION)
      {
          return RobotType.ROBOT_VISION;
+     } else if (robot == RobotType.ROBOT_MECHANISM){
+         return RobotType.ROBOT_MECHANISM;
      }
      else {
         return RobotType.ROBOT_CHASSIS;

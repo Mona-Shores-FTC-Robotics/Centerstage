@@ -83,6 +83,8 @@ public class Robot {
                 gyro.init();
                 break;
             }
+            case ROBOT_MECHANISM:
+                break;
 
             default:
                 break;
