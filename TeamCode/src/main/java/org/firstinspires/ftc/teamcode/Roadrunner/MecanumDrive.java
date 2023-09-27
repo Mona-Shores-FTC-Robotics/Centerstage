@@ -52,11 +52,11 @@ public final class MecanumDrive {
         // drive model parameters
         public double inPerTick =  65.1/1446.25; // .04495
         public double lateralInPerTick = 65.1/1023.25; //.06362
-        public double trackWidthTicks = 442.03560893215314;
+        public double trackWidthTicks = 897.8607392150585;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.8128768355117222;
-        public double kV = 0.004375172387881253;
+        public double kS = 0.9292250316572019;
+        public double kV = 0.004327427084027488;
         public double kA = 0;
 
         // path profile parameters (in inches)
@@ -113,20 +113,26 @@ public final class MecanumDrive {
         private Rotation2d lastHeading;
 
         public DriveLocalizer() {
-            leftFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftFront));
-            leftRear = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
-            rightRear = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
-            rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
 
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            RawEncoder LFEncoder = new RawEncoder(MecanumDrive.this.leftFront);
+            RawEncoder LBEncoder = new RawEncoder(MecanumDrive.this.leftBack);
+            RawEncoder RFEncoder = new RawEncoder(MecanumDrive.this.rightFront);
+            RawEncoder RBEncoder = new RawEncoder(MecanumDrive.this.rightBack);
+
+            LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+            RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+
+            leftFront = new OverflowEncoder(LFEncoder);
+            leftRear = new OverflowEncoder(LBEncoder);
+            rightRear = new OverflowEncoder(RBEncoder);
+            rightFront = new OverflowEncoder(RFEncoder);
 
             lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
             lastLeftRearPos = leftRear.getPositionAndVelocity().position;
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
-
-
 
             lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         }
@@ -188,12 +194,8 @@ public final class MecanumDrive {
         rightBack = hardwareMap.get(DcMotorEx.class, "RBDrive");
         rightFront = hardwareMap.get(DcMotorEx.class, "RFDrive");
 
-        if (leftFront.getDirection() == DcMotorSimple.Direction.FORWARD) {
-            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
-        if (leftBack.getDirection()== DcMotorSimple.Direction.FORWARD) {
-            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -444,3 +446,4 @@ public final class MecanumDrive {
         );
     }
 }
+

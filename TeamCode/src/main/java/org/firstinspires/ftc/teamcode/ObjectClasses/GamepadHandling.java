@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 public class GamepadHandling {
 
     private static Gamepad currentDriverGamepad;
-    static Gamepad currentOperatorGamepad;
+    private static Gamepad currentOperatorGamepad;
     private static Gamepad previousDriverGamepad;
     private static Gamepad previousOperatorGamepad;
 
@@ -120,7 +120,14 @@ public class GamepadHandling {
     public static Gamepad getCurrentDriverGamepad() {
         return currentDriverGamepad;
     }
-    public static Gamepad getOperatorGamepad() {
+    public static Gamepad getCurrentOperatorGamepad() {
         return currentOperatorGamepad;
+    }
+
+    public static Gamepad getPreviousDriverGamepad() {
+        return previousDriverGamepad;
+    }
+    public static Gamepad getPreviousOperatorGamepad() {
+        return previousOperatorGamepad;
     }
 }

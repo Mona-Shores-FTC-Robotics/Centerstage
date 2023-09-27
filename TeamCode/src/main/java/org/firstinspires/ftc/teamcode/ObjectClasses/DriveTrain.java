@@ -9,16 +9,22 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
-    private double P = 14; // default = 10
-    private double D = 0; // default = 0
-    private double I = 0; // default = 3
-    private double F = 0; // default = 0
+    private double DEFAULT_P = 9.5; // default = 10
+    private double DEFAULT_D = 3; // default = 0
+    private double DEFAULT_I = 0; // default = 3
+    private double DEFAULT_F = 12; // default = 0
+
+    private double P = DEFAULT_P; // default = 10
+    private double D = DEFAULT_D; // default = 0
+    private double I = DEFAULT_I; // default = 3
+    private double F = DEFAULT_F; // default = 0
 
     // DriveTrain physical constants
     private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
@@ -63,7 +69,6 @@ public class DriveTrain {
 
     /* Constructor */
     public DriveTrain() {
-
     }
 
     /* METHOD: Initialize Hardware interfaces */
@@ -91,6 +96,12 @@ public class DriveTrain {
 
     public void drive(){
 
+        P=DEFAULT_P;
+        D=DEFAULT_D;
+        I=DEFAULT_I;
+        F=DEFAULT_F;
+
+        driverGamepad = GamepadHandling.getCurrentDriverGamepad();
         driveInput = -driverGamepad.left_stick_y;
         strafeInput = driverGamepad.left_stick_x;
         turnInput = driverGamepad.right_stick_x;
@@ -152,17 +163,9 @@ public class DriveTrain {
         driveMotorTargetSpeed[2] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
         driveMotorTargetSpeed[3] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        activeOpMode.telemetry.addData("drive input", drive);
-        activeOpMode.telemetry.addData("strafe input", strafe);
-        activeOpMode.telemetry.addData("turn input", turn);
-
         for (int i = 0; i < 4; i++ ){
             driveMotor[i].setVelocityPIDFCoefficients(P,I,D,F);
             driveMotor[i].setVelocity(driveMotorTargetSpeed[i]);
-
-            activeOpMode.telemetry.addData("Motor " + i + " Target Speed", Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV));
-            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
-
         }
     }
 
@@ -184,15 +187,9 @@ public class DriveTrain {
         driveMotorPower[2] = leftBackPower;
         driveMotorPower[3] = rightBackPower;
 
-        activeOpMode.telemetry.addData("drive input", drive);
-        activeOpMode.telemetry.addData("strafe input", strafe);
-        activeOpMode.telemetry.addData("turn input", turn);
 
         for (int i = 0; i < 4; i++ ) {
             driveMotor[i].setPower(driveMotorPower[i]);
-            String caption = "Motor " + i + " Power";
-            activeOpMode.telemetry.addData(caption, Math.round(100.0 * driveMotorPower[i])/100.0);
-            activeOpMode.telemetry.addData("Actual Motor Speed", Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV));
         }
     }
 
@@ -269,5 +266,15 @@ public class DriveTrain {
         driveMotor[1].setPower(rightFrontPower);
         driveMotor[2].setPower(leftBackPower);
         driveMotor[3].setPower(rightBackPower);
+    }
+
+    public void telemetryDriveTrain() {
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("");
+        for (int i = 0; i < 4; i++ ){
+            double targetSpeed = Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV);
+            double actualSpeed = Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV);
+            double power =  Math.round(100.0 * driveMotorPower[i])/100.0;
+            activeOpMode.telemetry.addLine("Motor " + i + " Speed: " + JavaUtil.formatNumber(actualSpeed, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeed, 4, 1)  + " " + "Power: " +  Math.round(100.0 * driveMotor[i].getPower())/100.0);
+        }
     }
 }

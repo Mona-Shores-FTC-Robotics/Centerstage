@@ -27,6 +27,7 @@ public class Vision {
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
+    private LinearOpMode activeOpMode;
 
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
@@ -104,17 +105,18 @@ public class Vision {
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.06  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 1.5;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 1.2;   //  Clip the turn speed to this max value (adjust for your robot)
 
     public Vision() {
 
     }
 
     public void init() {
+
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
@@ -164,7 +166,7 @@ public class Vision {
    */
     private void setManualExposure(int exposureMS, int gain) {
 
-        LinearOpMode activeOpMode =  Robot.getInstance().getActiveOpMode();
+        activeOpMode = Robot.getInstance().getActiveOpMode();
 
         // Wait for the camera to be open, then use the controls
         if (visionPortal == null) {
@@ -196,6 +198,7 @@ public class Vision {
             gainControl.setGain(gain);
             activeOpMode.sleep(20);
         }
+
     }
 
     /**
@@ -395,6 +398,11 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
+                // set the is for if the driver takes over control near the backdrop
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
+                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
+                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
+
                 telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else if (getDeliverLocation().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -410,7 +418,7 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the s for if the driver takes over control near the backdrop
+                // set the is for if the driver takes over control near the backdrop
                 Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
                 Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
                 Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);

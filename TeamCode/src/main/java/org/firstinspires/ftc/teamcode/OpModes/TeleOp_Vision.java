@@ -32,6 +32,8 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -41,7 +43,6 @@ public class TeleOp_Vision extends LinearOpMode
 {
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
-    //
 
     @Override public void runOpMode()
     {
@@ -53,14 +54,21 @@ public class TeleOp_Vision extends LinearOpMode
 
         //initialize the Gamepads
         GamepadHandling.init();
+        robot.getVision().SwitchToInitVisionProcessor();
 
         while (opModeInInit()) {
+            GamepadHandling.storeGamepadValuesFromLastLoop();
+            GamepadHandling.storeCurrentGamepadValues();
+
             // Add Vision Init Processor Telemetry
             robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
+
+            robot.getVision().getInitVisionProcessor().lockAllianceColor();
 
             //TODO write code to allow user to override alliance color and sideOfField determined by vision
 
             telemetry.update();
+            sleep(10);
         }
 
         //Display the initVision telemetry a final time
@@ -95,10 +103,16 @@ public class TeleOp_Vision extends LinearOpMode
             robot.getDriveTrain().drive();
 
             //Add AprilTag Telemetry
-            robot.getVision().telemetryAprilTag();
+            if (gamepad1.left_trigger>.1) {
+                robot.getVision().telemetryAprilTag();
+            }
 
+            //Add DriveTrain Telemetry
+            if (gamepad1.right_trigger>.1) {
+                robot.getDriveTrain().telemetryDriveTrain();
+                robot.getGyro().telemetryGyro();
+            }
             telemetry.update();
-
         }
         robot.getVision().getVisionPortal().close();
     }

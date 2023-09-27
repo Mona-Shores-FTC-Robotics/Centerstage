@@ -28,6 +28,7 @@ import android.graphics.Canvas;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 import org.firstinspires.ftc.vision.VisionProcessor;
@@ -51,17 +52,85 @@ public class InitVisionProcessor implements VisionProcessor {
     public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
     public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
 
+    private boolean LockedFlag = false;
+    private boolean ManualOverrideFlag = false;
+
+    private AllianceColor allianceColorOverride = AllianceColor.BLUE;
+    private SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
+
     public void telemetryForInitProcessing() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         telemetry.addData("Alliance Color", getAllianceColorFinal());
         telemetry.addData("Side of the Field", getSideOfField());
         telemetry.addData("Team Prop Location", getTeamPropLocationFinal());
+        telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getCenterPercent(), 4, 1));
         telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getRightPercent(), 4, 1));
         telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(percentLeftStageDoorZone, 4, 1));
         telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(percentRightStageDoorZone, 4, 1));
+    }
+
+    public void lockAllianceColor() {
+        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        telemetry.addLine("");
+
+        if (LockedFlag)
+        {
+            telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = false;
+            }
+        } else if (!LockedFlag)
+        {
+            if (ManualOverrideFlag)
+            {
+                allianceColorFinal = allianceColorOverride;
+                sideOfFieldFinal = sideOfFieldOverride;
+            }
+            telemetry.addLine("Lock with B " + "Color: " + allianceColorFinal + " Side: " + sideOfFieldFinal);
+
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = true;
+            }
+
+            if (!ManualOverrideFlag) {
+                telemetry.addLine("Override with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = true;
+                }
+            } else if (ManualOverrideFlag) {
+                telemetry.addLine("Change Color with d-pad (up/down) - Change Side with d-pad (left/right)");
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
+                    allianceColorOverride = AllianceColor.BLUE;
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
+                    allianceColorOverride = AllianceColor.RED;
+                }
+
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
+                    if (allianceColorOverride == AllianceColor.BLUE) {
+                        sideOfFieldOverride = SideOfField.FRONTSTAGE;
+                    } else if (allianceColorOverride == AllianceColor.RED) {
+                        sideOfFieldOverride = SideOfField.BACKSTAGE;
+                    }
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
+                    if (allianceColorOverride == AllianceColor.RED) {
+                        sideOfFieldOverride = SideOfField.FRONTSTAGE;
+                    } else if (allianceColorOverride == AllianceColor.BLUE) {
+                        sideOfFieldOverride = SideOfField.BACKSTAGE;
+                    }
+                }
+
+                telemetry.addLine("Override Off with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = false;
+                }
+
+            }
+        }
     }
 
     /** Our Vision enums **/
@@ -264,18 +333,23 @@ public class InitVisionProcessor implements VisionProcessor {
             percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
             percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
-            allianceColorFinal = AllianceColor.RED;
-            maskedRedMat.copyTo(frame);
+            setAllianceColorFinal(AllianceColor.RED);
+            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
+                binaryRedMatFinal.copyTo(frame);
+            }
            } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
-            allianceColorFinal = AllianceColor.BLUE;
-           maskedBlueMat.copyTo(frame);
+            setAllianceColorFinal(AllianceColor.BLUE);
+            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
+                binaryBlueMat.copyTo(frame);
+            }
           }
         else {
-            Robot.getInstance().getActiveOpMode().telemetry.addLine("No Alliance Found - printing the maskedStageDoor Mat");
-            maskedStageDoorMat.copyTo(frame);
+            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
+                maskedStageDoorMat.copyTo(frame);
+            }
         }
 
         if (allianceColorFinal == AllianceColor.RED) {
@@ -290,18 +364,17 @@ public class InitVisionProcessor implements VisionProcessor {
                 // Team Prop is on th Right
                 teamPropLocationFinal = TeamPropLocation.RIGHT;
             } else {
-                Robot.getInstance().getActiveOpMode().telemetry.addLine("Can't figure out where the red prop is located - default to center");
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             }
 
             //Figure out which side of field we are on by combbining alliance and stage door detection
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
-                sideOfFieldFinal = SideOfField.BACKSTAGE;
+                setSideOfFieldFinal(SideOfField.BACKSTAGE);
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.FRONTSTAGE;
+                setSideOfFieldFinal(SideOfField.FRONTSTAGE);
             }
         }
 
@@ -316,18 +389,17 @@ public class InitVisionProcessor implements VisionProcessor {
                 // Team Prop is on the Right
                 teamPropLocationFinal = TeamPropLocation.RIGHT;
             } else {
-                Robot.getInstance().getActiveOpMode().telemetry.addLine("Can't figure out where the blue prop is located - default to center");
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             }
 
             //Figure out where the Stage Door is
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.FRONTSTAGE;
+                setSideOfFieldFinal(SideOfField.FRONTSTAGE);
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
-                sideOfFieldFinal = SideOfField.BACKSTAGE;
+                setSideOfFieldFinal(SideOfField.BACKSTAGE);
             }
 
         }
@@ -400,6 +472,20 @@ public class InitVisionProcessor implements VisionProcessor {
 
 
         return null;
+    }
+
+    private void setAllianceColorFinal(AllianceColor color) {
+        if (!LockedFlag)
+        {
+            allianceColorFinal = color;
+        }
+    }
+
+    private void setSideOfFieldFinal(SideOfField side) {
+        if (!LockedFlag)
+        {
+            sideOfFieldFinal = side;
+        }
     }
 
     @Override

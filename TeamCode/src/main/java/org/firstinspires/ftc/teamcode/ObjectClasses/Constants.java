@@ -24,7 +24,7 @@ public class Constants {
         ROBOT_2023,
         ROBOT_CHASSIS,
         ROBOT_VISION,
-        ROBOT_MECHANISM
+        ROBOT_MOTOR_TEST_MECHANISM
   }
 
   public static RobotType getRobot() {
@@ -33,8 +33,8 @@ public class Constants {
       } else if (robot == RobotType.ROBOT_VISION)
      {
          return RobotType.ROBOT_VISION;
-     } else if (robot == RobotType.ROBOT_MECHANISM){
-         return RobotType.ROBOT_MECHANISM;
+     } else if (robot == RobotType.ROBOT_MOTOR_TEST_MECHANISM){
+         return RobotType.ROBOT_MOTOR_TEST_MECHANISM;
      }
      else {
         return RobotType.ROBOT_CHASSIS;

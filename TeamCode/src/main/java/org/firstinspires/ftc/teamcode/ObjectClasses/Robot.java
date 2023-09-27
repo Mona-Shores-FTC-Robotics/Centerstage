@@ -25,8 +25,8 @@ public class Robot {
     private static Gyro gyro;
     private static IntakeOuttake intake;
     private static Vision vision;
-    private static GamepadHandling gamepadHandling;
     private static Telemetry telemetry;
+    private static TestIntake testIntake;
 
     /* Constructor */
     private Robot(LinearOpMode opMode) {
@@ -42,15 +42,12 @@ public class Robot {
         gyro = new Gyro();
         intake = new IntakeOuttake();
         vision = new Vision();
-        gamepadHandling = new GamepadHandling();
-        //testIntake = new TestIntake();
+        testIntake = new TestIntake();
 
     }
 
-    public static synchronized Robot createInstance(LinearOpMode opMode) {
-        if (robot == null) {
-            robot = new Robot(opMode);
-        }
+    public static Robot createInstance(LinearOpMode opMode) {
+        robot = new Robot(opMode);
         return robot;
     }
 
@@ -83,7 +80,8 @@ public class Robot {
                 gyro.init();
                 break;
             }
-            case ROBOT_MECHANISM:
+            case ROBOT_MOTOR_TEST_MECHANISM:
+                testIntake.init();
                 break;
 
             default:
@@ -97,6 +95,7 @@ public class Robot {
     public static synchronized Robot getInstance() {
         if (robot == null) {
             //error
+            telemetry.addLine("error");
         }
         return robot;
     }
@@ -113,6 +112,7 @@ public class Robot {
     }
     public DriveTrain getDriveTrain()  {return drivetrain;}
     public Vision getVision()  {return vision;}
+    public TestIntake getTestIntake()  {return testIntake;}
 
 }
 

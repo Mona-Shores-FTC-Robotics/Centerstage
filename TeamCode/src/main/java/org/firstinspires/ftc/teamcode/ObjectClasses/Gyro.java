@@ -92,8 +92,6 @@ public class Gyro {
             tiltAccel.add(0, 0.0);
         }
 
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Gyro Readings");
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle in Degrees" + JavaUtil.formatNumber(getYawDegrees(), 4, 0));
     }
 
     public void resetYaw() {
@@ -104,4 +102,8 @@ public class Gyro {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
+    public void telemetryGyro() {
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("");
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(getYawDegrees(), 4, 0));
+    }
 }
