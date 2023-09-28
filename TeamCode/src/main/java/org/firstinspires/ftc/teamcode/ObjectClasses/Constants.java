@@ -61,7 +61,7 @@ public class Constants {
     public static double FACE_315_DEGREES = Math.toRadians(315);
 
     public static Pose2d BLUE_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP = flipYAxis(BLUE_BACKDROP);
+    public static Pose2d RED_BACKDROP = new Pose2d(2*TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_LEFT_START_POSE = new Pose2d(HALF_TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_RED);
     public static Pose2d BLUE_RIGHT_START_POSE = new Pose2d(-HALF_TILE-TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_RED);
@@ -85,7 +85,7 @@ public class Constants {
     public static Pose2d BLUE_AUDIENCE_SPIKE_R = new Pose2d(-TILE-THREE_QUARTER_TILE, TILE+HALF_TILE, FACE_225_DEGREES);
 
     public static Vector2d RED_BACKSTAGE_PARK = new Vector2d(2*TILE, -TILE*2-HALF_TILE);
-    public static Vector2d BLUE_BACKSTAGE_PARK = flipYAxis(RED_BACKSTAGE_PARK);
+    public static Vector2d BLUE_BACKSTAGE_PARK = new Vector2d(2*TILE, TILE*2-HALF_TILE);
 
     public static Pose2d RED_STAGEDOOR_ENTRANCE = new Pose2d(-HALF_TILE-TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_STAGEDOOR_ENTRANCE = flipYAxis(RED_STAGEDOOR_ENTRANCE);
@@ -105,7 +105,7 @@ public class Constants {
     public static Pose2d BLUE_SAFE_STRAFE = new Pose2d(flipYAxis(new Vector2d(RED_SAFE_STRAFE.position.x, RED_SAFE_STRAFE.position.y)), FACE_TOWARD_RED);
 
     public static Pose2d RED_THROUGH_DOOR = new Pose2d(TILE+HALF_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d BLUE_THROUGH_DOOR = flipYAxis( RED_THROUGH_DOOR);
+    public static Pose2d BLUE_THROUGH_DOOR =  new Pose2d(TILE+HALF_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d flipYAxis(Pose2d pose) {
         Pose2d output = new Pose2d(pose.position.x, -pose.position.y, Math.toRadians(pose.heading.imag+pose.heading.real));

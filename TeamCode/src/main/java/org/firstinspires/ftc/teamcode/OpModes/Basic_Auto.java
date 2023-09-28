@@ -40,7 +40,7 @@ public class Basic_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), BLUE_RIGHT_START_POSE);
+        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), BLUE_LEFT_START_POSE);
         //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
@@ -83,7 +83,7 @@ public class Basic_Auto extends LinearOpMode {
         robot.getGyro().resetYaw();
 
 
-        Actions.runBlocking( blueAudienceBotTeamPropLeftRoute );
+        Actions.runBlocking( blueBackstageBotTeamPropLeftRoute );
 
         }
 
@@ -125,29 +125,27 @@ public class Basic_Auto extends LinearOpMode {
     }
 
     private void BuildTeamPropLeftRoutes(MecanumDrive roadRunnerDrive) {
-//        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_LEFT_START_POSE)
-//                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
-//                .setReversed(true)
-//                .splineToLinearHeading(BLUE_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
-//                .lineToX(BLUE_THROUGH_DOOR.position.y)
-//                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-//                .strafeTo(BLUE_BACKSTAGE_PARK)
-//                .turnTo(FACE_TOWARD_FRONTSTAGE)
-//                .build();
-//
-//        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_RIGHT_START_POSE)
-//              .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
-//
-//                .setReversed(true)
-//                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-//                .strafeTo(RED_BACKSTAGE_PARK)
-//                .turnTo(FACE_TOWARD_FRONTSTAGE)
-//                .build();
-//
-        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_LEFT_START_POSE)
-                .splineToLinearHeading(new Pose2d(RED_AUDIENCE_SPIKE_L.position.x, RED_AUDIENCE_SPIKE_L.position.y, FACE_225_DEGREES), FACE_225_DEGREES)
+        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR_ENTRANCE.position.x, RED_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_RIGHT_START_POSE)
+              .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_225_DEGREES)
+                .setReversed(true)
+                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
                 .lineToX(RED_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build();
