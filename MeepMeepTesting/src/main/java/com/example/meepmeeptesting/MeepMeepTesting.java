@@ -16,13 +16,13 @@ import javax.imageio.ImageIO;
 
 public class MeepMeepTesting {
 
-    public static RoadRunnerBotEntity blueLeftBot;
-    public static RoadRunnerBotEntity redLeftBot;
-    public static RoadRunnerBotEntity blueRightBot;
-    public static RoadRunnerBotEntity redRightBot;
+    public static RoadRunnerBotEntity blueBackstageBot;
+    public static RoadRunnerBotEntity redAudienceBot;
+    public static RoadRunnerBotEntity blueAudienceBot;
+    public static RoadRunnerBotEntity redBackstageBot;
 
     enum teamPropLocation {LEFT, CENTER, RIGHT}
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.LEFT;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.RIGHT;
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
@@ -32,17 +32,17 @@ public class MeepMeepTesting {
 
         if (teamPropLocationFinal == teamPropLocation.LEFT)
         {
-            teamPropLeftRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+            teamPropLeftRoute(blueBackstageBot, redBackstageBot, blueAudienceBot, redAudienceBot);
         }
 
         if (teamPropLocationFinal == teamPropLocation.CENTER)
         {
-            teamPropCenterRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+            teamPropCenterRoute(blueBackstageBot, redBackstageBot, blueAudienceBot, redAudienceBot);
         }
 
         if (teamPropLocationFinal == teamPropLocation.RIGHT)
         {
-            teamPropRightRoute(blueLeftBot, redRightBot, blueRightBot, redLeftBot);
+            teamPropRightRoute(blueBackstageBot, redBackstageBot, blueAudienceBot, redAudienceBot);
         }
 
         String filePath = "Centerstage.png";
@@ -53,33 +53,33 @@ public class MeepMeepTesting {
 
         meepMeep.setBackground(img)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(redRightBot)
-                .addEntity(blueLeftBot)
-                .addEntity(redLeftBot)
-                .addEntity(blueRightBot)
+                .addEntity(redBackstageBot)
+                .addEntity(blueBackstageBot)
+                .addEntity(redAudienceBot)
+                .addEntity(blueAudienceBot)
                 .start();
     }
 
     private static void MakeRobots( MeepMeep meepMeep ) {
-        blueLeftBot = new DefaultBotBuilder(meepMeep)
+        blueBackstageBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeBlueDark())
                 .build();
 
-        blueRightBot = new DefaultBotBuilder(meepMeep)
+        blueAudienceBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeBlueLight())
                 .build();
 
-        redLeftBot = new DefaultBotBuilder(meepMeep)
+        redAudienceBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeRedLight())
                 .build();
 
-        redRightBot = new DefaultBotBuilder(meepMeep)
+        redBackstageBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeRedLight())
@@ -88,36 +88,36 @@ public class MeepMeepTesting {
 
     static void teamPropCenterRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
 {
-    blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
-            .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
-            .turnTo(FACE_TOWARD_BACKSTAGE)
+    blueBackstageBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+            .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
+            .setReversed(true)
             .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
             .strafeTo(BLUE_BACKSTAGE_PARK)
             .turnTo(FACE_TOWARD_FRONTSTAGE)
             .build());
 
-    redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
-            .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, Math.toRadians(180))
-            .turnTo(FACE_TOWARD_BACKSTAGE)
+    redBackstageBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+            .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
+            .setReversed(true)
             .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
             .strafeTo(RED_BACKSTAGE_PARK)
             .turnTo(FACE_TOWARD_FRONTSTAGE)
             .build());
 
-    redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
-            .splineToLinearHeading( RED_LEFT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+    redAudienceBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+            .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
             .splineToLinearHeading(RED_SAFE_STRAFE , FACE_TOWARD_BLUE)
-            .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_2, FACE_TOWARD_BLUE) , FACE_TOWARD_BLUE)
-            .splineToLinearHeading(RED_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_BLUE) , FACE_TOWARD_BLUE)
+            .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
             .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
             .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
             .build());
 
-    blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
-            .splineToLinearHeading(BLUE_RIGHT_SPIKE_LOCATION, FACE_TOWARD_RED)
+    blueAudienceBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+            .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
             .splineToLinearHeading(BLUE_SAFE_STRAFE , FACE_TOWARD_RED)
-            .splineToLinearHeading(new Pose2d(BLUE_NEUTRAL_PIXEL_2, FACE_TOWARD_RED), FACE_TOWARD_RED)
-            .splineToLinearHeading(BLUE_STAGEDOOR, FACE_TOWARD_BACKSTAGE)
+            .splineToLinearHeading(new Pose2d(BLUE_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_RED), FACE_TOWARD_RED)
+            .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
             .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
             .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
             .build());
@@ -126,39 +126,41 @@ public class MeepMeepTesting {
 
     static void teamPropLeftRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
     {
-        blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
-                .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+        blueBackstageBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .stopAndAdd(dropPixel())
-                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
+                .lineToY(BLUE_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(BLUE_BACKSTAGE_PARK)
                 .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
-        redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
-                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+        redBackstageBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
                 .stopAndAdd(dropPixel())
-                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(RED_BACKSTAGE_PARK)
                 .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
-        redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
-                .splineToLinearHeading(new Pose2d(RED_SPIKE_3.position.x, RED_SPIKE_3.position.y, FACE_225_DEGREES), FACE_225_DEGREES)
+        redAudienceBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(new Pose2d(RED_AUDIENCE_SPIKE_L.position.x, RED_AUDIENCE_SPIKE_L.position.y, FACE_225_DEGREES), FACE_225_DEGREES)
                 .stopAndAdd(dropPixel())
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR.position.x, RED_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR_ENTRANCE.position.x, RED_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(RED_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build());
 
-        blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
-                .splineToLinearHeading(new Pose2d(BLUE_SPIKE_1.position.x, BLUE_SPIKE_1.position.y, FACE_45_DEGREES), FACE_45_DEGREES)
+        blueAudienceBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(new Pose2d(BLUE_AUDIENCE_SPIKE_L.position.x, BLUE_AUDIENCE_SPIKE_L.position.y, FACE_45_DEGREES), FACE_45_DEGREES)
                 .stopAndAdd(dropPixel())
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(BLUE_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
@@ -167,40 +169,42 @@ public class MeepMeepTesting {
 
     static void teamPropRightRoute(RoadRunnerBotEntity blueLeftBot, RoadRunnerBotEntity redRightBot, RoadRunnerBotEntity blueRightBot, RoadRunnerBotEntity redLeftBot )
     {
-        blueLeftBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
-                .splineToLinearHeading(BLUE_LEFT_SPIKE_LOCATION, FACE_TOWARD_RED)
+        blueBackstageBot.runAction(blueLeftBot.getDrive().actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_TOWARD_RED)
                 .stopAndAdd(dropPixel())
-                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(BLUE_BACKSTAGE_PARK)
                 .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
-        redRightBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
-                .splineToLinearHeading(RED_RIGHT_SPIKE_LOCATION, FACE_TOWARD_BLUE)
+        redBackstageBot.runAction(redRightBot.getDrive().actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_TOWARD_BLUE)
                 .stopAndAdd(dropPixel())
-                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
+                .lineToY(RED_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(RED_BACKSTAGE_PARK)
+                         .strafeTo(RED_BACKSTAGE_PARK)
                 .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build());
 
 
-        redLeftBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
-                .splineToLinearHeading(new Pose2d(RED_SPIKE_1.position.x, RED_SPIKE_1.position.y, FACE_135_DEGREES), FACE_TOWARD_BACKSTAGE)
+        redAudienceBot.runAction(redLeftBot.getDrive().actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(new Pose2d(RED_AUDIENCE_SPIKE_R.position.x, RED_AUDIENCE_SPIKE_R.position.y, FACE_135_DEGREES), FACE_TOWARD_BACKSTAGE)
                 .stopAndAdd(dropPixel())
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR.position.x, RED_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR_ENTRANCE.position.x, RED_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(RED_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build());
 
-        blueRightBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
-                .splineToLinearHeading(new Pose2d(BLUE_SPIKE_3.position.x, BLUE_SPIKE_3.position.y, FACE_315_DEGREES), FACE_315_DEGREES)
+        blueAudienceBot.runAction(blueRightBot.getDrive().actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(new Pose2d(BLUE_AUDIENCE_SPIKE_R.position.x, BLUE_AUDIENCE_SPIKE_R.position.y, FACE_315_DEGREES), FACE_315_DEGREES)
                 .stopAndAdd(dropPixel())
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR.position.x, BLUE_STAGEDOOR.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_RED)
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_RED)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .lineToY(BLUE_THROUGH_DOOR.position.y)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)

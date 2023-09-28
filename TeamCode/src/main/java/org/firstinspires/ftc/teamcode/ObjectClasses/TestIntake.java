@@ -26,7 +26,7 @@ public class TestIntake {
         // Save reference to Hardware map
         hwMap = Robot.getInstance().getHardwareMap();
 
-        testIntakeMotor = hwMap.get(DcMotor.class, "LFDrive"); //Change this name to the motor name in the config
+        testIntakeMotor = hwMap.get(DcMotor.class, "test"); //Change this name to the motor name in the config
         testIntakeMotor.setDirection(DcMotor.Direction.FORWARD);
         testIntakeMotor.setPower(0);
     }
