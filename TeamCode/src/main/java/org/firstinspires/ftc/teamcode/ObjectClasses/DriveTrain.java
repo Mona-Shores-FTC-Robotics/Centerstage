@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.atan;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class DriveTrain {
@@ -63,10 +67,6 @@ public class DriveTrain {
     private LinearOpMode activeOpMode;
     private Gamepad driverGamepad;
 
-    private double driveInput;
-    private double strafeInput;
-    private double turnInput;
-
     /* Constructor */
     public DriveTrain() {
     }
@@ -102,31 +102,23 @@ public class DriveTrain {
         F=DEFAULT_F;
 
         driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-        driveInput = -driverGamepad.left_stick_y;
-        strafeInput = driverGamepad.left_stick_x;
-        turnInput = driverGamepad.right_stick_x;
+        drive = -driverGamepad.left_stick_y;
+        strafe = driverGamepad.left_stick_x;
+        turn = driverGamepad.right_stick_x;
 
         //Check if driver controls are active so we can cancel automated driving if they are
         if (GamepadHandling.gamepadIsActive(driverGamepad))
         {
+            //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
+            CheckBackdropSafetyZone();
             setManualDriveControlFlag(true);
-
             if (fieldOrientedControlFlag==true)
             {
-                //TODO figure out how to add the safety code to field oriented control driving
                 fieldOrientedControl();
             } else {
-                drive = driveInput;
-                strafe = strafeInput;
-                turn = turnInput;
-
-                //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
-                CheckBackdropSafetyZone();
+                //call the drive function with the drive/turn/strafe values set based on the driver controls
+                mecanumDriveSpeedControl();
             }
-
-            //call the drive function with the drive/turn/strafe values set based on the driver controls
-            mecanumDriveSpeedControl();
-
         } else if (!getManualDriveControlFlag()) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
             moveRobot(aDrive, aStrafe, aTurn);
@@ -145,10 +137,10 @@ public class DriveTrain {
         {
             // Only modify if the driver was trying to go forward
             // The size of the adjustments are based on how far away we are from the backdrop AprilTags
-            if (driveInput>0) {
-                drive = driveInput * safetyDriveSpeedFactor;
-                strafe = strafeInput*safetyStrafeSpeedFactor;
-                turn = turnInput*safetyTurnSpeedFactor;
+            if (drive>0) {
+                drive = drive * safetyDriveSpeedFactor;
+                strafe = strafe*safetyStrafeSpeedFactor;
+                turn = turn*safetyTurnSpeedFactor;
             }
         }
     }
@@ -193,21 +185,37 @@ public class DriveTrain {
         }
     }
 
-    /** fieldOrientedControl takes inputs from the gamepad and the angle of the robot.
-     * These inputs are used to calculate the drive, strafe and turn inputs needed for the MecanumDrive method.
-     */
     public void fieldOrientedControl (){
 
-        double heading = Robot.getInstance().getGyro().getYawDegrees();
+        double y = drive;
+        double x = strafe;
+        double rx = turn;
 
-        double magnitude = Math.sqrt(Math.pow(drive, 2) + Math.pow(strafe, 2));
-        double driveAngle = Math.copySign(Math.acos(drive/magnitude), Math.asin(-strafe));
-        double deltaAngle = heading-driveAngle;
+        double botHeading = Robot.getInstance().getGyro().imu.getRobotYawPitchRollAngles().getYaw((AngleUnit.RADIANS));
 
-        drive = DRIVE_SPEED_FACTOR * magnitude * Math.cos(deltaAngle);
-        strafe = STRAFE_SPEED_FACTOR * magnitude * Math.sin(deltaAngle);
-        turn = TURN_SPEED_FACTOR * turn;
+        // Rotate the movement direction counter to the bot's rotation
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
+        rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+        // Denominator is the largest motor power (absolute value) or 1
+        // This ensures all the powers maintain the same ratio,
+        // but only if at least one is out of the range [-1, 1]
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+        double leftFrontPower = (rotY + rotX + rx) / denominator;
+        double leftBackPower = (rotY - rotX + rx) / denominator;
+        double rightFrontPower = (rotY - rotX - rx) / denominator;
+        double rightBackPower = (rotY + rotX - rx) / denominator;
+
+        driveMotorPower[0] = leftFrontPower;
+        driveMotorPower[1] = rightFrontPower;
+        driveMotorPower[2] = leftBackPower;
+        driveMotorPower[3] = rightBackPower;
+
+        for (int i = 0; i < 4; i++ ) {
+            driveMotor[i].setPower(driveMotorPower[i]);
+        }
     }
 
     public void setAutoDrive(double autoDrive) { aDrive = autoDrive;}

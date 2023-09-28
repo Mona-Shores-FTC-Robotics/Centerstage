@@ -17,55 +17,45 @@ import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 @Autonomous(name = "Basic_Auto")
 public class Basic_Auto extends LinearOpMode {
 
+    /** Create the robot **/
     Robot robot = Robot.createInstance(this);
-    MecanumDrive roadRunnerDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-
-    private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
-    private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
-    private InitVisionProcessor.SideOfField sideOfFieldAfterInit = InitVisionProcessor.SideOfField.BACKSTAGE;
-
-    private final ElapsedTime runtime = new ElapsedTime();
-    Gamepad currentGamepad1 = new Gamepad();
-    Gamepad currentGamepad2 = new Gamepad();
-    Gamepad previousGamepad1 = new Gamepad();
-    Gamepad previousGamepad2 = new Gamepad();
 
     @Override
     public void runOpMode() {
-        //This OpMode uses the robot with a Chassis, Camera, and Gyro
+
+        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0,0,0));
+        //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
-        robot.initialize(hardwareMap);
+        //Initialize the Robot
+        robot.initialize(robot.getHardwareMap());
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        //initialize the Gamepads
+        GamepadHandling.init();
+        robot.getVision().SwitchToInitVisionProcessor();
 
         while (opModeInInit()) {
-            teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
-            allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
-            sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
+            GamepadHandling.storeGamepadValuesFromLastLoop();
+            GamepadHandling.storeCurrentGamepadValues();
 
-            //Store the previous loop's gamepad values.
-            previousGamepad1 = GamepadHandling.copy(currentGamepad1);
-            previousGamepad2 = GamepadHandling.copy(currentGamepad2);
+            // Add Vision Init Processor Telemetry
+            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
 
-            //Store the gamepad values to be used for this iteration of the loop.
-            currentGamepad1 = GamepadHandling.copy(gamepad1);
-            currentGamepad2 = GamepadHandling.copy(gamepad2);
+            robot.getVision().getInitVisionProcessor().lockColorAndSide();
 
-            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
-            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCenterPercent());
-            telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
             telemetry.update();
+            sleep(10);
         }
-        telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
-        telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
-        telemetry.addData("Side of Field After Init", sideOfFieldAfterInit);
+
+        //Display the initVision telemetry a final time
+        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
         telemetry.update();
 
-        runtime.reset();
+        //After Init switch the vision processing to AprilTags
+        robot.getVision().SwitchToAprilTagProcessor();
+
+        //Start the TeleOp Timer
+        robot.getTeleOpRuntime().reset();
 
         Actions.runBlocking(
                     roadRunnerDrive.actionBuilder(roadRunnerDrive.pose)

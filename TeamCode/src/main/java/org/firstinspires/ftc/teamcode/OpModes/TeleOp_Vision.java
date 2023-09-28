@@ -63,9 +63,7 @@ public class TeleOp_Vision extends LinearOpMode
             // Add Vision Init Processor Telemetry
             robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
 
-            robot.getVision().getInitVisionProcessor().lockAllianceColor();
-
-            //TODO write code to allow user to override alliance color and sideOfField determined by vision
+            robot.getVision().getInitVisionProcessor().lockColorAndSide();
 
             telemetry.update();
             sleep(10);

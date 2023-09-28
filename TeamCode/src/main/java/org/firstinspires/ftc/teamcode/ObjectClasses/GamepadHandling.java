@@ -85,6 +85,11 @@ public class GamepadHandling {
                 drivetrain.setFieldOrientedControlFlag(true);
             }
         }
+
+        //Start button toggles field oriented control
+        if (currentDriverGamepad.options && !previousDriverGamepad.options) {
+            Robot.getInstance().getGyro().resetYaw();
+        }
     }
 
     public static void OperatorControls() {

@@ -72,7 +72,7 @@ public class InitVisionProcessor implements VisionProcessor {
         telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(percentRightStageDoorZone, 4, 1));
     }
 
-    public void lockAllianceColor() {
+    public void lockColorAndSide() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         telemetry.addLine("");
 
