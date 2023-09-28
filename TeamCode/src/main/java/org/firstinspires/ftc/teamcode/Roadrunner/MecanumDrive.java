@@ -50,32 +50,32 @@ import java.util.List;
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick =  0.0439334455038325; // .04495  72 3150.25
-        public double lateralInPerTick = 0.0513149454778704; // 120 2338.5
-        public double trackWidthTicks = 869.8234199469454;
+        public double inPerTick =  0.022365950344252; // 90.8in-37.2 2396.5ticks
+        public double lateralInPerTick = 0.0280188186095139; //1913
+        public double trackWidthTicks = 893.5920803662788;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.5485920474470509;
-        public double kV = 0.004364731274294586;
-        public double kA = 0;
+        public double kS = 0.7703864947833408;
+        public double kV = 0.00436466666183017;
+        public double kA = 0.00055;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
+        public double maxWheelVel = 25;
         public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxProfileAccel = 30;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 0.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 0.0; // shared with turn
+        public double axialGain = 8;
+        public double lateralGain = 8;
+        public double headingGain = 4; // shared with turn
 
-        public double axialVelGain = 0.0;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.0; // shared with turn
+        public double axialVelGain = .5;
+        public double lateralVelGain = .5;
+        public double headingVelGain = .5; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -107,24 +107,27 @@ public final class MecanumDrive {
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
     public class DriveLocalizer implements Localizer {
-        public Encoder leftFront, leftRear, rightRear, rightFront;
+        public final Encoder leftFront, leftRear, rightRear, rightFront;
 
         private int lastLeftFrontPos, lastLeftRearPos, lastRightRearPos, lastRightFrontPos;
         private Rotation2d lastHeading;
 
-
         public DriveLocalizer() {
 
-            RawEncoder encoderLF = new RawEncoder(MecanumDrive.this.leftFront);
-            RawEncoder encoderBL = new RawEncoder(MecanumDrive.this.leftBack);
+            RawEncoder LFEncoder = new RawEncoder(MecanumDrive.this.leftFront);
+            RawEncoder LBEncoder = new RawEncoder(MecanumDrive.this.leftBack);
+            RawEncoder RFEncoder = new RawEncoder(MecanumDrive.this.rightFront);
+            RawEncoder RBEncoder = new RawEncoder(MecanumDrive.this.rightBack);
 
-            encoderLF.setDirection(DcMotorSimple.Direction.REVERSE);
-            encoderBL.setDirection(DcMotorSimple.Direction.REVERSE);
+            LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+            RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
 
-            leftFront = new OverflowEncoder(encoderLF);
-            leftRear = new OverflowEncoder(encoderBL);
-            rightRear = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
-            rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
+            leftFront = new OverflowEncoder(LFEncoder);
+            leftRear = new OverflowEncoder(LBEncoder);
+            rightRear = new OverflowEncoder(RBEncoder);
+            rightFront = new OverflowEncoder(RFEncoder);
 
             lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
             lastLeftRearPos = leftRear.getPositionAndVelocity().position;
@@ -443,3 +446,4 @@ public final class MecanumDrive {
         );
     }
 }
+

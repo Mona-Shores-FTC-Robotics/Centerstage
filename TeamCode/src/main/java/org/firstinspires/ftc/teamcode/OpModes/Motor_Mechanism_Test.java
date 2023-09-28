@@ -32,54 +32,32 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name="TeleOp_Vision")
-public class TeleOp_Vision extends LinearOpMode
+@TeleOp(name="Motor_Mechanism_Test")
+public class Motor_Mechanism_Test extends LinearOpMode
 {
-
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
+
 
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        Constants.setRobot(Constants.RobotType.ROBOT_MOTOR_TEST_MECHANISM);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
 
         //initialize the Gamepads
         GamepadHandling.init();
-        robot.getVision().SwitchToInitVisionProcessor();
 
-        telemetry.setAutoClear(true);
-        telemetry.clearAll();
         while (opModeInInit()) {
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
 
-            // Add Vision Init Processor Telemetry
-            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
-
-            robot.getVision().getInitVisionProcessor().lockColorAndSide();
-
-            telemetry.update();
-            sleep(10);
         }
 
-        //Display the initVision telemetry a final time
-        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
-        telemetry.update();
-
-        //After Init switch the vision processing to AprilTags
-        robot.getVision().SwitchToAprilTagProcessor();
-
-        //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
 
         while (opModeIsActive())
@@ -88,35 +66,10 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
 
-            //Update Gyro values
-            robot.getGyro().UpdateGyro(robot.getTeleOpRuntime());
+            Robot.getInstance().getTestIntake().move();
 
-            //Process the Driver Controls
-            GamepadHandling.DriverControls();
-
-            //Process the Operator Controls
-            GamepadHandling.OperatorControls();
-
-            //Look for AprilTags
-            robot.getVision().LookForAprilTags();
-
-            //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDriveTrain().drive();
-
-            //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-                robot.getVision().telemetryAprilTag();
-            }
-
-            //Add DriveTrain Telemetry
-            if (gamepad1.right_trigger>.1) {
-                robot.getDriveTrain().telemetryDriveTrain();
-                robot.getGyro().telemetryGyro();
-            }
             telemetry.update();
-        }
-        robot.getVision().getVisionPortal().close();
-        telemetry.clearAll();
 
+        }
     }
 }

@@ -1,77 +1,202 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
+
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+
 
 @Autonomous(name = "Basic_Auto")
 public class Basic_Auto extends LinearOpMode {
 
+    /** Create the robot **/
     Robot robot = Robot.createInstance(this);
-    MecanumDrive roadRunnerDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
-    private InitVisionProcessor.TeamPropLocation teamPropLocationAfterInit = InitVisionProcessor.TeamPropLocation.CENTER;
-    private InitVisionProcessor.AllianceColor allianceColorAfterInit = InitVisionProcessor.AllianceColor.BLUE;
-    private InitVisionProcessor.SideOfField sideOfFieldAfterInit = InitVisionProcessor.SideOfField.BACKSTAGE;
+    //Routes
+    public Action redAudienceBotTeamPropCenterRoute;
+    public Action redAudienceBotTeamPropLeftRoute;
+    public Action redAudienceBotTeamPropRightRoute;
 
-    private final ElapsedTime runtime = new ElapsedTime();
-    Gamepad currentGamepad1 = new Gamepad();
-    Gamepad currentGamepad2 = new Gamepad();
-    Gamepad previousGamepad1 = new Gamepad();
-    Gamepad previousGamepad2 = new Gamepad();
+    public Action redBackstageBotTeamPropCenterRoute;
+    public Action redBackstageBotTeamPropLeftRoute;
+    public Action redBackstageBotTeamPropRightRoute;
+
+    public Action blueBackstageBotTeamPropCenterRoute;
+    public Action blueBackstageBotTeamPropLeftRoute;
+    public Action blueBackstageBotTeamPropRightRoute;
+
+    public Action blueAudienceBotTeamPropCenterRoute;
+    public Action blueAudienceBotTeamPropLeftRoute;
+    public Action blueAudienceBotTeamPropRightRoute;
 
     @Override
     public void runOpMode() {
-        //This OpMode uses the robot with a Chassis, Camera, and Gyro
+
+        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), BLUE_LEFT_START_POSE);
+        //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
-        robot.initialize(hardwareMap);
+        //Initialize the Robot
+        robot.initialize(robot.getHardwareMap());
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        //initialize the Gamepads
+        GamepadHandling.init();
+        robot.getVision().SwitchToInitVisionProcessor();
+
+        //BuildTeamPropCenterRoutes(roadRunnerDrive);
+        BuildTeamPropLeftRoutes(roadRunnerDrive);
+        //BuildTeamPropRightRoutes(roadRunnerDrive);
+
 
         while (opModeInInit()) {
-            teamPropLocationAfterInit = robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal();
-            allianceColorAfterInit = robot.getVision().getInitVisionProcessor().getAllianceColorFinal();
-            sideOfFieldAfterInit =  robot.getVision().getInitVisionProcessor().getSideOfField();
+            GamepadHandling.storeGamepadValuesFromLastLoop();
+            GamepadHandling.storeCurrentGamepadValues();
 
-            //Store the previous loop's gamepad values.
-            previousGamepad1 = GamepadHandling.copy(currentGamepad1);
-            previousGamepad2 = GamepadHandling.copy(currentGamepad2);
+            // Add Vision Init Processor Telemetry
+            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
 
-            //Store the gamepad values to be used for this iteration of the loop.
-            currentGamepad1 = GamepadHandling.copy(gamepad1);
-            currentGamepad2 = GamepadHandling.copy(gamepad2);
+            robot.getVision().getInitVisionProcessor().lockColorAndSide();
 
-            telemetry.addData("Alliance Color", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("Team Prop Location", robot.getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-            telemetry.addData("left Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getLeftPercent());
-            telemetry.addData("Middle Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getCenterPercent());
-            telemetry.addData("Right Square Blue/Red Percent", robot.getVision().getInitVisionProcessor().getRightPercent());
             telemetry.update();
+            sleep(10);
         }
-        telemetry.addData("Team Prop Location After Init", teamPropLocationAfterInit);
-        telemetry.addData("Alliance Color After Init", allianceColorAfterInit);
-        telemetry.addData("Side of Field After Init", sideOfFieldAfterInit);
+
+        //Display the initVision telemetry a final time
+        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
         telemetry.update();
 
-        runtime.reset();
+        //After Init switch the vision processing to AprilTags
+        robot.getVision().SwitchToAprilTagProcessor();
 
-        Actions.runBlocking(
-                    roadRunnerDrive.actionBuilder(roadRunnerDrive.pose)
-                            .splineTo(new Vector2d(30, 30), Math.PI / 2)
-                            .splineTo(new Vector2d(60, 0), Math.PI)
-                            .build());
+        //Start the TeleOp Timer
+        robot.getTeleOpRuntime().reset();
+
+        //Reset Gyro
+        robot.getGyro().resetYaw();
+
+
+        Actions.runBlocking( blueBackstageBotTeamPropLeftRoute );
+
         }
+
+    private void BuildTeamPropCenterRoutes(MecanumDrive roadRunnerDrive) {
+
+        blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
+                .splineToLinearHeading(RED_SAFE_STRAFE , FACE_TOWARD_BLUE)
+                .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_BLUE) , FACE_TOWARD_BLUE)
+                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+
+        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_SAFE_STRAFE , FACE_TOWARD_RED)
+                .splineToLinearHeading(new Pose2d(BLUE_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_RED), FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
     }
+
+    private void BuildTeamPropLeftRoutes(MecanumDrive roadRunnerDrive) {
+        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_RIGHT_START_POSE)
+              .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_225_DEGREES)
+                .setReversed(true)
+                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
+                .lineToX(RED_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+
+        blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, FACE_315_DEGREES)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
+                .lineToX(BLUE_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+    }
+
+    private void BuildTeamPropRightRoutes(MecanumDrive roadRunnerDrive) {
+        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_LEFT_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_RIGHT_START_POSE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
+                .lineToX(RED_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .strafeTo(RED_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
+                .build();
+
+        redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_LEFT_START_POSE)
+                .splineToLinearHeading(new Pose2d(RED_AUDIENCE_SPIKE_R.position.x, RED_AUDIENCE_SPIKE_R.position.y, FACE_135_DEGREES), FACE_TOWARD_BACKSTAGE)
+
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(RED_STAGEDOOR_ENTRANCE.position.x, RED_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_BACKSTAGE)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .lineToX(RED_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+
+        blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_RIGHT_START_POSE)
+                .splineToLinearHeading(new Pose2d(BLUE_AUDIENCE_SPIKE_R.position.x, BLUE_AUDIENCE_SPIKE_R.position.y, FACE_315_DEGREES), FACE_315_DEGREES)
+
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y, FACE_TOWARD_BACKSTAGE), FACE_TOWARD_RED)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .lineToX(BLUE_THROUGH_DOOR.position.y)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+    }
+}
 
