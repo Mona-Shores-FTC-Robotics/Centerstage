@@ -64,16 +64,16 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.storeCurrentGamepadValues();
 
             // Add Vision Init Processor Telemetry
-            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
+            robot.getVision().telemetryForInitProcessing();
 
-            robot.getVision().getInitVisionProcessor().lockColorAndSide();
+            robot.getVision().lockColorAndSide();
 
             telemetry.update();
             sleep(10);
         }
 
         //Display the initVision telemetry a final time
-        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
+        robot.getVision().telemetryForInitProcessing();
         telemetry.update();
 
         //After Init switch the vision processing to AprilTags

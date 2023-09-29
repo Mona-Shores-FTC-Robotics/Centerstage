@@ -5,6 +5,9 @@ import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor.*;
+
+
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -533,6 +536,104 @@ public class Vision {
     {
         return deliverLocation;
     }
+
+    public void telemetryForInitProcessing() {
+        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+
+        telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
+        telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfField());
+        telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+        telemetry.addLine("");
+        telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
+        telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
+        telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getRightPercent(), 4, 1));
+        telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentLeftStageDoorZone, 4, 1));
+        telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
+    }
+
+
+    private boolean LockedFlag = false;
+    private boolean ManualOverrideFlag = false;
+
+
+
+
+    public void lockColorAndSide() {
+        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        telemetry.addLine("");
+
+        if (LockedFlag)
+        {
+            telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = false;
+            }
+        } else if (!LockedFlag)
+        {
+            if (ManualOverrideFlag)
+            {
+                initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
+                initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
+            }
+            telemetry.addLine("Lock with B " + "Color: " + initVisionProcessor.allianceColorFinal + " Side: " + initVisionProcessor.sideOfFieldFinal);
+
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = true;
+            }
+
+            if (!ManualOverrideFlag) {
+                telemetry.addLine("Override with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = true;
+                }
+            } else if (ManualOverrideFlag) {
+                telemetry.addLine("Change Color with d-pad (up/down) - Change Side with d-pad (left/right)");
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
+                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
+                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.RED;
+                }
+
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
+                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.FRONTSTAGE;
+                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
+                    }
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
+                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.FRONTSTAGE;
+                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
+                    }
+                }
+
+                telemetry.addLine("Override Off with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = false;
+                }
+
+            }
+
+        }
+    }
+
+    private void setAllianceColorFinal(AllianceColor color) {
+        if (!LockedFlag)
+        {
+           initVisionProcessor.allianceColorFinal = color;
+        }
+    }
+
+    private void setSideOfFieldFinal(SideOfField side) {
+        if (!LockedFlag)
+        {
+           initVisionProcessor.sideOfFieldFinal = side;
+        }
+    }
+
 
 }
 

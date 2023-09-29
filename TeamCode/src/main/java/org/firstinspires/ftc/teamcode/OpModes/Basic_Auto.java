@@ -40,7 +40,7 @@ public class Basic_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), BLUE_LEFT_START_POSE);
+        MecanumDrive roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), BLUE_RIGHT_START_POSE);
         //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
@@ -61,16 +61,16 @@ public class Basic_Auto extends LinearOpMode {
             GamepadHandling.storeCurrentGamepadValues();
 
             // Add Vision Init Processor Telemetry
-            robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
+            robot.getVision().telemetryForInitProcessing();
 
-            robot.getVision().getInitVisionProcessor().lockColorAndSide();
+            robot.getVision().lockColorAndSide();
 
             telemetry.update();
             sleep(10);
         }
 
         //Display the initVision telemetry a final time
-        robot.getVision().getInitVisionProcessor().telemetryForInitProcessing();
+        robot.getVision().telemetryForInitProcessing();
         telemetry.update();
 
         //After Init switch the vision processing to AprilTags
@@ -83,7 +83,7 @@ public class Basic_Auto extends LinearOpMode {
         robot.getGyro().resetYaw();
 
 
-        Actions.runBlocking( blueBackstageBotTeamPropLeftRoute );
+        Actions.runBlocking( blueAudienceBotTeamPropCenterRoute );
 
         }
 

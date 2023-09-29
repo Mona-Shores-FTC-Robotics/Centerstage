@@ -25,12 +25,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground;
 
 import android.graphics.Canvas;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Vision;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -42,96 +38,21 @@ public class InitVisionProcessor implements VisionProcessor {
 
     /** InitVisionProcessor Constants **/
     //This constant defines how much of a spike zone has to be the prop color for it to count as being detected
-    private final int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 8;
+    private final int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 5;
 
     //This constant defines how much of a stage door zone needs to be yellow to count as being detected
-    private final int STAGE_DOOR_THRESHOLD = 6;
+    private final int STAGE_DOOR_THRESHOLD = 4;
 
     /** Our Default Values **/
     public AllianceColor allianceColorFinal = AllianceColor.BLUE;
     public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
     public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
 
-    private boolean LockedFlag = false;
-    private boolean ManualOverrideFlag = false;
+    public AllianceColor allianceColorOverride = AllianceColor.BLUE;
+    public SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
 
-    private AllianceColor allianceColorOverride = AllianceColor.BLUE;
-    private SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
 
-    public void telemetryForInitProcessing() {
-        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
-        telemetry.addData("Alliance Color", getAllianceColorFinal());
-        telemetry.addData("Side of the Field", getSideOfField());
-        telemetry.addData("Team Prop Location", getTeamPropLocationFinal());
-        telemetry.addLine("");
-        telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getLeftPercent(), 4, 1));
-        telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getCenterPercent(), 4, 1));
-        telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getRightPercent(), 4, 1));
-        telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(percentLeftStageDoorZone, 4, 1));
-        telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(percentRightStageDoorZone, 4, 1));
-    }
-
-    public void lockColorAndSide() {
-        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        telemetry.addLine("");
-
-        if (LockedFlag)
-        {
-            telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
-            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
-            {
-                LockedFlag = false;
-            }
-        } else if (!LockedFlag)
-        {
-            if (ManualOverrideFlag)
-            {
-                allianceColorFinal = allianceColorOverride;
-                sideOfFieldFinal = sideOfFieldOverride;
-            }
-            telemetry.addLine("Lock with B " + "Color: " + allianceColorFinal + " Side: " + sideOfFieldFinal);
-
-            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
-            {
-                LockedFlag = true;
-            }
-
-            if (!ManualOverrideFlag) {
-                telemetry.addLine("Override with A");
-                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = true;
-                }
-            } else if (ManualOverrideFlag) {
-                telemetry.addLine("Change Color with d-pad (up/down) - Change Side with d-pad (left/right)");
-                if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
-                    allianceColorOverride = AllianceColor.BLUE;
-                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
-                    allianceColorOverride = AllianceColor.RED;
-                }
-
-                if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
-                    if (allianceColorOverride == AllianceColor.BLUE) {
-                        sideOfFieldOverride = SideOfField.FRONTSTAGE;
-                    } else if (allianceColorOverride == AllianceColor.RED) {
-                        sideOfFieldOverride = SideOfField.BACKSTAGE;
-                    }
-                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
-                    if (allianceColorOverride == AllianceColor.RED) {
-                        sideOfFieldOverride = SideOfField.FRONTSTAGE;
-                    } else if (allianceColorOverride == AllianceColor.BLUE) {
-                        sideOfFieldOverride = SideOfField.BACKSTAGE;
-                    }
-                }
-
-                telemetry.addLine("Override Off with A");
-                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = false;
-                }
-
-            }
-        }
-    }
 
     /** Our Vision enums **/
     public enum AllianceColor {BLUE, RED}
@@ -152,8 +73,8 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar upperBlue = new Scalar(120.4, 255, 255);
 
     //Stage Door Filter (yellow)
-    public Scalar lowerStageDoor = new Scalar(97.8, 143.1, 28.3);
-    public Scalar upperStageDoor = new Scalar(147.3, 164.3, 110.5);
+    public Scalar lowerStageDoor = new Scalar(0, 127.5, 134.6);
+    public Scalar upperStageDoor = new Scalar(86.4, 255, 255);
 
     /** Matrices to store the camera images we are changing **/
     private Mat hsvMat       = new Mat();
@@ -228,8 +149,8 @@ public class InitVisionProcessor implements VisionProcessor {
     private double percentCenterZoneBlue;
     private double percentRightZoneBlue;
 
-    private double percentLeftStageDoorZone;
-    private double percentRightStageDoorZone;
+    public double percentLeftStageDoorZone;
+    public double percentRightStageDoorZone;
 
     public InitVisionProcessor() {
     }
@@ -333,22 +254,22 @@ public class InitVisionProcessor implements VisionProcessor {
             percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
             percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
-            setAllianceColorFinal(AllianceColor.RED);
+            allianceColorFinal = AllianceColor.RED;
             if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-                binaryRedMatFinal.copyTo(frame);
+//                binaryRedMatFinal.copyTo(frame);
             }
            } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
-            setAllianceColorFinal(AllianceColor.BLUE);
+            allianceColorFinal = AllianceColor.BLUE;
             if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-                binaryBlueMat.copyTo(frame);
+//                binaryBlueMat.copyTo(frame);
             }
           }
         else {
             if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-                maskedStageDoorMat.copyTo(frame);
+                binaryStageDoorMat.copyTo(frame);
             }
         }
 
@@ -370,11 +291,11 @@ public class InitVisionProcessor implements VisionProcessor {
             //Figure out which side of field we are on by combbining alliance and stage door detection
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
-                setSideOfFieldFinal(SideOfField.BACKSTAGE);
+                sideOfFieldFinal = SideOfField.BACKSTAGE;
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
-                setSideOfFieldFinal(SideOfField.FRONTSTAGE);
+                sideOfFieldFinal = SideOfField.FRONTSTAGE;
             }
         }
 
@@ -395,11 +316,11 @@ public class InitVisionProcessor implements VisionProcessor {
             //Figure out where the Stage Door is
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
-                setSideOfFieldFinal(SideOfField.FRONTSTAGE);
+                sideOfFieldFinal = SideOfField.FRONTSTAGE;
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
-                setSideOfFieldFinal(SideOfField.BACKSTAGE);
+                sideOfFieldFinal = SideOfField.BACKSTAGE;
             }
 
         }
@@ -474,19 +395,6 @@ public class InitVisionProcessor implements VisionProcessor {
         return null;
     }
 
-    private void setAllianceColorFinal(AllianceColor color) {
-        if (!LockedFlag)
-        {
-            allianceColorFinal = color;
-        }
-    }
-
-    private void setSideOfFieldFinal(SideOfField side) {
-        if (!LockedFlag)
-        {
-            sideOfFieldFinal = side;
-        }
-    }
 
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
