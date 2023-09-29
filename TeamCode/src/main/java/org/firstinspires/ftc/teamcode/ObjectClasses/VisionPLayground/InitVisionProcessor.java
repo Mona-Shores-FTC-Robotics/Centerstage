@@ -44,19 +44,17 @@ public class InitVisionProcessor implements VisionProcessor {
     private final int STAGE_DOOR_THRESHOLD = 4;
 
     /** Our Default Values **/
-    public AllianceColor allianceColorFinal = AllianceColor.BLUE;
+    public AllianceColor allianceColorFinal = AllianceColor.RED;
     public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
     public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
 
-    public AllianceColor allianceColorOverride = AllianceColor.BLUE;
+    public AllianceColor allianceColorOverride = AllianceColor.RED;
     public SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
-
-
-
+    public TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
 
     /** Our Vision enums **/
     public enum AllianceColor {BLUE, RED}
-    public enum SideOfField {BACKSTAGE, FRONTSTAGE}
+    public enum SideOfField {BACKSTAGE, AUDIENCE}
     public enum TeamPropLocation {LEFT, CENTER, RIGHT}
 
     /** Scalars for filtering out certain pixel HSV ranges **/
@@ -72,7 +70,7 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar lowerBlue = new Scalar(58.1, 114.8, 0);
     public Scalar upperBlue = new Scalar(120.4, 255, 255);
 
-    //Stage Door Filter (yellow)
+       //Stage Door Filter (yellow)
     public Scalar lowerStageDoor = new Scalar(0, 127.5, 134.6);
     public Scalar upperStageDoor = new Scalar(86.4, 255, 255);
 
@@ -250,27 +248,26 @@ public class InitVisionProcessor implements VisionProcessor {
         percentLeftStageDoorZone = ((Core.sumElems(leftStageDoorZone).val[0] / 255) / rectLeftSideOfField.area()) * 100;
         percentRightStageDoorZone = ((Core.sumElems(rightStageDoorZone).val[0] / 255) / rectRightSideOfField.area()) * 100;
 
+        if (Robot.getInstance().getActiveOpMode().gamepad1.left_trigger>.1) {
+            binaryRedMatFinal.copyTo(frame);
+        }
+        if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
+            binaryBlueMat.copyTo(frame);
+        }
+        if (Robot.getInstance().getActiveOpMode().gamepad1.left_bumper) {
+            binaryStageDoorMat.copyTo(frame);
+        }
+
         if (percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
             percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
             percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.RED;
-            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-//                binaryRedMatFinal.copyTo(frame);
-            }
            } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.BLUE;
-            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-//                binaryBlueMat.copyTo(frame);
-            }
-          }
-        else {
-            if (Robot.getInstance().getActiveOpMode().gamepad1.right_trigger>.1) {
-                binaryStageDoorMat.copyTo(frame);
-            }
         }
 
         if (allianceColorFinal == AllianceColor.RED) {
@@ -295,7 +292,7 @@ public class InitVisionProcessor implements VisionProcessor {
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.FRONTSTAGE;
+                sideOfFieldFinal = SideOfField.AUDIENCE;
             }
         }
 
@@ -303,7 +300,7 @@ public class InitVisionProcessor implements VisionProcessor {
             if (percentLeftZoneBlue > percentCenterZoneBlue && percentLeftZoneBlue > percentRightZoneBlue) {
                 // Red Team Prop is on the Left
                 teamPropLocationFinal = TeamPropLocation.LEFT;
-            } else if (percentCenterZoneBlue > percentLeftZoneBlue   && percentCenterZoneBlue > percentRightZoneBlue) {
+            } else if (percentCenterZoneBlue > percentLeftZoneBlue && percentCenterZoneBlue > percentRightZoneBlue) {
                 // Team Prop is in the Middle
                 teamPropLocationFinal = TeamPropLocation.CENTER;
             } else if (percentRightZoneBlue > percentCenterZoneBlue && percentRightZoneBlue > percentLeftZoneBlue) {
@@ -316,13 +313,21 @@ public class InitVisionProcessor implements VisionProcessor {
             //Figure out where the Stage Door is
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.FRONTSTAGE;
+                sideOfFieldFinal = SideOfField.AUDIENCE;
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
                 sideOfFieldFinal = SideOfField.BACKSTAGE;
             }
 
+        }
+
+        //TODO this is only for testing MUST BE REMOVED BEFORE COMPETITION!!!!! OR AT LEAST THE TEAM PROP PART HAS TO GO.
+        if (Robot.getInstance().getVision().LockedFlag ==true && Robot.getInstance().getVision().ManualOverrideFlag==true){
+
+            teamPropLocationFinal = Robot.getInstance().getVision().getInitVisionProcessor().teamPropLocationOverride;
+            allianceColorFinal = Robot.getInstance().getVision().getInitVisionProcessor().allianceColorOverride;
+            sideOfFieldFinal = Robot.getInstance().getVision().getInitVisionProcessor().sideOfFieldOverride;
         }
 
         /*
@@ -359,7 +364,7 @@ public class InitVisionProcessor implements VisionProcessor {
         if (allianceColorFinal == AllianceColor.RED &&  sideOfFieldFinal == SideOfField.BACKSTAGE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorRed, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorWhite, 2);
-        } else if (allianceColorFinal == AllianceColor.RED && sideOfFieldFinal == SideOfField.FRONTSTAGE) {
+        } else if (allianceColorFinal == AllianceColor.RED && sideOfFieldFinal == SideOfField.AUDIENCE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorRed, 2);
 
@@ -367,7 +372,7 @@ public class InitVisionProcessor implements VisionProcessor {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorBlue, 2);
 
-        } else if (allianceColorFinal == AllianceColor.BLUE && sideOfFieldFinal == SideOfField.FRONTSTAGE) {
+        } else if (allianceColorFinal == AllianceColor.BLUE && sideOfFieldFinal == SideOfField.AUDIENCE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorBlue, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorWhite, 2);
 
@@ -439,7 +444,7 @@ public class InitVisionProcessor implements VisionProcessor {
         return allianceColorFinal;
     }
 
-    public SideOfField getSideOfField()
+    public SideOfField getSideOfFieldFinal()
     {
         return sideOfFieldFinal;
     }

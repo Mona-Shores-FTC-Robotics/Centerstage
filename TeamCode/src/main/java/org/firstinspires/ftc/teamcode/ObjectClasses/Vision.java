@@ -541,7 +541,7 @@ public class Vision {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
-        telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfField());
+        telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
         telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
@@ -552,11 +552,8 @@ public class Vision {
     }
 
 
-    private boolean LockedFlag = false;
-    private boolean ManualOverrideFlag = false;
-
-
-
+    public boolean LockedFlag = false;
+    public boolean ManualOverrideFlag = false;
 
     public void lockColorAndSide() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
@@ -575,8 +572,10 @@ public class Vision {
             {
                 initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
                 initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
+                initVisionProcessor.teamPropLocationFinal = initVisionProcessor.teamPropLocationOverride;
             }
-            telemetry.addLine("Lock with B " + "Color: " + initVisionProcessor.allianceColorFinal + " Side: " + initVisionProcessor.sideOfFieldFinal);
+            telemetry.addLine("Lock with B");
+            telemetry.addLine( initVisionProcessor.allianceColorFinal + " " + initVisionProcessor.sideOfFieldFinal + " " + initVisionProcessor.teamPropLocationFinal);
 
             if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
             {
@@ -589,7 +588,7 @@ public class Vision {
                     ManualOverrideFlag = true;
                 }
             } else if (ManualOverrideFlag) {
-                telemetry.addLine("Change Color with d-pad (up/down) - Change Side with d-pad (left/right)");
+                telemetry.addLine("Color/Side - d-pad, Prop - bumpers");
                 if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
                     initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
                 } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
@@ -598,15 +597,37 @@ public class Vision {
 
                 if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
                     if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.FRONTSTAGE;
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
                     } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
                         initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
                     }
                 } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
                     if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.FRONTSTAGE;
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
                     } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
                         initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
+                    }
+                }
+
+                if (GamepadHandling.getCurrentDriverGamepad().right_bumper && !GamepadHandling.getPreviousDriverGamepad().right_bumper) {
+                    if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.LEFT)
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.CENTER;
+                    else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.CENTER)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.RIGHT;
+                    } else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.RIGHT)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.LEFT;
+                    }
+                } else if (GamepadHandling.getCurrentDriverGamepad().left_bumper && !GamepadHandling.getPreviousDriverGamepad().left_bumper) {
+                    if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.LEFT)
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.RIGHT;
+                    else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.CENTER)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.LEFT;
+                    } else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.RIGHT)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.CENTER;
                     }
                 }
 
