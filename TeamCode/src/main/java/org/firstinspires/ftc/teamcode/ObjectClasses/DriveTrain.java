@@ -128,6 +128,7 @@ public class DriveTrain {
             strafe = 0;
             turn = 0;
             mecanumDriveSpeedControl();
+            //ToDo:  Consider adding stop and reset encoders command if the drivetrain doesn't stop quickly enough.
         }
     }
 
@@ -141,6 +142,8 @@ public class DriveTrain {
                 drive = drive * safetyDriveSpeedFactor;
                 strafe = strafe*safetyStrafeSpeedFactor;
                 turn = turn*safetyTurnSpeedFactor;
+                //ToDo:  do we need to limit turn and strafe commands?  In Robot orientation only +drive should be limited
+                //ToDo:  In FOC only left strafe or right strafe (depending on field side) should be limited.
             }
         }
     }
@@ -192,6 +195,7 @@ public class DriveTrain {
         double rx = turn;
 
         double botHeading = Robot.getInstance().getGyro().imu.getRobotYawPitchRollAngles().getYaw((AngleUnit.RADIANS));
+        //ToDo:  Move this out of the drive code, should read all sensors at the beginning of teleop loops.
 
         // Rotate the movement direction counter to the bot's rotation
         double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -202,6 +206,9 @@ public class DriveTrain {
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
+        // ToDo: Once we have calculated the drive and strafe values, why don't we just plug them
+        //  into the exiting speed or power control methods instead of using a unique method.
+
         double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
         double leftFrontPower = (rotY + rotX + rx) / denominator;
         double leftBackPower = (rotY - rotX + rx) / denominator;
