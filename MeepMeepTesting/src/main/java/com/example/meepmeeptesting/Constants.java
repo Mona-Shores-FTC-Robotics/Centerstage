@@ -37,7 +37,7 @@ public final class Constants {
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;
 
-    public static double HALF_FIELD = 72.0;
+    public static double HALF_FIELD = 71;
     public static double TILE = 23.5;
     public static double HALF_TILE = TILE/2;
     public static double QUARTER_TILE = TILE/4;
@@ -90,9 +90,9 @@ public final class Constants {
     public static Vector2d RED_NEUTRAL_PIXEL_CENTERSPIKE = new Vector2d(TILE,-TILE*2-QUARTER_TILE);
     public static Vector2d RED_NEUTRAL_PIXEL_WING = new Vector2d(TILE+HALF_TILE,-TILE*2-QUARTER_TILE);
 
-    public static Vector2d BLUE_NEUTRAL_PIXEL_STAGEDOOR = new Vector2d(-HALF_TILE,-TILE*-QUARTER_TILE);
-    public static Vector2d BLUE_NEUTRAL_PIXEL_CENTERSPIKE = new Vector2d(-TILE,-TILE*2-QUARTER_TILE);
-    public static Vector2d BLUE_NEUTRAL_PIXEL_WING = new Vector2d(-TILE+HALF_TILE,-TILE*2-QUARTER_TILE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_STAGEDOOR = new Pose2d(-HALF_TILE,-TILE*2-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_CENTERSPIKE = new Pose2d(-TILE,-TILE*2-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_WING = new Pose2d(-TILE-HALF_TILE,-TILE*2-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d RED_SAFE_STRAFE = new Pose2d(TILE+HALF_TILE,-TILE*2-QUARTER_TILE, FACE_TOWARD_BLUE);
     public static Pose2d BLUE_SAFE_STRAFE = new Pose2d(-TILE-HALF_TILE,-TILE*2-QUARTER_TILE, FACE_TOWARD_RED);
@@ -101,10 +101,8 @@ public final class Constants {
     public static Pose2d BLUE_THROUGH_DOOR =new Pose2d(-HALF_TILE,TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
 
-    public static Pose2d changeToMeepMeepCoordinates(Pose2d pose){
+  public static Pose2d BLUE_TRUSS_BACKSTAGE = new Pose2d(-HALF_FIELD+HALF_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d BLUE_TRUSS_FRONTSTAGE = new Pose2d(-HALF_FIELD+HALF_TILE, -TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
 
-        return new Pose2d(-pose.position.y, pose.position.x, Math.toRadians(pose.heading.real+pose.heading.imag+180));
-
-    }
 
 }

@@ -5,11 +5,13 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 import static com.example.meepmeeptesting.Constants.*;
+import static com.example.meepmeeptesting.Routes.*;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -25,37 +27,19 @@ public class MeepMeepTesting {
     public static RoadRunnerBotEntity roadRunnerBot;
     public static DriveShim roadRunnerDrive;
 
-    //Routes
-    public static Action redAudienceBotTeamPropCenterRoute;
-    public static Action redAudienceBotTeamPropLeftRoute;
-    public static Action redAudienceBotTeamPropRightRoute;
-
-    public static Action redBackstageBotTeamPropCenterRoute;
-    public static Action redBackstageBotTeamPropLeftRoute;
-    public static Action redBackstageBotTeamPropRightRoute;
-
-    public static Action blueBackstageBotTeamPropCenterRoute;
-    public static Action blueBackstageBotTeamPropLeftRoute;
-    public static Action blueBackstageBotTeamPropRightRoute;
-
-    public static Action blueAudienceBotTeamPropCenterRoute;
-    public static Action blueAudienceBotTeamPropLeftRoute;
-    public static Action blueAudienceBotTeamPropRightRoute;
-
     enum teamPropLocation {LEFT, CENTER, RIGHT}
     public static teamPropLocation teamPropLocationFinal = teamPropLocation.CENTER;
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(800);
 
-
         //This method makes 4 robots (2 red robots and 2 blue robots)
         MakeRobots(meepMeep);
         roadRunnerDrive = roadRunnerBot.getDrive();
 
-        BuildTeamPropCenterRoutes();
-        BuildTeamPropLeftRoutes();
-        BuildTeamPropRightRoutes();
+        Routes.BuildTeamPropCenterRoutes();
+        Routes.BuildTeamPropLeftRoutes();
+        Routes.BuildTeamPropRightRoutes();
 
         if (teamPropLocationFinal == teamPropLocation.LEFT) teamPropLeftRoute();
         if (teamPropLocationFinal == teamPropLocation.CENTER) teamPropCenterRoute();
@@ -93,12 +77,13 @@ public class MeepMeepTesting {
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeRedLight())
+                .setDimensions(16,16)
                 .build();
 
         redBackstageBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
+                .setColorScheme(new ColorSchemeRedDark())
                 .build();
 
         roadRunnerBot = new DefaultBotBuilder(meepMeep)
@@ -137,119 +122,5 @@ public class MeepMeepTesting {
         SleepAction sleep = new SleepAction(.1);
         return sleep;
     }
-
-    private static void BuildTeamPropCenterRoutes() {
-
-        blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(BLUE_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-        redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
-                .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(RED_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-        redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
-                .splineToLinearHeading(RED_SAFE_STRAFE, FACE_TOWARD_BLUE)
-                .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_BLUE), FACE_TOWARD_BLUE)
-                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-
-        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
-                .splineToLinearHeading(BLUE_SAFE_STRAFE, FACE_TOWARD_RED)
-                .splineToLinearHeading(new Pose2d(BLUE_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_RED), FACE_TOWARD_RED)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-    }
-
-    private static void BuildTeamPropLeftRoutes() {
-
-        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_45_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(BLUE_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_225_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(RED_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_225_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-
-        blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, FACE_45_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-    }
-
-    private static void BuildTeamPropRightRoutes() {
-
-        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_315_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(BLUE_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-
-        redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_135_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(RED_STAGEDOOR_EXIT, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(RED_BACKSTAGE_PARK)
-                .turnTo(FACE_TOWARD_FRONTSTAGE)
-                .build();
-
-        redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_R, FACE_135_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-
-
-        blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_315_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
-    }
-
 }
 
