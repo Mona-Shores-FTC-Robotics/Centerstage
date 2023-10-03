@@ -179,16 +179,16 @@ public class InitVisionProcessor implements VisionProcessor {
 
         //set parameters for Left Side Stage Door Detection
         RectLeftSideOfFieldX = 0;
-        RectLeftSideOfFieldY = (height*1)/3;
+        RectLeftSideOfFieldY = (height*1)/6;
         RectLeftSideOfFieldWidth = width/3;
-        RectLeftSideOfFieldHeight = height/3-2;
+        RectLeftSideOfFieldHeight = height/6;
         rectLeftSideOfField = new Rect(RectLeftSideOfFieldX, RectLeftSideOfFieldY, RectLeftSideOfFieldWidth, RectLeftSideOfFieldHeight);
 
         //set parameters for Right Side Stage Door Detection
         RectRightSideOfFieldX = (width*2)/3;
-        RectRightSideOfFieldY = (height*1)/3;
+        RectRightSideOfFieldY = (height*1)/6;
         RectRightSideOfFieldWidth = width/3;
-        RectRightSideOfFieldHeight = height/3-2;
+        RectRightSideOfFieldHeight = height/6;
         rectRightSideOfField = new Rect(RectRightSideOfFieldX, RectRightSideOfFieldY, RectRightSideOfFieldWidth, RectRightSideOfFieldHeight);
     }
 
