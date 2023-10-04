@@ -3,7 +3,7 @@ package com.example.meepmeeptesting;
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
-import static com.example.meepmeeptesting.Constants.*;
+import static com.example.meepmeeptesting.ConstantsRotated.*;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotRight;

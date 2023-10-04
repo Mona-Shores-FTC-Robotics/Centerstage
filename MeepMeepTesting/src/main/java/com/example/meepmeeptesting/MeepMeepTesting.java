@@ -82,8 +82,8 @@ public class MeepMeepTesting {
         } else if (routesToRunSelection == routesToRun.SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK) {
 
             RoutesSpikePickup1BackdropPickup2BackdropPark.BuildTeamPropCenterRoutes();
-            RoutesSpikeOnly.BuildTeamPropLeftRoutes();
-            RoutesSpikeOnly.BuildTeamPropRightRoutes();
+            RoutesSpikePickup1BackdropPickup2BackdropPark.BuildTeamPropLeftRoutes();
+            RoutesSpikePickup1BackdropPickup2BackdropPark.BuildTeamPropRightRoutes();
 
             if (teamPropLocationFinal == teamPropLocation.LEFT) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropLeftRoutes();
             if (teamPropLocationFinal == teamPropLocation.CENTER) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropCenterRoutes();
@@ -98,13 +98,6 @@ public class MeepMeepTesting {
     private static void addRobotsToField(MeepMeep meepMeep_local) {
 
 
-        String filePath = "Centerstage.png";
-        System.out.println(new File(".").getAbsolutePath());
-        Image img = null;
-        try {
-            img = ImageIO.read(new File(filePath));
-        } catch (IOException e) {
-        }
 
         if (teamPropLocationFinal != teamPropLocation.ALL) {
             if (SHOW_BLUE_AUDIENCE_BOT) meepMeep_local.addEntity(blueAudienceBot);
@@ -140,6 +133,16 @@ public class MeepMeepTesting {
             }
 
         }
+
+
+        String filePath = "CenterstageRotated.png";
+        System.out.println(new File(".").getAbsolutePath());
+        Image img = null;
+        try {
+            img = ImageIO.read(new File(filePath));
+        } catch (IOException e) {
+        }
+
 
         meepMeep_local.setBackground(img)
                 .setBackgroundAlpha(0.95f)

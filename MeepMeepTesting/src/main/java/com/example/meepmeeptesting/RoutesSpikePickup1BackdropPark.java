@@ -3,7 +3,7 @@ package com.example.meepmeeptesting;
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
-import static com.example.meepmeeptesting.Constants.*;
+import static com.example.meepmeeptesting.ConstantsRotated.*;
 import static com.example.meepmeeptesting.MeepMeepRobots.*;
 
 import com.acmerobotics.roadrunner.Action;
@@ -51,7 +51,7 @@ public class RoutesSpikePickup1BackdropPark {
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
                 .splineToLinearHeading(RED_SAFE_STRAFE, FACE_TOWARD_BLUE)
-                .splineToLinearHeading(new Pose2d(RED_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_BLUE), FACE_TOWARD_BLUE)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_CENTERSPIKE, FACE_TOWARD_BLUE)
                 .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(RED_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
