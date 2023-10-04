@@ -13,18 +13,22 @@ public class Routes {
 
     //Routes
     public static Action redAudienceBotTeamPropCenterRoute;
+    public static Action redAudienceBotTeamPropCenterRouteSimple;
     public static Action redAudienceBotTeamPropLeftRoute;
     public static Action redAudienceBotTeamPropRightRoute;
 
     public static Action redBackstageBotTeamPropCenterRoute;
+    public static Action redBackstageBotTeamPropCenterRouteSimple;
     public static Action redBackstageBotTeamPropLeftRoute;
     public static Action redBackstageBotTeamPropRightRoute;
 
+    public static Action blueBackstageBotTeamPropCenterRouteSimple;
     public static Action blueBackstageBotTeamPropCenterRoute;
     public static Action blueBackstageBotTeamPropLeftRoute;
     public static Action blueBackstageBotTeamPropRightRoute;
 
     public static Action blueAudienceBotTeamPropCenterRoute;
+    public static Action blueAudienceBotTeamPropCenterRouteSimple;
     public static Action blueAudienceBotTeamPropLeftRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
@@ -150,4 +154,26 @@ public class Routes {
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build();
     }
-}
+
+    public static void BuildTeamPropCenterRoutesSimple() {
+        blueBackstageBotTeamPropCenterRouteSimple = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKSTAGE_PARK_POSE, FACE_TOWARD_BLUE)
+                .build();
+
+        blueAudienceBotTeamPropCenterRouteSimple = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_SAFE_STRAFE, FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .build();
+    }
+
+
+
+    }

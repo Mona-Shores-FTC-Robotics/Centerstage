@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 
 public class MeepMeepTesting {
 
+
     public static RoadRunnerBotEntity blueBackstageBot;
     public static RoadRunnerBotEntity redAudienceBot;
     public static RoadRunnerBotEntity blueAudienceBot;
@@ -36,13 +37,13 @@ public class MeepMeepTesting {
         //This method makes 4 robots (2 red robots and 2 blue robots)
         MakeRobots(meepMeep);
         roadRunnerDrive = roadRunnerBot.getDrive();
-
+        Routes.BuildTeamPropCenterRoutesSimple();
         Routes.BuildTeamPropCenterRoutes();
         Routes.BuildTeamPropLeftRoutes();
         Routes.BuildTeamPropRightRoutes();
 
         if (teamPropLocationFinal == teamPropLocation.LEFT) teamPropLeftRoute();
-        if (teamPropLocationFinal == teamPropLocation.CENTER) teamPropCenterRoute();
+        if (teamPropLocationFinal == teamPropLocation.CENTER) teamPropCenterRouteSimple();
         if (teamPropLocationFinal == teamPropLocation.RIGHT) teamPropRightRoute();
 
         String filePath = "Centerstage.png";
@@ -53,9 +54,9 @@ public class MeepMeepTesting {
 
         meepMeep.setBackground(img)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(redBackstageBot)
+//                .addEntity(redBackstageBot)
                 .addEntity(blueBackstageBot)
-                .addEntity(redAudienceBot)
+//                .addEntity(redAudienceBot)
                 .addEntity(blueAudienceBot)
                 .start();
     }
@@ -100,6 +101,13 @@ public class MeepMeepTesting {
     redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
     blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
 }
+    static void teamPropCenterRouteSimple()
+    {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRouteSimple);
+//        redBackstageBot.runAction(redBackstageBotTeamPropCenterRouteSimple);
+//        redAudienceBot.runAction(redAudienceBotTeamPropCenterRouteSimple);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRouteSimple);
+    }
 
     static void teamPropLeftRoute()
     {

@@ -76,7 +76,7 @@ public final class Constants {
     public static Pose2d BLUE_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE, FACE_TOWARD_RED);
     public static Pose2d BLUE_AUDIENCE_SPIKE_R = new Pose2d(-TILE-HALF_TILE, -TILE-THREE_QUARTER_TILE, FACE_315_DEGREES);
 
-
+  public static Pose2d BLUE_BACKSTAGE_PARK_POSE = new Pose2d(-TILE*2-HALF_TILE, 2*TILE,FACE_TOWARD_BACKSTAGE);
     public static Vector2d BLUE_BACKSTAGE_PARK = new Vector2d(-TILE*2-HALF_TILE, 2*TILE);
     public static Vector2d RED_BACKSTAGE_PARK = new Vector2d(TILE*2+HALF_TILE, 2*TILE);
 
