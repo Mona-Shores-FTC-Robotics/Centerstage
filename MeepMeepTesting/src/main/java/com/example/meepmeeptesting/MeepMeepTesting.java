@@ -68,7 +68,6 @@ public class MeepMeepTesting {
             if (teamPropLocationFinal == teamPropLocation.RIGHT) RoutesSpikePickup1BackdropPark.setTeamPropRightRoutes();
             if (teamPropLocationFinal == teamPropLocation.ALL) RoutesSpikePickup1BackdropPark.setTeamPropAllRoutes();
 
-
         } else if (routesToRunSelection == routesToRun.SPIKE_ONLY) {
 
             RoutesSpikeOnly.BuildTeamPropCenterRoutes();
