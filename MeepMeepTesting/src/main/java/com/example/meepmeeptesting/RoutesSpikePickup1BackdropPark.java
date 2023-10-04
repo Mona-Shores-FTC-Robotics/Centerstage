@@ -2,50 +2,42 @@ package com.example.meepmeeptesting;
 
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
+
 import static com.example.meepmeeptesting.Constants.*;
-import com.noahbres.meepmeep.roadrunner.DriveShim;
+import static com.example.meepmeeptesting.MeepMeepRobots.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.noahbres.meepmeep.roadrunner.DriveShim;
 
-public class Routes {
+public class RoutesSpikePickup1BackdropPark {
     private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
 
-    //Routes
-    public static Action redAudienceBotTeamPropCenterRoute;
-    public static Action redAudienceBotTeamPropCenterRouteSimple;
-    public static Action redAudienceBotTeamPropLeftRoute;
-    public static Action redAudienceBotTeamPropRightRoute;
+    //Center Route Variables
+    private static Action redAudienceBotTeamPropCenterRoute;
+    private static Action redBackstageBotTeamPropCenterRoute;
+    private static Action blueBackstageBotTeamPropCenterRoute;
+    private static Action blueAudienceBotTeamPropCenterRoute;
 
-    public static Action redBackstageBotTeamPropCenterRoute;
-    public static Action redBackstageBotTeamPropCenterRouteSimple;
-    public static Action redBackstageBotTeamPropLeftRoute;
-    public static Action redBackstageBotTeamPropRightRoute;
+    //Left Route Variables
+    private static Action redAudienceBotTeamPropLeftRoute;
+    private static Action blueBackstageBotTeamPropLeftRoute;
+    private static Action redBackstageBotTeamPropLeftRoute;
+    private static Action blueAudienceBotTeamPropLeftRoute;
 
-    public static Action blueBackstageBotTeamPropCenterRouteSimple;
-    public static Action blueBackstageBotTeamPropCenterRoute;
-    public static Action blueBackstageBotTeamPropLeftRoute;
-    public static Action blueBackstageBotTeamPropRightRoute;
-
-    public static Action blueAudienceBotTeamPropCenterRoute;
-    public static Action blueAudienceBotTeamPropCenterRouteSimple;
-    public static Action blueAudienceBotTeamPropLeftRoute;
-    public static Action blueAudienceBotTeamPropRightRoute;
-
+    //Right Route Variables
+    private static Action redBackstageBotTeamPropRightRoute;
+    private static Action redAudienceBotTeamPropRightRoute;
+    private static Action blueBackstageBotTeamPropRightRoute;
+    private static Action blueAudienceBotTeamPropRightRoute;
 
     public static void BuildTeamPropCenterRoutes() {
         blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_TRUSS_BACKSTAGE, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_TRUSS_FRONTSTAGE, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(BLUE_BACKSTAGE_PARK)
+                .turnTo(FACE_TOWARD_FRONTSTAGE)
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -72,14 +64,6 @@ public class Routes {
                 .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_TRUSS_BACKSTAGE, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_TRUSS_FRONTSTAGE, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, FACE_TOWARD_FRONTSTAGE)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-//                .splineToLinearHeading(BLUE_STEAL_POSITION, STEAL_CENTER)
                 .build();
     }
 
@@ -155,25 +139,42 @@ public class Routes {
                 .build();
     }
 
-    public static void BuildTeamPropCenterRoutesSimple() {
-        blueBackstageBotTeamPropCenterRouteSimple = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKSTAGE_PARK_POSE, FACE_TOWARD_BLUE)
-                .build();
-
-        blueAudienceBotTeamPropCenterRouteSimple = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_SAFE_STRAFE, FACE_TOWARD_RED)
-                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
+    static void setTeamPropCenterRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
     }
 
-
-
+    static void setTeamPropLeftRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropLeftRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropLeftRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropLeftRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropLeftRoute);
     }
+
+    static void setTeamPropRightRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
+    }
+
+    static void setTeamPropAllRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
+        blueBackstageBotLeft.runAction(blueBackstageBotTeamPropLeftRoute);
+        blueBackstageBotRight.runAction(blueBackstageBotTeamPropRightRoute);
+
+        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
+        blueAudienceBotLeft.runAction(blueAudienceBotTeamPropLeftRoute);
+        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightRoute);
+
+        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
+        redBackstageBotLeft.runAction(redBackstageBotTeamPropLeftRoute);
+        redBackstageBotRight.runAction(redBackstageBotTeamPropRightRoute);
+
+        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
+        redAudienceBotLeft.runAction(redAudienceBotTeamPropLeftRoute);
+        redAudienceBotRight.runAction(redAudienceBotTeamPropRightRoute);
+    }
+}

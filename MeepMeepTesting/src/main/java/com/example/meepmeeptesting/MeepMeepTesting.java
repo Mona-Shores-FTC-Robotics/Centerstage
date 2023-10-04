@@ -1,134 +1,172 @@
 package com.example.meepmeeptesting;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.noahbres.meepmeep.MeepMeep;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
-import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedLight;
-import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
-import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-import static com.example.meepmeeptesting.Constants.*;
-import static com.example.meepmeeptesting.Routes.*;
+import static com.example.meepmeeptesting.MeepMeepRobots.*;
+
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
 public class MeepMeepTesting {
 
+    /**
+     * SET TO PICK WHICH ROUTES TO RUN:
+     * Prop Location: LEFT, RIGHT, OR CENTER
+     * Routes:
+     *      SPIKE_ONLY,
+     *      SPIKE_BACKDROP_PARK,
+     *      SPIKE_PICKUP1_BACKDROP_PARK,
+     *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
+     **/
 
-    public static RoadRunnerBotEntity blueBackstageBot;
-    public static RoadRunnerBotEntity redAudienceBot;
-    public static RoadRunnerBotEntity blueAudienceBot;
-    public static RoadRunnerBotEntity redBackstageBot;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.ALL;
+    public static routesToRun routesToRunSelection = routesToRun.SPIKE_BACKDROP_PARK;
 
-    public static RoadRunnerBotEntity roadRunnerBot;
+    /** Set which robots should show up **/
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
+    public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
+    public static boolean SHOW_RED_AUDIENCE_BOT = true;
+    public static boolean SHOW_RED_BACKSTAGE_BOT = true;
+
     public static DriveShim roadRunnerDrive;
-
-    enum teamPropLocation {LEFT, CENTER, RIGHT}
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.CENTER;
+    enum teamPropLocation {LEFT, CENTER, RIGHT, ALL}
+    enum routesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK}
 
     public static void main(String[] args) {
+
         MeepMeep meepMeep = new MeepMeep(800);
 
         //This method makes 4 robots (2 red robots and 2 blue robots)
-        MakeRobots(meepMeep);
-        roadRunnerDrive = roadRunnerBot.getDrive();
-        Routes.BuildTeamPropCenterRoutesSimple();
-        Routes.BuildTeamPropCenterRoutes();
-        Routes.BuildTeamPropLeftRoutes();
-        Routes.BuildTeamPropRightRoutes();
+        MeepMeepRobots.createRobots(meepMeep);
 
-        if (teamPropLocationFinal == teamPropLocation.LEFT) teamPropLeftRoute();
-        if (teamPropLocationFinal == teamPropLocation.CENTER) teamPropCenterRouteSimple();
-        if (teamPropLocationFinal == teamPropLocation.RIGHT) teamPropRightRoute();
+        //This sets the drive for a "dummy robot"
+        roadRunnerDrive = MeepMeepRobots.roadRunnerBot.getDrive();
+
+        //Set the routes that will be run
+        if (routesToRunSelection == routesToRun.SPIKE_BACKDROP_PARK) {
+
+            RoutesSpikeBackdropPark.BuildTeamPropCenterRoutes();
+            RoutesSpikeBackdropPark.BuildTeamPropLeftRoutes();
+            RoutesSpikeBackdropPark.BuildTeamPropRightRoutes();
+
+            if (teamPropLocationFinal == teamPropLocation.LEFT) RoutesSpikeBackdropPark.setTeamPropLeftRoutes();
+            if (teamPropLocationFinal == teamPropLocation.CENTER) RoutesSpikeBackdropPark.setTeamPropCenterRoutes();
+            if (teamPropLocationFinal == teamPropLocation.RIGHT) RoutesSpikeBackdropPark.setTeamPropRightRoutes();
+            if (teamPropLocationFinal == teamPropLocation.ALL) RoutesSpikeBackdropPark.setTeamPropAllRoutes();
+        } else if (routesToRunSelection == routesToRun.SPIKE_PICKUP1_BACKDROP_PARK) {
+
+            RoutesSpikePickup1BackdropPark.BuildTeamPropCenterRoutes();
+            RoutesSpikePickup1BackdropPark.BuildTeamPropLeftRoutes();
+            RoutesSpikePickup1BackdropPark.BuildTeamPropRightRoutes();
+
+            if (teamPropLocationFinal == teamPropLocation.LEFT) RoutesSpikePickup1BackdropPark.setTeamPropLeftRoutes();
+            if (teamPropLocationFinal == teamPropLocation.CENTER) RoutesSpikePickup1BackdropPark.setTeamPropCenterRoutes();
+            if (teamPropLocationFinal == teamPropLocation.RIGHT) RoutesSpikePickup1BackdropPark.setTeamPropRightRoutes();
+            if (teamPropLocationFinal == teamPropLocation.ALL) RoutesSpikePickup1BackdropPark.setTeamPropAllRoutes();
+
+
+        } else if (routesToRunSelection == routesToRun.SPIKE_ONLY) {
+
+            RoutesSpikeOnly.BuildTeamPropCenterRoutes();
+            RoutesSpikeOnly.BuildTeamPropLeftRoutes();
+            RoutesSpikeOnly.BuildTeamPropRightRoutes();
+
+            if (teamPropLocationFinal == teamPropLocation.LEFT) RoutesSpikeOnly.setTeamPropLeftRoutes();
+            if (teamPropLocationFinal == teamPropLocation.CENTER) RoutesSpikeOnly.setTeamPropCenterRoutes();
+            if (teamPropLocationFinal == teamPropLocation.RIGHT) RoutesSpikeOnly.setTeamPropRightRoutes();
+            if (teamPropLocationFinal == teamPropLocation.ALL) RoutesSpikeOnly.setTeamPropAllRoutes();
+
+        } else if (routesToRunSelection == routesToRun.SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK) {
+
+            RoutesSpikePickup1BackdropPickup2BackdropPark.BuildTeamPropCenterRoutes();
+            RoutesSpikeOnly.BuildTeamPropLeftRoutes();
+            RoutesSpikeOnly.BuildTeamPropRightRoutes();
+
+            if (teamPropLocationFinal == teamPropLocation.LEFT) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropLeftRoutes();
+            if (teamPropLocationFinal == teamPropLocation.CENTER) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropCenterRoutes();
+            if (teamPropLocationFinal == teamPropLocation.RIGHT) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropRightRoutes();
+            if (teamPropLocationFinal == teamPropLocation.ALL) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropAllRoutes();
+        }
+
+        addRobotsToField(meepMeep);
+
+    }
+
+    private static void addRobotsToField(MeepMeep meepMeep_local) {
+
 
         String filePath = "Centerstage.png";
         System.out.println(new File(".").getAbsolutePath());
         Image img = null;
-        try { img = ImageIO.read(new File(filePath)); }
-        catch (IOException e) {}
+        try {
+            img = ImageIO.read(new File(filePath));
+        } catch (IOException e) {
+        }
 
-        meepMeep.setBackground(img)
+        if (teamPropLocationFinal != teamPropLocation.ALL) {
+            if (SHOW_BLUE_AUDIENCE_BOT) meepMeep_local.addEntity(blueAudienceBot);
+            if (SHOW_BLUE_BACKSTAGE_BOT) meepMeep_local.addEntity(blueBackstageBot);
+            if (SHOW_RED_AUDIENCE_BOT) meepMeep_local.addEntity(redAudienceBot);
+            if (SHOW_RED_BACKSTAGE_BOT) meepMeep_local.addEntity(redBackstageBot);
+        }
+
+        if (teamPropLocationFinal == teamPropLocation.ALL)
+        {
+            if (SHOW_BLUE_BACKSTAGE_BOT){
+                meepMeep_local.addEntity(blueBackstageBot);
+                meepMeep_local.addEntity(blueBackstageBotLeft);
+                meepMeep_local.addEntity(blueBackstageBotRight);
+            }
+
+            if (SHOW_BLUE_AUDIENCE_BOT){
+                meepMeep_local.addEntity(blueAudienceBot);
+                meepMeep_local.addEntity(blueAudienceBotLeft);
+                meepMeep_local.addEntity(blueAudienceBotRight);
+            }
+
+            if (SHOW_RED_BACKSTAGE_BOT){
+                meepMeep_local.addEntity(redBackstageBot);
+                meepMeep_local.addEntity(redBackstageBotLeft);
+                meepMeep_local.addEntity(redBackstageBotRight);
+            }
+
+            if (SHOW_RED_AUDIENCE_BOT){
+                meepMeep_local.addEntity(redAudienceBot);
+                meepMeep_local.addEntity(redAudienceBotLeft);
+                meepMeep_local.addEntity(redAudienceBotRight);
+            }
+
+        }
+
+        meepMeep_local.setBackground(img)
                 .setBackgroundAlpha(0.95f)
-//                .addEntity(redBackstageBot)
-                .addEntity(blueBackstageBot)
-//                .addEntity(redAudienceBot)
-                .addEntity(blueAudienceBot)
                 .start();
+
     }
 
-    private static void MakeRobots( MeepMeep meepMeep ) {
-        blueBackstageBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .build();
-
-        blueAudienceBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueLight())
-                .build();
-
-        redAudienceBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
-                .setDimensions(16,16)
-                .build();
-
-        redBackstageBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedDark())
-                .build();
-
-        roadRunnerBot = new DefaultBotBuilder(meepMeep)
-                // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeRedLight())
-                .build();
-    }
-
-    static void teamPropCenterRoute()
-{
-    blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
-    redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
-    redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
-    blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
-}
-    static void teamPropCenterRouteSimple()
-    {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRouteSimple);
-//        redBackstageBot.runAction(redBackstageBotTeamPropCenterRouteSimple);
-//        redAudienceBot.runAction(redAudienceBotTeamPropCenterRouteSimple);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRouteSimple);
-    }
-
-    static void teamPropLeftRoute()
-    {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropLeftRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropLeftRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropLeftRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropLeftRoute);
-    }
-
-    static void teamPropRightRoute()
-    {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
-    }
-
-    static Action dropPixel()
+    /** Methods for dropping pixels **/
+    static Action dropPixelOnBackdrop()
     {
         SleepAction sleep = new SleepAction(.1);
         return sleep;
     }
+
+    static Action dropPixelOnGround()
+    {
+        SleepAction sleep = new SleepAction(.1);
+        return sleep;
+    }
+
+    static Action pickupPixel()
+    {
+        SleepAction sleep = new SleepAction(.1);
+        return sleep;
+    }
+
+
 }
 
