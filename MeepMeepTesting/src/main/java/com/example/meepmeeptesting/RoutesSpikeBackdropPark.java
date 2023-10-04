@@ -16,6 +16,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
 
+import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
 import com.acmerobotics.roadrunner.Action;
@@ -97,6 +98,18 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build();
+
+        //TODO try this route instead and notice the difference?
+//
+//        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+//                .splineTo(new Vector2d(BLUE_AUDIENCE_SPIKE_C.position.x, BLUE_AUDIENCE_SPIKE_C.position.y), FACE_TOWARD_RED)
+//                .setReversed(true)
+//                .splineTo(new Vector2d(BLUE_SAFE_STRAFE.position.x, BLUE_SAFE_STRAFE.position.y), FACE_TOWARD_RED)
+//                .splineTo(new Vector2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y), FACE_TOWARD_BACKSTAGE)
+//                .splineTo(new Vector2d(BLUE_THROUGH_DOOR.position.x, BLUE_THROUGH_DOOR.position.y), FACE_TOWARD_BACKSTAGE)
+//                .splineTo(new Vector2d(BLUE_BACKDROP.position.x, BLUE_BACKDROP.position.y), FACE_TOWARD_BACKSTAGE)
+//                .build();
+
 
         //TODO Finish the SPIKE BACKDROP PARK  routes for the red start locations when the team prop is in the center
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
