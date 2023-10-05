@@ -105,34 +105,40 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_PARK_POSE, FACE_TOWARD_BLUE)
                 .build();
 
-        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        /*blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, FACE_TOWARD_RED)
                 .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
-                .build();
+                .build();*/
 
         //TODO try this route instead and notice the difference?
-//
-//        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-//                .splineTo(new Vector2d(BLUE_AUDIENCE_SPIKE_C.position.x, BLUE_AUDIENCE_SPIKE_C.position.y), FACE_TOWARD_RED)
-//                .setReversed(true)
-//                .splineTo(new Vector2d(BLUE_SAFE_STRAFE.position.x, BLUE_SAFE_STRAFE.position.y), FACE_TOWARD_RED)
-//                .splineTo(new Vector2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y), FACE_TOWARD_BACKSTAGE)
-//                .splineTo(new Vector2d(BLUE_THROUGH_DOOR.position.x, BLUE_THROUGH_DOOR.position.y), FACE_TOWARD_BACKSTAGE)
-//                .splineTo(new Vector2d(BLUE_BACKDROP.position.x, BLUE_BACKDROP.position.y), FACE_TOWARD_BACKSTAGE)
-//                .build();
+
+        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+                .splineTo(new Vector2d(BLUE_AUDIENCE_SPIKE_C.position.x, BLUE_AUDIENCE_SPIKE_C.position.y), FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineTo(new Vector2d(BLUE_SAFE_STRAFE.position.x, BLUE_SAFE_STRAFE.position.y), FACE_TOWARD_RED)
+                .splineTo(new Vector2d(BLUE_STAGEDOOR_ENTRANCE.position.x, BLUE_STAGEDOOR_ENTRANCE.position.y), FACE_TOWARD_BACKSTAGE)
+                .splineTo(new Vector2d(BLUE_THROUGH_DOOR.position.x, BLUE_THROUGH_DOOR.position.y), FACE_TOWARD_BACKSTAGE)
+                .splineTo(new Vector2d(BLUE_BACKDROP.position.x, BLUE_BACKDROP.position.y), FACE_TOWARD_BACKSTAGE)
+                .build();
 
 
         //TODO Finish the SPIKE BACKDROP PARK  routes for the red start locations when the team prop is in the center
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, FACE_TOWARD_BACKSTAGE)
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKSTAGE_PARK_POSE, FACE_TOWARD_RED)
                 .build();
     }
 
