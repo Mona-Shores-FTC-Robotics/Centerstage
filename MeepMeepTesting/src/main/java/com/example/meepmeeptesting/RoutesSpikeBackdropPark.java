@@ -46,18 +46,33 @@ public class RoutesSpikeBackdropPark {
         //TODO Create the SPIKE BACKDROP PARK routes for all four start locations when the team prop is on the left
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKSTAGE_PARK_POSE, FACE_TOWARD_RED)
                 .build();
+
 
         redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKSTAGE_PARK_POSE, FACE_TOWARD_BLUE)
                 .build();
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_FRONTSTAGE)
+                .setReversed(true)
                 .build();
 
         blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_FRONTSTAGE)
+                .setReversed(true)
                 .build();
     }
 
