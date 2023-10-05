@@ -65,6 +65,9 @@ public class RoutesSpikeBackdropPark {
         //TODO Create the SPIKE BACKDROP PARK  routes for all four start locations when the team prop is on the right
         blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_BACKSTAGE_PARK_POSE, FACE_TOWARD_BLUE)
                 .build();
 
         redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -77,6 +80,11 @@ public class RoutesSpikeBackdropPark {
 
         blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_TOWARD_RED)
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, FACE_TOWARD_BLUE)
+                .splineToLinearHeading(BLUE_THROUGH_DOOR, FACE_TOWARD_RED)
+                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .build();
     }
 
