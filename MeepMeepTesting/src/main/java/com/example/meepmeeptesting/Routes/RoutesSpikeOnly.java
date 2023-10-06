@@ -1,9 +1,9 @@
-package com.example.meepmeeptesting;
+package com.example.meepmeeptesting.Routes;
 
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
-import static com.example.meepmeeptesting.ConstantsRotated.*;
+import static com.example.meepmeeptesting.Constants.*;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotRight;
@@ -18,6 +18,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
 
 import com.acmerobotics.roadrunner.Action;
+import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
 public class RoutesSpikeOnly {
@@ -41,7 +42,7 @@ public class RoutesSpikeOnly {
     private static Action blueBackstageBotTeamPropRightRoute;
     private static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildTeamPropLeftRoutes() {
+    public static void BuildRoutes() {
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .build();
@@ -57,9 +58,7 @@ public class RoutesSpikeOnly {
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_TOWARD_BLUE)
                 .build();
-    }
 
-    public static void BuildTeamPropRightRoutes() {
         blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_TOWARD_RED)
                 .build();
@@ -75,9 +74,7 @@ public class RoutesSpikeOnly {
         redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_R, FACE_TOWARD_BLUE)
                 .build();
-    }
 
-    public static void BuildTeamPropCenterRoutes() {
         blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
                 .build();
@@ -99,28 +96,28 @@ public class RoutesSpikeOnly {
      * METHODS TO SET SPIKE PIXEL ONLY ROUTES FOR ALL TEAM PROP LOCATIONS
      **/
 
-    static void setTeamPropCenterRoutes() {
+    public static void setTeamPropCenterRoutes() {
         blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
         blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
         redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
         redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
     }
 
-    static void setTeamPropLeftRoutes() {
+    public static void setTeamPropLeftRoutes() {
         blueBackstageBot.runAction(RoutesSpikeOnly.blueBackstageBotTeamPropLeftRoute);
         redBackstageBot.runAction(RoutesSpikeOnly.redBackstageBotTeamPropLeftRoute);
         redAudienceBot.runAction(RoutesSpikeOnly.redAudienceBotTeamPropLeftRoute);
         blueAudienceBot.runAction(RoutesSpikeOnly.blueAudienceBotTeamPropLeftRoute);
     }
 
-    static void setTeamPropRightRoutes() {
+    public static void setTeamPropRightRoutes() {
         blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
         blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
         redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
         redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
     }
 
-    static void setTeamPropAllRoutes() {
+    public static void setTeamPropAllRoutes() {
         blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
         blueBackstageBotLeft.runAction(blueBackstageBotTeamPropLeftRoute);
         blueBackstageBotRight.runAction(blueBackstageBotTeamPropRightRoute);

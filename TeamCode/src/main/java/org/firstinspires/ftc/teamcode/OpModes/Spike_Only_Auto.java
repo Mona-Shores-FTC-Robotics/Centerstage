@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotType;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Routes.*;
 
 import androidx.annotation.NonNull;
 
@@ -12,17 +13,15 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Routes;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
-
-@Autonomous(name = "Basic_Auto")
-public class Basic_Auto extends LinearOpMode {
+@Autonomous(name = "Spike Only Auto")
+public class Spike_Only_Auto extends LinearOpMode {
 
     Robot robot = Robot.createInstance(this);
 
@@ -38,7 +37,7 @@ public class Basic_Auto extends LinearOpMode {
     public void runOpMode() {
 
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        Constants.setRobot(RobotType.ROBOT_VISION);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
@@ -49,13 +48,7 @@ public class Basic_Auto extends LinearOpMode {
 
         roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0, 0, 0));
 
-        //TODO Make these routes line up to the correct spot (e.g., team prop on right, then line up using the right AprilTag on the backboard)
-        //TODO Create actions to outtake a pixel and add them to the routes
-
-        Routes.BuildTeamPropCenterRoutes();
-        Routes.BuildTeamPropLeftRoutes();
-        Routes.BuildTeamPropRightRoutes();
-
+        RoutesSpikeOnly.BuildRoutes();
 
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
@@ -67,7 +60,6 @@ public class Basic_Auto extends LinearOpMode {
             telemetry.update();
             sleep(10);
         }
-
 
         //Reset Gyro
         robot.getGyro().resetYaw();
