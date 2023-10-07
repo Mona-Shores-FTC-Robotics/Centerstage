@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 
 public class DriveTrain {
     // DriveTrain tuning constants
@@ -46,13 +47,11 @@ public class DriveTrain {
     public double aprilTagStrafe = 0.0;
     public double aprilTagTurn = 0.0;
 
-    private final double DRIVE_SPEED_FACTOR = .9;
-    private final double STRAFE_SPEED_FACTOR = .9;
-    private final double TURN_SPEED_FACTOR = .7;
+    public final double DRIVE_SPEED_FACTOR = .8;
+    private final double STRAFE_SPEED_FACTOR = .8;
+    private final double TURN_SPEED_FACTOR = .5;
 
-    private double safetyDriveSpeedFactor = 1.0;
-    private double safetyStrafeSpeedFactor = 1.0;
-    private double safetyTurnSpeedFactor = 1.0;
+    private double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
     private boolean fieldOrientedControlFlag = true;
     private boolean backdropSafetyZoneFlag = false;
@@ -65,6 +64,9 @@ public class DriveTrain {
     private double autoTurn;
     private double turnDegrees;
 
+    private InitVisionProcessor initVisionProcessor;
+    private Vision vision;
+
     /* Constructor */
     public DriveTrain() {
     }
@@ -76,6 +78,9 @@ public class DriveTrain {
 
         //set the driverGamepad so we can use the shortname throughout this class
         driverGamepad = GamepadHandling.getCurrentDriverGamepad();
+        initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
+
+        vision = Robot.getInstance().getVision();
 
         // Define and Initialize Motors
         DcMotorSimple.Direction fwd = DcMotorSimple.Direction.FORWARD;
@@ -98,33 +103,51 @@ public class DriveTrain {
 
     public void drive(){
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (GamepadHandling.driverGamepadIsActive())
-        {
+        if (GamepadHandling.driverGamepadIsActive()) {
+            //Store the adjusted gamepad values as drive/strafe/turn
             driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-            drive = -driverGamepad.left_stick_y*DRIVE_SPEED_FACTOR;
-            strafe = driverGamepad.left_stick_x*STRAFE_SPEED_FACTOR;
-            turn = driverGamepad.right_stick_x*TURN_SPEED_FACTOR;
+            drive = -driverGamepad.left_stick_y * DRIVE_SPEED_FACTOR;
+            strafe = driverGamepad.left_stick_x * STRAFE_SPEED_FACTOR;
+            turn = driverGamepad.right_stick_x * TURN_SPEED_FACTOR;
 
-            //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
-            Robot.getInstance().getVision().aprilTagDriving=false;
-            if (autoTurning)
-            {
+            //Check if we are turning automatically using Turn or TurnTo and change the turn value if we are
+            if (autoTurning) {
                 turnUpdate();
                 turn = autoTurn;
             }
-            if (fieldOrientedControlFlag==true)
-            {
+
+            //Check if we are using field oriented control and change the drive/strafe values if we are
+            if (fieldOrientedControlFlag == true) {
                 fieldOrientedControl();
             }
-            CheckBackdropSafetyZone();
+
+            boolean override = !GamepadHandling.getOverrideAprilTagDriving();
+            boolean tagsfound = vision.redBackdropAprilTagFound;
+            boolean colortrue = (initVisionProcessor.allianceColorFinal == InitVisionProcessor.AllianceColor.RED);
+
+            //Aligning to the Backdrop AprilTags - CASE RED
+            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                    vision.redBackdropAprilTagFound &&
+                    drive > 0 &&
+                    !GamepadHandling.getOverrideAprilTagDriving()) {
+                vision.AutoDriveToBackdropRed();
+                drive = aprilTagDrive;
+                strafe = aprilTagStrafe;
+                turn = aprilTagTurn;
+            }
+
+            //Aligning to the Backdrop AprilTags - CASE BLUE
+            else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                    vision.blueBackdropAprilTagFound &&
+                    drive > 0 &&
+                    !GamepadHandling.getOverrideAprilTagDriving()) {
+                vision.AutoDriveToBackdropBlue();
+                drive = aprilTagDrive;
+                strafe = aprilTagStrafe;
+                turn = aprilTagTurn;
+            }
         }
 
-        /** Autodriving Commands **/
-        else if (Robot.getInstance().getVision().aprilTagDriving ) {
-            drive = aprilTagDrive;
-            strafe = aprilTagStrafe;
-            turn = aprilTagTurn;
-        }
         else if (autoTurning) {
             turnUpdate();
             drive = 0;
@@ -181,9 +204,9 @@ public class DriveTrain {
         strafe = Math.min( strafe * 1.1, 1);  // Counteract imperfect strafing
     }
 
-    public void setAutoDrive(double autoDrive) { aprilTagDrive = autoDrive;}
-    public void setAutoStrafe(double autoStrafe) { aprilTagStrafe = autoStrafe;}
-    public void setAutoTurn(double autoTurn) {  aprilTagTurn = autoTurn;  }
+    public void setAprilTagDrive(double autoDrive) { aprilTagDrive = autoDrive;}
+    public void setAprilTagStrafe(double autoStrafe) { aprilTagStrafe = autoStrafe;}
+    public void setAprilTagTurn(double autoTurn) {  aprilTagTurn = autoTurn;  }
 
     public void setFieldOrientedControlFlag(boolean flag) {
         fieldOrientedControlFlag = flag;
@@ -193,13 +216,9 @@ public class DriveTrain {
         return fieldOrientedControlFlag;
     }
 
-    public void setSafeyDriveSpeedFactor(double factor) { safetyDriveSpeedFactor = factor;}
+    public void setSafetyDriveSpeedFactor(double factor) { safetyDriveSpeedFactor = factor;}
 
-    public void setSafetyStrafeSpeedFactor(double factor) { safetyStrafeSpeedFactor = factor; }
-
-    public void setSafetyTurnSpeedFactor(double factor) {
-        safetyTurnSpeedFactor = factor;
-    }
+    public double getSafetyDriveSpeedFactor() { return safetyDriveSpeedFactor;}
 
     public void setBackdropSafetyZone(boolean flag) {
         backdropSafetyZoneFlag = flag;
@@ -268,8 +287,6 @@ public class DriveTrain {
         }
         turn(error);
     }
-
-
 
     public void mecanumDrivePowerControl (){
 

@@ -17,6 +17,7 @@ public class GamepadHandling {
     public static double motorFwd = 0.0;
     public static double motorRev = 0.0;
 
+    private static boolean overrideAprilTagDriving = false;
 
     public GamepadHandling() {
 
@@ -92,6 +93,11 @@ public class GamepadHandling {
             Robot.getInstance().getGyro().resetAbsoluteYaw();
         }
 
+        if (currentDriverGamepad.left_bumper)
+        {
+            overrideAprilTagDriving = true;
+        } else overrideAprilTagDriving =false;
+
 //        if (Robot.getInstance().getVision().noVisibleTags && (currentDriverGamepad.left_bumper && !previousDriverGamepad.left_bumper)) {
 //            Robot.getInstance().getDriveTrain().turnTo(105);
 //        }
@@ -138,5 +144,9 @@ public class GamepadHandling {
     }
     public static Gamepad getPreviousOperatorGamepad() {
         return previousOperatorGamepad;
+    }
+
+    public static boolean getOverrideAprilTagDriving() {
+        return overrideAprilTagDriving;
     }
 }

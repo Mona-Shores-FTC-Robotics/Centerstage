@@ -75,8 +75,8 @@ public class Robot {
             }
             case ROBOT_VISION:
             {
-                drivetrain.init();
                 vision.init();
+                drivetrain.init();
                 gyro.init();
                 break;
             }
