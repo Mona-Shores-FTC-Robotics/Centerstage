@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 
 public class DriveTrain {
     // DriveTrain tuning constants
@@ -54,7 +54,6 @@ public class DriveTrain {
     private double safetyStrafeSpeedFactor = 1.0;
     private double safetyTurnSpeedFactor = 1.0;
 
-    private boolean manualDriveControlFlag = true;
     private boolean fieldOrientedControlFlag = true;
     private boolean backdropSafetyZoneFlag = false;
 
@@ -83,6 +82,11 @@ public class DriveTrain {
         DcMotorSimple.Direction rvrs = DcMotorSimple.Direction.REVERSE;
         DcMotorSimple.Direction driveMotorDirections[] = {rvrs, fwd, rvrs, fwd};
 
+        P=DEFAULT_P;
+        D=DEFAULT_D;
+        I=DEFAULT_I;
+        F=DEFAULT_F;
+
         for (int i = 0; i < 4; i++ ){
             driveMotor[i] = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, driveMotorNames[i]);
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -93,51 +97,39 @@ public class DriveTrain {
     }
 
     public void drive(){
-
-        P=DEFAULT_P;
-        D=DEFAULT_D;
-        I=DEFAULT_I;
-        F=DEFAULT_F;
-
-        driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-        drive = -driverGamepad.left_stick_y*DRIVE_SPEED_FACTOR;
-        strafe = driverGamepad.left_stick_x*STRAFE_SPEED_FACTOR;
-        turn = driverGamepad.right_stick_x*TURN_SPEED_FACTOR;
-
         //Check if driver controls are active so we can cancel automated driving if they are
         if (GamepadHandling.driverGamepadIsActive())
         {
-            //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
-            setManualDriveControlFlag(true);
+            driverGamepad = GamepadHandling.getCurrentDriverGamepad();
+            drive = -driverGamepad.left_stick_y*DRIVE_SPEED_FACTOR;
+            strafe = driverGamepad.left_stick_x*STRAFE_SPEED_FACTOR;
+            turn = driverGamepad.right_stick_x*TURN_SPEED_FACTOR;
 
-            if (autoTurning){
+            //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
+            Robot.getInstance().getVision().aprilTagDriving=false;
+            if (autoTurning)
+            {
                 turnUpdate();
                 turn = autoTurn;
             }
-
             if (fieldOrientedControlFlag==true)
             {
-               // CheckBackdropSafetyZoneFOC();
                 fieldOrientedControl();
-            } else {
-
-               // CheckBackdropSafetyZoneNormal();
             }
-            //call the drive function with the drive/turn/strafe values set based on the driver controls
-            mecanumDriveSpeedControl();
+            CheckBackdropSafetyZone();
+        }
 
-        } else if (!getManualDriveControlFlag() || autoTurning) {
-            //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
-           if (!autoTurning) {
-               drive = aprilTagDrive;
-               strafe = aprilTagStrafe;
-               turn = aprilTagTurn;
-           } else if (autoTurning) {
-               turnUpdate();
-               drive = 0;
-               strafe = 0;
-               turn = autoTurn;
-           }
+        /** Autodriving Commands **/
+        else if (Robot.getInstance().getVision().aprilTagDriving ) {
+            drive = aprilTagDrive;
+            strafe = aprilTagStrafe;
+            turn = aprilTagTurn;
+        }
+        else if (autoTurning) {
+            turnUpdate();
+            drive = 0;
+            strafe = 0;
+            turn = autoTurn;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             drive = 0;
@@ -151,32 +143,12 @@ public class DriveTrain {
         mecanumDriveSpeedControl();
     }
 
-    private void CheckBackdropSafetyZoneNormal() {
+    private void CheckBackdropSafetyZone() {
         //this flag is set while looking for AprilTags
-        if (backdropSafetyZoneFlag)
+        if(backdropSafetyZoneFlag)
         {
-            // Only modify if the driver was trying to go forward
-            // The size of the adjustments are based on how far away we are from the backdrop AprilTags
             if (drive>0) {
-                drive = drive * safetyDriveSpeedFactor;
-            }
-        }
-    }
-
-
-    private void CheckBackdropSafetyZoneFOC() {
-        //this flag is set while looking for AprilTags
-        if (backdropSafetyZoneFlag)
-        {
-            // Only modify if the driver was trying to go forward
-            // The size of the adjustments are based on how far away we are from the backdrop AprilTags
-            if (    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    strafe > 0) {
-                strafe = strafe*safetyStrafeSpeedFactor;
-            } else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                strafe < 0)
-            {
-                strafe = strafe*safetyStrafeSpeedFactor;
+                drive = Range.clip(drive, -safetyDriveSpeedFactor, safetyDriveSpeedFactor);
             }
         }
     }
@@ -197,34 +169,21 @@ public class DriveTrain {
         }
     }
 
-
-
     public void fieldOrientedControl (){
-
         double y = drive;
         double x = strafe;
-
         double botHeading = Robot.getInstance().getGyro().currentAbsoluteYawRadians;
 
         // Rotate the movement direction counter to the bot's rotation
         strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         drive = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-//        strafe = Math.max( strafe * 1.1, 1);  // Counteract imperfect strafing
-
+        strafe = Math.min( strafe * 1.1, 1);  // Counteract imperfect strafing
     }
 
     public void setAutoDrive(double autoDrive) { aprilTagDrive = autoDrive;}
     public void setAutoStrafe(double autoStrafe) { aprilTagStrafe = autoStrafe;}
     public void setAutoTurn(double autoTurn) {  aprilTagTurn = autoTurn;  }
-
-    public void setManualDriveControlFlag(boolean flag) {
-        manualDriveControlFlag = flag;
-    }
-
-    public boolean getManualDriveControlFlag() {
-        return manualDriveControlFlag;
-    }
 
     public void setFieldOrientedControlFlag(boolean flag) {
         fieldOrientedControlFlag = flag;
@@ -246,34 +205,13 @@ public class DriveTrain {
         backdropSafetyZoneFlag = flag;
     }
 
-    public void moveRobot(double x, double y, double yaw) {
-        // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
-
-        // Normalize wheel powers to be less than 1.0
-        double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-        max = Math.max(max, Math.abs(leftBackPower));
-        max = Math.max(max, Math.abs(rightBackPower));
-
-        if (max > 1.0) {
-            leftFrontPower /= max;
-            rightFrontPower /= max;
-            leftBackPower /= max;
-            rightBackPower /= max;
-        }
-
-        // Send powers to the wheels.
-        driveMotor[0].setPower(leftFrontPower);
-        driveMotor[1].setPower(rightFrontPower);
-        driveMotor[2].setPower(leftBackPower);
-        driveMotor[3].setPower(rightBackPower);
-    }
-
-    public void telemetryDriveTrain() {
+      public void telemetryDriveTrain() {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
+
+        activeOpMode.telemetry.addData("Drive: ", drive);
+        activeOpMode.telemetry.addData("Strafe: ", strafe);
+        activeOpMode.telemetry.addData("Turn: ", turn);
+
         for (int i = 0; i < 4; i++ ){
             double targetSpeed = Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV);
             double actualSpeed = Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV);
@@ -281,7 +219,6 @@ public class DriveTrain {
             activeOpMode.telemetry.addLine("Motor " + i + " Speed: " + JavaUtil.formatNumber(actualSpeed, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeed, 4, 1)  + " " + "Power: " +  Math.round(100.0 * driveMotor[i].getPower())/100.0);
         }
     }
-
 
     public void setAllPower(double p) {setMotorPower(p,p,p,p);}
 

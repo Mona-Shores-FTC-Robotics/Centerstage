@@ -76,8 +76,6 @@ public class GamepadHandling {
     public static void DriverControls() {
         DriveTrain drivetrain = Robot.getInstance().getDriveTrain();
 
-
-
         //Start button toggles field oriented control
         if (currentDriverGamepad.start && !previousDriverGamepad.start) {
             if (Robot.getInstance().getDriveTrain().getFieldOrientedControlFlag()) {

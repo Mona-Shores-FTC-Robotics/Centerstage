@@ -54,6 +54,8 @@ public class TeleOp_Vision extends LinearOpMode
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
 
+        telemetry = robot.getActiveOpMode().telemetry;
+
         //initialize the Gamepads
         GamepadHandling.init();
         robot.getVision().SwitchToInitVisionProcessor();
@@ -85,6 +87,10 @@ public class TeleOp_Vision extends LinearOpMode
 
         while (opModeIsActive())
         {
+            telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
+            telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+
             //Store the previous loop's gamepad values and new current gamepad values
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
@@ -100,10 +106,6 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Process the Operator Controls
             GamepadHandling.OperatorControls();
-
-
-
-
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             robot.getDriveTrain().drive();
@@ -122,6 +124,5 @@ public class TeleOp_Vision extends LinearOpMode
         }
         robot.getVision().getVisionPortal().close();
         telemetry.clearAll();
-
     }
 }

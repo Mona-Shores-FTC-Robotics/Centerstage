@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Vision.AprilTagID.*;
 import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor.*;
@@ -36,7 +35,7 @@ public class Vision {
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
 
-    private boolean autoDrive = false;
+    public boolean aprilTagDriving = false;
     public boolean noVisibleTags;
 
     public void SwitchToAprilTagProcessor() {
@@ -109,12 +108,17 @@ public class Vision {
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.06  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  0.02  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double STRAFE_GAIN =  -0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  -0.02  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 1.2;   //  Clip the turn speed to this max value (adjust for your robot)
+
+
+    final double MAX_MANUAL_BACKDROP_SPEED = 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
+
+
 
     public Vision() {
 
@@ -201,7 +205,6 @@ public class Vision {
             gainControl.setGain(gain);
             activeOpMode.sleep(20);
         }
-
     }
 
     /**
@@ -271,23 +274,21 @@ public class Vision {
             telemetry.addData(">", "HOLD Left-Bumper to Drive to Small Red Target\n");
        }
 
-        autoDrive = false;
+        aprilTagDriving = false;
         Robot.getInstance().getDriveTrain().setBackdropSafetyZone(false);
 
         DriveToBlueAudienceWallTag();
         DriveToRedAudienceWallTag();
 
-        if (!autoDrive) {
-            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.BLUE) AutoDriveToBackdropBlue();
-            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.RED) AutoDriveToBackdropRed();
+        if (!aprilTagDriving) {
+//            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.BLUE) AutoDriveToBackdropBlue();
+//            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.RED) AutoDriveToBackdropRed();
+            AutoDriveToBackdropBlue();
+            AutoDriveToBackdropRed();
         }
 
-        if (autoDrive) {
-            //set the manual control flag to false so ew know that we are doing automated driving
-            Robot.getInstance().getDriveTrain().setManualDriveControlFlag(false);
-        } else {
-            //no april tag is being driven to (either because we didn't see them or the user didn't hold down the bumpers) - so we set manual drive control to true
-            Robot.getInstance().getDriveTrain().setManualDriveControlFlag(true);
+        if (!aprilTagDriving) {
+            //no april tag is being driven to (either because we didn't see them or the user didn't hold down the bumpers) - so we set the flag for drive to use
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(false);
             Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(1.0);
             Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(1.0);
@@ -334,7 +335,7 @@ public class Vision {
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            autoDrive = true;
+            aprilTagDriving = true;
         }
     }
 
@@ -378,60 +379,16 @@ public class Vision {
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            autoDrive = true;
+            aprilTagDriving = true;
         }
     }
 
     private void AutoDriveToBackdropBlue() {
-        if ((BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected) &&
-                ((GamepadHandling.getCurrentDriverGamepad().left_bumper || GamepadHandling.getCurrentDriverGamepad().right_bumper))) {
+        if ((BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected)) {
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
-
             //if we can see the middle april tag use that for navigation
-            if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected)                   {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
-                double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-                // set the drive/turn strafe values for AutoDriving
-                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
-                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
-
-                // set the is for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
-
-                telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            } else if (getDeliverLocation().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = BLUE_BACKDROP_LEFT.detection.ftcPose.bearing;
-                double yawError = BLUE_BACKDROP_LEFT.detection.ftcPose.yaw;
-
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
-
-                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
-                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
-
-                // set the is for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
-
-                telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-
-            else if (getDeliverLocation().equals(DeliverLocation.RIGHT) && BLUE_BACKDROP_RIGHT.isDetected) {
+            if (getDeliverLocation().equals(DeliverLocation.RIGHT) && BLUE_BACKDROP_RIGHT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = BLUE_BACKDROP_RIGHT.detection.ftcPose.bearing;
@@ -445,29 +402,17 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
 
                 telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            autoDrive = true;
-        }
-    }
-
-
-
-    private void AutoDriveToBackdropRed() {
-        if ((RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_CENTER.isDetected || RED_BACKDROP_RIGHT.isDetected) &&
-                ((GamepadHandling.getCurrentDriverGamepad().left_bumper || GamepadHandling.getCurrentDriverGamepad().right_bumper))) {
-            Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
-            //if we can see the middle april tag use that for navigation
-            if (getDeliverLocation().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected){
+          else if (getDeliverLocation().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;
-                double yawError = RED_BACKDROP_CENTER.detection.ftcPose.yaw;
+                double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = BLUE_BACKDROP_LEFT.detection.ftcPose.bearing;
+                double yawError = BLUE_BACKDROP_LEFT.detection.ftcPose.yaw;
 
                 double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
@@ -477,13 +422,44 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
 
-                telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            } else if (getDeliverLocation().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected) {
+                telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            }
+
+            else    if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
+                double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
+
+                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                // set the drive/turn strafe values for AutoDriving
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
+
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
+
+
+                telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            }
+            aprilTagDriving = true;
+        }
+    }
+
+    private void AutoDriveToBackdropRed() {
+        if (    (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_CENTER.isDetected || RED_BACKDROP_RIGHT.isDetected)) {
+            Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
+            //if we can see the middle april tag use that for navigation
+         if (getDeliverLocation().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = RED_BACKDROP_LEFT.detection.ftcPose.bearing;
@@ -497,14 +473,32 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
 
                 telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
+            else if (getDeliverLocation().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected){
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;
+                double yawError = RED_BACKDROP_CENTER.detection.ftcPose.yaw;
 
+                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+
+                Robot.getInstance().getDriveTrain().setAutoDrive(drive);
+                Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
+                Robot.getInstance().getDriveTrain().setAutoTurn(turn);
+
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
+
+                telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            }
             else if (getDeliverLocation().equals(DeliverLocation.RIGHT) && RED_BACKDROP_RIGHT.isDetected) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (RED_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -519,14 +513,13 @@ public class Vision {
                 Robot.getInstance().getDriveTrain().setAutoStrafe(strafe);
                 Robot.getInstance().getDriveTrain().setAutoTurn(turn);
 
-                // set the noCrashDriveSpeedFactor for if the driver takes over control near the backdrop
-                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(drive);
-                Robot.getInstance().getDriveTrain().setSafetyStrafeSpeedFactor(strafe);
-                Robot.getInstance().getDriveTrain().setSafetyTurnSpeedFactor(turn);
+                // Use this to limit drive speed based on distance
+                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                Robot.getInstance().getDriveTrain().setSafeyDriveSpeedFactor(manualDriveLimit);
 
                 telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            autoDrive = true;
+            aprilTagDriving = true;
         }
     }
 
