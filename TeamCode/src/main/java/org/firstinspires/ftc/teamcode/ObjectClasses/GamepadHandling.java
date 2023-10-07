@@ -65,14 +65,18 @@ public class GamepadHandling {
         return pad;
     }
 
-    public static Boolean gamepadIsActive(@NonNull Gamepad gamepad) {
-        if (Math.abs(gamepad.left_stick_x) + Math.abs(gamepad.left_stick_y) + Math.abs(gamepad.right_stick_x) > .1) {
+    public static Boolean driverGamepadIsActive() {
+        if (    (Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_x) +
+                Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_y) +
+                Math.abs(GamepadHandling.getCurrentDriverGamepad().right_stick_x)) > .1) {
             return true;
         } else return false;
     }
 
     public static void DriverControls() {
         DriveTrain drivetrain = Robot.getInstance().getDriveTrain();
+
+
 
         //Start button toggles field oriented control
         if (currentDriverGamepad.start && !previousDriverGamepad.start) {
@@ -86,9 +90,18 @@ public class GamepadHandling {
         }
 
         //Options button resets the Yaw
-        if (currentDriverGamepad.share && !previousDriverGamepad.share) {
+        if (currentDriverGamepad.x && !previousDriverGamepad.x) {
             Robot.getInstance().getGyro().resetAbsoluteYaw();
         }
+
+//        if (Robot.getInstance().getVision().noVisibleTags && (currentDriverGamepad.left_bumper && !previousDriverGamepad.left_bumper)) {
+//            Robot.getInstance().getDriveTrain().turnTo(105);
+//        }
+//
+//        if (Robot.getInstance().getVision().noVisibleTags && (currentDriverGamepad.right_bumper && !previousDriverGamepad.right_bumper)) {
+//            Robot.getInstance().getDriveTrain().turnTo(90);
+//        }
+
     }
 
     public static void OperatorControls() {
@@ -103,14 +116,8 @@ public class GamepadHandling {
             if(currentOperatorGamepad.b && !previousOperatorGamepad.b) {
                 Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
     }
-
-
-
 }
-    public static void mechTest() {
 
-
-    }
     public static void storeGamepadValuesFromLastLoop() {
         previousDriverGamepad = GamepadHandling.copy(currentDriverGamepad);
         previousOperatorGamepad = GamepadHandling.copy(currentOperatorGamepad);

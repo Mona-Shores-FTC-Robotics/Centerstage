@@ -37,6 +37,7 @@ public class Vision {
     final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
 
     private boolean autoDrive = false;
+    public boolean noVisibleTags;
 
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
@@ -128,8 +129,6 @@ public class Vision {
 
         // Initialize the AprilTag Processor
         aprilTagProcessor = new AprilTagProcessor.Builder()
-//                .setDrawAxes(false)
-//                .setDrawCubeProjection(false)
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
@@ -254,6 +253,7 @@ public class Vision {
 
         // Step through the list of detected tags and look for a matching tag
         List<AprilTagDetection> currentDetections = aprilTagProcessor.getDetections();
+
         for (AprilTagDetection detection : currentDetections) {
             if ((detection.metadata != null)) {
                 currentTag = AprilTagID.getByID(detection.id);

@@ -92,26 +92,26 @@ public class TeleOp_Vision extends LinearOpMode
             //Update Gyro values
             robot.getGyro().UpdateGyro();
 
+            //Look for AprilTags
+            robot.getVision().LookForAprilTags();
+
             //Process the Driver Controls
             GamepadHandling.DriverControls();
 
             //Process the Operator Controls
             GamepadHandling.OperatorControls();
 
-            //Look for AprilTags
-            robot.getVision().LookForAprilTags();
 
-            if (gamepad1.left_trigger>.1) {
-                Robot.getInstance().getDriveTrain().turnTo(40);
-            }
+
+
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             robot.getDriveTrain().drive();
 
             //Add AprilTag Telemetry
-//            if (gamepad1.left_trigger>.1) {
-//                robot.getVision().telemetryAprilTag();
-//            }
+            if (gamepad1.left_trigger>.1) {
+                robot.getVision().telemetryAprilTag();
+            }
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {

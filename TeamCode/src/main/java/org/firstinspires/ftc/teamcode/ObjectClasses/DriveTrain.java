@@ -47,9 +47,9 @@ public class DriveTrain {
     public double aprilTagStrafe = 0.0;
     public double aprilTagTurn = 0.0;
 
-    private final double DRIVE_SPEED_FACTOR = 1;
-    private final double STRAFE_SPEED_FACTOR = 1;
-    private final double TURN_SPEED_FACTOR = 1;
+    private final double DRIVE_SPEED_FACTOR = .9;
+    private final double STRAFE_SPEED_FACTOR = .9;
+    private final double TURN_SPEED_FACTOR = .7;
 
     private double safetyDriveSpeedFactor = 1.0;
     private double safetyStrafeSpeedFactor = 1.0;
@@ -89,7 +89,6 @@ public class DriveTrain {
             driveMotor[i].setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             driveMotor[i].setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             driveMotor[i].setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            //driveMotor[i].setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             driveMotor[i].setDirection(driveMotorDirections[i]);
         }
     }
@@ -102,34 +101,44 @@ public class DriveTrain {
         F=DEFAULT_F;
 
         driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-        drive = -driverGamepad.left_stick_y;
-        strafe = driverGamepad.left_stick_x;
-        turn = driverGamepad.right_stick_x;
+        drive = -driverGamepad.left_stick_y*DRIVE_SPEED_FACTOR;
+        strafe = driverGamepad.left_stick_x*STRAFE_SPEED_FACTOR;
+        turn = driverGamepad.right_stick_x*TURN_SPEED_FACTOR;
 
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (GamepadHandling.gamepadIsActive(driverGamepad))
+        if (GamepadHandling.driverGamepadIsActive())
         {
             //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
             setManualDriveControlFlag(true);
+
+            if (autoTurning){
+                turnUpdate();
+                turn = autoTurn;
+            }
+
             if (fieldOrientedControlFlag==true)
             {
-                CheckBackdropSafetyZoneFOC();
+               // CheckBackdropSafetyZoneFOC();
                 fieldOrientedControl();
             } else {
-                CheckBackdropSafetyZoneNormal();
-                //call the drive function with the drive/turn/strafe values set based on the driver controls
-                mecanumDriveSpeedControl();
+
+               // CheckBackdropSafetyZoneNormal();
             }
+            //call the drive function with the drive/turn/strafe values set based on the driver controls
+            mecanumDriveSpeedControl();
+
         } else if (!getManualDriveControlFlag() || autoTurning) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
            if (!autoTurning) {
-               moveRobot(aprilTagDrive, aprilTagStrafe, aprilTagTurn);
-           } else if (autoTurning)
-           {
+               drive = aprilTagDrive;
+               strafe = aprilTagStrafe;
+               turn = aprilTagTurn;
+           } else if (autoTurning) {
                turnUpdate();
-               moveRobot(aprilTagDrive, aprilTagStrafe, autoTurn);
+               drive = 0;
+               strafe = 0;
+               turn = autoTurn;
            }
-
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             drive = 0;
@@ -138,8 +147,9 @@ public class DriveTrain {
             for (int i = 0; i < 4; i++){
                 driveMotor[i].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             }
-            //mecanumDriveSpeedControl();
         }
+        //call the drive function with the drive/turn/strafe values set based on the driver controls
+        mecanumDriveSpeedControl();
     }
 
     private void CheckBackdropSafetyZoneNormal() {
@@ -188,68 +198,21 @@ public class DriveTrain {
         }
     }
 
-    public void mecanumDrivePowerControl (){
-        //TODO Should we be trying to do some sort of ramping?
 
-        // Put Mecanum Drive math and motor commands here.
-        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
-        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
-        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
-
-        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-
-        driveMotorPower[0] = leftFrontPower;
-        driveMotorPower[1] = rightFrontPower;
-        driveMotorPower[2] = leftBackPower;
-        driveMotorPower[3] = rightBackPower;
-
-
-        for (int i = 0; i < 4; i++ ) {
-            driveMotor[i].setPower(driveMotorPower[i]);
-        }
-    }
 
     public void fieldOrientedControl (){
 
         double y = drive;
         double x = strafe;
-        double rx = turn;
 
         double botHeading = Robot.getInstance().getGyro().currentAbsoluteYawRadians;
-        //ToDo:  Move this out of the drive code, should read all sensors at the beginning of teleop loops.
 
         // Rotate the movement direction counter to the bot's rotation
         strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
         drive = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-        strafe = Math.max( strafe * 1.1, 1);  // Counteract imperfect strafing
+//        strafe = Math.max( strafe * 1.1, 1);  // Counteract imperfect strafing
 
-        mecanumDriveSpeedControl();
-
-        // Denominator is the largest motor power (absolute value) or 1
-        // This ensures all the powers maintain the same ratio,
-        // but only if at least one is out of the range [-1, 1]
-        // ToDo: Once we have calculated the drive and strafe values, why don't we just plug them
-        //  into the exiting speed or power control methods instead of using a unique method.
-
-       /* double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        double leftFrontPower = (rotY + rotX + rx) / denominator;
-        double leftBackPower = (rotY - rotX + rx) / denominator;
-        double rightFrontPower = (rotY - rotX - rx) / denominator;
-        double rightBackPower = (rotY + rotX - rx) / denominator;
-
-        driveMotorPower[0] = leftFrontPower;
-        driveMotorPower[1] = rightFrontPower;
-        driveMotorPower[2] = leftBackPower;
-        driveMotorPower[3] = rightBackPower;
-
-        for (int i = 0; i < 4; i++ ) {
-            driveMotor[i].setPower(driveMotorPower[i]);
-        }
-        */
     }
 
     public void setAutoDrive(double autoDrive) { aprilTagDrive = autoDrive;}
@@ -339,7 +302,7 @@ public class DriveTrain {
 
     public void turnUpdate () {
         if (Math.abs(currentTurnError) > 2){
-            double motorPower = (currentTurnError < 0 ? -0.3 : 0.3);
+            double motorPower = (currentTurnError < 0 ? 0.7 : -0.7);
             autoTurn = motorPower;
             currentTurnError = turnDegrees - Robot.getInstance().getGyro().getCurrentRelativeYaw();
             Robot.getInstance().getActiveOpMode().telemetry.addData("error", currentTurnError);
@@ -368,6 +331,30 @@ public class DriveTrain {
             error += 360;
         }
         turn(error);
+    }
+
+
+
+    public void mecanumDrivePowerControl (){
+
+        // Put Mecanum Drive math and motor commands here.
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
+
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+
+        driveMotorPower[0] = leftFrontPower;
+        driveMotorPower[1] = rightFrontPower;
+        driveMotorPower[2] = leftBackPower;
+        driveMotorPower[3] = rightBackPower;
+
+        for (int i = 0; i < 4; i++ ) {
+            driveMotor[i].setPower(driveMotorPower[i]);
+        }
     }
 
 }
