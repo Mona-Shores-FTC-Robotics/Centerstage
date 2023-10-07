@@ -26,17 +26,27 @@ import java.util.concurrent.TimeUnit;
 
 public class Vision {
 
+    // Adjust these numbers to suit your robot.
+    final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
+
+    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
+    //  applied to the drive motors to correct the error.
+    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
+    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN =  -0.037 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  -0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+
+    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.7;   //  Clip the turn speed to this max value (adjust for your robot)
+
+    final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
-
-    // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
-
-    public boolean aprilTagDriving = false;
-    public boolean noVisibleTags;
 
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
@@ -106,19 +116,6 @@ public class Vision {
     private DeliverLocation deliverLocationRed = DeliverLocation.LEFT;
 
 
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  -0.04 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  -0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-
-    final double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
-
-
-    final double MAX_MANUAL_BACKDROP_SPEED = 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
 
     public boolean blueBackdropAprilTagFound=false;
     public boolean redBackdropAprilTagFound=false;
@@ -330,7 +327,6 @@ public class Vision {
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            aprilTagDriving = true;
         }
     }
 
@@ -374,7 +370,6 @@ public class Vision {
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            aprilTagDriving = true;
         }
     }
 
@@ -429,10 +424,7 @@ public class Vision {
 
                 telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
-            aprilTagDriving = true;
         }
-
-
 
     public void AutoDriveToBackdropRed() {
          if (getDeliverLocationRed().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected  ) {
@@ -600,9 +592,7 @@ public class Vision {
                 if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
                     ManualOverrideFlag = false;
                 }
-
             }
-
         }
     }
 

@@ -47,8 +47,8 @@ public class DriveTrain {
     public double aprilTagStrafe = 0.0;
     public double aprilTagTurn = 0.0;
 
-    public final double DRIVE_SPEED_FACTOR = .8;
-    private final double STRAFE_SPEED_FACTOR = .8;
+    public final double DRIVE_SPEED_FACTOR = .9;
+    private final double STRAFE_SPEED_FACTOR = .9;
     private final double TURN_SPEED_FACTOR = .5;
 
     private double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
@@ -121,14 +121,10 @@ public class DriveTrain {
                 fieldOrientedControl();
             }
 
-            boolean override = !GamepadHandling.getOverrideAprilTagDriving();
-            boolean tagsfound = vision.redBackdropAprilTagFound;
-            boolean colortrue = (initVisionProcessor.allianceColorFinal == InitVisionProcessor.AllianceColor.RED);
-
             //Aligning to the Backdrop AprilTags - CASE RED
             if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     vision.redBackdropAprilTagFound &&
-                    drive > 0 &&
+                    drive > .1 &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 vision.AutoDriveToBackdropRed();
                 drive = aprilTagDrive;
@@ -139,13 +135,17 @@ public class DriveTrain {
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     vision.blueBackdropAprilTagFound &&
-                    drive > 0 &&
+                    drive > .1 &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 vision.AutoDriveToBackdropBlue();
                 drive = aprilTagDrive;
                 strafe = aprilTagStrafe;
                 turn = aprilTagTurn;
+            } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && drive > 0)
+            {
+                drive = Math.min(drive, safetyDriveSpeedFactor);
             }
+
         }
 
         else if (autoTurning) {
@@ -164,16 +164,6 @@ public class DriveTrain {
         }
         //call the drive function with the drive/turn/strafe values set based on the driver controls
         mecanumDriveSpeedControl();
-    }
-
-    private void CheckBackdropSafetyZone() {
-        //this flag is set while looking for AprilTags
-        if(backdropSafetyZoneFlag)
-        {
-            if (drive>0) {
-                drive = Range.clip(drive, -safetyDriveSpeedFactor, safetyDriveSpeedFactor);
-            }
-        }
     }
 
     public void mecanumDriveSpeedControl() {
