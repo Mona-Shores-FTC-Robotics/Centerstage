@@ -13,12 +13,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionP
 
 public class DriveTrain {
     // DriveTrain tuning constants
-    private final double STICK_DEAD_ZONE = .1;
 
-    private double DEFAULT_P = 8.5; // default = 10
+    private double DEFAULT_P = 11; // default = 10
     private double DEFAULT_D = 3; // default = 0
     private double DEFAULT_I = 0; // default = 3
-    private double DEFAULT_F = 11.5; // default = 0
+    private double DEFAULT_F = 12; // default = 0
 
     private double P = DEFAULT_P; // default = 10
     private double D = DEFAULT_D; // default = 0
