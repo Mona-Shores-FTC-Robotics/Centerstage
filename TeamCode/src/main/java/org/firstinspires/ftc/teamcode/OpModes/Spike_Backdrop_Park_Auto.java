@@ -47,7 +47,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
         roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0, 0, 0));
 
-        RoutesSpikeBackdropPark.BuildRoutes();
+        RoutesSpikeBackdropPark.BuildRoutes(roadRunnerDrive);
 
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
@@ -62,7 +62,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
 
         //Reset Gyro
-        robot.getGyro().resetYaw();
+        robot.getGyro().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
         robot.getVision().telemetryForInitProcessing();

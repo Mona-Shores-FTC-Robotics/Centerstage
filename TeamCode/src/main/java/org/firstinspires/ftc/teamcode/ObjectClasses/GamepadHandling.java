@@ -81,14 +81,13 @@ public class GamepadHandling {
                 drivetrain.setFieldOrientedControlFlag(false);
             } else {
                 //drive in field oriented control
-                Robot.getInstance().getGyro().resetYaw();
                 drivetrain.setFieldOrientedControlFlag(true);
             }
         }
 
-        //Start button toggles field oriented control
-        if (currentDriverGamepad.options && !previousDriverGamepad.options) {
-            Robot.getInstance().getGyro().resetYaw();
+        //Options button resets the Yaw
+        if (currentDriverGamepad.share && !previousDriverGamepad.share) {
+            Robot.getInstance().getGyro().resetAbsoluteYaw();
         }
     }
 

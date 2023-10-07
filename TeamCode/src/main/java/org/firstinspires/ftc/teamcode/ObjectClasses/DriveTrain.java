@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.atan;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,17 +9,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
 
 public class DriveTrain {
     // DriveTrain tuning constants
     private final double STICK_DEAD_ZONE = .1;
 
-    private double DEFAULT_P = 9.5; // default = 10
+    private double DEFAULT_P = 8.5; // default = 10
     private double DEFAULT_D = 3; // default = 0
     private double DEFAULT_I = 0; // default = 3
-    private double DEFAULT_F = 12; // default = 0
+    private double DEFAULT_F = 11.5; // default = 0
 
     private double P = DEFAULT_P; // default = 10
     private double D = DEFAULT_D; // default = 0
@@ -48,9 +43,9 @@ public class DriveTrain {
     public double strafe = 0.0;
     public double turn = 0.0;
 
-    public double aDrive = 0.0;
-    public double aStrafe = 0.0;
-    public double aTurn = 0.0;
+    public double aprilTagDrive = 0.0;
+    public double aprilTagStrafe = 0.0;
+    public double aprilTagTurn = 0.0;
 
     private final double DRIVE_SPEED_FACTOR = 1;
     private final double STRAFE_SPEED_FACTOR = 1;
@@ -61,11 +56,16 @@ public class DriveTrain {
     private double safetyTurnSpeedFactor = 1.0;
 
     private boolean manualDriveControlFlag = true;
-    private boolean fieldOrientedControlFlag = false;
+    private boolean fieldOrientedControlFlag = true;
     private boolean backdropSafetyZoneFlag = false;
 
     private LinearOpMode activeOpMode;
     private Gamepad driverGamepad;
+
+    private boolean autoTurning=false;
+    private double currentTurnError;
+    private double autoTurn;
+    private double turnDegrees;
 
     /* Constructor */
     public DriveTrain() {
@@ -110,18 +110,26 @@ public class DriveTrain {
         if (GamepadHandling.gamepadIsActive(driverGamepad))
         {
             //Check if we are near the backdrop and scale our movement down if we are trying to move toward the backdrop
-            CheckBackdropSafetyZone();
             setManualDriveControlFlag(true);
             if (fieldOrientedControlFlag==true)
             {
+                CheckBackdropSafetyZoneFOC();
                 fieldOrientedControl();
             } else {
+                CheckBackdropSafetyZoneNormal();
                 //call the drive function with the drive/turn/strafe values set based on the driver controls
                 mecanumDriveSpeedControl();
             }
-        } else if (!getManualDriveControlFlag()) {
+        } else if (!getManualDriveControlFlag() || autoTurning) {
             //call the drive function with the drive/turn/strafe values that are already set by vision (or some other system)
-            moveRobot(aDrive, aStrafe, aTurn);
+           if (!autoTurning) {
+               moveRobot(aprilTagDrive, aprilTagStrafe, aprilTagTurn);
+           } else if (autoTurning)
+           {
+               turnUpdate();
+               moveRobot(aprilTagDrive, aprilTagStrafe, autoTurn);
+           }
+
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             drive = 0;
@@ -132,7 +140,7 @@ public class DriveTrain {
         }
     }
 
-    private void CheckBackdropSafetyZone() {
+    private void CheckBackdropSafetyZoneNormal() {
         //this flag is set while looking for AprilTags
         if (backdropSafetyZoneFlag)
         {
@@ -140,10 +148,24 @@ public class DriveTrain {
             // The size of the adjustments are based on how far away we are from the backdrop AprilTags
             if (drive>0) {
                 drive = drive * safetyDriveSpeedFactor;
+            }
+        }
+    }
+
+
+    private void CheckBackdropSafetyZoneFOC() {
+        //this flag is set while looking for AprilTags
+        if (backdropSafetyZoneFlag)
+        {
+            // Only modify if the driver was trying to go forward
+            // The size of the adjustments are based on how far away we are from the backdrop AprilTags
+            if (    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                    strafe > 0) {
                 strafe = strafe*safetyStrafeSpeedFactor;
-                turn = turn*safetyTurnSpeedFactor;
-                //ToDo:  do we need to limit turn and strafe commands?  In Robot orientation only +drive should be limited
-                //ToDo:  In FOC only left strafe or right strafe (depending on field side) should be limited.
+            } else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                strafe < 0)
+            {
+                strafe = strafe*safetyStrafeSpeedFactor;
             }
         }
     }
@@ -194,7 +216,7 @@ public class DriveTrain {
         double x = strafe;
         double rx = turn;
 
-        double botHeading = Robot.getInstance().getGyro().imu.getRobotYawPitchRollAngles().getYaw((AngleUnit.RADIANS));
+        double botHeading = Robot.getInstance().getGyro().currentAbsoluteYawRadians;
         //ToDo:  Move this out of the drive code, should read all sensors at the beginning of teleop loops.
 
         // Rotate the movement direction counter to the bot's rotation
@@ -225,9 +247,9 @@ public class DriveTrain {
         }
     }
 
-    public void setAutoDrive(double autoDrive) { aDrive = autoDrive;}
-    public void setAutoStrafe(double autoStrafe) { aStrafe = autoStrafe;}
-    public void setAutoTurn(double autoTurn) {  aTurn = autoTurn;  }
+    public void setAutoDrive(double autoDrive) { aprilTagDrive = autoDrive;}
+    public void setAutoStrafe(double autoStrafe) { aprilTagStrafe = autoStrafe;}
+    public void setAutoTurn(double autoTurn) {  aprilTagTurn = autoTurn;  }
 
     public void setManualDriveControlFlag(boolean flag) {
         manualDriveControlFlag = flag;
@@ -292,4 +314,55 @@ public class DriveTrain {
             activeOpMode.telemetry.addLine("Motor " + i + " Speed: " + JavaUtil.formatNumber(actualSpeed, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeed, 4, 1)  + " " + "Power: " +  Math.round(100.0 * driveMotor[i].getPower())/100.0);
         }
     }
+
+
+    public void setAllPower(double p) {setMotorPower(p,p,p,p);}
+
+    public void setMotorPower (double lF, double rF, double lB, double rB){
+        driveMotor[0].setPower(lF);
+        driveMotor[1].setPower(rF);
+        driveMotor[2].setPower(lB);
+        driveMotor[3].setPower(rB);
+    }
+
+    public void turn (double degrees) {
+        Robot.getInstance().getGyro().resetRelativeYaw();
+        currentTurnError = degrees;
+        turnDegrees = degrees;
+        autoTurning = true;
+    }
+
+    public void turnUpdate () {
+        if (Math.abs(currentTurnError) > 2){
+            double motorPower = (currentTurnError < 0 ? -0.3 : 0.3);
+            autoTurn = motorPower;
+            currentTurnError = turnDegrees - Robot.getInstance().getGyro().getCurrentRelativeYaw();
+            Robot.getInstance().getActiveOpMode().telemetry.addData("error", currentTurnError);
+            Robot.getInstance().getActiveOpMode().telemetry.update();
+        } else {
+            autoTurning = false;
+            autoTurn=0;
+        }
+    }
+
+    public void turnTo(double degrees) {
+        double error = degrees - Robot.getInstance().getGyro().currentAbsoluteYawDegrees;
+        if (error > 180) {
+            error -= 360;
+        } else if (error < -180) {
+            error += 360;
+        }
+        turn(error);
+    }
+
+    public void turnToPID(double degrees) {
+        double error = degrees - Robot.getInstance().getGyro().currentAbsoluteYawDegrees;
+        if (error > 180) {
+            error -= 360;
+        } else if (error < -180) {
+            error += 360;
+        }
+        turn(error);
+    }
+
 }

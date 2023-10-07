@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.OpModes.Spike_Backdrop_Park_Auto.ro
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+
 public class RoutesSpikeBackdropPark {
 
     //Variables to store routes for team prop center for all four start locations
@@ -26,7 +28,7 @@ public class RoutesSpikeBackdropPark {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildRoutes() {
+    public static void BuildRoutes(MecanumDrive roadRunnerDrive) {
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
@@ -125,6 +127,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, TANGENT_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, TANGENT_TOWARD_RED)
+                .splineToConstantHeading(PoseToVector(BLUE_NEUTRAL_PIXEL_STAGEDOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
@@ -136,6 +139,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(RED_SAFE_STRAFE, TANGENT_TOWARD_BLUE)
+                .splineToConstantHeading(PoseToVector(RED_NEUTRAL_PIXEL_STAGEDOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP), TANGENT_TOWARD_BACKSTAGE)

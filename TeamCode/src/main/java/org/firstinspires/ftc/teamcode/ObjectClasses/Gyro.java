@@ -25,85 +25,66 @@ import java.util.LinkedList;
 
 public class Gyro {
 
-   /* local OpMode members. */
+    private LinearOpMode activeOpMode;
+    private HardwareMap hwMap;
+    private IMU imu;
 
-    HardwareMap hwMap = null;
-    // BNO055IMU imu;
-   public IMU imu;
-    private ElapsedTime turnPeriod = new ElapsedTime();
 
-    //gyro members
     private final RevHubOrientationOnRobot hubOrientation =
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, // direction of control hub logo on robot
                     RevHubOrientationOnRobot.UsbFacingDirection.LEFT); // direction of USB ports on robot
 
+    public double currentAbsoluteYawDegrees;
+    public double currentAbsoluteYawRadians;
+    private double currentRelativeYaw;
+    private double lastRelativeYaw;
 
-    private int deltaLength = 5; // Number of readings used for calculating velocity and acceleration
-    public LinkedList<Orientation> angles = new LinkedList<>();
-    public LinkedList<Double> turnAngle = new LinkedList<>();
-    public LinkedList<Double> tiltAngle = new LinkedList<>();
-    public LinkedList<Double> tiltVelocity = new LinkedList<>();
-    public LinkedList<Double> tiltAccel = new LinkedList<>();
-    public LinkedList<ElapsedTime> readTime = new LinkedList<>();
 
-//    public Orientation originalOrientation;
-    LinearOpMode activeOpMode;
-
-    /* Constructor */
     public Gyro() {
 
     }
 
-    /* Initialize Hardware interfaces */
     public void init() {
-
-        IMU.Parameters myIMUparameters;
-
         activeOpMode = Robot.getInstance().getActiveOpMode();
-        // Save reference to Hardware map
         hwMap = Robot.getInstance().getHardwareMap();
-
         imu = hwMap.get(IMU.class, "imu");
-
         imu.initialize(new IMU.Parameters(hubOrientation));
         imu.resetYaw();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-
-    public void UpdateGyro(ElapsedTime runtime) {
-        int calcLocation = Math.min(deltaLength, angles.size());
-
-        readTime.add(0,runtime);
-        angles.add(0, imu.getRobotOrientation(AxesReference.INTRINSIC,AxesOrder.ZYX,AngleUnit.DEGREES));
+    public void UpdateGyro() {
         YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
-        AngularVelocity veloc = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
-
-        turnAngle.add(0, (double) angles.get(0).firstAngle);
-        tiltAngle.add(0, (double) angles.get(0).thirdAngle);  // This angle will vary based on the orientation of the control hub.
-
-        if(readTime.get(0) != readTime.get(calcLocation)) {
-            tiltVelocity.add(0, (tiltAngle.get(0) - tiltAngle.get(calcLocation)) / (readTime.get(0).seconds() - readTime.get(calcLocation).seconds()));
-            tiltAccel.add(0, (tiltVelocity.get(0) - tiltAngle.get(calcLocation)) / (readTime.get(0).seconds() - readTime.get(calcLocation).seconds()));
-        }
-
-        else {
-            tiltVelocity.add(0, 0.0);
-            tiltAccel.add(0, 0.0);
-        }
-
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
     }
 
-    public void resetYaw() {
+    public void resetAbsoluteYaw() {
         imu.resetYaw();
     }
 
-    public double getYawDegrees() {
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+    public void resetRelativeYaw(){
+        lastRelativeYaw = currentAbsoluteYawDegrees;
+        currentRelativeYaw = 0;
+    }
+
+    public double getCurrentRelativeYaw()
+    {
+        double deltaAngle = currentAbsoluteYawDegrees - lastRelativeYaw;
+
+        if (deltaAngle>180){
+            deltaAngle-=360;
+        } else if(deltaAngle <=-180)
+        {
+            deltaAngle +=360;
+        }
+        currentRelativeYaw+= deltaAngle;
+        lastRelativeYaw = currentAbsoluteYawDegrees;
+        telemetryGyro();
+        return currentRelativeYaw;
     }
 
     public void telemetryGyro() {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(getYawDegrees(), 4, 0));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 4, 0));
     }
 }

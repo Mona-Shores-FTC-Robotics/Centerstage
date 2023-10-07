@@ -37,6 +37,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.TurnPIDController;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -89,7 +90,7 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.storeCurrentGamepadValues();
 
             //Update Gyro values
-            robot.getGyro().UpdateGyro(robot.getTeleOpRuntime());
+            robot.getGyro().UpdateGyro();
 
             //Process the Driver Controls
             GamepadHandling.DriverControls();
@@ -100,13 +101,17 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             robot.getVision().LookForAprilTags();
 
+            if (gamepad1.left_trigger>.1) {
+                Robot.getInstance().getDriveTrain().turnTo(40);
+            }
+
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             robot.getDriveTrain().drive();
 
             //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-                robot.getVision().telemetryAprilTag();
-            }
+//            if (gamepad1.left_trigger>.1) {
+//                robot.getVision().telemetryAprilTag();
+//            }
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {

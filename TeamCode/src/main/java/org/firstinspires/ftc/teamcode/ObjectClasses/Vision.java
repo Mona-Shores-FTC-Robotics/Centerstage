@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Vision.AprilTagID.*;
 import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor.*;
@@ -277,8 +278,8 @@ public class Vision {
         DriveToRedAudienceWallTag();
 
         if (!autoDrive) {
-            AutoDriveToBackdropBlue();
-            AutoDriveToBackdropRed();
+            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.BLUE) AutoDriveToBackdropBlue();
+            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == AllianceColor.RED) AutoDriveToBackdropRed();
         }
 
         if (autoDrive) {
@@ -382,12 +383,13 @@ public class Vision {
     }
 
     private void AutoDriveToBackdropBlue() {
-        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected) {
+        if ((BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_CENTER.isDetected || BLUE_BACKDROP_RIGHT.isDetected) &&
+                ((GamepadHandling.getCurrentDriverGamepad().left_bumper || GamepadHandling.getCurrentDriverGamepad().right_bumper))) {
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
 
             //if we can see the middle april tag use that for navigation
-            if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            if (getDeliverLocation().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected)                   {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
                 double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
@@ -457,10 +459,11 @@ public class Vision {
 
 
     private void AutoDriveToBackdropRed() {
-        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_CENTER.isDetected || RED_BACKDROP_RIGHT.isDetected) {
+        if ((RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_CENTER.isDetected || RED_BACKDROP_RIGHT.isDetected) &&
+                ((GamepadHandling.getCurrentDriverGamepad().left_bumper || GamepadHandling.getCurrentDriverGamepad().right_bumper))) {
             Robot.getInstance().getDriveTrain().setBackdropSafetyZone(true);
             //if we can see the middle april tag use that for navigation
-            if (getDeliverLocation().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected) {
+            if (getDeliverLocation().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected){
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;

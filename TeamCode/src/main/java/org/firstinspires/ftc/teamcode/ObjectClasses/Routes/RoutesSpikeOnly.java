@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.OpModes.Spike_Backdrop_Park_Auto.ro
 
 import com.acmerobotics.roadrunner.Action;
 
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+
 public class RoutesSpikeOnly {
 
     //Variables to store routes for team prop center for all four start locations
@@ -24,7 +26,7 @@ public class RoutesSpikeOnly {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildRoutes() {
+    public static void BuildRoutes(MecanumDrive roadRunnerDrive) {
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .build();
