@@ -42,7 +42,6 @@ public class Motor_Mechanism_Test extends LinearOpMode
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
 
-
     @Override public void runOpMode()
     {
         //Set the type of Robot

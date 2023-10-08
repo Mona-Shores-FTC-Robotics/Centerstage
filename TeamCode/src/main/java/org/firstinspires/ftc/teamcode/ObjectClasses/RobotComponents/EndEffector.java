@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class IntakeOuttake {
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+
+public class EndEffector {
     public Servo pivot;
     public Servo leftIntake;
     public Servo rightIntake;
@@ -37,7 +39,7 @@ public class IntakeOuttake {
     boolean safeToRotate = false;
     boolean rotating = false;
 
-    public IntakeOuttake() {
+    public EndEffector() {
 
     }
 

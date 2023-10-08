@@ -4,6 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.DriveTrain;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
+
 public class GamepadHandling {
 
     private static Gamepad currentDriverGamepad;
@@ -18,6 +23,9 @@ public class GamepadHandling {
     public static double motorRev = 0.0;
 
     private static boolean overrideAprilTagDriving = false;
+
+    public static boolean LockedFlag = false;
+    public static boolean ManualOverrideFlag = false;
 
     public GamepadHandling() {
 
@@ -75,11 +83,11 @@ public class GamepadHandling {
     }
 
     public static void DriverControls() {
-        DriveTrain drivetrain = Robot.getInstance().getDriveTrain();
+        DriveTrain drivetrain = Robot.getInstance().getDrivetrain();
 
         //Start button toggles field oriented control
         if (currentDriverGamepad.start && !previousDriverGamepad.start) {
-            if (Robot.getInstance().getDriveTrain().getFieldOrientedControlFlag()) {
+            if (Robot.getInstance().getDrivetrain().getFieldOrientedControlFlag()) {
                 //drive normally - not in field oriented control
                 drivetrain.setFieldOrientedControlFlag(false);
             } else {
@@ -149,4 +157,91 @@ public class GamepadHandling {
     public static boolean getOverrideAprilTagDriving() {
         return overrideAprilTagDriving;
     }
+
+
+    public static void lockColorAndSide() {
+        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        InitVisionProcessor initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
+        telemetry.addLine("");
+
+        if (LockedFlag)
+        {
+            telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = false;
+            }
+        } else if (!LockedFlag)
+        {
+            if (ManualOverrideFlag)
+            {
+                initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
+                initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
+                initVisionProcessor.teamPropLocationFinal = initVisionProcessor.teamPropLocationOverride;
+            }
+            telemetry.addLine("Lock with B");
+            telemetry.addLine( initVisionProcessor.allianceColorFinal + " " + initVisionProcessor.sideOfFieldFinal + " " + initVisionProcessor.teamPropLocationFinal);
+
+            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
+            {
+                LockedFlag = true;
+            }
+
+            if (!ManualOverrideFlag) {
+                telemetry.addLine("Override with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = true;
+                }
+            } else if (ManualOverrideFlag) {
+                telemetry.addLine("Color/Side - d-pad, Prop - bumpers");
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
+                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
+                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.RED;
+                }
+
+                if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
+                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
+                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
+                    }
+                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
+                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
+                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
+                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
+                    }
+                }
+
+                if (GamepadHandling.getCurrentDriverGamepad().right_bumper && !GamepadHandling.getPreviousDriverGamepad().right_bumper) {
+                    if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.LEFT)
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.CENTER;
+                    else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.CENTER)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.RIGHT;
+                    } else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.RIGHT)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.LEFT;
+                    }
+                } else if (GamepadHandling.getCurrentDriverGamepad().left_bumper && !GamepadHandling.getPreviousDriverGamepad().left_bumper) {
+                    if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.LEFT)
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.RIGHT;
+                    else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.CENTER)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.LEFT;
+                    } else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.RIGHT)
+                    {
+                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.CENTER;
+                    }
+                }
+
+                telemetry.addLine("Override Off with A");
+                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
+                    ManualOverrideFlag = false;
+                }
+            }
+        }
+    }
+
 }

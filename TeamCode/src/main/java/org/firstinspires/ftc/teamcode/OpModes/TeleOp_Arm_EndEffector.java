@@ -36,8 +36,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name="TeleOp_Vision")
-public class TeleOp_Vision extends LinearOpMode
+@TeleOp(name="TeleOp_Arm_EndEffector")
+public class TeleOp_Arm_EndEffector extends LinearOpMode
 {
 
     /** Create the robot **/
@@ -46,7 +46,7 @@ public class TeleOp_Vision extends LinearOpMode
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        Constants.setRobot(Constants.RobotType.ROBOT_ARM_END_EFFECTOR);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
@@ -59,6 +59,7 @@ public class TeleOp_Vision extends LinearOpMode
 
         telemetry.setAutoClear(true);
         telemetry.clearAll();
+
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();

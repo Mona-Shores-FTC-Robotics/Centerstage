@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Vision.AprilTagID.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision.AprilTagID.*;
 import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor.*;
 
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -15,7 +15,9 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -27,7 +29,8 @@ import java.util.concurrent.TimeUnit;
 public class Vision {
 
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target for alignment (inches)
+    final double DESIRED_DISTANCE_SAFETY = 30; //  this is how close the camera should get to the target for safety(inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
@@ -157,7 +160,7 @@ public class Vision {
         telemetry.addLine("AprilTag on? " + visionPortal.getProcessorEnabled(aprilTagProcessor) + "       initVisionProcessor on? " + visionPortal.getProcessorEnabled(initVisionProcessor));
         telemetry.addLine("");
 
-        setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+        setManualExposure(7, 250);  // Use low exposure time to reduce motion blur
      }
 
     public InitVisionProcessor getInitVisionProcessor()
@@ -263,17 +266,17 @@ public class Vision {
                 currentTag.setDetected();
                 currentTag.storeDetection(detection);
 
-                double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE);
+                double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE_SAFETY);
 
                 // Use this to limit drive speed based on distance
                 double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < Robot.getInstance().getDriveTrain().getSafetyDriveSpeedFactor()) {
-                    Robot.getInstance().getDriveTrain().setSafetyDriveSpeedFactor(manualDriveLimit);
+                if (manualDriveLimit < Robot.getInstance().getDrivetrain().getSafetyDriveSpeedFactor()) {
+                    Robot.getInstance().getDrivetrain().setSafetyDriveSpeedFactor(manualDriveLimit);
                 }
             }
         }
 
-        if (currentDetections.size()==0)  Robot.getInstance().getDriveTrain().setSafetyDriveSpeedFactor(Robot.getInstance().getDriveTrain().DRIVE_SPEED_FACTOR);
+        if (currentDetections.size()==0)  Robot.getInstance().getDrivetrain().setSafetyDriveSpeedFactor(Robot.getInstance().getDrivetrain().DRIVE_SPEED_FACTOR);
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
         redBackdropAprilTagFound = CheckRedBackdropAprilTags();
@@ -302,9 +305,9 @@ public class Vision {
                     double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                     double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                    Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                    Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                    Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                    Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                    Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                    Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                     telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -321,9 +324,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -345,9 +348,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
@@ -364,9 +367,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -384,9 +387,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -400,9 +403,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -418,9 +421,9 @@ public class Vision {
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 // set the drive/turn strafe values for AutoDriving
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -437,9 +440,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -453,9 +456,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -469,9 +472,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveTrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDriveTrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDriveTrain().setAprilTagTurn(turn);
+                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
+                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
+                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -509,106 +512,6 @@ public class Vision {
     }
 
 
-    public boolean LockedFlag = false;
-    public boolean ManualOverrideFlag = false;
-
-    public void lockColorAndSide() {
-        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        telemetry.addLine("");
-
-        if (LockedFlag)
-        {
-            telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
-            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
-            {
-                LockedFlag = false;
-            }
-        } else if (!LockedFlag)
-        {
-            if (ManualOverrideFlag)
-            {
-                initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
-                initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
-                initVisionProcessor.teamPropLocationFinal = initVisionProcessor.teamPropLocationOverride;
-            }
-            telemetry.addLine("Lock with B");
-            telemetry.addLine( initVisionProcessor.allianceColorFinal + " " + initVisionProcessor.sideOfFieldFinal + " " + initVisionProcessor.teamPropLocationFinal);
-
-            if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
-            {
-                LockedFlag = true;
-            }
-
-            if (!ManualOverrideFlag) {
-                telemetry.addLine("Override with A");
-                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = true;
-                }
-            } else if (ManualOverrideFlag) {
-                telemetry.addLine("Color/Side - d-pad, Prop - bumpers");
-                if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
-                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
-                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_up && !GamepadHandling.getPreviousDriverGamepad().dpad_up) {
-                    initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.RED;
-                }
-
-                if (GamepadHandling.getCurrentDriverGamepad().dpad_left && !GamepadHandling.getPreviousDriverGamepad().dpad_left) {
-                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
-                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
-                    }
-                } else if (GamepadHandling.getCurrentDriverGamepad().dpad_right && !GamepadHandling.getPreviousDriverGamepad().dpad_right) {
-                    if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.RED) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.AUDIENCE;
-                    } else if (initVisionProcessor.allianceColorOverride == InitVisionProcessor.AllianceColor.BLUE) {
-                        initVisionProcessor.sideOfFieldOverride = InitVisionProcessor.SideOfField.BACKSTAGE;
-                    }
-                }
-
-                if (GamepadHandling.getCurrentDriverGamepad().right_bumper && !GamepadHandling.getPreviousDriverGamepad().right_bumper) {
-                    if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.LEFT)
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.CENTER;
-                    else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.CENTER)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.RIGHT;
-                    } else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.RIGHT)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.LEFT;
-                    }
-                } else if (GamepadHandling.getCurrentDriverGamepad().left_bumper && !GamepadHandling.getPreviousDriverGamepad().left_bumper) {
-                    if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.LEFT)
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.RIGHT;
-                    else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.CENTER)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.LEFT;
-                    } else if (initVisionProcessor.teamPropLocationOverride == TeamPropLocation.RIGHT)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = TeamPropLocation.CENTER;
-                    }
-                }
-
-                telemetry.addLine("Override Off with A");
-                if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = false;
-                }
-            }
-        }
-    }
-
-    private void setAllianceColorFinal(AllianceColor color) {
-        if (!LockedFlag)
-        {
-           initVisionProcessor.allianceColorFinal = color;
-        }
-    }
-
-    private void setSideOfFieldFinal(SideOfField side) {
-        if (!LockedFlag)
-        {
-           initVisionProcessor.sideOfFieldFinal = side;
-        }
-    }
 
 
 }

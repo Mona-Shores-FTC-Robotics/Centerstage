@@ -21,15 +21,16 @@ public class Constants {
   }
 
   public enum RobotType {
-        ROBOT_2023,
+        ROBOT_CENTERSTAGE,
+        ROBOT_ARM_END_EFFECTOR,
         ROBOT_CHASSIS,
         ROBOT_VISION,
         ROBOT_MOTOR_TEST_MECHANISM
   }
 
   public static RobotType getRobot() {
-     if (robot == RobotType.ROBOT_2023) {
-        return RobotType.ROBOT_2023;
+     if (robot == RobotType.ROBOT_CENTERSTAGE) {
+        return RobotType.ROBOT_CENTERSTAGE;
       } else if (robot == RobotType.ROBOT_VISION)
      {
          return RobotType.ROBOT_VISION;

@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class Lift {
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+
+public class LiftSlide {
     DcMotorEx lift;
     LinearOpMode activeOpMode;
     private double MOTOR_SPEED_RPM = 435;
@@ -64,7 +65,7 @@ public class Lift {
     boolean outputShifted = false;
 
     /* Constructor     */
-    public Lift() {
+    public LiftSlide() {
 
     }
 
@@ -75,10 +76,8 @@ public class Lift {
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lift.setDirection(DcMotorSimple.Direction.FORWARD);
         lift.setPower(0);
-       // lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-
-
 
     /**
      * Lift (targetPosition, currentPosition, minSafeHeight)

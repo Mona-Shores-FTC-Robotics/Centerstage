@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-import dalvik.system.DelegateLastClassLoader;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Arm;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.DriveTrain;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Gyro;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.EndEffector;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.LiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.TestIntake;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
 
 public class Robot {
 
@@ -21,9 +23,9 @@ public class Robot {
 
     private static DriveTrain drivetrain;
     private static Arm arm;
-    private static Lift lift;
+    private static LiftSlide liftSlide;
     private static Gyro gyro;
-    private static IntakeOuttake intake;
+    private static EndEffector endEffector;
     private static Vision vision;
     private static Telemetry telemetry;
     private static TestIntake testIntake;
@@ -37,10 +39,10 @@ public class Robot {
         teleOpRuntime = new ElapsedTime();
 
         drivetrain = new DriveTrain();
-        lift = new Lift();
+        liftSlide = new LiftSlide();
         arm = new Arm();
         gyro = new Gyro();
-        intake = new IntakeOuttake();
+        endEffector = new EndEffector();
         vision = new Vision();
         testIntake = new TestIntake();
 
@@ -53,18 +55,15 @@ public class Robot {
 
     public void initialize(HardwareMap hwMap) {
 
-        //Make the telemetry print to both the Driver Station and to the Dashboard
-        //TODO investigate how this is supposed to work
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
         switch (Constants.getRobot()) {
-            case ROBOT_2023:
+            case ROBOT_CENTERSTAGE:
             {
+                vision.init();
                 gyro.init();
                 drivetrain.init();
-                lift.init();
-                arm.init();
-                intake.init();
+                liftSlide.init();  //Uses a motor
+                arm.init(); // Uses a servo
+                endEffector.init(); //Uses a servo
                 break;
             }
             case ROBOT_CHASSIS:
@@ -80,9 +79,19 @@ public class Robot {
                 gyro.init();
                 break;
             }
-            case ROBOT_MOTOR_TEST_MECHANISM:
+            case ROBOT_MOTOR_TEST_MECHANISM: {
                 testIntake.init();
                 break;
+            }
+            case ROBOT_ARM_END_EFFECTOR:
+            {
+                vision.init();
+                gyro.init();
+                drivetrain.init();
+                arm.init(); // Uses a servo
+                endEffector.init(); //Uses a servo
+                break;
+            }
 
             default:
                 break;
@@ -107,11 +116,10 @@ public class Robot {
         return activeOpMode;
     }
     public HardwareMap getHardwareMap() {return activeOpMode.hardwareMap;}
-    public Gyro getGyro()  {
-        return gyro;
-    }
-    public DriveTrain getDriveTrain()  {return drivetrain;}
+    public Gyro getGyro()  {return gyro;    }
+    public DriveTrain getDrivetrain()  {return drivetrain;}
     public Vision getVision()  {return vision;}
+    public EndEffector getEndEffector()  {return endEffector;}
     public TestIntake getTestIntake()  {return testIntake;}
 
 }

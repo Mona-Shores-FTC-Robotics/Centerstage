@@ -21,11 +21,12 @@
  *
  */
 
-package org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground;
+package org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors;
 
 import android.graphics.Canvas;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
@@ -263,7 +264,7 @@ public class InitVisionProcessor implements VisionProcessor {
             percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             allianceColorFinal = AllianceColor.RED;
-           } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+        } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
@@ -320,14 +321,6 @@ public class InitVisionProcessor implements VisionProcessor {
                 sideOfFieldFinal = SideOfField.BACKSTAGE;
             }
 
-        }
-
-        //TODO this is only for testing MUST BE REMOVED BEFORE COMPETITION!!!!! OR AT LEAST THE TEAM PROP PART HAS TO GO.
-        if (Robot.getInstance().getVision().LockedFlag ==true && Robot.getInstance().getVision().ManualOverrideFlag==true){
-
-            teamPropLocationFinal = Robot.getInstance().getVision().getInitVisionProcessor().teamPropLocationOverride;
-            allianceColorFinal = Robot.getInstance().getVision().getInitVisionProcessor().allianceColorOverride;
-            sideOfFieldFinal = Robot.getInstance().getVision().getInitVisionProcessor().sideOfFieldOverride;
         }
 
         /*
@@ -395,7 +388,6 @@ public class InitVisionProcessor implements VisionProcessor {
         rightZoneBlue.release();
         leftStageDoorZone.release();
         rightStageDoorZone.release();
-
 
         return null;
     }

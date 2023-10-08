@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionPLayground.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 @Autonomous(name = "Spike Only Auto")
@@ -56,7 +56,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
             // Add Vision Init Processor Telemetry
             robot.getVision().telemetryForInitProcessing();
-            robot.getVision().lockColorAndSide();
+            GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
