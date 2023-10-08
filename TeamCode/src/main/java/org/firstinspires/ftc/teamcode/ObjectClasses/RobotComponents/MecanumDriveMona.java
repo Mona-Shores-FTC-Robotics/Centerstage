@@ -62,6 +62,8 @@ public final class MecanumDriveMona {
     public double strafe;
     public double turn;
 
+    P,I,D,F
+
     public static class Params {
         // drive model parameters
         public double inPerTick =  0.022365950344252; // 90.8in-37.2 2396.5ticks
@@ -466,25 +468,28 @@ public final class MecanumDriveMona {
 
 
     public void mecanumDriveSpeedControl() {
+        //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
+
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-        leftBack
+        double leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        double leftFrontTargetSpeed
-        leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
-        rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
-        rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
+        leftFront.setVelocityPIDFCoefficients(P,I,D,F);
+        leftFront.setVelocity(leftFrontTargetSpeed);
 
-        driveMotorTargetSpeed[0] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-        driveMotorTargetSpeed[1] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-        driveMotorTargetSpeed[2] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-        driveMotorTargetSpeed[3] = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+        rightFront.setVelocityPIDFCoefficients(P,I,D,F);
+        rightFront.setVelocity(rightFrontTargetSpeed);
 
-        for (int i = 0; i < 4; i++ ){
-            driveMotor[i].setVelocityPIDFCoefficients(P,I,D,F);
-            driveMotor[i].setVelocity(driveMotorTargetSpeed[i]);
+        leftBack.setVelocityPIDFCoefficients(P,I,D,F);
+        leftBack.setVelocity(leftBackTargetSpeed);
+
+        rightBack.setVelocityPIDFCoefficients(P,I,D,F);
+        rightBack.setVelocity(rightBackTargetSpeed);
         }
     }
 
