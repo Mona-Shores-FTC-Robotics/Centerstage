@@ -88,4 +88,8 @@ public class Gyro {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 4, 0));
     }
+
+    public IMU getIMU() {
+        return imu;
+    }
 }

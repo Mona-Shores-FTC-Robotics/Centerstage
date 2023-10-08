@@ -29,12 +29,15 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -42,6 +45,7 @@ public class TeleOp_Vision extends LinearOpMode
 
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
+    MecanumDriveMona mecanumDrive;
 
     @Override public void runOpMode()
     {
@@ -52,6 +56,7 @@ public class TeleOp_Vision extends LinearOpMode
         robot.initialize(robot.getHardwareMap());
 
         telemetry = robot.getActiveOpMode().telemetry;
+        mecanumDrive= robot.getMecanumDriveMona();
 
         //initialize the Gamepads
         GamepadHandling.init();
@@ -105,7 +110,23 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.OperatorControls();
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDrivetrain().drive();
+            robot.getDriveController().setDriveStrafeTurnValues();
+
+            mecanumDrive.setDrivePowers(new PoseVelocity2d(
+                    new Vector2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x
+                    ),
+                    -gamepad1.right_stick_x
+            ));
+
+            mecanumDrive.updatePoseEstimate();
+
+            telemetry.addData("x", mecanumDrive.pose.position.x);
+            telemetry.addData("y", mecanumDrive.pose.position.y);
+            telemetry.addData("heading", mecanumDrive.pose.heading);
+
+//            robot.getMecanumDriveMona().mecanumDriveSpeedControl();
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
@@ -114,7 +135,7 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                robot.getDrivetrain().telemetryDriveTrain();
+                robot.getMecanumDriveMona().telemetryDriveTrain();
                 robot.getGyro().telemetryGyro();
             }
             telemetry.update();

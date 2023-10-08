@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.DriveTrain;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
@@ -83,16 +83,16 @@ public class GamepadHandling {
     }
 
     public static void DriverControls() {
-        DriveTrain drivetrain = Robot.getInstance().getDrivetrain();
+        DriveController driveController = Robot.getInstance().getDriveController();
 
         //Start button toggles field oriented control
         if (currentDriverGamepad.start && !previousDriverGamepad.start) {
-            if (Robot.getInstance().getDrivetrain().getFieldOrientedControlFlag()) {
+            if (driveController.fieldOrientedControlFlag==true) {
                 //drive normally - not in field oriented control
-                drivetrain.setFieldOrientedControlFlag(false);
+                driveController.fieldOrientedControlFlag = false;
             } else {
                 //drive in field oriented control
-                drivetrain.setFieldOrientedControlFlag(true);
+                driveController.fieldOrientedControlFlag = true;
             }
         }
 

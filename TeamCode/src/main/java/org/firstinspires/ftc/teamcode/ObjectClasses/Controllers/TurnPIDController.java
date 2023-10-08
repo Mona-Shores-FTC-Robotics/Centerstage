@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.Controllers;
 
 import static java.lang.Math.signum;
 

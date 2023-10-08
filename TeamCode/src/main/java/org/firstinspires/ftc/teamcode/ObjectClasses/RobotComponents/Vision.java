@@ -5,8 +5,6 @@ import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor.*;
-
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -15,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -270,13 +267,13 @@ public class Vision {
 
                 // Use this to limit drive speed based on distance
                 double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < Robot.getInstance().getDrivetrain().getSafetyDriveSpeedFactor()) {
-                    Robot.getInstance().getDrivetrain().setSafetyDriveSpeedFactor(manualDriveLimit);
+                if (manualDriveLimit < Robot.getInstance().getMecanumDriveMona().getSafetyDriveSpeedFactor()) {
+                    Robot.getInstance().getMecanumDriveMona().setSafetyDriveSpeedFactor(manualDriveLimit);
                 }
             }
         }
 
-        if (currentDetections.size()==0)  Robot.getInstance().getDrivetrain().setSafetyDriveSpeedFactor(Robot.getInstance().getDrivetrain().DRIVE_SPEED_FACTOR);
+        if (currentDetections.size()==0)  Robot.getInstance().getMecanumDriveMona().setSafetyDriveSpeedFactor(Robot.getInstance().getMecanumDriveMona().DRIVE_SPEED_FACTOR);
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
         redBackdropAprilTagFound = CheckRedBackdropAprilTags();
@@ -305,9 +302,9 @@ public class Vision {
                     double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                     double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                    Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                    Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                    Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                    Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                    Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                    Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                     telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -324,9 +321,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -348,9 +345,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
@@ -367,9 +364,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -387,9 +384,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -403,9 +400,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -421,9 +418,9 @@ public class Vision {
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
                 // set the drive/turn strafe values for AutoDriving
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -440,9 +437,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -456,9 +453,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -472,9 +469,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDrivetrain().setAprilTagDrive(drive);
-                Robot.getInstance().getDrivetrain().setAprilTagStrafe(strafe);
-                Robot.getInstance().getDrivetrain().setAprilTagTurn(turn);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
+                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
 
                 telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }

@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Arm;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.DriveTrain;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.EndEffector;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.LiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.TestIntake;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
 
@@ -21,7 +22,7 @@ public class Robot {
     private static LinearOpMode activeOpMode;
     private static HardwareMap hardwareMap;
 
-    private static DriveTrain drivetrain;
+    private static MecanumDriveMona mecanumDrive;
     private static Arm arm;
     private static LiftSlide liftSlide;
     private static Gyro gyro;
@@ -30,6 +31,8 @@ public class Robot {
     private static Telemetry telemetry;
     private static TestIntake testIntake;
 
+    private static DriveController driveController;
+
     /* Constructor */
     private Robot(LinearOpMode opMode) {
         activeOpMode = opMode;
@@ -37,14 +40,14 @@ public class Robot {
         telemetry = opMode.telemetry;
 
         teleOpRuntime = new ElapsedTime();
-
-        drivetrain = new DriveTrain();
+        mecanumDrive = new MecanumDriveMona();
         liftSlide = new LiftSlide();
         arm = new Arm();
         gyro = new Gyro();
         endEffector = new EndEffector();
         vision = new Vision();
         testIntake = new TestIntake();
+        driveController = new DriveController();
 
     }
 
@@ -60,7 +63,7 @@ public class Robot {
             {
                 vision.init();
                 gyro.init();
-                drivetrain.init();
+                mecanumDrive.init();
                 liftSlide.init();  //Uses a motor
                 arm.init(); // Uses a servo
                 endEffector.init(); //Uses a servo
@@ -68,15 +71,16 @@ public class Robot {
             }
             case ROBOT_CHASSIS:
             {
-                drivetrain.init();
+                mecanumDrive.init();
                 gyro.init();
                 break;
             }
             case ROBOT_VISION:
             {
                 vision.init();
-                drivetrain.init();
+                mecanumDrive.init();
                 gyro.init();
+                driveController.init();
                 break;
             }
             case ROBOT_MOTOR_TEST_MECHANISM: {
@@ -87,7 +91,7 @@ public class Robot {
             {
                 vision.init();
                 gyro.init();
-                drivetrain.init();
+                mecanumDrive.init();
                 arm.init(); // Uses a servo
                 endEffector.init(); //Uses a servo
                 break;
@@ -97,7 +101,6 @@ public class Robot {
                 break;
         }
     }
-
 
     /** Getters **/
     // Static method to get single instance of Robot
@@ -117,10 +120,12 @@ public class Robot {
     }
     public HardwareMap getHardwareMap() {return activeOpMode.hardwareMap;}
     public Gyro getGyro()  {return gyro;    }
-    public DriveTrain getDrivetrain()  {return drivetrain;}
+    public MecanumDriveMona getMecanumDriveMona()  {return mecanumDrive;}
     public Vision getVision()  {return vision;}
     public EndEffector getEndEffector()  {return endEffector;}
     public TestIntake getTestIntake()  {return testIntake;}
+    public DriveController getDriveController()  {return driveController;}
 
 }
+
 

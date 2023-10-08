@@ -106,7 +106,7 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
             GamepadHandling.OperatorControls();
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDrivetrain().drive();
+            robot.getMecanumDriveMona().drive();
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
@@ -115,7 +115,7 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                robot.getDrivetrain().telemetryDriveTrain();
+                robot.getMecanumDriveMona().telemetryDriveTrain();
                 robot.getGyro().telemetryGyro();
             }
             telemetry.update();
