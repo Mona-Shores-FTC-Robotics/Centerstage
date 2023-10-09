@@ -6,6 +6,7 @@ import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.ConstantTrajectoryBuilder;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TimeTurn;
@@ -87,7 +88,8 @@ public class GamepadHandling {
 
         problemLedEffect = new Gamepad.LedEffect.Builder()
                 .addStep(0, 1, 0, 500) // Show green for 250ms
-                .addStep(1, 1, 1, 500) // Show white for 250ms
+                .addStep(0, 0, 0, 500) // Show white for 250ms
+                .addStep(0, 1, 0, LED_DURATION_CONTINUOUS) // Show white for 250ms
                 .build();
 
         //set the rumble counter to 0
@@ -431,7 +433,7 @@ public class GamepadHandling {
     }
 
     public static void problemInInitLed() {
-            Robot.getInstance().getActiveOpMode().gamepad1.runLedEffect(problemLedEffect);
-            Robot.getInstance().getActiveOpMode().gamepad2.runLedEffect(problemLedEffect);
+            Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
+            Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
         }
 }
