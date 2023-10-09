@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class Vision {
 
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 20; //  this is how close the camera should get to the target for alignment (inches)
+    final double DESIRED_DISTANCE = 50; //  this is how close the camera should get to the target for alignment (inches)
     final double DESIRED_DISTANCE_SAFETY = 100; //  this is how close the camera should get to the target for safety(inches)
 
     //this is the tolerance before we rumble if vision is seeing things that are close
@@ -45,8 +45,8 @@ public class Vision {
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN = 0.02;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = -0.005;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN = 0.005;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double STRAFE_GAIN = -0.02;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN = -0.02;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double SAFETY_SPEED_GAIN = 0.01;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
 
