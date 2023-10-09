@@ -1,0 +1,11 @@
+
+Tasks:
+1. Test and Tweak our Auto files: Spike Only Auto and Spike Backdrop Park Auto 
+2. Teleop Mode with the Arm and End Effector
+3. Driving to April Tag
+
+Updates:
+1.	Organization changes
+2.	auto drive to april tags (ellie/oliver/morgan)
+3.	RRintegration -	Dashboard/Actions/Localization
+4.	Gamepad (rumbe/color)
