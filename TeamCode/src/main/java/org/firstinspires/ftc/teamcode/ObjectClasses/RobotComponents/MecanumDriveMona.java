@@ -61,6 +61,8 @@ import java.util.List;
 @Config
 public final class MecanumDriveMona {
 
+
+
     public double drive;
     public double strafe;
     public double turn;
@@ -565,10 +567,8 @@ public final class MecanumDriveMona {
         rightBack.setPower(rB);
     }
 
+    public class DrawCurrentPosition implements Action {
 
-    public final class DrawCurrentPosition implements Action {
-
-        @Override
         public boolean run(@NonNull TelemetryPacket p) {
 
             Canvas c = p.fieldOverlay();
@@ -577,9 +577,10 @@ public final class MecanumDriveMona {
             c.setStroke("#3F51B5");
             drawRobot(c, pose);
 
-            return true;
+            return false;
         }
     }
+
 
 }
 

@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TimeTurn;
+import com.acmerobotics.roadrunner.TurnActionFactory;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -41,7 +47,8 @@ public class GamepadHandling {
     private static Telemetry telemetry;
 
     private static Gamepad.RumbleEffect endGameRumbleEffect;
-    private static Gamepad.RumbleEffect problemRumbleEffect;
+    private static Gamepad.RumbleEffect
+            problemRumbleEffect;
     private static Gamepad.LedEffect problemLedEffect;
 
     private static int timeoutRumbleCounter;
@@ -155,24 +162,25 @@ public class GamepadHandling {
 
         if (GamepadHandling.driverButtonPressed("y"))
         {
-            Actions.runBlocking(Robot.getInstance().getMecanumDriveMona().actionBuilder(mecanumDrive.pose)
-                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x+6, mecanumDrive.pose.position.y))
-                    .build());
+//            runBlocking(Robot.getInstance().getMecanumDriveMona().actionBuilder(mecanumDrive.pose)
+//                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x+6, mecanumDrive.pose.position.y))
+//                    .build());
             telemetry.addLine("y");
         }
 
         if (GamepadHandling.driverButtonPressed("a"))
         {
-            Actions.runBlocking(mecanumDrive.actionBuilder(mecanumDrive.pose)
-                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x-6, mecanumDrive.pose.position.y))
-                    .build());
-            telemetry.setAutoClear(false);
+//            runBlocking(mecanumDrive.actionBuilder(mecanumDrive.pose)
+//                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x-6, mecanumDrive.pose.position.y))
+//                    .build());
             telemetry.addLine("a");
         }
 
         if (GamepadHandling.getCurrentDriverGamepad().b)
         {
             telemetry.addLine("b");
+
+
 
         }
 
@@ -403,13 +411,13 @@ public class GamepadHandling {
 
     public static void setRed() {
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS );
-        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
+        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
     }
 
 
     public static void setBlue() {
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
-        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
+        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
     }
 
     public static void problemInInitRumble() {
