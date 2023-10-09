@@ -36,7 +36,7 @@ public class Vision {
 
     // Adjust these numbers to suit your robot.
     final double DESIRED_DISTANCE = 20; //  this is how close the camera should get to the target for alignment (inches)
-    final double DESIRED_DISTANCE_SAFETY = 50; //  this is how close the camera should get to the target for safety(inches)
+    final double DESIRED_DISTANCE_SAFETY = 35; //  this is how close the camera should get to the target for safety(inches)
 
     //this is the tolerance before we rumble if vision is seeing things that are close
     final double PERCENT_TOLERANCE = 2;
@@ -44,17 +44,16 @@ public class Vision {
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN = 0.04;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN = -0.03;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN = -0.03;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double SAFETY_SPEED_GAIN = 0.01;   //
+    final double STRAFE_GAIN =  -0.037 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  -0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double SAFETY_SPEED_GAIN = 0.01;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.7;   //  Clip the turn speed to this max value (adjust for your robot)
 
-    final double MAX_AUTO_SPEED = 0.7;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE = 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
-
-    final double MAX_MANUAL_BACKDROP_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
 
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -165,7 +164,8 @@ public class Vision {
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
         visionPortal.setProcessorEnabled(aprilTagProcessor, false);
 
-//        aprilTagProcessor.setDecimation(6.0f);
+        //I think the default value is like 2.5f or so
+//        aprilTagProcessor.setDecimation(2f);
 
         telemetry.addLine("AprilTag on? " + visionPortal.getProcessorEnabled(aprilTagProcessor) + "       initVisionProcessor on? " + visionPortal.getProcessorEnabled(initVisionProcessor));
         telemetry.addLine("");

@@ -96,7 +96,7 @@ public class DriveController {
                 controllerTurn = aprilTagTurn;
             } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > .1)
             {
-               // controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
+                controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
             }
         }
 
