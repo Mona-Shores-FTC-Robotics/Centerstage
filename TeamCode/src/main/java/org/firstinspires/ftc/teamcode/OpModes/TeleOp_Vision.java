@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -38,6 +36,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
+
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -49,6 +48,7 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
+
         //Set the type of Robot
         Constants.setRobot(Constants.RobotType.ROBOT_VISION);
 
@@ -64,6 +64,7 @@ public class TeleOp_Vision extends LinearOpMode
 
         telemetry.setAutoClear(true);
         telemetry.clearAll();
+
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
@@ -78,7 +79,7 @@ public class TeleOp_Vision extends LinearOpMode
         }
 
         //Display the initVision telemetry a final time
-        robot.getVision().telemetryForInitProcessing();
+        telemetry.clearAll();
         telemetry.update();
 
         //After Init switch the vision processing to AprilTags
@@ -87,11 +88,9 @@ public class TeleOp_Vision extends LinearOpMode
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
 
+
         while (opModeIsActive())
         {
-            telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
-            telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
 
             //Store the previous loop's gamepad values and new current gamepad values
             GamepadHandling.storeGamepadValuesFromLastLoop();
@@ -112,24 +111,25 @@ public class TeleOp_Vision extends LinearOpMode
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             robot.getDriveController().setDriveStrafeTurnValues();
 
-            mecanumDrive.setDrivePowers(new PoseVelocity2d(
-                    new Vector2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x
-                    ),
-                    -gamepad1.right_stick_x
-            ));
+//            mecanumDrive.setDrivePowers(new PoseVelocity2d(
+//                    new Vector2d(
+//                            -gamepad1.left_stick_y,
+//                            -gamepad1.left_stick_x
+//                    ),
+//                    -gamepad1.right_stick_x
+//            ));
+
+            mecanumDrive.mecanumDriveSpeedControl();
 
             mecanumDrive.updatePoseEstimate();
 
-            telemetry.addData("x", mecanumDrive.pose.position.x);
-            telemetry.addData("y", mecanumDrive.pose.position.y);
-            telemetry.addData("heading", mecanumDrive.pose.heading);
-
-//            robot.getMecanumDriveMona().mecanumDriveSpeedControl();
-
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
+
+                telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
+                telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
+                telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+
                 robot.getVision().telemetryAprilTag();
             }
 
@@ -137,8 +137,12 @@ public class TeleOp_Vision extends LinearOpMode
             if (gamepad1.right_trigger>.1) {
                 robot.getMecanumDriveMona().telemetryDriveTrain();
                 robot.getGyro().telemetryGyro();
+                telemetry.addData("x", mecanumDrive.pose.position.x);
+                telemetry.addData("y", mecanumDrive.pose.position.y);
+                telemetry.addData("heading", mecanumDrive.pose.heading);
             }
-            telemetry.update();
+
+            Robot.getInstance().getActiveOpMode().telemetry.update();
         }
         robot.getVision().getVisionPortal().close();
         telemetry.clearAll();

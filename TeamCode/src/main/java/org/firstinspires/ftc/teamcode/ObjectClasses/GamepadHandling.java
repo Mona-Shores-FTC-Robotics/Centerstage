@@ -1,13 +1,21 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
+
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
 
 public class GamepadHandling {
 
@@ -19,13 +27,24 @@ public class GamepadHandling {
     private static Gamepad driverGamepad;
     private static Gamepad operatorGamepad;
 
+
     public static double motorFwd = 0.0;
     public static double motorRev = 0.0;
 
     private static boolean overrideAprilTagDriving = false;
 
-    public static boolean LockedFlag = false;
-    public static boolean ManualOverrideFlag = false;
+    public static boolean LockedInitSettingsFlag = false;
+    public static boolean ManualOverrideInitSettingsFlag = false;
+    private static HashMap<String, Integer> buttonMap = new HashMap<String, Integer>();
+
+    private static MecanumDriveMona mecanumDrive;
+    private static Telemetry telemetry;
+
+    private static Gamepad.RumbleEffect endGameRumbleEffect;
+    private static Gamepad.RumbleEffect problemRumbleEffect;
+    private static Gamepad.LedEffect problemLedEffect;
+
+    private static int timeoutRumbleCounter;
 
     public GamepadHandling() {
 
@@ -39,6 +58,33 @@ public class GamepadHandling {
 
         driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
         operatorGamepad = Robot.getInstance().getActiveOpMode().gamepad2;
+
+        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,1,0,LED_DURATION_CONTINUOUS );
+        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0,LED_DURATION_CONTINUOUS );
+        endGameRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
+                .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .addStep(0.0, 0.0, 250)  //  Pause for 250 mSec
+                .addStep(1.0, 0.0, 250)  //  Rumble left motor 100% for 250 mSec
+                .build();
+
+        problemRumbleEffect = new Gamepad.RumbleEffect.Builder()
+                .addStep(1.0, 1.0, 500)  //  Rumble both motors 100% for 500 mSec
+                .addStep(0.0, 0.0, 1000)  //  Pause for 1 Sec
+                .addStep(.5, .5, 250)  //  Rumble both motors 50% for 250 mSec
+                .addStep(0.0, 0.0, 1000)  //  Pause for 1 Sec
+                .build();
+
+        problemLedEffect = new Gamepad.LedEffect.Builder()
+                .addStep(0, 1, 0, 500) // Show green for 250ms
+                .addStep(1, 1, 1, 500) // Show white for 250ms
+                .build();
+
+        //set the rumble counter to 0
+        timeoutRumbleCounter=0;
     }
 
     @NonNull
@@ -96,23 +142,99 @@ public class GamepadHandling {
             }
         }
 
-        //Options button resets the Yaw
-        if (currentDriverGamepad.x && !previousDriverGamepad.x) {
-            Robot.getInstance().getGyro().resetAbsoluteYaw();
-        }
-
         if (currentDriverGamepad.left_bumper)
         {
             overrideAprilTagDriving = true;
         } else overrideAprilTagDriving =false;
 
-//        if (Robot.getInstance().getVision().noVisibleTags && (currentDriverGamepad.left_bumper && !previousDriverGamepad.left_bumper)) {
-//            Robot.getInstance().getDriveTrain().turnTo(105);
-//        }
-//
-//        if (Robot.getInstance().getVision().noVisibleTags && (currentDriverGamepad.right_bumper && !previousDriverGamepad.right_bumper)) {
-//            Robot.getInstance().getDriveTrain().turnTo(90);
-//        }
+
+        //Reset Gyro Button
+        if (GamepadHandling.driverButtonPressed("x")){
+            Robot.getInstance().getGyro().resetAbsoluteYaw();
+        }
+
+        if (GamepadHandling.driverButtonPressed("y"))
+        {
+            Actions.runBlocking(Robot.getInstance().getMecanumDriveMona().actionBuilder(mecanumDrive.pose)
+                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x+6, mecanumDrive.pose.position.y))
+                    .build());
+            telemetry.addLine("y");
+        }
+
+        if (GamepadHandling.driverButtonPressed("a"))
+        {
+            Actions.runBlocking(mecanumDrive.actionBuilder(mecanumDrive.pose)
+                    .strafeTo(new Vector2d(mecanumDrive.pose.position.x-6, mecanumDrive.pose.position.y))
+                    .build());
+            telemetry.setAutoClear(false);
+            telemetry.addLine("a");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().b)
+        {
+            telemetry.addLine("b");
+
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().dpad_up)
+        {
+            telemetry.addLine("d-pad up");
+        }
+        if (GamepadHandling.getCurrentDriverGamepad().dpad_down)
+        {
+            telemetry.addLine("d-pad down");
+        }
+        if (GamepadHandling.getCurrentDriverGamepad().dpad_left)
+        {
+            telemetry.addLine("d-pad left");
+        }
+        if (GamepadHandling.getCurrentDriverGamepad().dpad_right)
+        {
+            telemetry.addLine("d-pad right");
+        }
+
+        //this button is labeled as "share" on our gamepad
+        if (GamepadHandling.getCurrentDriverGamepad().back)
+        {
+            telemetry.addLine("back");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().ps)
+        {
+            telemetry.addLine("ps");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().touchpad_finger_1)
+        {
+            telemetry.addLine("touchpad_finger_1");
+        }
+
+
+        if (GamepadHandling.getCurrentDriverGamepad().touchpad_finger_2)
+        {
+            telemetry.addLine("touchpad_finger_2");
+        }
+
+        //these dont work
+        if (GamepadHandling.getCurrentDriverGamepad().share)
+        {
+            telemetry.addLine("share");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().options)
+        {
+            telemetry.addLine("options");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().guide)
+        {
+            telemetry.addLine("guide");
+        }
+
+        if (GamepadHandling.getCurrentDriverGamepad().touchpad)
+        {
+            telemetry.addLine("touchpad");
+        }
 
     }
 
@@ -164,16 +286,16 @@ public class GamepadHandling {
         InitVisionProcessor initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
         telemetry.addLine("");
 
-        if (LockedFlag)
+        if (LockedInitSettingsFlag)
         {
             telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
             if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
             {
-                LockedFlag = false;
+                LockedInitSettingsFlag = false;
             }
-        } else if (!LockedFlag)
+        } else if (!LockedInitSettingsFlag)
         {
-            if (ManualOverrideFlag)
+            if (ManualOverrideInitSettingsFlag)
             {
                 initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
                 initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
@@ -184,15 +306,15 @@ public class GamepadHandling {
 
             if (GamepadHandling.getCurrentDriverGamepad().b && !GamepadHandling.getPreviousDriverGamepad().b)
             {
-                LockedFlag = true;
+                LockedInitSettingsFlag = true;
             }
 
-            if (!ManualOverrideFlag) {
+            if (!ManualOverrideInitSettingsFlag) {
                 telemetry.addLine("Override with A");
                 if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = true;
+                    ManualOverrideInitSettingsFlag = true;
                 }
-            } else if (ManualOverrideFlag) {
+            } else if (ManualOverrideInitSettingsFlag) {
                 telemetry.addLine("Color/Side - d-pad, Prop - bumpers");
                 if (GamepadHandling.getCurrentDriverGamepad().dpad_down && !GamepadHandling.getPreviousDriverGamepad().dpad_down) {
                     initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
@@ -238,10 +360,70 @@ public class GamepadHandling {
 
                 telemetry.addLine("Override Off with A");
                 if (GamepadHandling.getCurrentDriverGamepad().a && !GamepadHandling.getPreviousDriverGamepad().a) {
-                    ManualOverrideFlag = false;
+                    ManualOverrideInitSettingsFlag = false;
                 }
             }
         }
     }
 
+    public static boolean driverButtonPressed(String buttonName) {
+        Field currentField= null;
+        try {
+            currentField = currentDriverGamepad.getClass().getField(buttonName);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        Field previousField = null;
+        try {
+            previousField = previousDriverGamepad.getClass().getField(buttonName);
+        } catch ( NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        boolean currentButton = false;
+        try {
+                 currentButton = (boolean) currentField.getBoolean(currentDriverGamepad);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+         }
+        boolean previousButton = false;
+
+        try {
+            previousButton = (boolean) previousField.getBoolean(previousDriverGamepad);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (currentButton && !previousButton);
+    }
+
+    public static void endGameRumble() {
+        Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
+        Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
+    }
+
+    public static void setRed() {
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS );
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
+    }
+
+
+    public static void setBlue() {
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
+    }
+
+    public static void problemInInitRumble() {
+
+        //only do the rumble 5 times so we don't burn out the rumble motors
+        if  (!Robot.getInstance().getActiveOpMode().gamepad1.isRumbling() && timeoutRumbleCounter < 5) {
+            timeoutRumbleCounter+=1;
+            Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(problemRumbleEffect);
+            Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(problemRumbleEffect);
+        }
+    }
+
+    public static void problemInInitLed() {
+            Robot.getInstance().getActiveOpMode().gamepad1.runLedEffect(problemLedEffect);
+            Robot.getInstance().getActiveOpMode().gamepad2.runLedEffect(problemLedEffect);
+        }
 }

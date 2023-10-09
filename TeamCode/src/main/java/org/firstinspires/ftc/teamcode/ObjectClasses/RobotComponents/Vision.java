@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision.AprilTagID.*;
+
+import android.graphics.Canvas;
 import android.util.Size;
+
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.Range;
 
@@ -13,34 +17,44 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.opencv.core.Mat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Vision {
 
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 15; //  this is how close the camera should get to the target for alignment (inches)
-    final double DESIRED_DISTANCE_SAFETY = 30; //  this is how close the camera should get to the target for safety(inches)
+    final double DESIRED_DISTANCE = 20; //  this is how close the camera should get to the target for alignment (inches)
+    final double DESIRED_DISTANCE_SAFETY = 100; //  this is how close the camera should get to the target for safety(inches)
+
+    //this is the tolerance before we rumble if vision is seeing things that are close
+    final double PERCENT_TOLERANCE = 2;
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double STRAFE_GAIN =  -0.037 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  -0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double SPEED_GAIN = 0.02;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double STRAFE_GAIN = -0.005;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN = 0.005;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.7;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double SAFETY_SPEED_GAIN = 0.01;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
 
-    final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE = 0.3;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
+
+    final double MAX_MANUAL_BACKDROP_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
 
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -59,16 +73,16 @@ public class Vision {
     }
 
     public enum AprilTagID {
-        BLUE_BACKDROP_LEFT (1),
-        BLUE_BACKDROP_CENTER (2),
-        BLUE_BACKDROP_RIGHT (3),
-        RED_BACKDROP_LEFT (4),
-        RED_BACKDROP_CENTER (5),
-        RED_BACKDROP_RIGHT (6),
-        RED_AUDIENCE_WALL_LARGE (7),
-        RED_AUDIENCE_WALL_SMALL (8),
-        BLUE_AUDIENCE_WALL_SMALL (9),
-        BLUE_AUDIENCE_WALL_LARGE (10);
+        BLUE_BACKDROP_LEFT(1),
+        BLUE_BACKDROP_CENTER(2),
+        BLUE_BACKDROP_RIGHT(3),
+        RED_BACKDROP_LEFT(4),
+        RED_BACKDROP_CENTER(5),
+        RED_BACKDROP_RIGHT(6),
+        RED_AUDIENCE_WALL_LARGE(7),
+        RED_AUDIENCE_WALL_SMALL(8),
+        BLUE_AUDIENCE_WALL_SMALL(9),
+        BLUE_AUDIENCE_WALL_LARGE(10);
 
         private final int id;
         private boolean isDetected;
@@ -80,28 +94,25 @@ public class Vision {
             this.detection = null;
         }
 
-        public static AprilTagID getByID(int id){
-            for (AprilTagID tag : values()){
-                if(tag.id == id)
+        public static AprilTagID getByID(int id) {
+            for (AprilTagID tag : values()) {
+                if (tag.id == id)
                     return tag;
             }
             return null;
         }
 
-        public static void setAllUnDetected()
-        {
-            for (AprilTagID tag : values()){
+        public static void setAllUnDetected() {
+            for (AprilTagID tag : values()) {
                 tag.isDetected = false;
             }
         }
 
-        public void setDetected()
-        {
+        public void setDetected() {
             this.isDetected = true;
         }
 
-        public void storeDetection(AprilTagDetection detect)
-        {
+        public void storeDetection(AprilTagDetection detect) {
             this.detection = detect;
         }
     }
@@ -116,9 +127,8 @@ public class Vision {
     private DeliverLocation deliverLocationRed = DeliverLocation.LEFT;
 
 
-
-    public boolean blueBackdropAprilTagFound=false;
-    public boolean redBackdropAprilTagFound=false;
+    public boolean blueBackdropAprilTagFound = false;
+    public boolean redBackdropAprilTagFound = false;
 
     public Vision() {
 
@@ -138,13 +148,13 @@ public class Vision {
                 .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                 // ... these parameters are fx, fy, cx, cy.
-                //.setLensIntrinsics(1394.6027293299926, 1394.6027293299926, 995.588675691456, 599.3212928484164)
+                .setLensIntrinsics(1394.6027293299926, 1394.6027293299926, 995.588675691456, 599.3212928484164)
                 .build();
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(Robot.getInstance().getHardwareMap().get(WebcamName.class, "Webcam 1"))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
-                .setCameraResolution(new Size(640 , 480))
+                .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .addProcessor(initVisionProcessor)
                 .addProcessor(aprilTagProcessor)
@@ -154,17 +164,21 @@ public class Vision {
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
         visionPortal.setProcessorEnabled(aprilTagProcessor, false);
 
+        aprilTagProcessor.setDecimation(2.0f);
+
         telemetry.addLine("AprilTag on? " + visionPortal.getProcessorEnabled(aprilTagProcessor) + "       initVisionProcessor on? " + visionPortal.getProcessorEnabled(initVisionProcessor));
         telemetry.addLine("");
 
-        setManualExposure(7, 250);  // Use low exposure time to reduce motion blur
-     }
+        setManualExposure(5, 250);  // Use low exposure time to reduce motion blur
+    }
 
-    public InitVisionProcessor getInitVisionProcessor()
-    {
+    public InitVisionProcessor getInitVisionProcessor() {
         return initVisionProcessor;
     }
-    public AprilTagProcessor getAprilTagProcessor() { return aprilTagProcessor;}
+
+    public AprilTagProcessor getAprilTagProcessor() {
+        return aprilTagProcessor;
+    }
 
 
     /*
@@ -192,8 +206,7 @@ public class Vision {
         }
 
         // Set camera controls unless we are stopping.
-        if (!Robot.getInstance().getActiveOpMode().isStopRequested())
-        {
+        if (!Robot.getInstance().getActiveOpMode().isStopRequested()) {
             ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
             if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
@@ -266,25 +279,31 @@ public class Vision {
                 double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE_SAFETY);
 
                 // Use this to limit drive speed based on distance
-                double manualDriveLimit = Range.clip(rangeError * SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < Robot.getInstance().getMecanumDriveMona().getSafetyDriveSpeedFactor()) {
-                    Robot.getInstance().getMecanumDriveMona().setSafetyDriveSpeedFactor(manualDriveLimit);
+                double manualDriveLimit = Range.clip(rangeError * SAFETY_SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                if (manualDriveLimit < Robot.getInstance().getDriveController().safetyDriveSpeedFactor) {
+                    Robot.getInstance().getDriveController().safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
-        if (currentDetections.size()==0)  Robot.getInstance().getMecanumDriveMona().setSafetyDriveSpeedFactor(Robot.getInstance().getMecanumDriveMona().DRIVE_SPEED_FACTOR);
+        //If no april tags are detected then reset the safety drive speed factor
+        if (currentDetections.size() == 0) {
+            Robot.getInstance().getDriveController().safetyDriveSpeedFactor = Robot.getInstance().getDriveController().DRIVE_SPEED_FACTOR;
+        }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
         redBackdropAprilTagFound = CheckRedBackdropAprilTags();
     }
 
     private boolean CheckBlueBackdropAprilTags() {
-        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected) return true;
+        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected)
+            return true;
         else return false;
     }
+
     private boolean CheckRedBackdropAprilTags() {
-        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected) return true;
+        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected)
+            return true;
         else return false;
     }
 
@@ -292,23 +311,22 @@ public class Vision {
         if (Robot.getInstance().getActiveOpMode().gamepad1.left_bumper && (RED_AUDIENCE_WALL_LARGE.isDetected || RED_AUDIENCE_WALL_SMALL.isDetected)) {
             //if we can see the small april tag use that for navigation
             if (RED_AUDIENCE_WALL_SMALL.isDetected && RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range < 35) {
-                    // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                    double rangeError = (RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range - DESIRED_DISTANCE);
-                    double headingError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing;
-                    double yawError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw;
+                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+                double rangeError = (RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range - DESIRED_DISTANCE);
+                double headingError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing;
+                double yawError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw;
 
-                    // Use the speed and turn "gains" to calculate how we want the robot to move.
-                    double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                    double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                    double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                // Use the speed and turn "gains" to calculate how we want the robot to move.
+                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                    Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                    Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                    Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+                Robot.getInstance().getDriveController().aprilTagDrive = drive;
+                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                    telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-            else if (RED_AUDIENCE_WALL_LARGE.isDetected ) // use the large tag until we can see the small tag
+                telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            } else if (RED_AUDIENCE_WALL_LARGE.isDetected) // use the large tag until we can see the small tag
             {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (RED_AUDIENCE_WALL_LARGE.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -321,9 +339,9 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+                Robot.getInstance().getDriveController().aprilTagDrive = drive;
+                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -345,14 +363,13 @@ public class Vision {
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+                Robot.getInstance().getDriveController().aprilTagDrive = drive;
+                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
-            }
-            else if (BLUE_AUDIENCE_WALL_LARGE.isDetected)// use the large tag until we can see the small tag
+            } else if (BLUE_AUDIENCE_WALL_LARGE.isDetected)// use the large tag until we can see the small tag
             {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
                 double rangeError = (BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -362,11 +379,11 @@ public class Vision {
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
                 double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                 double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                double strafe = Range.clip(-yawError *  STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+                Robot.getInstance().getDriveController().aprilTagDrive = drive;
+                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -375,122 +392,115 @@ public class Vision {
 
     public void AutoDriveToBackdropBlue() {
         if (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && BLUE_BACKDROP_RIGHT.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = BLUE_BACKDROP_RIGHT.detection.ftcPose.bearing;
-                double yawError = BLUE_BACKDROP_RIGHT.detection.ftcPose.yaw;
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = BLUE_BACKDROP_RIGHT.detection.ftcPose.bearing;
+            double yawError = BLUE_BACKDROP_RIGHT.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-          else if (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = BLUE_BACKDROP_LEFT.detection.ftcPose.bearing;
-                double yawError = BLUE_BACKDROP_LEFT.detection.ftcPose.yaw;
+            telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        } else if (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && BLUE_BACKDROP_LEFT.isDetected) {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = BLUE_BACKDROP_LEFT.detection.ftcPose.bearing;
+            double yawError = BLUE_BACKDROP_LEFT.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
+            telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        } else if (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
+            double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
 
-            else if (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && BLUE_BACKDROP_CENTER.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
-                double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            // set the drive/turn strafe values for AutoDriving
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                // set the drive/turn strafe values for AutoDriving
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
-
-                telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
+            telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
         }
+    }
 
     public void AutoDriveToBackdropRed() {
-         if (getDeliverLocationRed().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected  ) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = RED_BACKDROP_LEFT.detection.ftcPose.bearing;
-                double yawError = RED_BACKDROP_LEFT.detection.ftcPose.yaw;
+        if (getDeliverLocationRed().equals(DeliverLocation.LEFT) && RED_BACKDROP_LEFT.isDetected) {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = RED_BACKDROP_LEFT.detection.ftcPose.bearing;
+            double yawError = RED_BACKDROP_LEFT.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-            else if (getDeliverLocationRed().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected){
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;
-                double yawError = RED_BACKDROP_CENTER.detection.ftcPose.yaw;
+            telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        } else if (getDeliverLocationRed().equals(DeliverLocation.CENTER) && RED_BACKDROP_CENTER.isDetected) {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;
+            double yawError = RED_BACKDROP_CENTER.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-            else if (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && RED_BACKDROP_RIGHT.isDetected) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
-                double headingError = RED_BACKDROP_RIGHT.detection.ftcPose.bearing;
-                double yawError = RED_BACKDROP_RIGHT.detection.ftcPose.yaw;
+            telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        } else if (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && RED_BACKDROP_RIGHT.isDetected) {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            double rangeError = (RED_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = RED_BACKDROP_RIGHT.detection.ftcPose.bearing;
+            double yawError = RED_BACKDROP_RIGHT.detection.ftcPose.yaw;
 
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getMecanumDriveMona().setAprilTagDrive(drive);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagStrafe(strafe);
-                Robot.getInstance().getMecanumDriveMona().setAprilTagTurn(turn);
+            Robot.getInstance().getDriveController().aprilTagDrive = drive;
+            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveController().aprilTagTurn = turn;
 
-                telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
+            telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
         }
+    }
 
 
-    public void setDeliverLocation(DeliverLocation d)
-    {
+    public void setDeliverLocation(DeliverLocation d) {
         deliverLocationRed = d;
         deliverLocationBlue = d;
     }
 
 
-    public DeliverLocation getDeliverLocationBlue()
-    {
+    public DeliverLocation getDeliverLocationBlue() {
         return deliverLocationBlue;
     }
-    public DeliverLocation getDeliverLocationRed()
-    {
+
+    public DeliverLocation getDeliverLocationRed() {
         return deliverLocationRed;
     }
 
@@ -506,10 +516,34 @@ public class Vision {
         telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getRightPercent(), 4, 1));
         telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentLeftStageDoorZone, 4, 1));
         telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
+
+
+        //rumble the controller if there is a vision issue
+        if (hasLargestNumberWithinTolerance(
+                getInitVisionProcessor().getLeftPercent(),
+                getInitVisionProcessor().getCenterPercent(),
+                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE)) {
+            GamepadHandling.problemInInitRumble();
+            GamepadHandling.problemInInitLed();
+        } else {
+            //show the color of the Alliance on the gamepads
+            if (Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
+                GamepadHandling.setRed();
+            } else if (Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.BLUE) {
+                GamepadHandling.setBlue();
+            }
+        }
     }
 
+    public boolean areNumbersClose(double num1, double num2, double tolerance) {
+        double diff = Math.abs(num1 - num2);
+        return diff <= tolerance;
+    }
 
-
+    public boolean hasLargestNumberWithinTolerance(double num1, double num2, double num3, double tolerance) {
+        double largest = Math.max(num1, Math.max(num2, num3));
+        return areNumbersClose(largest, num1, tolerance) || areNumbersClose(largest, num2, tolerance) || areNumbersClose(largest, num3, tolerance);
+    }
 
 }
 

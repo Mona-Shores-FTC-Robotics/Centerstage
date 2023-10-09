@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.DisplacementTrajectory;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.HolonomicController;
 import com.acmerobotics.roadrunner.MecanumKinematics;
@@ -25,8 +26,10 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TimeTurn;
+import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
@@ -62,7 +65,28 @@ public final class MecanumDriveMona {
     public double strafe;
     public double turn;
 
-    P,I,D,F
+    private double DEFAULT_P = 11; // default = 10
+    private double DEFAULT_D = 3; // default = 0
+    private double DEFAULT_I = 0; // default = 3
+    private double DEFAULT_F = 12; // default = 0
+
+    private double P = DEFAULT_P; // default = 10
+    private double D = DEFAULT_D; // default = 0
+    private double I = DEFAULT_I; // default = 3
+    private double F = DEFAULT_F; // default = 0
+
+    // DriveTrain physical constants
+    private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
+    public final double TICKS_PER_REV = 537.7;
+    private final double DRIVE_GEAR_REDUCTION = 1.0;
+    private final double WHEEL_DIAMETER_INCHES = 3.93701;
+    private final double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+    public final double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+
+    private double leftFrontTargetSpeed;
+    private double rightFrontTargetSpeed;
+    private double leftBackTargetSpeed;
+    private double rightBackTargetSpeed;
 
     public static class Params {
         // drive model parameters
@@ -422,7 +446,6 @@ public final class MecanumDriveMona {
         }
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
-
         return twist.velocity().value();
     }
 
@@ -466,7 +489,6 @@ public final class MecanumDriveMona {
         );
     }
 
-
     public void mecanumDriveSpeedControl() {
         //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
 
@@ -474,72 +496,90 @@ public final class MecanumDriveMona {
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-        double leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-        double rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-        double leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-        double rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+        leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        leftFront.setVelocityPIDFCoefficients(P,I,D,F);
+        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
         leftFront.setVelocity(leftFrontTargetSpeed);
 
-        rightFront.setVelocityPIDFCoefficients(P,I,D,F);
+        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
         rightFront.setVelocity(rightFrontTargetSpeed);
 
-        leftBack.setVelocityPIDFCoefficients(P,I,D,F);
+        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
         leftBack.setVelocity(leftBackTargetSpeed);
 
-        rightBack.setVelocityPIDFCoefficients(P,I,D,F);
+        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
         rightBack.setVelocity(rightBackTargetSpeed);
-        }
-    }
-
-    public void telemetryDriveTrain() {
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("");
-
-        activeOpMode.telemetry.addData("Drive: ", drive);
-        activeOpMode.telemetry.addData("Strafe: ", strafe);
-        activeOpMode.telemetry.addData("Turn: ", turn);
-
-        for (int i = 0; i < 4; i++ ){
-            double targetSpeed = Math.round(100.0 * driveMotorTargetSpeed[i] / TICKS_PER_REV);
-            double actualSpeed = Math.round(100.0 * driveMotor[i].getVelocity() / TICKS_PER_REV);
-            double power =  Math.round(100.0 * driveMotorPower[i])/100.0;
-            activeOpMode.telemetry.addLine("Motor " + i + " Speed: " + JavaUtil.formatNumber(actualSpeed, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeed, 4, 1)  + " " + "Power: " +  Math.round(100.0 * driveMotor[i].getPower())/100.0);
-        }
-    }
-
-
-    public void setAllPower(double p) {setMotorPower(p,p,p,p);}
-
-    public void setMotorPower (double lF, double rF, double lB, double rB){
-        driveMotor[0].setPower(lF);
-        driveMotor[1].setPower(rF);
-        driveMotor[2].setPower(lB);
-        driveMotor[3].setPower(rB);
     }
 
     public void mecanumDrivePowerControl (){
 
         // Put Mecanum Drive math and motor commands here.
-        double dPercent = abs(controllerDrive) / (abs(controllerDrive) + abs(controllerStrafe) + abs(controllerTurn));
-        double sPercent = abs(controllerStrafe) / (abs(controllerDrive) + abs(controllerTurn) + abs(controllerStrafe));
-        double tPercent = abs(controllerTurn) / (abs(controllerDrive) + abs(controllerTurn) + abs(controllerStrafe));
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-        double leftFrontPower = ((controllerDrive * dPercent) + (controllerStrafe * sPercent) + (controllerTurn * tPercent));
-        double rightFrontPower = ((controllerDrive * dPercent) + (-controllerStrafe * sPercent) + (-controllerTurn * tPercent));
-        double leftBackPower = ((controllerDrive * dPercent) + (-controllerStrafe * sPercent) + (controllerTurn * tPercent));
-        double rightBackPower = ((controllerDrive * dPercent) + (controllerStrafe * sPercent) + (-controllerTurn * tPercent));
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        driveMotorPower[0] = leftFrontPower;
-        driveMotorPower[1] = rightFrontPower;
-        driveMotorPower[2] = leftBackPower;
-        driveMotorPower[3] = rightBackPower;
-
-        for (int i = 0; i < 4; i++ ) {
-            driveMotor[i].setPower(driveMotorPower[i]);
-        }
+        leftFront.setPower(leftFrontPower);
+        rightFront.setPower(rightFrontPower);
+        leftBack.setPower(leftBackPower);
+        rightBack.setPower(rightBackPower);
     }
 
+
+    public void telemetryDriveTrain() {
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("");
+
+        Robot.getInstance().getActiveOpMode().telemetry.addData("Drive: ", drive);
+        Robot.getInstance().getActiveOpMode().telemetry.addData("Strafe: ", strafe);
+        Robot.getInstance().getActiveOpMode().telemetry.addData("Turn: ", turn);
+
+        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / TICKS_PER_REV);
+        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / TICKS_PER_REV);
+        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / TICKS_PER_REV);
+        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / TICKS_PER_REV);
+
+        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / TICKS_PER_REV);
+        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / TICKS_PER_REV);
+        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / TICKS_PER_REV);
+        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / TICKS_PER_REV);
+
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
+    }
+
+    public void setAllPower(double p) {setMotorPower(p,p,p,p);}
+
+    public void setMotorPower (double lF, double rF, double lB, double rB){
+        leftFront.setPower(lF);
+        rightFront.setPower(rF);
+        leftBack.setPower(lB);
+        rightBack.setPower(rB);
+    }
+
+
+    public final class DrawCurrentPosition implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket p) {
+
+            Canvas c = p.fieldOverlay();
+            drawPoseHistory(c);
+
+            c.setStroke("#3F51B5");
+            drawRobot(c, pose);
+
+            return true;
+        }
+    }
 
 }
 

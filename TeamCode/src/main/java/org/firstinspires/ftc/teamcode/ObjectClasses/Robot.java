@@ -78,8 +78,8 @@ public class Robot {
             case ROBOT_VISION:
             {
                 vision.init();
-                mecanumDrive.init();
                 gyro.init();
+                mecanumDrive.init();
                 driveController.init();
                 break;
             }

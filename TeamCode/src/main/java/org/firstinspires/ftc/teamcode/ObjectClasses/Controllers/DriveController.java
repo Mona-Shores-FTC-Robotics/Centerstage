@@ -25,7 +25,7 @@ public class DriveController {
     private final double STRAFE_SPEED_FACTOR = .9;
     private final double TURN_SPEED_FACTOR = .5;
 
-    private double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
+    public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
     public boolean fieldOrientedControlFlag = true;
 
@@ -94,9 +94,9 @@ public class DriveController {
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
-            } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > 0)
+            } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > .1)
             {
-                controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
+               // controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
             }
         }
 

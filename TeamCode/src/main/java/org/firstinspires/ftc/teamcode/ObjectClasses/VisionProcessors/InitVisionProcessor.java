@@ -259,17 +259,7 @@ public class InitVisionProcessor implements VisionProcessor {
             binaryStageDoorMat.copyTo(frame);
         }
 
-        if (percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-            percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-            percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
-        {
-            allianceColorFinal = AllianceColor.RED;
-        } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-                percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
-                percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
-        {
-            allianceColorFinal = AllianceColor.BLUE;
-        }
+        DetermineAllianceColor();
 
         if (allianceColorFinal == AllianceColor.RED) {
             //Figure out and Store the Team Prop Location
@@ -289,11 +279,11 @@ public class InitVisionProcessor implements VisionProcessor {
             //Figure out which side of field we are on by combbining alliance and stage door detection
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
-                sideOfFieldFinal = SideOfField.BACKSTAGE;
+                setSideOfFieldFinal(SideOfField.BACKSTAGE);
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.AUDIENCE;
+                setSideOfFieldFinal(SideOfField.AUDIENCE);
             }
         }
 
@@ -392,6 +382,25 @@ public class InitVisionProcessor implements VisionProcessor {
         return null;
     }
 
+    private void DetermineAllianceColor() {
+
+
+        if (    percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
+        {
+            setAllianceColorFinal(AllianceColor.RED);
+            //set problem red variable?
+
+        } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+                percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
+        {
+            setAllianceColorFinal(AllianceColor.BLUE);
+            //set problem blue variable?
+        }
+    }
+
 
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
@@ -431,15 +440,37 @@ public class InitVisionProcessor implements VisionProcessor {
         return teamPropLocationFinal;
     }
 
-    public AllianceColor getAllianceColorFinal()
-    {
-        return allianceColorFinal;
+    public void setSideOfFieldFinal(SideOfField side) {
+        if (GamepadHandling.LockedInitSettingsFlag != true)
+        {
+            sideOfFieldFinal = side;
+        }
     }
 
     public SideOfField getSideOfFieldFinal()
     {
-        return sideOfFieldFinal;
+        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
+            return sideOfFieldOverride;
+        } else
+        {
+            return sideOfFieldFinal;
+        }
     }
 
+    public void setAllianceColorFinal(AllianceColor color) {
+        if (GamepadHandling.LockedInitSettingsFlag != true)
+        {
+            allianceColorFinal = color;
+        }
+    }
 
+    public AllianceColor getAllianceColorFinal()
+    {
+        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
+            return allianceColorOverride;
+        } else
+        {
+            return allianceColorFinal;
+        }
+    }
 }
