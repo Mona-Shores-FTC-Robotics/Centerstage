@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Controllers;
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
@@ -110,6 +111,10 @@ public class DriveController {
             controllerDrive = 0;
             controllerStrafe = 0;
             controllerTurn = 0;
+            mecanumDrive.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            mecanumDrive.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            mecanumDrive.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            mecanumDrive.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
 
         mecanumDrive.drive = controllerDrive;
