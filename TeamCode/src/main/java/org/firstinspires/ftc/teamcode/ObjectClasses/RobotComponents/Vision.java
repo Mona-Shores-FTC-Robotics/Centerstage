@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 public class Vision {
 
     // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 20; //  this is how close the camera should get to the target for alignment (inches)
+    final double DESIRED_DISTANCE = 10; //  this is how close the camera should get to the target for alignment (inches)
     final double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
     //this is the tolerance before we rumble if vision is seeing things that are close
@@ -41,12 +41,12 @@ public class Vision {
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
     final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double SAFETY_SPEED_GAIN = 0.01;   //
-    final double STRAFE_GAIN =  -0.037 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  -0.03  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double STRAFE_GAIN =  -0.025 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+    final double TURN_GAIN   =  -0.025  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
     final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.7;   //  Clip the turn speed to this max value (adjust for your robot)
+    final double MAX_AUTO_STRAFE= 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_TURN  = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
 
     final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
 
@@ -467,9 +467,10 @@ public class Vision {
 
     public void AutoDriveToBackdropRed() {
 
-        if (    (RED_BACKDROP_LEFT.isDetected && getDeliverLocationRed().equals(DeliverLocation.LEFT))          ||
+        if (    RED_BACKDROP_LEFT.isDetected && (
+                getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER.isDetected)    ||
-                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT.isDetected))
+                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -487,9 +488,11 @@ public class Vision {
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT);
 
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        } else if (    (RED_BACKDROP_CENTER.isDetected && getDeliverLocationRed().equals(DeliverLocation.CENTER))  ||
+        } else if (    RED_BACKDROP_CENTER.isDetected && (
+               getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
                        (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT.isDetected)    ||
                        (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT.isDetected))
+        )
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -508,9 +511,10 @@ public class Vision {
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
         }
-        else if (    (RED_BACKDROP_RIGHT.isDetected && getDeliverLocationRed().equals(DeliverLocation.RIGHT))  ||
+        else if ( RED_BACKDROP_RIGHT.isDetected && (
+                 getDeliverLocationRed().equals(DeliverLocation.RIGHT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT.isDetected)    ||
-                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER.isDetected))
+                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER.isDetected)))
         {
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -593,7 +597,7 @@ public class Vision {
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .08) && (Math.abs(strafe) < .08) && (Math.abs(turn) <.08)){
+        if ((Math.abs(drive) < .08) && (Math.abs(strafe) < .08) && (Math.abs(turn) <.08) && tag.isDetected){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);

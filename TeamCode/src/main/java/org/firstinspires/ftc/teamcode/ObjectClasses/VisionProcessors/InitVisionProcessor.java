@@ -68,7 +68,7 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar upperRed2 = new Scalar(179, 255, 255);
 
     //Blue Filter
-    public Scalar lowerBlue = new Scalar(58.1, 114.8, 0);
+    public Scalar lowerBlue = new Scalar(58.1, 80.8, 0);
     public Scalar upperBlue = new Scalar(120.4, 255, 255);
 
        //Stage Door Filter (yellow)

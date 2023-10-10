@@ -24,7 +24,7 @@ public class DriveController {
 
     public final double DRIVE_SPEED_FACTOR = .9;
     private final double STRAFE_SPEED_FACTOR = .9;
-    private final double TURN_SPEED_FACTOR = .5;
+    private final double TURN_SPEED_FACTOR = .6;
 
     public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
