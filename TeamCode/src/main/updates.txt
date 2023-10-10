@@ -10,3 +10,6 @@ Things to do
 8. Have we tested Spike Only Auto?
 9. Have we tested SpikeBackdropParkAuto
 10. CAn we see telemetry in the dashboard? How can we improve our telemetry to the dashboard?
+11. What about the 20 frames for detection code?
+12. Tweak the manual driving controls
+13. Tweak the automatic drive controls
