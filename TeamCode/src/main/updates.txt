@@ -1,11 +1,12 @@
-
-Tasks:
-1. Test and Tweak our Auto files: Spike Only Auto and Spike Backdrop Park Auto 
-2. Teleop Mode with the Arm and End Effector
-3. Driving to April Tag
-
-Updates:
-1.	Organization changes
-2.	auto drive to april tags (ellie/oliver/morgan)
-3.	RRintegration -	Dashboard/Actions/Localization
-4.	Gamepad (rumbe/color)
+Things to do
+1. Try the code on a different robot to see if the gyro drops out (identify if its a hardware//software issue
+1.5  Does other robot need to be tuned with RR (at least check encoder directions)
+2. Did the update fix the jittering? (RUN WITH ENCODERS AFTER STOP AND RESET ENCODERS)
+3. Fix the Gamepad issues to make it easy to use - can we consistently detect our alliance color/side of field/prop?
+4. Does the auto driving work well? What tweaks do we need?
+5. Does the localization work well? How can we make it better?
+6. Is code ready to test the arm/end effector?
+7. Is code ready to test the lift?
+8. Have we tested Spike Only Auto?
+9. Have we tested SpikeBackdropParkAuto
+10. CAn we see telemetry in the dashboard? How can we improve our telemetry to the dashboard?
