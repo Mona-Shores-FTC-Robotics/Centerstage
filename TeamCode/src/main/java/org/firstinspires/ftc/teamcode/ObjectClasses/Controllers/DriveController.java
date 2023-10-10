@@ -24,7 +24,7 @@ public class DriveController {
 
     public final double DRIVE_SPEED_FACTOR = .9;
     private final double STRAFE_SPEED_FACTOR = .9;
-    private final double TURN_SPEED_FACTOR = .6;
+    private final double TURN_SPEED_FACTOR = .65;
 
     public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
@@ -75,30 +75,26 @@ public class DriveController {
                 fieldOrientedControl();
             }
 
-            //Aligning to the Backdrop AprilTags - CASE RED
-            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    vision.redBackdropAprilTagFound &&
-                    controllerDrive > .1 &&
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropRed();
-                controllerDrive = aprilTagDrive;
-                controllerStrafe = aprilTagStrafe;
-                controllerTurn = aprilTagTurn;
-            }
+        }
 
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                    vision.blueBackdropAprilTagFound &&
-                    controllerDrive > .1 &&
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropBlue();
-                controllerDrive = aprilTagDrive;
-                controllerStrafe = aprilTagStrafe;
-                controllerTurn = aprilTagTurn;
-            } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > .1)
-            {
-                controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
-            }
+        //This should automatically drive to the Backdrop AprilTags - CASE RED
+        else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                vision.redBackdropAprilTagFound &&
+                !GamepadHandling.getOverrideAprilTagDriving()) {
+            vision.AutoDriveToBackdropRed();
+            controllerDrive = aprilTagDrive;
+            controllerStrafe = aprilTagStrafe;
+            controllerTurn = aprilTagTurn;
+        }
+
+        //This should automatically drive to the Backdrop AprilTags - CASE BLUE
+        else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                vision.blueBackdropAprilTagFound &&
+                !GamepadHandling.getOverrideAprilTagDriving()) {
+            vision.AutoDriveToBackdropBlue();
+            controllerDrive = aprilTagDrive;
+            controllerStrafe = aprilTagStrafe;
+            controllerTurn = aprilTagTurn;
         }
 
         else if (autoTurning) {
