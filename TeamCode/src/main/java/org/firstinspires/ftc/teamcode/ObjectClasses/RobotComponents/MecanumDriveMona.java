@@ -51,6 +51,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
 
@@ -493,6 +494,20 @@ public final class MecanumDriveMona {
 
     public void mecanumDriveSpeedControl() {
         //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
+
+        if (    Robot.getInstance().getVision().blueBackdropAprilTagFound &&
+                Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                drive > 0)
+        {
+            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+        }
+        else if (       Robot.getInstance().getVision().redBackdropAprilTagFound &&
+                        Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                        drive > 0)
+        {
+            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+        }
+
 
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));

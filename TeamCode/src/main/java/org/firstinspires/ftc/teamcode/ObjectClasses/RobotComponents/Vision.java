@@ -50,6 +50,9 @@ public class Vision {
 
     final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
 
+    private double blueTagFrameCount;
+    private double redTagFrameCount;
+
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
@@ -166,6 +169,10 @@ public class Vision {
         telemetry.addLine("");
 
         setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
+        redTagFrameCount=0;
+        blueTagFrameCount=0;
+
     }
 
     public InitVisionProcessor getInitVisionProcessor() {
@@ -292,15 +299,31 @@ public class Vision {
     }
 
     private boolean CheckBlueBackdropAprilTags() {
-        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected)
+        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected) {
+            blueTagFrameCount++;
+        } else
+        {
+            blueTagFrameCount=0;
+        }
+
+        if (blueTagFrameCount>20)
+        {
             return true;
-        else return false;
+        } return false;
     }
 
     private boolean CheckRedBackdropAprilTags() {
-        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected)
+        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected) {
+            redTagFrameCount++;
+        } else
+        {
+            redTagFrameCount=0;
+        }
+
+        if (redTagFrameCount>20)
+        {
             return true;
-        else return false;
+        } return false;
     }
 
     public void DriveToRedAudienceWallTag() {
