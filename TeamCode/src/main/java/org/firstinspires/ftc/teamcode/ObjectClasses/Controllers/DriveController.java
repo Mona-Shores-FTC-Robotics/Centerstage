@@ -58,6 +58,7 @@ public class DriveController {
     public void setDriveStrafeTurnValues(){
         //Check if driver controls are active so we can cancel automated driving if they are
         if (GamepadHandling.driverGamepadIsActive()) {
+            //ToDo: || drivingToAprilTag
             //Store the adjusted gamepad values as drive/strafe/turn
             driverGamepad = GamepadHandling.getCurrentDriverGamepad();
             controllerDrive = -driverGamepad.left_stick_y * DRIVE_SPEED_FACTOR;
@@ -74,31 +75,34 @@ public class DriveController {
             if (fieldOrientedControlFlag == true) {
                 fieldOrientedControl();
             }
-
+            //ToDo if controllerDrive < .1 then drivingToAprilTag = false
             //Aligning to the Backdrop AprilTags - CASE RED
             if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     vision.redBackdropAprilTagFound &&
-                    controllerDrive > .1 &&
+                    controllerDrive > .1 &&  //ToDo || drivingToAprilTag
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 vision.AutoDriveToBackdropRed();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
+                //ToDo drivingToAprilTag = true
             }
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     vision.blueBackdropAprilTagFound &&
-                    controllerDrive > .1 &&
+                    controllerDrive > .1 && //ToDo || drivingToAprilTag
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 vision.AutoDriveToBackdropBlue();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
+                //ToDo drivingToAprilTag = true
             } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > .1)
             {
                 controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
             }
+            // ToDo: else drivingToAprilTag = false
         }
 
         else if (autoTurning) {
