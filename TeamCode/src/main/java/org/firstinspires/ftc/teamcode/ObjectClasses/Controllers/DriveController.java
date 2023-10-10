@@ -108,6 +108,12 @@ public class DriveController {
             controllerStrafe = 0;
             controllerTurn = 0;
 
+            mecanumDrive.leftFront.setPower(0);
+            mecanumDrive.rightFront.setPower(0);
+            mecanumDrive.leftBack.setPower(0);
+            mecanumDrive.rightBack.setPower(0);
+
+
             //stop and reset encoders
             mecanumDrive.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             mecanumDrive.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

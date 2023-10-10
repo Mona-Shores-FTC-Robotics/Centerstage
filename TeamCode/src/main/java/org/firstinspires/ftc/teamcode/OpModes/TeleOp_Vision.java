@@ -67,7 +67,6 @@ public class TeleOp_Vision extends LinearOpMode
         GamepadHandling.init();
         robot.getVision().SwitchToInitVisionProcessor();
 
-        telemetry.setAutoClear(true);
         telemetry.clearAll();
 
         //Create the action for drawing the Robot during TeleOp
@@ -143,6 +142,11 @@ public class TeleOp_Vision extends LinearOpMode
                 telemetry.addData("x", mecanumDrive.pose.position.x);
                 telemetry.addData("y", mecanumDrive.pose.position.y);
                 telemetry.addData("heading", mecanumDrive.pose.heading);
+
+                telemetry.addData("leftstick y", GamepadHandling.getCurrentDriverGamepad().left_stick_y );
+                telemetry.addData("leftstick x", GamepadHandling.getCurrentDriverGamepad().left_stick_x );
+                telemetry.addData("rightstick x", GamepadHandling.getCurrentDriverGamepad().right_stick_x );
+
             }
 
             runBlocking(drawTeleOpRobot);

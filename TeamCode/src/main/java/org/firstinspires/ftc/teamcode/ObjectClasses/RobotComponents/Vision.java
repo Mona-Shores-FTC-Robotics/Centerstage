@@ -307,7 +307,7 @@ public class Vision {
         }
 
         //this method only returns true if we see 20 frames of one of the tags being detected
-        if (blueTagFrameCount>20)
+        if (blueTagFrameCount>2)
         {
             return true;
         } return false;
@@ -322,7 +322,7 @@ public class Vision {
         }
 
         //this method only returns true if we see 20 frames of one of the tags being detected
-        if (redTagFrameCount>20)
+        if (redTagFrameCount>2)
         {
             return true;
         } return false;
@@ -595,12 +595,14 @@ public class Vision {
 
 
         //rumble the controller if there is a vision issue
-        if (hasLargestNumberWithinTolerance(
+        boolean whatIsThis = hasLargestNumberWithinTolerance(
                 getInitVisionProcessor().getLeftPercent(),
                 getInitVisionProcessor().getCenterPercent(),
-                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE) &&
+                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE);
+
+
+        if (whatIsThis &&
                 GamepadHandling.ManualOverrideInitSettingsFlag==false) {
-            GamepadHandling.problemInInitRumble();
             GamepadHandling.problemInInitLed();
         } else {
             //show the color of the Alliance on the gamepads
@@ -614,7 +616,7 @@ public class Vision {
 
     public boolean areNumbersClose(double num1, double num2, double tolerance) {
         double diff = Math.abs(num1 - num2);
-        return diff <= tolerance;
+        return diff >= tolerance;
     }
 
     public boolean hasLargestNumberWithinTolerance(double num1, double num2, double num3, double tolerance) {

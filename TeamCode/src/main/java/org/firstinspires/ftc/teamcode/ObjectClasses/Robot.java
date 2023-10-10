@@ -60,8 +60,6 @@ public class Robot {
 
     public void initialize(HardwareMap hwMap) {
 
-        //testing this out to see if it is sending stuff to dashboard now
-        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
 
         switch (Constants.getRobot()) {
             case ROBOT_CENTERSTAGE:
@@ -105,6 +103,9 @@ public class Robot {
             default:
                 break;
         }
+        //testing this out to see if it is sending stuff to dashboard now
+        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
+
     }
 
     /** Getters **/
