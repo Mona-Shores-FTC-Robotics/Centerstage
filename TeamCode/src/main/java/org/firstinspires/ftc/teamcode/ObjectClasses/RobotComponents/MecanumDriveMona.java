@@ -493,7 +493,8 @@ public final class MecanumDriveMona {
 
     public void mecanumDriveSpeedControl() {
         //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
-
+        // ToDo:  Move stop and reset encoders to here and skip set velocity.
+        //  It doesn't do anything where it is currently located
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
@@ -502,7 +503,9 @@ public final class MecanumDriveMona {
         rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
         leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
         rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-
+        // ToDo: How often do PIDF values change?  If not regularly we shouldn't be writing every time.
+        //  If PIDF doesn't dynamically change, should only write at init.
+        //  If PIDF doesn't change from default, there is no point writing it at all.
         leftFront.setVelocityPIDFCoefficients(P, I, D, F);
         leftFront.setVelocity(leftFrontTargetSpeed);
 
