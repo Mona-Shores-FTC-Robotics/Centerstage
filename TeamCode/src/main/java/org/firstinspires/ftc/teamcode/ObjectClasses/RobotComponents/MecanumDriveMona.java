@@ -259,6 +259,12 @@ public final class MecanumDriveMona {
 
         localizer = new DriveLocalizer();
 
+        //set the PID values one time
+        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
+        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
+        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
+        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
+
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
 
@@ -493,14 +499,15 @@ public final class MecanumDriveMona {
     }
 
     public void mecanumDriveSpeedControl() {
-        //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
 
+        //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
         if (    Robot.getInstance().getVision().blueBackdropAprilTagFound &&
                 Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                 drive > 0)
         {
             drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
         }
+        //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
         else if (       Robot.getInstance().getVision().redBackdropAprilTagFound &&
                         Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                         drive > 0)
@@ -518,16 +525,10 @@ public final class MecanumDriveMona {
         leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
         rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
+
         leftFront.setVelocity(leftFrontTargetSpeed);
-
-        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
         rightFront.setVelocity(rightFrontTargetSpeed);
-
-        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
         leftBack.setVelocity(leftBackTargetSpeed);
-
-        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
         rightBack.setVelocity(rightBackTargetSpeed);
     }
 

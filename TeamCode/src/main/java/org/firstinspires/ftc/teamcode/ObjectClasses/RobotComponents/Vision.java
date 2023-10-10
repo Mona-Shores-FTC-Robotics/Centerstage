@@ -50,8 +50,8 @@ public class Vision {
 
     final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
 
-    private double blueTagFrameCount;
-    private double redTagFrameCount;
+    private int blueTagFrameCount;
+    private int redTagFrameCount;
 
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -281,8 +281,8 @@ public class Vision {
 
                 double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE_SAFETY);
 
-                // Use this to limit drive speed based on distance
-                double manualDriveLimit = Range.clip(rangeError * SAFETY_SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                // Pick whichever value is lower
+                double manualDriveLimit = Math.min(rangeError * SAFETY_SPEED_GAIN, MAX_MANUAL_BACKDROP_SPEED);
                 if (manualDriveLimit < Robot.getInstance().getDriveController().safetyDriveSpeedFactor) {
                     Robot.getInstance().getDriveController().safetyDriveSpeedFactor = manualDriveLimit;
                 }
@@ -306,6 +306,7 @@ public class Vision {
             blueTagFrameCount=0;
         }
 
+        //this method only returns true if we see 20 frames of one of the tags being detected
         if (blueTagFrameCount>20)
         {
             return true;
@@ -320,6 +321,7 @@ public class Vision {
             redTagFrameCount=0;
         }
 
+        //this method only returns true if we see 20 frames of one of the tags being detected
         if (redTagFrameCount>20)
         {
             return true;
