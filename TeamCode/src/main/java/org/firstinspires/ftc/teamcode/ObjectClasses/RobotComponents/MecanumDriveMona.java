@@ -501,21 +501,20 @@ public final class MecanumDriveMona {
     public void mecanumDriveSpeedControl() {
 
         //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+        //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
         if (    Robot.getInstance().getVision().blueBackdropAprilTagFound &&
                 Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                drive > 0)
+                drive > .1)
         {
             drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
         }
         //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
         else if (       Robot.getInstance().getVision().redBackdropAprilTagFound &&
                         Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                        drive > 0)
+                        drive > .1)
         {
             drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
         }
-
-
 
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
