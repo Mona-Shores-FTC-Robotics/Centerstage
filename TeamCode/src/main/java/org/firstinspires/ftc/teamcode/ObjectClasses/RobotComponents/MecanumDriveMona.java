@@ -51,6 +51,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
 
@@ -257,6 +258,12 @@ public final class MecanumDriveMona {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new DriveLocalizer();
+
+        //set the PID values one time
+        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
+        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
+        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
+        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -492,9 +499,24 @@ public final class MecanumDriveMona {
     }
 
     public void mecanumDriveSpeedControl() {
-        //{"LFDrive", "RFDrive", "LBDrive", "RBDrive"};
-        // ToDo:  Move stop and reset encoders to here and skip set velocity.
-        //  It doesn't do anything where it is currently located
+
+        //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+        if (    Robot.getInstance().getVision().blueBackdropAprilTagFound &&
+                Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                drive > 0)
+        {
+            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+        }
+        //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+        else if (       Robot.getInstance().getVision().redBackdropAprilTagFound &&
+                        Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                        drive > 0)
+        {
+            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+        }
+
+
+
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
@@ -503,19 +525,11 @@ public final class MecanumDriveMona {
         rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
         leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
         rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-        // ToDo: How often do PIDF values change?  If not regularly we shouldn't be writing every time.
-        //  If PIDF doesn't dynamically change, should only write at init.
-        //  If PIDF doesn't change from default, there is no point writing it at all.
-        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
+
+
         leftFront.setVelocity(leftFrontTargetSpeed);
-
-        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
         rightFront.setVelocity(rightFrontTargetSpeed);
-
-        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
         leftBack.setVelocity(leftBackTargetSpeed);
-
-        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
         rightBack.setVelocity(rightBackTargetSpeed);
     }
 

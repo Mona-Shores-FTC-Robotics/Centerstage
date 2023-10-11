@@ -24,7 +24,7 @@ public class DriveController {
 
     public final double DRIVE_SPEED_FACTOR = .9;
     private final double STRAFE_SPEED_FACTOR = .9;
-    private final double TURN_SPEED_FACTOR = .6;
+    private final double TURN_SPEED_FACTOR = .65;
 
     public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
@@ -58,7 +58,6 @@ public class DriveController {
     public void setDriveStrafeTurnValues(){
         //Check if driver controls are active so we can cancel automated driving if they are
         if (GamepadHandling.driverGamepadIsActive()) {
-            //ToDo: || drivingToAprilTag
             //Store the adjusted gamepad values as drive/strafe/turn
             driverGamepad = GamepadHandling.getCurrentDriverGamepad();
             controllerDrive = -driverGamepad.left_stick_y * DRIVE_SPEED_FACTOR;
@@ -75,34 +74,27 @@ public class DriveController {
             if (fieldOrientedControlFlag == true) {
                 fieldOrientedControl();
             }
-            //ToDo if controllerDrive < .1 then drivingToAprilTag = false
-            //Aligning to the Backdrop AprilTags - CASE RED
-            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    vision.redBackdropAprilTagFound &&
-                    controllerDrive > .1 &&  //ToDo || drivingToAprilTag
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropRed();
-                controllerDrive = aprilTagDrive;
-                controllerStrafe = aprilTagStrafe;
-                controllerTurn = aprilTagTurn;
-                //ToDo drivingToAprilTag = true
-            }
 
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                    vision.blueBackdropAprilTagFound &&
-                    controllerDrive > .1 && //ToDo || drivingToAprilTag
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropBlue();
-                controllerDrive = aprilTagDrive;
-                controllerStrafe = aprilTagStrafe;
-                controllerTurn = aprilTagTurn;
-                //ToDo drivingToAprilTag = true
-            } else if ((vision.blueBackdropAprilTagFound || vision.redBackdropAprilTagFound) && controllerDrive > .1)
-            {
-                controllerDrive = Math.min(controllerDrive, safetyDriveSpeedFactor);
-            }
-            // ToDo: else drivingToAprilTag = false
+        }
+
+        //This should automatically drive to the Backdrop AprilTags - CASE RED
+        else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                vision.redBackdropAprilTagFound &&
+                !GamepadHandling.getOverrideAprilTagDriving()) {
+            vision.AutoDriveToBackdropRed();
+            controllerDrive = aprilTagDrive;
+            controllerStrafe = aprilTagStrafe;
+            controllerTurn = aprilTagTurn;
+        }
+
+        //This should automatically drive to the Backdrop AprilTags - CASE BLUE
+        else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                vision.blueBackdropAprilTagFound &&
+                !GamepadHandling.getOverrideAprilTagDriving()) {
+            vision.AutoDriveToBackdropBlue();
+            controllerDrive = aprilTagDrive;
+            controllerStrafe = aprilTagStrafe;
+            controllerTurn = aprilTagTurn;
         }
 
         else if (autoTurning) {
@@ -115,6 +107,12 @@ public class DriveController {
             controllerDrive = 0;
             controllerStrafe = 0;
             controllerTurn = 0;
+
+            mecanumDrive.leftFront.setPower(0);
+            mecanumDrive.rightFront.setPower(0);
+            mecanumDrive.leftBack.setPower(0);
+            mecanumDrive.rightBack.setPower(0);
+
 
             //stop and reset encoders
             mecanumDrive.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

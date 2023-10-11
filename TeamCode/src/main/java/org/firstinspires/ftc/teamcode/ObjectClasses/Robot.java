@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -58,6 +60,7 @@ public class Robot {
 
     public void initialize(HardwareMap hwMap) {
 
+
         switch (Constants.getRobot()) {
             case ROBOT_CENTERSTAGE:
             {
@@ -100,6 +103,9 @@ public class Robot {
             default:
                 break;
         }
+        //testing this out to see if it is sending stuff to dashboard now
+        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
+
     }
 
     /** Getters **/

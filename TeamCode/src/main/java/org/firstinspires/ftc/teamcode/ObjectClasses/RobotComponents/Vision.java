@@ -50,6 +50,9 @@ public class Vision {
 
     final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
 
+    private int blueTagFrameCount;
+    private int redTagFrameCount;
+
     private VisionPortal visionPortal;               // Used to manage the video source.
     private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
@@ -117,8 +120,8 @@ public class Vision {
         RIGHT
     }
 
-    private DeliverLocation deliverLocationBlue = DeliverLocation.RIGHT;
-    private DeliverLocation deliverLocationRed = DeliverLocation.LEFT;
+    private DeliverLocation deliverLocationBlue = DeliverLocation.CENTER;
+    private DeliverLocation deliverLocationRed = DeliverLocation.CENTER;
 
 
     public boolean blueBackdropAprilTagFound = false;
@@ -166,6 +169,10 @@ public class Vision {
         telemetry.addLine("");
 
         setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
+        redTagFrameCount=0;
+        blueTagFrameCount=0;
+
     }
 
     public InitVisionProcessor getInitVisionProcessor() {
@@ -274,8 +281,8 @@ public class Vision {
 
                 double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE_SAFETY);
 
-                // Use this to limit drive speed based on distance
-                double manualDriveLimit = Range.clip(rangeError * SAFETY_SPEED_GAIN, -MAX_MANUAL_BACKDROP_SPEED, MAX_MANUAL_BACKDROP_SPEED);
+                // Pick whichever value is lower
+                double manualDriveLimit = Math.min(rangeError * SAFETY_SPEED_GAIN, MAX_MANUAL_BACKDROP_SPEED);
                 if (manualDriveLimit < Robot.getInstance().getDriveController().safetyDriveSpeedFactor) {
                     Robot.getInstance().getDriveController().safetyDriveSpeedFactor = manualDriveLimit;
                 }
@@ -292,15 +299,33 @@ public class Vision {
     }
 
     private boolean CheckBlueBackdropAprilTags() {
-        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected)
+        if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected) {
+            blueTagFrameCount++;
+        } else
+        {
+            blueTagFrameCount=0;
+        }
+
+        //this method only returns true if we see 20 frames of one of the tags being detected
+        if (blueTagFrameCount>2)
+        {
             return true;
-        else return false;
+        } return false;
     }
 
     private boolean CheckRedBackdropAprilTags() {
-        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected)
+        if (RED_BACKDROP_LEFT.isDetected || RED_BACKDROP_RIGHT.isDetected || RED_BACKDROP_CENTER.isDetected) {
+            redTagFrameCount++;
+        } else
+        {
+            redTagFrameCount=0;
+        }
+
+        //this method only returns true if we see 20 frames of one of the tags being detected
+        if (redTagFrameCount>2)
+        {
             return true;
-        else return false;
+        } return false;
     }
 
     public void DriveToRedAudienceWallTag() {
@@ -387,13 +412,15 @@ public class Vision {
     }
 
 
-    //Drive to the Right backdrop if its the deliver location, or
-    // if its center, but center is not detected or
-    // if its left, but left is not detected
+    //  If right tag is detected AND one of the following three things is true, then drive to the right tag:
+    //  1) the delivery location is right; or
+    //  2) the delivery location is center, but center isn't found
+    //  3) the delivery location is left, but left isn't found
     public void AutoDriveToBackdropBlue() {
-        if (        (BLUE_BACKDROP_RIGHT.isDetected && getDeliverLocationBlue().equals(DeliverLocation.RIGHT))    ||
+        if (        BLUE_BACKDROP_RIGHT.isDetected && (
+                    getDeliverLocationBlue().equals(DeliverLocation.RIGHT)    ||
                     (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER.isDetected)       ||
-                    (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT.isDetected))
+                    (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -416,9 +443,10 @@ public class Vision {
         //Drive to the Center backdrop if its the deliver location, or
         // if its left, but left is not detected or
         // if its right, but right is not detected
-        else if (   (BLUE_BACKDROP_CENTER.isDetected && getDeliverLocationBlue().equals(DeliverLocation.CENTER))    ||
+        else if (   (BLUE_BACKDROP_CENTER.isDetected &&
+                    getDeliverLocationBlue().equals(DeliverLocation.CENTER) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT.isDetected)       ||
-                    (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT.isDetected))
+                    (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -441,9 +469,10 @@ public class Vision {
         //Drive to the Right backdrop if its the deliver location, or
         // if its left, but left is not detected or
         // if its center, but center is not detected
-        else if (   (BLUE_BACKDROP_LEFT.isDetected && getDeliverLocationBlue().equals(DeliverLocation.LEFT))    ||
+        else if (   BLUE_BACKDROP_LEFT.isDetected &&
+                (getDeliverLocationBlue().equals(DeliverLocation.LEFT)    ||
                 (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT.isDetected)       ||
-                (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER.isDetected))
+                (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
@@ -488,8 +517,8 @@ public class Vision {
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT);
 
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-        } else if (    RED_BACKDROP_CENTER.isDetected && (
-               getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
+        } else if (     RED_BACKDROP_CENTER.isDetected && (
+                        getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
                        (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT.isDetected)    ||
                        (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT.isDetected))
         )
@@ -566,12 +595,14 @@ public class Vision {
 
 
         //rumble the controller if there is a vision issue
-        if (hasLargestNumberWithinTolerance(
+        boolean whatIsThis = hasLargestNumberWithinTolerance(
                 getInitVisionProcessor().getLeftPercent(),
                 getInitVisionProcessor().getCenterPercent(),
-                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE) &&
+                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE);
+
+
+        if (whatIsThis &&
                 GamepadHandling.ManualOverrideInitSettingsFlag==false) {
-            GamepadHandling.problemInInitRumble();
             GamepadHandling.problemInInitLed();
         } else {
             //show the color of the Alliance on the gamepads
@@ -585,7 +616,7 @@ public class Vision {
 
     public boolean areNumbersClose(double num1, double num2, double tolerance) {
         double diff = Math.abs(num1 - num2);
-        return diff <= tolerance;
+        return diff >= tolerance;
     }
 
     public boolean hasLargestNumberWithinTolerance(double num1, double num2, double num3, double tolerance) {
@@ -597,7 +628,7 @@ public class Vision {
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .08) && (Math.abs(strafe) < .08) && (Math.abs(turn) <.08) && tag.isDetected){
+        if ((Math.abs(drive) < .08) && (Math.abs(strafe) < .08) && (Math.abs(turn) <.08)){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);
