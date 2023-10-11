@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotType;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants.RobotType;
 
 
 import androidx.annotation.NonNull;
@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
@@ -37,7 +37,7 @@ public class Spike_Only_Auto extends LinearOpMode {
     public void runOpMode() {
 
         //Set the type of Robot
-        Constants.setRobot(RobotType.ROBOT_VISION);
+        RobotConstants.setRobot(RobotType.ROBOT_VISION);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

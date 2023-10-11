@@ -1,10 +1,8 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MotorParameters;
+package org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotType.ROBOT_VISION_FAST_MOTORS;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants.RobotType.ROBOT_VISION_FAST_MOTORS;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
-
-public class Params {
+public class MotorParameters {
     // drive model parameters
     public static double inPerTick;
     public static double lateralInPerTick;
@@ -34,7 +32,7 @@ public class Params {
     public double headingVelGain; // shared with turn
 
     public void init() {
-        if (Constants.getRobot() == ROBOT_VISION_FAST_MOTORS) {
+        if (RobotConstants.getRobot() == ROBOT_VISION_FAST_MOTORS) {
             Params_Fast();
         } else
         {
@@ -44,8 +42,8 @@ public class Params {
 
     private void Params_Fast() {
         // drive model parameters
-        inPerTick = 0.022365950344252; // 90.8in-37.2 2396.5ticks
-        lateralInPerTick = 0.0280188186095139; //1913
+        inPerTick = 0.0317919075144509; //60.5\1903
+        lateralInPerTick = 0.0325115144947169; // 60\1845.5
         trackWidthTicks = 893.5920803662788;
 
         // feedforward parameters (in tick units)

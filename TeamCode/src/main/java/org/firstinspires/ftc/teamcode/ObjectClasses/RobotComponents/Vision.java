@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision.AprilTagID.*;
 
 
@@ -16,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
@@ -58,6 +58,7 @@ public class Vision {
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
+    private MecanumDriveMona mecanumDrive;
 
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
@@ -134,7 +135,7 @@ public class Vision {
     public void init() {
 
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-
+        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
         // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
@@ -582,10 +583,18 @@ public class Vision {
 
     public void telemetryForInitProcessing() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
+        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
 
-        telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
-        telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
+        telemetry.addData("Alliance Color", allianceColor);
+        telemetry.addData("Side of the Field", sideOfField);
         telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+
+        //TODO set the pose of the robot for telemetry based on color/side combinations - do the other 3 using this one to help you
+        if (allianceColor== InitVisionProcessor.AllianceColor.BLUE && sideOfField== InitVisionProcessor.SideOfField.BACKSTAGE){
+            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
+        }
+
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
@@ -636,7 +645,7 @@ public class Vision {
             Vector2d distanceVector = new Vector2d(tag.detection.ftcPose.y,tag.detection.ftcPose.x);
             Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
             //TODO  need to change the facing here based on metadata to make this generic
-            Pose2d realPose = new Pose2d(result.x, result.y, Constants.FACE_TOWARD_BACKSTAGE);
+            Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
             Robot.getInstance().getMecanumDriveMona().pose = realPose;
             telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
         }

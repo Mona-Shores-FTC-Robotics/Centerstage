@@ -6,46 +6,12 @@
  * Initially from https://github.com/Mechanical-Advantage/RobotCode2022
  */
 
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 
-public class Constants {
-
-  public static RobotType robot;
-
-  public static void setRobot(RobotType type)
-  {
-      robot = type;
-  }
-
-  public enum RobotType {
-        ROBOT_CENTERSTAGE,
-        ROBOT_ARM_END_EFFECTOR,
-        ROBOT_CHASSIS,
-        ROBOT_VISION,
-        ROBOT_VISION_FAST_MOTORS,
-        ROBOT_MOTOR_TEST_MECHANISM
-  }
-
-  public static RobotType getRobot() {
-     if (robot == RobotType.ROBOT_CENTERSTAGE) {
-        return RobotType.ROBOT_CENTERSTAGE;
-      } else if (robot == RobotType.ROBOT_VISION)
-     {
-         return RobotType.ROBOT_VISION;
-     } else if (robot == RobotType.ROBOT_VISION_FAST_MOTORS)
-     {
-         return RobotType.ROBOT_VISION_FAST_MOTORS;
-     }
-     else if (robot == RobotType.ROBOT_MOTOR_TEST_MECHANISM){
-         return RobotType.ROBOT_MOTOR_TEST_MECHANISM;
-     }
-     else {
-        return RobotType.ROBOT_CHASSIS;
-      }
-  }
+public class FieldConstants {
 
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;

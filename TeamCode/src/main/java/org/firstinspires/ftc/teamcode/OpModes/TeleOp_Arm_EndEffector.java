@@ -32,7 +32,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
@@ -46,7 +46,7 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_ARM_END_EFFECTOR);
+        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_ARM_END_EFFECTOR);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

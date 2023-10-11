@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark.*;
 import androidx.annotation.NonNull;
 
@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark;
@@ -36,7 +36,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
     public void runOpMode() {
 
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION_FAST_MOTORS);
+        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_VISION_FAST_MOTORS);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

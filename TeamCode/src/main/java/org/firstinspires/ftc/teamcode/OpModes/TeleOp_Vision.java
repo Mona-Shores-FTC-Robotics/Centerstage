@@ -31,14 +31,10 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TimeTurn;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
@@ -55,7 +51,7 @@ public class TeleOp_Vision extends LinearOpMode
     {
 
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_VISION);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

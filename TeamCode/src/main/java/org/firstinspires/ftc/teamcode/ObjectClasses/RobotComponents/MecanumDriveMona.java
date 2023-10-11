@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotType.ROBOT_VISION_FAST_MOTORS;
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
@@ -47,9 +46,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MotorParameters.Params;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.MotorParameters;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
@@ -88,7 +86,7 @@ public final class MecanumDriveMona {
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
-    public static Params PARAMS;
+    public static MotorParameters MotorParameters;
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -105,7 +103,7 @@ public final class MecanumDriveMona {
 
     public Localizer localizer;
     public Pose2d pose;
-    private IMU imu;
+    private Gyro gyro;
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
@@ -137,7 +135,7 @@ public final class MecanumDriveMona {
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-            lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            lastHeading = Rotation2d.exp(gyro.currentAbsoluteYawRadians);
         }
 
         @Override
@@ -147,26 +145,26 @@ public final class MecanumDriveMona {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation2d heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            Rotation2d heading = Rotation2d.exp(gyro.currentAbsoluteYawRadians);
             double headingDelta = heading.minus(lastHeading);
 
             Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
                     new DualNum<Time>(new double[]{
                             (leftFrontPosVel.position - lastLeftFrontPos),
                             leftFrontPosVel.velocity,
-                    }).times(PARAMS.inPerTick),
+                    }).times(MotorParameters.inPerTick),
                     new DualNum<Time>(new double[]{
                             (leftRearPosVel.position - lastLeftRearPos),
                             leftRearPosVel.velocity,
-                    }).times(PARAMS.inPerTick),
+                    }).times(MotorParameters.inPerTick),
                     new DualNum<Time>(new double[]{
                             (rightRearPosVel.position - lastRightRearPos),
                             rightRearPosVel.velocity,
-                    }).times(PARAMS.inPerTick),
+                    }).times(MotorParameters.inPerTick),
                     new DualNum<Time>(new double[]{
                             (rightFrontPosVel.position - lastRightFrontPos),
                             rightFrontPosVel.velocity,
-                    }).times(PARAMS.inPerTick)
+                    }).times(MotorParameters.inPerTick)
             ));
 
             lastLeftFrontPos = leftFrontPosVel.position;
@@ -187,10 +185,9 @@ public final class MecanumDriveMona {
     }
 
     public void init() {
-
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
         pose = new Pose2d(0,0,0);
-        imu = Robot.getInstance().getGyro().getIMU();
+        gyro = Robot.getInstance().getGyro();
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -221,29 +218,29 @@ public final class MecanumDriveMona {
         leftBack.setVelocityPIDFCoefficients(P, I, D, F);
         rightBack.setVelocityPIDFCoefficients(P, I, D, F);
 
-        Params PARAMS = new Params();
+        MotorParameters MotorParameters = new MotorParameters();
 
         //sets the parameters based on the robot we have set
         //right now we just have two different sets
-        PARAMS.init();
+        MotorParameters.init();
 
         kinematics = new MecanumKinematics(
-                PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
+                MotorParameters.inPerTick * MotorParameters.trackWidthTicks, MotorParameters.inPerTick / MotorParameters.lateralInPerTick);
 
-        feedforward = new MotorFeedforward(PARAMS.kS, PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
+        feedforward = new MotorFeedforward(MotorParameters.kS, MotorParameters.kV / MotorParameters.inPerTick, MotorParameters.kA / MotorParameters.inPerTick);
 
         defaultTurnConstraints = new TurnConstraints(
-                PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
+                MotorParameters.maxAngVel, -MotorParameters.maxAngAccel, MotorParameters.maxAngAccel);
 
         defaultVelConstraint =
                 new MinVelConstraint(Arrays.asList(
-                        kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
-                        new AngularVelConstraint(PARAMS.maxAngVel)
+                        kinematics.new WheelVelConstraint(MotorParameters.maxWheelVel),
+                        new AngularVelConstraint(MotorParameters.maxAngVel)
                 ));
 
-        defaultAccelConstraint = new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
+        defaultAccelConstraint = new ProfileAccelConstraint(MotorParameters.minProfileAccel, MotorParameters.maxProfileAccel);
 
-        FlightRecorder.write("MECANUM_PARAMS", PARAMS);
+        FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
@@ -306,8 +303,8 @@ public final class MecanumDriveMona {
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
-                    PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
-                    PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
+                    MotorParameters.axialGain, MotorParameters.lateralGain, MotorParameters.headingGain,
+                    MotorParameters.axialVelGain, MotorParameters.lateralVelGain, MotorParameters.headingVelGain
             )
                     .compute(txWorldTarget, pose, robotVelRobot);
 
@@ -387,8 +384,8 @@ public final class MecanumDriveMona {
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
-                    PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
-                    PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
+                    MotorParameters.axialGain, MotorParameters.lateralGain, MotorParameters.headingGain,
+                    MotorParameters.axialVelGain, MotorParameters.lateralVelGain, MotorParameters.headingVelGain
             )
                     .compute(txWorldTarget, pose, robotVelRobot);
 

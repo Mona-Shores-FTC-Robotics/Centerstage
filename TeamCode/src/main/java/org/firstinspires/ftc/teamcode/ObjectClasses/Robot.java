@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Arm;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Gyro;
@@ -61,7 +62,7 @@ public class Robot {
     public void initialize(HardwareMap hwMap) {
 
 
-        switch (Constants.getRobot()) {
+        switch (RobotConstants.getRobot()) {
             case ROBOT_CENTERSTAGE:
             {
                 vision.init();
