@@ -170,7 +170,7 @@ public final class MecanumDriveMona {
 
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
-        pose = new Pose2d(0,0,0);
+        this.pose = new Pose2d(0,0,0);
         gyro = Robot.getInstance().getGyro();
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
@@ -413,6 +413,7 @@ public final class MecanumDriveMona {
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
         return twist.velocity().value();
+
     }
 
     private void drawPoseHistory(Canvas c) {
@@ -464,16 +465,16 @@ public final class MecanumDriveMona {
             leftBack.setPower(0);
             rightFront.setPower(0);
             rightBack.setPower(0);
-
-            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//
+//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
@@ -526,6 +527,7 @@ public final class MecanumDriveMona {
 
 
     public void telemetryDriveTrain() {
+
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
 
         Robot.getInstance().getActiveOpMode().telemetry.addData("Drive: ", drive);
@@ -546,6 +548,7 @@ public final class MecanumDriveMona {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
         Robot.getInstance().getActiveOpMode().telemetry.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
         Robot.getInstance().getActiveOpMode().telemetry.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
+
     }
 
     public void setAllPower(double p) {setMotorPower(p,p,p,p);}
@@ -569,5 +572,37 @@ public final class MecanumDriveMona {
             return false;
         }
     }
+    public class SendSpeedAndPositionDataToDashboard implements Action {
+        public boolean run(@NonNull TelemetryPacket p) {
+
+            p.put("x", pose.position.x);
+            p.put("y", pose.position.y);
+            p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
+
+            double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
+            double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
+            double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / MotorParameters.TICKS_PER_REV);
+            double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / MotorParameters.TICKS_PER_REV);
+
+            double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / MotorParameters.TICKS_PER_REV);
+            double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / MotorParameters.TICKS_PER_REV);
+            double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / MotorParameters.TICKS_PER_REV);
+            double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / MotorParameters.TICKS_PER_REV);
+
+            p.addLine("");
+
+            p.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
+            p.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
+            p.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
+            p.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
+
+            p.addLine("");
+            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyro().currentAbsoluteYawDegrees, 4, 0));
+
+            return false;
+        }
+    }
+
+
 }
 

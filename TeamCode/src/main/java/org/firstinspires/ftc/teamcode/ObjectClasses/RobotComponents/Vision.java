@@ -583,7 +583,7 @@ public class Vision {
     }
 
     public void telemetryForInitProcessing() {
-        Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
         InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
 

@@ -31,7 +31,6 @@ public class Robot {
     private static Gyro gyro;
     private static EndEffector endEffector;
     private static Vision vision;
-    private static Telemetry telemetry;
     private static TestIntake testIntake;
 
     private static DriveController driveController;
@@ -40,8 +39,6 @@ public class Robot {
     private Robot(LinearOpMode opMode) {
         activeOpMode = opMode;
         hardwareMap = opMode.hardwareMap;
-        telemetry = opMode.telemetry;
-
         teleOpRuntime = new ElapsedTime();
         mecanumDrive = new MecanumDriveMona();
         liftSlide = new LiftSlide();
@@ -60,6 +57,7 @@ public class Robot {
     }
 
     public void initialize(HardwareMap hwMap) {
+
 
 
         switch (RobotConstants.getRobot()) {
@@ -104,8 +102,6 @@ public class Robot {
             default:
                 break;
         }
-        //testing this out to see if it is sending stuff to dashboard now
-        Robot.getInstance().getActiveOpMode().telemetry = new MultipleTelemetry(Robot.getInstance().getActiveOpMode().telemetry, FtcDashboard.getInstance().getTelemetry());
 
     }
 
@@ -114,7 +110,7 @@ public class Robot {
     public static synchronized Robot getInstance() {
         if (robot == null) {
             //error
-            telemetry.addLine("error");
+            Robot.activeOpMode.telemetry.addLine("error");
         }
         return robot;
     }

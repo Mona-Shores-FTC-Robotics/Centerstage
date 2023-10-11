@@ -445,5 +445,17 @@ public final class MecanumDrive {
                 0.25, 0.1
         );
     }
+    public class DrawCurrentPosition implements Action {
+        public boolean run(@NonNull TelemetryPacket p) {
+
+            Canvas c = p.fieldOverlay();
+            drawPoseHistory(c);
+
+            c.setStroke("#3F51B5");
+            drawRobot(c, pose);
+
+            return false;
+        }
+    }
 }
 

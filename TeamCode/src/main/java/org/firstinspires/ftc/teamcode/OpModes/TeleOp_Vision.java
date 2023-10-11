@@ -31,6 +31,9 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -43,6 +46,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDrive
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
+
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
     MecanumDriveMona mecanumDrive;
@@ -55,17 +59,15 @@ public class TeleOp_Vision extends LinearOpMode
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
 
-        telemetry = robot.getActiveOpMode().telemetry;
         mecanumDrive= robot.getMecanumDriveMona();
 
         //initialize the Gamepads
         GamepadHandling.init();
         robot.getVision().SwitchToInitVisionProcessor();
 
-        telemetry.clearAll();
-
         //Create the action for drawing the Robot during TeleOp
         MecanumDriveMona.DrawCurrentPosition drawTeleOpRobot = mecanumDrive.new DrawCurrentPosition();
+        MecanumDriveMona.SendSpeedAndPositionDataToDashboard sendSpeedAndPositionDataToDashboard = mecanumDrive.new SendSpeedAndPositionDataToDashboard();
 
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
@@ -80,9 +82,6 @@ public class TeleOp_Vision extends LinearOpMode
             sleep(10);
         }
 
-        //Display the initVision telemetry a final time
-        telemetry.clearAll();
-
         robot.getVision().telemetryForInitProcessing();
         telemetry.update();
 
@@ -91,7 +90,6 @@ public class TeleOp_Vision extends LinearOpMode
 
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
-
 
         while (opModeIsActive())
         {
@@ -119,7 +117,6 @@ public class TeleOp_Vision extends LinearOpMode
 
             mecanumDrive.updatePoseEstimate();
 
-
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
 
@@ -134,22 +131,23 @@ public class TeleOp_Vision extends LinearOpMode
             if (gamepad1.right_trigger>.1) {
                 robot.getMecanumDriveMona().telemetryDriveTrain();
                 robot.getGyro().telemetryGyro();
-                telemetry.addData("x", mecanumDrive.pose.position.x);
-                telemetry.addData("y", mecanumDrive.pose.position.y);
-                telemetry.addData("heading", mecanumDrive.pose.heading);
 
                 telemetry.addData("leftstick y", GamepadHandling.getCurrentDriverGamepad().left_stick_y );
                 telemetry.addData("leftstick x", GamepadHandling.getCurrentDriverGamepad().left_stick_x );
                 telemetry.addData("rightstick x", GamepadHandling.getCurrentDriverGamepad().right_stick_x );
 
             }
+            //this sends speed and position data to the dashboard
+            runBlocking(sendSpeedAndPositionDataToDashboard);
 
+            //this sends info to dashboard to draw our robot on the field
             runBlocking(drawTeleOpRobot);
 
-            Robot.getInstance().getActiveOpMode().telemetry.update();
+            //TODO send apriltag data to the dashboard instead of speed data when we hold down the left trigger
+
+            telemetry.update();
         }
         robot.getVision().getVisionPortal().close();
-        telemetry.clearAll();
     }
 }
 
