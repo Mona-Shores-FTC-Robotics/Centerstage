@@ -66,6 +66,8 @@ public class MotorParameters {
 
         /** Set our motor parameters for faster drive motors **/
 
+        //TODO test driving around in teleop and tweak these
+        //We either use these or the roadrunner ones, not both
         DEFAULT_P = 11; // default = 10
         DEFAULT_D = 3; // default = 0
         DEFAULT_I = 0; // default = 3
@@ -86,7 +88,7 @@ public class MotorParameters {
 
         /** Set Roadrunner motor parameters for faster drive motors **/
 
-        // drive model parameters
+        //TODO use roadrunner to figure out these drive model parameters
         inPerTick = 0.0317919075144509; //60.5\1903
         lateralInPerTick = 0.0325115144947169; // 60\1845.5
         trackWidthTicks = 893.5920803662788;

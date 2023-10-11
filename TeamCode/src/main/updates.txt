@@ -1,17 +1,17 @@
-Things to do
-1. Finish tuining the faster motors - see new MotorParameters file in the Constants package
+Student TODOS to do
+1. Finish tuining the faster motors - see the TODO items in Constants.MotorParameters
 2. Set the inital poses - see the TODO item in vision.java
-3. Moved the zero functionality to MecanumSpeedControl - check to make sure this worked
-4. Gamepad Code
+3. Alliance Error Checking Code - see the TODO item in Initvisionprocessor
+5. Write the pseudocode for Side Of Field Checking - see the TODO item in Initvisionprocessor
+6. Frame skipping april tags - see the TODO item in vision - how does this work - look at it test it then explain to mentor
 
+Mentor Todos
+1. Moved the zero functionality to MecanumSpeedControl - check to make sure this worked
+2. Can we see telemetry in the dashboard? How can we improve our telemetry to the dashboard?
 
-4. Does the auto driving work well? What tweaks do we need?
-5. Does the localization work well? How can we make it better?
-6. Is code ready to test the arm/end effector?
-7. Is code ready to test the lift?
-8. Have we tested Spike Only Auto?
-9. Have we tested SpikeBackdropParkAuto
-10. CAn we see telemetry in the dashboard? How can we improve our telemetry to the dashboard?
-11. What about the 20 frames for detection code?
-12. Tweak the manual driving controls
-13. Tweak the automatic drive controls
+Things to Think about:
+1. Does the localization work well? How can we make it better?
+2. Is code ready to test the arm/end effector?
+3. Is code ready to test the lift?
+4. Have we tested Spike Only Auto?
+5. Have we tested SpikeBackdropParkAuto

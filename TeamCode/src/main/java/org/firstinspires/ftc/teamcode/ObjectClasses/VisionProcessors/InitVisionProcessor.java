@@ -382,6 +382,7 @@ public class InitVisionProcessor implements VisionProcessor {
 
     private void DetermineSideOfField() {
 
+        //TODO You write the pseudo code for error checking the side of the field
         // Step 1 - if there was a problem with alliance color determination - then set that there is a problem with side of field too
 
         if (allianceColorFinal == AllianceColor.RED) {

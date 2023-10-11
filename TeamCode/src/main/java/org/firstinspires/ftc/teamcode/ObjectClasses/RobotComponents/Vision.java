@@ -300,6 +300,7 @@ public class Vision {
     }
 
     private boolean CheckBlueBackdropAprilTags() {
+        //TODO should we change the framecount? How does this work?
         if (BLUE_BACKDROP_LEFT.isDetected || BLUE_BACKDROP_RIGHT.isDetected || BLUE_BACKDROP_CENTER.isDetected) {
             blueTagFrameCount++;
         } else
