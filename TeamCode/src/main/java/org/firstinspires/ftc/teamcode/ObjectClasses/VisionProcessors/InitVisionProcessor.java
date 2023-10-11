@@ -40,6 +40,7 @@ public class InitVisionProcessor implements VisionProcessor {
     /** InitVisionProcessor Constants **/
     //This constant defines how much of a spike zone has to be the prop color for it to count as being detected
     private final int TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION = 5;
+    private final int DIFFERENCE_THRESHOLD_FOR_RED_BLUE_DETECTION = 2;
 
     //This constant defines how much of a stage door zone needs to be yellow to count as being detected
     private final int STAGE_DOOR_THRESHOLD = 4;
@@ -144,12 +145,18 @@ public class InitVisionProcessor implements VisionProcessor {
     private double percentCenterZoneRed;
     private double percentRightZoneRed;
 
+    public double percentRedTotal;
+
     private double percentLeftZoneBlue;
     private double percentCenterZoneBlue;
     private double percentRightZoneBlue;
 
+    public double percentBlueTotal;
+
     public double percentLeftStageDoorZone;
     public double percentRightStageDoorZone;
+
+    public boolean allianceColorDeterminationProblem;
 
     public InitVisionProcessor() {
     }
@@ -224,7 +231,7 @@ public class InitVisionProcessor implements VisionProcessor {
         Core.bitwise_and(frame, frame, maskedBlueMat, binaryBlueMat);
         Core.bitwise_and(frame, frame, maskedStageDoorMat, binaryStageDoorMat);
 
-        //this is to check specific zones to determine where the team prop is
+        //this is where we store certain areas of the picture so we can determine alliance color/side of field/team prop location
         leftZoneRed  = binaryRedMatFinal.submat(rectL);
         centerZoneRed = binaryRedMatFinal.submat(rectM);
         rightZoneRed  = binaryRedMatFinal.submat(rectR);
@@ -236,19 +243,8 @@ public class InitVisionProcessor implements VisionProcessor {
         leftStageDoorZone = binaryStageDoorMat.submat(rectLeftSideOfField);
         rightStageDoorZone = binaryStageDoorMat.submat(rectRightSideOfField);
 
-        //Determine where the team prop is located
-        percentLeftZoneRed = ((Core.sumElems(leftZoneRed).val[0] /255) / rectL.area()) * 100 ;
-        percentCenterZoneRed = ((Core.sumElems(centerZoneRed).val[0]/255) / rectM.area()) * 100 ;
-        percentRightZoneRed= ((Core.sumElems(rightZoneRed).val[0]/255) / rectR.area()) * 100 ;
-
-        percentLeftZoneBlue = ((Core.sumElems(leftZoneBlue).val[0]/255) / rectL.area()) * 100 ;
-        percentCenterZoneBlue = ((Core.sumElems(centerZoneBlue).val[0]/255) / rectM.area()) * 100 ;
-        percentRightZoneBlue= ((Core.sumElems(rightZoneBlue).val[0]/255) / rectR.area()) * 100 ;
-
-        //Determine whehter stage door is left or right
-        percentLeftStageDoorZone = ((Core.sumElems(leftStageDoorZone).val[0] / 255) / rectLeftSideOfField.area()) * 100;
-        percentRightStageDoorZone = ((Core.sumElems(rightStageDoorZone).val[0] / 255) / rectRightSideOfField.area()) * 100;
-
+        /** use gamepad so we can easily see what our camera is filtering for
+         * the blue filter / red filter / or yellow(stage door) **/
         if (Robot.getInstance().getActiveOpMode().gamepad1.left_trigger>.1) {
             binaryRedMatFinal.copyTo(frame);
         }
@@ -259,59 +255,28 @@ public class InitVisionProcessor implements VisionProcessor {
             binaryStageDoorMat.copyTo(frame);
         }
 
+        //Calculate percentage values from the binary matrices (number of white pixels vs. black pixels for a particular area)
+        percentLeftZoneRed = ((Core.sumElems(leftZoneRed).val[0] /255) / rectL.area()) * 100 ;
+        percentCenterZoneRed = ((Core.sumElems(centerZoneRed).val[0]/255) / rectM.area()) * 100 ;
+        percentRightZoneRed= ((Core.sumElems(rightZoneRed).val[0]/255) / rectR.area()) * 100 ;
+
+        percentLeftZoneBlue = ((Core.sumElems(leftZoneBlue).val[0]/255) / rectL.area()) * 100 ;
+        percentCenterZoneBlue = ((Core.sumElems(centerZoneBlue).val[0]/255) / rectM.area()) * 100 ;
+        percentRightZoneBlue= ((Core.sumElems(rightZoneBlue).val[0]/255) / rectR.area()) * 100 ;
+
+        percentLeftStageDoorZone = ((Core.sumElems(leftStageDoorZone).val[0] / 255) / rectLeftSideOfField.area()) * 100;
+        percentRightStageDoorZone = ((Core.sumElems(rightStageDoorZone).val[0] / 255) / rectRightSideOfField.area()) * 100;
+
+
+        // Add up the percent of white pixels in the left, center, and right boxes
+        // This is for convenience because while we practice we want to be able to place the prop in any location and have it figure out the alliance color
+        // - If we run into trouble, we might want to only look at the center Zone to determine alliance color because we always place our prop in the middle
+        percentRedTotal = percentLeftZoneRed + percentCenterZoneRed + percentRightZoneRed;
+        percentBlueTotal = percentLeftZoneBlue + percentCenterZoneBlue + percentRightZoneBlue;
+
         DetermineAllianceColor();
-
-        if (allianceColorFinal == AllianceColor.RED) {
-            //Figure out and Store the Team Prop Location
-            if (percentLeftZoneRed > percentCenterZoneRed && percentLeftZoneRed > percentRightZoneRed) {
-                // Red Team Prop is on the Left
-                teamPropLocationFinal = TeamPropLocation.LEFT;
-            } else if (percentCenterZoneRed > percentLeftZoneRed && percentCenterZoneRed > percentRightZoneRed) {
-                // Team Prop is in the Middle
-                teamPropLocationFinal = TeamPropLocation.CENTER;
-            } else if (percentRightZoneRed > percentCenterZoneRed && percentRightZoneRed > percentLeftZoneRed) {
-                // Team Prop is on th Right
-                teamPropLocationFinal = TeamPropLocation.RIGHT;
-            } else {
-                teamPropLocationFinal = TeamPropLocation.CENTER;
-            }
-
-            //Figure out which side of field we are on by combbining alliance and stage door detection
-            if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
-                // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
-                setSideOfFieldFinal(SideOfField.BACKSTAGE);
-            } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
-            {
-                // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
-                setSideOfFieldFinal(SideOfField.AUDIENCE);
-            }
-        }
-
-        if (allianceColorFinal == AllianceColor.BLUE) {
-            if (percentLeftZoneBlue > percentCenterZoneBlue && percentLeftZoneBlue > percentRightZoneBlue) {
-                // Red Team Prop is on the Left
-                teamPropLocationFinal = TeamPropLocation.LEFT;
-            } else if (percentCenterZoneBlue > percentLeftZoneBlue && percentCenterZoneBlue > percentRightZoneBlue) {
-                // Team Prop is in the Middle
-                teamPropLocationFinal = TeamPropLocation.CENTER;
-            } else if (percentRightZoneBlue > percentCenterZoneBlue && percentRightZoneBlue > percentLeftZoneBlue) {
-                // Team Prop is on the Right
-                teamPropLocationFinal = TeamPropLocation.RIGHT;
-            } else {
-                teamPropLocationFinal = TeamPropLocation.CENTER;
-            }
-
-            //Figure out where the Stage Door is
-            if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
-                // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.AUDIENCE;
-            } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
-            {
-                // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
-                sideOfFieldFinal = SideOfField.BACKSTAGE;
-            }
-
-        }
+        DetermineSideOfField();
+        DetermineTeamPropLocation();
 
         /*
          * Different from OpenCvPipeline, you cannot return
@@ -360,7 +325,7 @@ public class InitVisionProcessor implements VisionProcessor {
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorWhite, 2);
 
         }
-        //Release all the mats - is this necessary?
+        //Release all the mats
         hsvMat.release();
         maskedRedMat.release();
         maskedBlueMat.release();
@@ -382,25 +347,122 @@ public class InitVisionProcessor implements VisionProcessor {
         return null;
     }
 
+    private void DetermineTeamPropLocation() {
+        if (allianceColorFinal == AllianceColor.RED) {
+            //Figure out and Store the Team Prop Location
+            if (percentLeftZoneRed > percentCenterZoneRed && percentLeftZoneRed > percentRightZoneRed) {
+                // Red Team Prop is on the Left
+                teamPropLocationFinal = TeamPropLocation.LEFT;
+            } else if (percentCenterZoneRed > percentLeftZoneRed && percentCenterZoneRed > percentRightZoneRed) {
+                // Team Prop is in the Middle
+                teamPropLocationFinal = TeamPropLocation.CENTER;
+            } else if (percentRightZoneRed > percentCenterZoneRed && percentRightZoneRed > percentLeftZoneRed) {
+                // Team Prop is on th Right
+                teamPropLocationFinal = TeamPropLocation.RIGHT;
+            } else {
+                teamPropLocationFinal = TeamPropLocation.CENTER;
+            }
+        }
+
+        if (allianceColorFinal == AllianceColor.BLUE) {
+            if (percentLeftZoneBlue > percentCenterZoneBlue && percentLeftZoneBlue > percentRightZoneBlue) {
+                // Red Team Prop is on the Left
+                teamPropLocationFinal = TeamPropLocation.LEFT;
+            } else if (percentCenterZoneBlue > percentLeftZoneBlue && percentCenterZoneBlue > percentRightZoneBlue) {
+                // Team Prop is in the Middle
+                teamPropLocationFinal = TeamPropLocation.CENTER;
+            } else if (percentRightZoneBlue > percentCenterZoneBlue && percentRightZoneBlue > percentLeftZoneBlue) {
+                // Team Prop is on the Right
+                teamPropLocationFinal = TeamPropLocation.RIGHT;
+            } else {
+                teamPropLocationFinal = TeamPropLocation.CENTER;
+            }
+        }
+    }
+
+    private void DetermineSideOfField() {
+
+        // Step 1 - if there was a problem with alliance color determination - then set that there is a problem with side of field too
+
+        if (allianceColorFinal == AllianceColor.RED) {
+            if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
+                // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
+                setSideOfFieldFinal(SideOfField.BACKSTAGE);
+            } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
+            {
+                // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
+                setSideOfFieldFinal(SideOfField.AUDIENCE);
+            }
+        }
+
+        if (allianceColorFinal == AllianceColor.BLUE) {
+            //Figure out where the Stage Door is
+            if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
+                // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
+                sideOfFieldFinal = SideOfField.AUDIENCE;
+            } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
+            {
+                // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
+                sideOfFieldFinal = SideOfField.BACKSTAGE;
+            }
+        }
+    }
+
     private void DetermineAllianceColor() {
 
+        //TODO look at how I wrote this pseudo code and then how I implemented it below - now you write the pseudo code for DetermineSideOfTheField()
+
+        // Here are our steps for alliance color selection
+        // 1. Reset alliance color determination problem flag
+        // 2. check if the total red vs. blue is too close to call - set the problem flag if it is, but continue
+        // 3. compare each zone to a threshold (5 percent)
+        //      If no zone is greater than the threshold, set the default to Red, but flag an error
+        //      Otherwise set an over-threshold true/false variable for blue/red
+        // 4. If only blue or only red was over the threshold, then set the alliance color based on that
+        //      if blue and red both are over threshold, set the alliance color to red, but flag the problem
+
+        //Reset our variable
+        allianceColorDeterminationProblem=false;
+        boolean redOverThreshold = false;
+        boolean blueOverThreshold = false;
+
+        if (Math.abs(percentRedTotal - percentBlueTotal) < DIFFERENCE_THRESHOLD_FOR_RED_BLUE_DETECTION)
+        {
+            //set the problem variable to flag this is too close to call
+            allianceColorDeterminationProblem=true;
+        }
 
         if (    percentLeftZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneRed>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
-            setAllianceColorFinal(AllianceColor.RED);
-            //set problem red variable?
-
-        } else if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
+            redOverThreshold=true;
+        }
+        if (percentLeftZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentCenterZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION ||
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
+            blueOverThreshold=true;
+        } else
+        {
+            //if neither red or blue percents are over the threshold anywhere, then default to red, but tell the driver using the problem boolean
+            setAllianceColorFinal(AllianceColor.RED);
+            allianceColorDeterminationProblem=true;
+        }
+
+        //if both red and blue are over the threshold, then default to red, but tell the driver using the problem boolean
+        if (redOverThreshold && blueOverThreshold)
+        {
+            setAllianceColorFinal(AllianceColor.RED);
+            allianceColorDeterminationProblem=true;
+        } else if (redOverThreshold)
+        {
+            setAllianceColorFinal(AllianceColor.RED);
+        } else if (blueOverThreshold)
+        {
             setAllianceColorFinal(AllianceColor.BLUE);
-            //set problem blue variable?
         }
     }
-
 
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {

@@ -41,11 +41,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.MotorParameters;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
@@ -63,30 +61,12 @@ public final class MecanumDriveMona {
     public double strafe;
     public double turn;
 
-    private double DEFAULT_P = 11; // default = 10
-    private double DEFAULT_D = 3; // default = 0
-    private double DEFAULT_I = 0; // default = 3
-    private double DEFAULT_F = 12; // default = 0
-
-    private double P = DEFAULT_P; // default = 10
-    private double D = DEFAULT_D; // default = 0
-    private double I = DEFAULT_I; // default = 3
-    private double F = DEFAULT_F; // default = 0
-
-    // DriveTrain physical constants
-    private final double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
-    public final double TICKS_PER_REV = 537.7;
-    private final double DRIVE_GEAR_REDUCTION = 1.0;
-    private final double WHEEL_DIAMETER_INCHES = 3.93701;
-    private final double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-    public final double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
-
     private double leftFrontTargetSpeed;
     private double rightFrontTargetSpeed;
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
-    public static MotorParameters MotorParameters;
+    public MotorParameters MotorParameters;
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -107,6 +87,11 @@ public final class MecanumDriveMona {
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
+    /** Empty Constructor **/
+    public MecanumDriveMona() {
+    }
+
+    /** Localizer **/
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftRear, rightRear, rightFront;
 
@@ -181,8 +166,7 @@ public final class MecanumDriveMona {
         }
     }
 
-    public MecanumDriveMona() {
-    }
+
 
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
@@ -212,17 +196,15 @@ public final class MecanumDriveMona {
 
         localizer = new DriveLocalizer();
 
-        //set the PID values one time
-        leftFront.setVelocityPIDFCoefficients(P, I, D, F);
-        rightFront.setVelocityPIDFCoefficients(P, I, D, F);
-        leftBack.setVelocityPIDFCoefficients(P, I, D, F);
-        rightBack.setVelocityPIDFCoefficients(P, I, D, F);
-
-        MotorParameters MotorParameters = new MotorParameters();
-
         //sets the parameters based on the robot we have set
         //right now we just have two different sets
         MotorParameters.init();
+
+        //set the PID values one time
+        leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
         kinematics = new MecanumKinematics(
                 MotorParameters.inPerTick * MotorParameters.trackWidthTicks, MotorParameters.inPerTick / MotorParameters.lateralInPerTick);
@@ -510,10 +492,10 @@ public final class MecanumDriveMona {
             double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
             double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-            leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-            rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-            leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-            rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+            leftFrontTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+            rightFrontTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+            leftBackTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+            rightBackTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
             leftFront.setVelocity(leftFrontTargetSpeed);
             rightFront.setVelocity(rightFrontTargetSpeed);
@@ -548,15 +530,15 @@ public final class MecanumDriveMona {
         Robot.getInstance().getActiveOpMode().telemetry.addData("Strafe: ", strafe);
         Robot.getInstance().getActiveOpMode().telemetry.addData("Turn: ", turn);
 
-        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / TICKS_PER_REV);
-        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / TICKS_PER_REV);
-        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / TICKS_PER_REV);
-        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / TICKS_PER_REV);
+        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
+        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
+        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / MotorParameters.TICKS_PER_REV);
+        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / MotorParameters.TICKS_PER_REV);
 
-        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / TICKS_PER_REV);
-        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / TICKS_PER_REV);
-        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / TICKS_PER_REV);
-        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / TICKS_PER_REV);
+        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / MotorParameters.TICKS_PER_REV);
+        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / MotorParameters.TICKS_PER_REV);
+        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / MotorParameters.TICKS_PER_REV);
+        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / MotorParameters.TICKS_PER_REV);
 
         Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
         Robot.getInstance().getActiveOpMode().telemetry.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
@@ -574,7 +556,6 @@ public final class MecanumDriveMona {
     }
 
     public class DrawCurrentPosition implements Action {
-
         public boolean run(@NonNull TelemetryPacket p) {
 
             Canvas c = p.fieldOverlay();
@@ -586,7 +567,5 @@ public final class MecanumDriveMona {
             return false;
         }
     }
-
-
 }
 

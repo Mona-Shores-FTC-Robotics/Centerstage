@@ -599,40 +599,26 @@ public class Vision {
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
         telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getRightPercent(), 4, 1));
+
+        telemetry.addData("Total Red", JavaUtil.formatNumber(getInitVisionProcessor().percentRedTotal, 4, 1));
+        telemetry.addData("Total Blue", JavaUtil.formatNumber(getInitVisionProcessor().percentBlueTotal, 4, 1));
+        telemetry.addData("Alliance Color Problem Flag", getInitVisionProcessor().allianceColorDeterminationProblem);
+
         telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentLeftStageDoorZone, 4, 1));
-        telemetry.addData("Right Square Right Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
+        telemetry.addData("Stage Door Right Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
 
-
-        //rumble the controller if there is a vision issue
-        boolean whatIsThis = hasLargestNumberWithinTolerance(
-                getInitVisionProcessor().getLeftPercent(),
-                getInitVisionProcessor().getCenterPercent(),
-                getInitVisionProcessor().getRightPercent(), PERCENT_TOLERANCE);
-
-
-        if (whatIsThis &&
-                GamepadHandling.ManualOverrideInitSettingsFlag==false) {
+        //Set the gamepads to Green if there is a problem and the driver hasn't overridden
+        if ( getInitVisionProcessor().allianceColorDeterminationProblem && GamepadHandling.ManualOverrideInitSettingsFlag==false) {
             GamepadHandling.problemInInitLed();
         } else {
-            //show the color of the Alliance on the gamepads
-            if (Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
+            //show the color of the Alliance on the drivergamepad
+            if (allianceColor == InitVisionProcessor.AllianceColor.RED) {
                 GamepadHandling.setRed();
-            } else if (Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.BLUE) {
+            } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
                 GamepadHandling.setBlue();
             }
         }
     }
-
-    public boolean areNumbersClose(double num1, double num2, double tolerance) {
-        double diff = Math.abs(num1 - num2);
-        return diff >= tolerance;
-    }
-
-    public boolean hasLargestNumberWithinTolerance(double num1, double num2, double num3, double tolerance) {
-        double largest = Math.max(num1, Math.max(num2, num3));
-        return areNumbersClose(largest, num1, tolerance) || areNumbersClose(largest, num2, tolerance) || areNumbersClose(largest, num3, tolerance);
-    }
-
 
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 

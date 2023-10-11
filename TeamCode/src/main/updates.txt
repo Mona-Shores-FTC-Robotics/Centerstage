@@ -1,11 +1,10 @@
 Things to do
-1. Try the code on a different robot to see if the gyro drops out (identify if its a hardware//software issue
-    definitely is a grounding wire of some sort. Just touching metal to metal causes the gyro to go to zero.
-1.5  Does other robot need to be tuned with RR (at least check encoder directions)
-    This needs to be done.
-2. Did the update fix the jittering? (RUN WITH ENCODERS AFTER STOP AND RESET ENCODERS)
-    setting power to zero, resetting encoders, and then resetting them back to run with encoders seems to have fixed this.
-3. Fix the Gamepad issues to make it easy to use - can we consistently detect our alliance color/side of field/prop?
+1. Finish tuining the faster motors - see new MotorParameters file in the Constants package
+2. Set the inital poses - see the TODO item in vision.java
+3. Moved the zero functionality to MecanumSpeedControl - check to make sure this worked
+4. Gamepad Code
+
+
 4. Does the auto driving work well? What tweaks do we need?
 5. Does the localization work well? How can we make it better?
 6. Is code ready to test the arm/end effector?

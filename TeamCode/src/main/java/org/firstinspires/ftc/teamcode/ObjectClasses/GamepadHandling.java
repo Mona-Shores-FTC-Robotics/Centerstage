@@ -34,10 +34,6 @@ public class GamepadHandling {
     private static Gamepad driverGamepad;
     private static Gamepad operatorGamepad;
 
-
-    public static double motorFwd = 0.0;
-    public static double motorRev = 0.0;
-
     private static boolean overrideAprilTagDriving = false;
 
     public static boolean LockedInitSettingsFlag = false;
@@ -69,8 +65,16 @@ public class GamepadHandling {
 
         mecanumDrive = Robot.getInstance().getMecanumDriveMona();
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,1,0,LED_DURATION_CONTINUOUS );
-        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0,LED_DURATION_CONTINUOUS );
+
+
+        //driver is (not sure what color this will be)
+        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,.2,.4,LED_DURATION_CONTINUOUS );
+
+
+        //operator is white
+        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
+
+
         endGameRumbleEffect = new Gamepad.RumbleEffect.Builder()
                 .addStep(0.0, 1.0, 500)  //  Rumble right motor 100% for 500 mSec
                 .addStep(0.0, 0.0, 300)  //  Pause for 300 mSec
@@ -412,14 +416,16 @@ public class GamepadHandling {
     }
 
     public static void setRed() {
+        //set driver gamepad to red
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS );
-        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
+        //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
     }
 
 
     public static void setBlue() {
+        //set driver gamepad to blue
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
-        Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
+        //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
     }
 
     public static void problemInInitRumble() {
@@ -428,12 +434,12 @@ public class GamepadHandling {
         if  (!Robot.getInstance().getActiveOpMode().gamepad1.isRumbling() && timeoutRumbleCounter < 5) {
             timeoutRumbleCounter+=1;
             Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(problemRumbleEffect);
-            Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(problemRumbleEffect);
+            //Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(problemRumbleEffect);
         }
     }
 
     public static void problemInInitLed() {
             Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
-            Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
+            //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
         }
 }

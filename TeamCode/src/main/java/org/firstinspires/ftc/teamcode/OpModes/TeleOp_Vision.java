@@ -49,7 +49,6 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
-
         //Set the type of Robot
         RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_VISION);
 
