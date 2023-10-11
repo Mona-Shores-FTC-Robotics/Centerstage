@@ -14,7 +14,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
@@ -24,7 +26,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     Robot robot = Robot.createInstance(this);
 
-    public static MecanumDrive roadRunnerDrive;
+    public static MecanumDriveMona roadRunnerDrive;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private InitVisionProcessor.AllianceColor allianceColor;
@@ -45,7 +47,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         GamepadHandling.init();
         robot.getVision().SwitchToInitVisionProcessor();
 
-        roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0, 0, 0));
+        roadRunnerDrive = Robot.getInstance().getMecanumDriveMona();
 
         RoutesSpikeBackdropPark.BuildRoutes(roadRunnerDrive);
 
@@ -85,7 +87,6 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         CheckRedAudience();
 
         telemetry.clearAll();
-        telemetry.setAutoClear(false);
 
         Actions.runBlocking(selectedRoute);
 

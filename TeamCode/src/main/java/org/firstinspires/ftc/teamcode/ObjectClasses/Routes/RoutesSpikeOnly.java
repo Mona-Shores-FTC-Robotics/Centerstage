@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 
 import com.acmerobotics.roadrunner.Action;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class RoutesSpikeOnly {
@@ -26,7 +27,7 @@ public class RoutesSpikeOnly {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildRoutes(MecanumDrive roadRunnerDrive) {
+    public static void BuildRoutes(MecanumDriveMona roadRunnerDrive) {
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .build();
