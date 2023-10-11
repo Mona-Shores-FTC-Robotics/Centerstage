@@ -39,12 +39,12 @@ public class Vision {
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.04  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double SAFETY_SPEED_GAIN = 0.01;   //
     final double STRAFE_GAIN =  -0.025 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
     final double TURN_GAIN   =  -0.025  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_AUTO_SPEED = 0.9;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_STRAFE= 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
     final double MAX_AUTO_TURN  = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
 
@@ -309,7 +309,7 @@ public class Vision {
         }
 
         //this method only returns true if we see 20 frames of one of the tags being detected
-        if (blueTagFrameCount>2)
+        if (blueTagFrameCount>0)
         {
             return true;
         } return false;
@@ -324,7 +324,7 @@ public class Vision {
         }
 
         //this method only returns true if we see 20 frames of one of the tags being detected
-        if (redTagFrameCount>2)
+        if (redTagFrameCount>0)
         {
             return true;
         } return false;

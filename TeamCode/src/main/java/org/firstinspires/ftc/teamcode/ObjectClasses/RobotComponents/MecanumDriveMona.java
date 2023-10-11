@@ -66,7 +66,7 @@ public final class MecanumDriveMona {
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
-    public MotorParameters MotorParameters;
+    public MotorParameters MotorParameters = new MotorParameters();
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -458,20 +458,22 @@ public final class MecanumDriveMona {
     public void mecanumDriveSpeedControl() {
 
         if (drive==0 && strafe ==0 && turn==0) {
-            //stop and reset encoders
+
+            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+            leftFront.setPower(0);
+            leftBack.setPower(0);
+            rightFront.setPower(0);
+            rightBack.setPower(0);
+
             leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            //We might have to set power to zero, but lets see if it works without that now that we skip setting velocity to zero.
-
-            //Put the encoders back in run to encoder mode
-            //This should be unnecessary
-//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down

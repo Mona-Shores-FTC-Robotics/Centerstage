@@ -134,9 +134,9 @@ public class GamepadHandling {
     }
 
     public static Boolean driverGamepadIsActive() {
-        if (    (Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_x) +
-                Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_y) +
-                Math.abs(GamepadHandling.getCurrentDriverGamepad().right_stick_x)) > .2) {
+        if     (Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_x) > .1 ||
+                Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_y) > .1 ||
+                Math.abs(GamepadHandling.getCurrentDriverGamepad().right_stick_x) > .1 ){
             return true;
         } else return false;
     }
