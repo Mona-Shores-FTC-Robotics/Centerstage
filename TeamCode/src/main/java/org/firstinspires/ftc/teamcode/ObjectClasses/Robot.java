@@ -79,7 +79,7 @@ public class Robot {
                 break;
             }
             case ROBOT_VISION:
-            {
+            case ROBOT_VISION_FAST_MOTORS: {
                 vision.init();
                 gyro.init();
                 mecanumDrive.init();

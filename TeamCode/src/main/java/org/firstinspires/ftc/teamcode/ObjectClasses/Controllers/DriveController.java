@@ -106,7 +106,6 @@ public class DriveController {
                 drivingToAprilTag = true;
             } else drivingToAprilTag = false;
         }
-
         else if (autoTurning) {
             turnUpdate();
             controllerDrive = 0;
@@ -117,18 +116,6 @@ public class DriveController {
             controllerDrive = 0;
             controllerStrafe = 0;
             controllerTurn = 0;
-
-            //stop and reset encoders
-            mecanumDrive.leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            mecanumDrive.leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            mecanumDrive.rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            mecanumDrive.rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            //Put the encoders back in run to encoder mode
-            mecanumDrive.leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mecanumDrive.leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mecanumDrive.rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            mecanumDrive.rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
         mecanumDrive.drive = controllerDrive;
         mecanumDrive.strafe = controllerStrafe;

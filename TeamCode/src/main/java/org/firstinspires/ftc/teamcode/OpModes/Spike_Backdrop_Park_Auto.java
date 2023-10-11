@@ -36,7 +36,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
     public void runOpMode() {
 
         //Set the type of Robot
-        Constants.setRobot(Constants.RobotType.ROBOT_VISION);
+        Constants.setRobot(Constants.RobotType.ROBOT_VISION_FAST_MOTORS);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

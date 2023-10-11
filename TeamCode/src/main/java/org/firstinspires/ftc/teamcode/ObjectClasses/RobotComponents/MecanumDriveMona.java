@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotType.ROBOT_VISION_FAST_MOTORS;
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
@@ -11,7 +12,6 @@ import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.DisplacementTrajectory;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.HolonomicController;
 import com.acmerobotics.roadrunner.MecanumKinematics;
@@ -26,10 +26,8 @@ import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TimeTurn;
-import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TurnConstraints;
-import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
@@ -40,7 +38,6 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -50,7 +47,9 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MotorParameters.Params;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
@@ -61,8 +60,6 @@ import java.util.List;
 
 @Config
 public final class MecanumDriveMona {
-
-
 
     public double drive;
     public double strafe;
@@ -91,54 +88,13 @@ public final class MecanumDriveMona {
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
-    public static class Params {
-        // drive model parameters
-        public double inPerTick =  0.022365950344252; // 90.8in-37.2 2396.5ticks
-        public double lateralInPerTick = 0.0280188186095139; //1913
-        public double trackWidthTicks = 893.5920803662788;
+    public static Params PARAMS;
 
-        // feedforward parameters (in tick units)
-        public double kS = 0.7703864947833408;
-        public double kV = 0.00436466666183017;
-        public double kA = 0.00055;
-
-        // path profile parameters (in inches)
-        public double maxWheelVel = 25;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 30;
-
-        // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
-        public double maxAngAccel = Math.PI;
-
-        // path controller gains
-        public double axialGain = 8;
-        public double lateralGain = 8;
-        public double headingGain = 4; // shared with turn
-
-        public double axialVelGain = .5;
-        public double lateralVelGain = .5;
-        public double headingVelGain = .5; // shared with turn
-    }
-
-    public static Params PARAMS = new Params();
-
-    public final MecanumKinematics kinematics = new MecanumKinematics(
-            PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
-
-    public final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS, PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
-
-    public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
-            PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
-
-    public final VelConstraint defaultVelConstraint =
-            new MinVelConstraint(Arrays.asList(
-                    kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
-                    new AngularVelConstraint(PARAMS.maxAngVel)
-            ));
-
-    public final AccelConstraint defaultAccelConstraint =
-            new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
+    public MecanumKinematics kinematics;
+    public MotorFeedforward feedforward;
+    public TurnConstraints defaultTurnConstraints;
+    public VelConstraint defaultVelConstraint;
+    public AccelConstraint defaultAccelConstraint;
 
     public DcMotorEx leftFront;
     public DcMotorEx leftBack;
@@ -264,6 +220,28 @@ public final class MecanumDriveMona {
         rightFront.setVelocityPIDFCoefficients(P, I, D, F);
         leftBack.setVelocityPIDFCoefficients(P, I, D, F);
         rightBack.setVelocityPIDFCoefficients(P, I, D, F);
+
+        Params PARAMS = new Params();
+
+        //sets the parameters based on the robot we have set
+        //right now we just have two different sets
+        PARAMS.init();
+
+        kinematics = new MecanumKinematics(
+                PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
+
+        feedforward = new MotorFeedforward(PARAMS.kS, PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
+
+        defaultTurnConstraints = new TurnConstraints(
+                PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
+
+        defaultVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
+                        new AngularVelConstraint(PARAMS.maxAngVel)
+                ));
+
+        defaultAccelConstraint = new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -500,36 +478,51 @@ public final class MecanumDriveMona {
 
     public void mecanumDriveSpeedControl() {
 
-        //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-        //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
-        if (    Robot.getInstance().getVision().blueBackdropAprilTagFound &&
-                Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                drive > .1)
-        {
-            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+        if (drive==0 && strafe ==0 && turn==0) {
+            //stop and reset encoders
+            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            //We might have to set power to zero, but lets see if it works without that now that we skip setting velocity to zero.
+
+            //Put the encoders back in run to encoder mode
+            //This should be unnecessary
+//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+
+            //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
+            if (Robot.getInstance().getVision().blueBackdropAprilTagFound &&
+                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                    drive > .1) {
+                drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+            }
+            //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            else if (Robot.getInstance().getVision().redBackdropAprilTagFound &&
+                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                    drive > .1) {
+                drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+            }
+
+            double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+            double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+            double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
+
+            leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+            rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+            leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+            rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+
+            leftFront.setVelocity(leftFrontTargetSpeed);
+            rightFront.setVelocity(rightFrontTargetSpeed);
+            leftBack.setVelocity(leftBackTargetSpeed);
+            rightBack.setVelocity(rightBackTargetSpeed);
         }
-        //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-        else if (       Robot.getInstance().getVision().redBackdropAprilTagFound &&
-                        Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                        drive > .1)
-        {
-            drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
-        }
-
-        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
-        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
-        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
-
-        leftFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-        rightFrontTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-        leftBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-        rightBackTargetSpeed = MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-
-
-        leftFront.setVelocity(leftFrontTargetSpeed);
-        rightFront.setVelocity(rightFrontTargetSpeed);
-        leftBack.setVelocity(leftBackTargetSpeed);
-        rightBack.setVelocity(rightBackTargetSpeed);
     }
 
     public void mecanumDrivePowerControl (){

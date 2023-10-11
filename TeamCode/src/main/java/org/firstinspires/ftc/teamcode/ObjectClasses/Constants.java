@@ -25,6 +25,7 @@ public class Constants {
         ROBOT_ARM_END_EFFECTOR,
         ROBOT_CHASSIS,
         ROBOT_VISION,
+        ROBOT_VISION_FAST_MOTORS,
         ROBOT_MOTOR_TEST_MECHANISM
   }
 
@@ -34,7 +35,11 @@ public class Constants {
       } else if (robot == RobotType.ROBOT_VISION)
      {
          return RobotType.ROBOT_VISION;
-     } else if (robot == RobotType.ROBOT_MOTOR_TEST_MECHANISM){
+     } else if (robot == RobotType.ROBOT_VISION_FAST_MOTORS)
+     {
+         return RobotType.ROBOT_VISION_FAST_MOTORS;
+     }
+     else if (robot == RobotType.ROBOT_MOTOR_TEST_MECHANISM){
          return RobotType.ROBOT_MOTOR_TEST_MECHANISM;
      }
      else {
