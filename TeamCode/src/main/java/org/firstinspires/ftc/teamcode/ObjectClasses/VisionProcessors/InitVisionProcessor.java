@@ -385,13 +385,22 @@ public class InitVisionProcessor implements VisionProcessor {
         //TODO You write the pseudo code for error checking the side of the field
         // Step 1 - if there was a problem with alliance color determination - then set that there is a problem with side of field too
 
+        // Here is our steps for Side of Field selection
+        // 1. Reset Backstage/Audience determination problem flag
+        // 2. check if the total left vs. right box are too close to call - set problem flag if it is but continue
+        // 3. Compare each zone to a threshold (4%)
+        //      If nether zone is greater than the threshold set default to Backstage, but flag an error
+        //      otherwise set an over-threshold true/false variable for backstage/Audience
+        // 4. If only the left box or the right box is over the threshold, then set the side of field based on that using the alliance color
+        //      if they are both over the threshold set the side of field to default (Backstage) and flag an error
+
         if (allianceColorFinal == AllianceColor.RED) {
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
                 setSideOfFieldFinal(SideOfField.BACKSTAGE);
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
-                // Stage Door is on the right and we are Red Alliance so we are FRONTSTAGE
+                // Stage Door is on the right and we are Red Alliance so we are AUDIENCE
                 setSideOfFieldFinal(SideOfField.AUDIENCE);
             }
         }
