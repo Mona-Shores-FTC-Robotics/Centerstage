@@ -44,10 +44,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.MotorParameters;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
+
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
 
 import java.util.Arrays;
@@ -66,7 +69,7 @@ public final class MecanumDriveMona {
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
-    public MotorParameters MotorParameters = new MotorParameters();
+    public static ParamsMona MotorParameters = new ParamsMona();
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -110,6 +113,7 @@ public final class MecanumDriveMona {
             RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
             RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
 
+
             leftFront = new OverflowEncoder(LFEncoder);
             leftRear = new OverflowEncoder(LBEncoder);
             rightRear = new OverflowEncoder(RBEncoder);
@@ -120,7 +124,8 @@ public final class MecanumDriveMona {
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-            lastHeading = Rotation2d.exp(gyro.currentAbsoluteYawRadians);
+            lastHeading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
         }
 
         @Override
@@ -130,7 +135,7 @@ public final class MecanumDriveMona {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation2d heading = Rotation2d.exp(gyro.currentAbsoluteYawRadians);
+            Rotation2d heading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             double headingDelta = heading.minus(lastHeading);
 
             Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
@@ -166,11 +171,9 @@ public final class MecanumDriveMona {
         }
     }
 
-
-
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
-        this.pose = new Pose2d(0,0,0);
+        this.pose = new Pose2d(0, 0, 0);
         gyro = Robot.getInstance().getGyro();
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
@@ -195,10 +198,6 @@ public final class MecanumDriveMona {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new DriveLocalizer();
-
-        //sets the parameters based on the robot we have set
-        //right now we just have two different sets
-        MotorParameters.init();
 
         //set the PID values one time
         leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
@@ -482,13 +481,13 @@ public final class MecanumDriveMona {
             if (Robot.getInstance().getVision().blueBackdropAprilTagFound &&
                     Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     drive > .1) {
-                drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             else if (Robot.getInstance().getVision().redBackdropAprilTagFound &&
                     Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .1) {
-                drive = Math.min(drive, Robot.getInstance().getDriveController().safetyDriveSpeedFactor);
+                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
 
             double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
@@ -504,6 +503,30 @@ public final class MecanumDriveMona {
             rightFront.setVelocity(rightFrontTargetSpeed);
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
+
+            //set the PID values one time
+            leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+            rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+            leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+            rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+
+            kinematics = new MecanumKinematics(
+                    MotorParameters.inPerTick * MotorParameters.trackWidthTicks, MotorParameters.inPerTick / MotorParameters.lateralInPerTick);
+
+            feedforward = new MotorFeedforward(MotorParameters.kS, MotorParameters.kV / MotorParameters.inPerTick, MotorParameters.kA / MotorParameters.inPerTick);
+
+            defaultTurnConstraints = new TurnConstraints(
+                    MotorParameters.maxAngVel, -MotorParameters.maxAngAccel, MotorParameters.maxAngAccel);
+
+            defaultVelConstraint =
+                    new MinVelConstraint(Arrays.asList(
+                            kinematics.new WheelVelConstraint(MotorParameters.maxWheelVel),
+                            new AngularVelConstraint(MotorParameters.maxAngVel)
+                    ));
+
+            defaultAccelConstraint = new ProfileAccelConstraint(MotorParameters.minProfileAccel, MotorParameters.maxProfileAccel);
+
+            FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
         }
     }
 
@@ -603,6 +626,117 @@ public final class MecanumDriveMona {
         }
     }
 
+    //old parameters i cant figure out how to switch between them easily
+//    public static class ParamsMona {
+//        /** Set our motor parameters for slower drive motors **/
+//        public double DRIVE_SPEED_FACTOR = .8;
+//        public double STRAFE_SPEED_FACTOR = .9;
+//        public double TURN_SPEED_FACTOR = .6;
+//
+//        public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
+//
+//        public double DEFAULT_P = 11; // default = 10
+//        public double DEFAULT_D = 3; // default = 0
+//        public double DEFAULT_I = 0; // default = 3
+//        public double DEFAULT_F = 12; // default = 0
+//
+//        public double P = DEFAULT_P; // default = 10
+//        public double D = DEFAULT_D; // default = 0
+//        public double I = DEFAULT_I; // default = 3
+//        public double F = DEFAULT_F; // default = 0
+//
+//        // DriveTrain physical constants
+//        public double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
+//        public double TICKS_PER_REV = 537.7;
+//        public double DRIVE_GEAR_REDUCTION = 1.0;
+//        public double WHEEL_DIAMETER_INCHES = 3.93701;
+//        public double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+//        public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+//
+//        /** Set Roadrunner motor parameters for slower drive motors **/
+//
+//        // drive model parameters
+//        public double inPerTick = 0.022365950344252; // 90.8in-37.2 2396.5ticks
+//        public double lateralInPerTick = 0.0280188186095139; //1913
+//        public double trackWidthTicks = 893.5920803662788;
+//
+//        // feedforward parameters (in tick units)
+//        public double kS = 0.7703864947833408;
+//        public double kV = 0.00436466666183017;
+//        public double kA = 0.00055;
+//
+//        // path profile parameters (in inches)
+//        public double maxWheelVel = 25;
+//        public double minProfileAccel = -30;
+//        public double maxProfileAccel = 30;
+//
+//        // turn profile parameters (in radians)
+//        public double maxAngVel = Math.PI; // shared with path
+//        public double maxAngAccel = Math.PI;
+//
+//        // path controller gains
+//        public double axialGain = 8;
+//        public double lateralGain = 8;
+//        public double headingGain = 4; // shared with turn
+//
+//        public double axialVelGain = .5;
+//        public double lateralVelGain = .5;
+//        public double headingVelGain = .5; // shared with turn
+//    }
 
+
+    public static class ParamsMona {
+        public double DRIVE_SPEED_FACTOR=.7;
+        public double STRAFE_SPEED_FACTOR=.8;
+        public double TURN_SPEED_FACTOR=.4;
+
+        public double safetyDriveSpeedFactor =DRIVE_SPEED_FACTOR;
+
+        //TODO test driving around in teleop and tweak these
+        //We either use these or the roadrunner ones, not both
+
+        public double P =5; // default = 10
+        public double D =0; // default = 0
+        public double I =0; // default = 3
+        public double F =8; // default = 0
+
+        // DriveTrain physical constants
+        public double MAX_MOTOR_SPEED_RPS =435.0/60.0;
+        public double TICKS_PER_REV =384.5;
+        public double DRIVE_GEAR_REDUCTION =1.0;
+        public double WHEEL_DIAMETER_INCHES =3.93701;
+        public double COUNTS_PER_INCH =(TICKS_PER_REV *DRIVE_GEAR_REDUCTION)/(WHEEL_DIAMETER_INCHES *3.1415);
+        public double MAX_SPEED_TICK_PER_SEC =MAX_MOTOR_SPEED_RPS *TICKS_PER_REV;
+
+        /** Set Roadrunner motor parameters for faster drive motors **/
+
+        // drive model parameters
+        public double inPerTick =0.0317919075144509; //60.5\1903
+        public double lateralInPerTick =0.0325115144947169; // 60\1845.5
+        public double trackWidthTicks =631.8289216104534;
+
+        // feedforward parameters (in tick units)
+        public double kS =0.9574546275336608;
+        public double kV =0.004264232249424524;
+        public double kA =0.00055;
+
+        // path profile parameters (in inches)
+        public double maxWheelVel =25;
+        public double minProfileAccel =-30;
+        public double maxProfileAccel =30;
+
+        // turn profile parameters (in radians)
+        public double maxAngVel =Math.PI; // shared with path
+        public double maxAngAccel =Math.PI;
+
+        // path controller gains
+        public double axialGain =12;
+        public double lateralGain =3;
+        public double headingGain =8; // shared with turn
+
+        public double axialVelGain =1;
+        public double lateralVelGain =1;
+        public double headingVelGain =1; // shared with turn
+    }
 }
 

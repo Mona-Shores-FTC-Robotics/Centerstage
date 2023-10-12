@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Config
+//@Config
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {
         public double parYTicks = 0.0; // y position of the parallel encoder (in tick units)

@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Controllers;
 
-import static java.lang.Math.abs;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
@@ -21,12 +19,6 @@ public class DriveController {
     public double aprilTagDrive = 0.0;
     public double aprilTagStrafe = 0.0;
     public double aprilTagTurn = 0.0;
-
-    public final double DRIVE_SPEED_FACTOR = .9;
-    private final double STRAFE_SPEED_FACTOR = .9;
-    private final double TURN_SPEED_FACTOR = .65;
-
-    public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
 
     public boolean fieldOrientedControlFlag = true;
     public boolean drivingToAprilTag = false;
@@ -61,9 +53,9 @@ public class DriveController {
         if (GamepadHandling.driverGamepadIsActive() || drivingToAprilTag) {
             //Store the adjusted gamepad values as drive/strafe/turn
             driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-            controllerDrive = -driverGamepad.left_stick_y * DRIVE_SPEED_FACTOR;
-            controllerStrafe = driverGamepad.left_stick_x * STRAFE_SPEED_FACTOR;
-            controllerTurn = driverGamepad.right_stick_x * TURN_SPEED_FACTOR;
+            controllerDrive = -driverGamepad.left_stick_y * mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
+            controllerStrafe = driverGamepad.left_stick_x * mecanumDrive.MotorParameters.STRAFE_SPEED_FACTOR;
+            controllerTurn = driverGamepad.right_stick_x * mecanumDrive.MotorParameters.TURN_SPEED_FACTOR;
 
             //Check if we are turning automatically using Turn or TurnTo and change the turn value if we are
             if (autoTurning) {

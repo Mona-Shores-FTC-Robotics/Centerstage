@@ -284,15 +284,15 @@ public class Vision {
 
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * SAFETY_SPEED_GAIN, MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < Robot.getInstance().getDriveController().safetyDriveSpeedFactor) {
-                    Robot.getInstance().getDriveController().safetyDriveSpeedFactor = manualDriveLimit;
+                if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
+                    mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
         //If no april tags are detected then reset the safety drive speed factor
         if (currentDetections.size() == 0) {
-            Robot.getInstance().getDriveController().safetyDriveSpeedFactor = Robot.getInstance().getDriveController().DRIVE_SPEED_FACTOR;
+            mecanumDrive.MotorParameters.safetyDriveSpeedFactor = mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
         }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
