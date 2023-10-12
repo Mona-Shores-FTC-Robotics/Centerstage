@@ -444,7 +444,9 @@ public class InitVisionProcessor implements VisionProcessor {
                 percentRightZoneBlue>TEAM_PROP_PERCENT_THRESHOLD_FOR_DETECTION)
         {
             blueOverThreshold=true;
-        } else
+        }
+
+        if (!redOverThreshold && !blueOverThreshold)
         {
             //if neither red or blue percents are over the threshold anywhere, then default to red, but tell the driver using the problem boolean
             setAllianceColorFinal(AllianceColor.RED);

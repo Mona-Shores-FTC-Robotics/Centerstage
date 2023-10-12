@@ -38,7 +38,7 @@ public class Spike_Only_Auto extends LinearOpMode {
     public void runOpMode() {
 
         //Set the type of Robot
-        RobotConstants.setRobot(RobotType.ROBOT_VISION);
+        RobotConstants.setRobot(RobotType.ROBOT_VISION_FAST_MOTORS);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());

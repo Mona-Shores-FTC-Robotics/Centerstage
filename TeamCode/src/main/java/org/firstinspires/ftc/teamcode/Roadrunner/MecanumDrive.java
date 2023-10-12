@@ -50,13 +50,13 @@ import java.util.List;
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick =  0.022365950344252; // 90.8in-37.2 2396.5ticks
-        public double lateralInPerTick = 0.0280188186095139; //1913
-        public double trackWidthTicks = 893.5920803662788;
+        public double inPerTick = 0.0317919075144509; //60.5\1903
+        public double lateralInPerTick = 0.0325115144947169; // 60\1845.5
+        public double trackWidthTicks = 631.8289216104534;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.7703864947833408;
-        public double kV = 0.00436466666183017;
+        public double kS = 0.9574546275336608;
+        public double kV = 0.004264232249424524;
         public double kA = 0.00055;
 
         // path profile parameters (in inches)
@@ -69,13 +69,13 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 8;
-        public double lateralGain = 8;
-        public double headingGain = 4; // shared with turn
+        public double axialGain = 12;
+        public double lateralGain = 3;
+        public double headingGain = 8; // shared with turn
 
-        public double axialVelGain = .5;
-        public double lateralVelGain = .5;
-        public double headingVelGain = .5; // shared with turn
+        public double axialVelGain = 1;
+        public double lateralVelGain = 1;
+        public double headingVelGain = 1; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -123,6 +123,7 @@ public final class MecanumDrive {
             LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
             RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+
 
             leftFront = new OverflowEncoder(LFEncoder);
             leftRear = new OverflowEncoder(LBEncoder);
