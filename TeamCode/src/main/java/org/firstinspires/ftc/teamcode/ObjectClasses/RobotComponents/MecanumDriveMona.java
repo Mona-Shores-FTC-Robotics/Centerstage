@@ -4,6 +4,7 @@ import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -46,7 +47,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
@@ -64,12 +64,23 @@ public final class MecanumDriveMona {
     public double strafe;
     public double turn;
 
+    public double last_drive=0;
+    public double last_strafe=0;
+    public double last_turn=0;
+
+    public double current_drive_ramp =0;
+    public double current_strafe_ramp=0;
+    public double current_turn_ramp=0;
+
     private double leftFrontTargetSpeed;
     private double rightFrontTargetSpeed;
     private double leftBackTargetSpeed;
     private double rightBackTargetSpeed;
 
     public static ParamsMona MotorParameters = new ParamsMona();
+    public static ParamsRRMona MotorParametersRR = new ParamsRRMona();
+    public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
+
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -142,19 +153,19 @@ public final class MecanumDriveMona {
                     new DualNum<Time>(new double[]{
                             (leftFrontPosVel.position - lastLeftFrontPos),
                             leftFrontPosVel.velocity,
-                    }).times(MotorParameters.inPerTick),
+                    }).times(MotorParametersRR.inPerTick),
                     new DualNum<Time>(new double[]{
                             (leftRearPosVel.position - lastLeftRearPos),
                             leftRearPosVel.velocity,
-                    }).times(MotorParameters.inPerTick),
+                    }).times(MotorParametersRR.inPerTick),
                     new DualNum<Time>(new double[]{
                             (rightRearPosVel.position - lastRightRearPos),
                             rightRearPosVel.velocity,
-                    }).times(MotorParameters.inPerTick),
+                    }).times(MotorParametersRR.inPerTick),
                     new DualNum<Time>(new double[]{
                             (rightFrontPosVel.position - lastRightFrontPos),
                             rightFrontPosVel.velocity,
-                    }).times(MotorParameters.inPerTick)
+                    }).times(MotorParametersRR.inPerTick)
             ));
 
             lastLeftFrontPos = leftFrontPosVel.position;
@@ -206,22 +217,23 @@ public final class MecanumDriveMona {
         rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
         kinematics = new MecanumKinematics(
-                MotorParameters.inPerTick * MotorParameters.trackWidthTicks, MotorParameters.inPerTick / MotorParameters.lateralInPerTick);
+                MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
-        feedforward = new MotorFeedforward(MotorParameters.kS, MotorParameters.kV / MotorParameters.inPerTick, MotorParameters.kA / MotorParameters.inPerTick);
+        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
 
         defaultTurnConstraints = new TurnConstraints(
-                MotorParameters.maxAngVel, -MotorParameters.maxAngAccel, MotorParameters.maxAngAccel);
+                MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
 
         defaultVelConstraint =
                 new MinVelConstraint(Arrays.asList(
-                        kinematics.new WheelVelConstraint(MotorParameters.maxWheelVel),
-                        new AngularVelConstraint(MotorParameters.maxAngVel)
+                        kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
+                        new AngularVelConstraint(MotorParametersRR.maxAngVel)
                 ));
 
-        defaultAccelConstraint = new ProfileAccelConstraint(MotorParameters.minProfileAccel, MotorParameters.maxProfileAccel);
+        defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
-        FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
+        FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
+        FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
@@ -284,8 +296,8 @@ public final class MecanumDriveMona {
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParameters.axialGain, MotorParameters.lateralGain, MotorParameters.headingGain,
-                    MotorParameters.axialVelGain, MotorParameters.lateralVelGain, MotorParameters.headingVelGain
+                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
+                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
             )
                     .compute(txWorldTarget, pose, robotVelRobot);
 
@@ -365,8 +377,8 @@ public final class MecanumDriveMona {
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParameters.axialGain, MotorParameters.lateralGain, MotorParameters.headingGain,
-                    MotorParameters.axialVelGain, MotorParameters.lateralVelGain, MotorParameters.headingVelGain
+                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
+                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
             )
                     .compute(txWorldTarget, pose, robotVelRobot);
 
@@ -457,24 +469,25 @@ public final class MecanumDriveMona {
 
     public void mecanumDriveSpeedControl() {
 
-        if (drive==0 && strafe ==0 && turn==0) {
-
-            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
-            leftFront.setPower(0);
-            leftBack.setPower(0);
-            rightFront.setPower(0);
-            rightBack.setPower(0);
+//        if (drive==0 && strafe ==0 && turn==0) {
 //
-//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        } else {
+//            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+//            leftFront.setPower(0);
+//            leftBack.setPower(0);
+//            rightFront.setPower(0);
+//            rightBack.setPower(0);
+////
+////            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+////            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+////            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+////            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+////
+////            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+////            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+////            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+////            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        } else
+        {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
@@ -490,42 +503,108 @@ public final class MecanumDriveMona {
                 drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
 
+
+            TelemetryPacket p = new TelemetryPacket();
+            p.put("drive", drive);
+
+            double THRESHOLD = .04;
+
+            if (Math.abs(current_drive_ramp)  + THRESHOLD  < Math.abs(drive)) {
+                current_drive_ramp =  Math.signum(drive) * (Math.abs(current_drive_ramp) + MotorParameters.DRIVE_RAMP);
+            }  else
+            {
+                current_drive_ramp = drive;
+            }
+
+            if (Math.abs(current_strafe_ramp)  + THRESHOLD  < Math.abs(strafe)) {
+                current_strafe_ramp =  Math.signum(strafe) * (Math.abs(current_strafe_ramp) + MotorParameters.STRAFE_RAMP);
+            }  else
+            {
+                current_strafe_ramp = strafe;
+            }
+
+            if (Math.abs(current_turn_ramp)  + THRESHOLD  < Math.abs(turn)) {
+                current_turn_ramp =  Math.signum(turn) * (Math.abs(current_turn_ramp) + MotorParameters.TURN_RAMP);
+            }  else
+            {
+                current_turn_ramp = turn;
+            }
+
+            drive = current_drive_ramp;
+            strafe = current_strafe_ramp;
+            turn = current_turn_ramp;
+
+            p.put("current drive ramp", current_drive_ramp);
+            p.put("current strafe ramp", current_strafe_ramp);
+            p.put("current turn ramp", current_turn_ramp);
+            Canvas c = p.fieldOverlay();
+            drawPoseHistory(c);
+
+            c.setStroke("#3F51B5");
+            drawRobot(c, pose);
+
+
+            FtcDashboard.getInstance().sendTelemetryPacket(p);
+
+//
+//
+//            if (last_strafe <.5 && strafe > .5) {
+//                strafe   = current_strafe_ramp + MotorParameters.STRAFE_RAMP;
+//            }else
+//            {
+//                current_strafe_ramp=0;
+//            }
+//
+//            if (last_turn <.5 && turn > .3) {
+//                turn = current_turn_ramp + MotorParameters.TURN_RAMP;
+//            } else
+//            {
+//                current_turn_ramp=0;
+//            }
+
+
             double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
             double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
             double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-            leftFrontTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-            rightFrontTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-            leftBackTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-            rightBackTargetSpeed = MotorParameters.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+            leftFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+            rightFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+            leftBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+            rightBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
             leftFront.setVelocity(leftFrontTargetSpeed);
             rightFront.setVelocity(rightFrontTargetSpeed);
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
-            //set the PID values one time
+            //set the param values in the loop for tuning (after we have tuned using dashbaord these can be moved to init()
+            //We should investigate if assigning PID values is messing up the feedforward that roadrunner uses
+
             leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
             rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
             leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
             rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
             kinematics = new MecanumKinematics(
-                    MotorParameters.inPerTick * MotorParameters.trackWidthTicks, MotorParameters.inPerTick / MotorParameters.lateralInPerTick);
+                    MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
-            feedforward = new MotorFeedforward(MotorParameters.kS, MotorParameters.kV / MotorParameters.inPerTick, MotorParameters.kA / MotorParameters.inPerTick);
+            feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
 
             defaultTurnConstraints = new TurnConstraints(
-                    MotorParameters.maxAngVel, -MotorParameters.maxAngAccel, MotorParameters.maxAngAccel);
+                    MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
 
             defaultVelConstraint =
                     new MinVelConstraint(Arrays.asList(
-                            kinematics.new WheelVelConstraint(MotorParameters.maxWheelVel),
-                            new AngularVelConstraint(MotorParameters.maxAngVel)
+                            kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
+                            new AngularVelConstraint(MotorParametersRR.maxAngVel)
                     ));
 
-            defaultAccelConstraint = new ProfileAccelConstraint(MotorParameters.minProfileAccel, MotorParameters.maxProfileAccel);
+            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
+
+            last_drive=drive;
+            last_strafe=strafe;
+            last_turn=turn;
             FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
         }
     }
@@ -557,15 +636,15 @@ public final class MecanumDriveMona {
         Robot.getInstance().getActiveOpMode().telemetry.addData("Strafe: ", strafe);
         Robot.getInstance().getActiveOpMode().telemetry.addData("Turn: ", turn);
 
-        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
-        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
-        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / MotorParameters.TICKS_PER_REV);
-        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / MotorParameters.TICKS_PER_REV);
+        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
 
-        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / MotorParameters.TICKS_PER_REV);
-        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / MotorParameters.TICKS_PER_REV);
-        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / MotorParameters.TICKS_PER_REV);
-        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / MotorParameters.TICKS_PER_REV);
+        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
 
         Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
         Robot.getInstance().getActiveOpMode().telemetry.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
@@ -602,15 +681,18 @@ public final class MecanumDriveMona {
             p.put("y", pose.position.y);
             p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
 
-            double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
-            double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / MotorParameters.TICKS_PER_REV);
-            double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / MotorParameters.TICKS_PER_REV);
-            double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / MotorParameters.TICKS_PER_REV);
+            p.put("leftFrontTargetSpeed",leftFrontTargetSpeed);
+            p.put("leftFrontCurrentSpeed",leftFront.getVelocity() );
 
-            double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / MotorParameters.TICKS_PER_REV);
-            double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / MotorParameters.TICKS_PER_REV);
-            double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / MotorParameters.TICKS_PER_REV);
-            double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / MotorParameters.TICKS_PER_REV);
+            double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+            double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+            double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+            double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+
+            double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+            double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+            double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+            double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
 
             p.addLine("");
 
@@ -686,28 +768,29 @@ public final class MecanumDriveMona {
 
 
     public static class ParamsMona {
-        public double DRIVE_SPEED_FACTOR=.7;
+        public double DRIVE_SPEED_FACTOR=.8;
         public double STRAFE_SPEED_FACTOR=.8;
         public double TURN_SPEED_FACTOR=.4;
 
         public double safetyDriveSpeedFactor =DRIVE_SPEED_FACTOR;
 
+        public double DRIVE_RAMP = .04;
+        public double STRAFE_RAMP = .05;
+        public double TURN_RAMP = .05;
+
         //TODO test driving around in teleop and tweak these
         //We either use these or the roadrunner ones, not both
 
-        public double P =5; // default = 10
+
+        //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
+        public double P =0; // default = 10
         public double D =0; // default = 0
         public double I =0; // default = 3
-        public double F =8; // default = 0
+        public double F =12.5; // default = 0
 
-        // DriveTrain physical constants
-        public double MAX_MOTOR_SPEED_RPS =435.0/60.0;
-        public double TICKS_PER_REV =384.5;
-        public double DRIVE_GEAR_REDUCTION =1.0;
-        public double WHEEL_DIAMETER_INCHES =3.93701;
-        public double COUNTS_PER_INCH =(TICKS_PER_REV *DRIVE_GEAR_REDUCTION)/(WHEEL_DIAMETER_INCHES *3.1415);
-        public double MAX_SPEED_TICK_PER_SEC =MAX_MOTOR_SPEED_RPS *TICKS_PER_REV;
+    }
 
+    public static class ParamsRRMona {
         /** Set Roadrunner motor parameters for faster drive motors **/
 
         // drive model parameters
@@ -738,5 +821,19 @@ public final class MecanumDriveMona {
         public double lateralVelGain =1;
         public double headingVelGain =1; // shared with turn
     }
+
+    public static class ParamsDriveTrainConstants {
+        // DriveTrain physical constants
+        public static double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
+        public static double TICKS_PER_REV = 384.5;
+        public static double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+
+        //These aren't actually being used...
+//        public static double DRIVE_GEAR_REDUCTION = 1.0;
+//        public static double WHEEL_DIAMETER_INCHES = 3.93701;
+//        public static double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
+
+    }
 }
+
 

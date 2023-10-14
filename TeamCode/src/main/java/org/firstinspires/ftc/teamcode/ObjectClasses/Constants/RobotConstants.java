@@ -10,6 +10,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 
 public class RobotConstants {
 
+
+
   public static RobotType robot;
 
   public static void setRobot(RobotType type)
@@ -43,4 +45,8 @@ public class RobotConstants {
         return RobotType.ROBOT_CHASSIS;
       }
   }
+
+
+
+
 }
