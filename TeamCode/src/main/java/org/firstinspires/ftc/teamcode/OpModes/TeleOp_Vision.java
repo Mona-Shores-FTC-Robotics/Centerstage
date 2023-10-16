@@ -145,8 +145,6 @@ public class TeleOp_Vision extends LinearOpMode
             //this sends info to dashboard to draw our robot on the field
             runBlocking(drawTeleOpRobot);
 
-            //TODO send apriltag data to the dashboard instead of speed data when we hold down the left trigger
-
             telemetry.update();
         }
         robot.getVision().getVisionPortal().close();

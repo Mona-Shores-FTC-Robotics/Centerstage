@@ -74,6 +74,8 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         allianceColor = Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
         sideOfField = Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
 
+        robot.getVision().setStartingPose(allianceColor, sideOfField);
+
         //After Init switch the vision processing to AprilTags
         robot.getVision().SwitchToAprilTagProcessor();
 

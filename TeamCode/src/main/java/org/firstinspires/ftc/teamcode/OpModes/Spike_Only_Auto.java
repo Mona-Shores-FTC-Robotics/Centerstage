@@ -73,6 +73,9 @@ public class Spike_Only_Auto extends LinearOpMode {
         allianceColor = Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
         sideOfField = Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
 
+        //Set the starting pose of the robot
+        robot.getVision().setStartingPose(allianceColor, sideOfField);
+
         //After Init switch the vision processing to AprilTags
         robot.getVision().SwitchToAprilTagProcessor();
 

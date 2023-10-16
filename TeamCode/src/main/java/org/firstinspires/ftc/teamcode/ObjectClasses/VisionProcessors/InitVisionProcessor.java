@@ -420,8 +420,6 @@ public class InitVisionProcessor implements VisionProcessor {
 
     private void DetermineAllianceColor() {
 
-        //TODO look at how I wrote this pseudo code and then how I implemented it below - now you write the pseudo code for DetermineSideOfTheField()
-
         // Here are our steps for alliance color selection
         // 1. Reset alliance color determination problem flag
         // 2. check if the total red vs. blue is too close to call - set the problem flag if it is, but continue

@@ -73,6 +73,18 @@ public class Vision {
         visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), false);
     }
 
+    public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
+        if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
+            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
+            mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
+            mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
+            mecanumDrive.pose = RED_AUDIENCE_START_POSE;
+        }
+    }
+
     public enum AprilTagID {
         BLUE_BACKDROP_LEFT(1),
         BLUE_BACKDROP_CENTER(2),
@@ -596,12 +608,6 @@ public class Vision {
         telemetry.addData("Alliance Color", allianceColor);
         telemetry.addData("Side of the Field", sideOfField);
         telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
-
-        //TODO set the pose of the robot for telemetry based on color/side combinations - do the other 3 using this one to help you
-        if (allianceColor== InitVisionProcessor.AllianceColor.BLUE && sideOfField== InitVisionProcessor.SideOfField.BACKSTAGE){
-            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
-        }
-
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));

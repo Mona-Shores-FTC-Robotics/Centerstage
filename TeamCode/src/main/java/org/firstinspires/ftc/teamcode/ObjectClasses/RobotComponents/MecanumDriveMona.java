@@ -764,10 +764,8 @@ public final class MecanumDriveMona {
         public double STRAFE_RAMP = .05;
         public double TURN_RAMP = .05;
 
-
         //TODO test driving around in teleop and tweak these
         //We either use these or the roadrunner ones, not both
-
 
         //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
         public double P =0; // default = 10
