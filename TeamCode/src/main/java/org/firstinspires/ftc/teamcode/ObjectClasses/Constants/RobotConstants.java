@@ -42,8 +42,8 @@ public class RobotConstants {
      }
      else if (robot == RobotType.ROBOT_LIFT_TEST){
          return RobotType.ROBOT_LIFT_TEST;
-     } else if (robot == RobotType.ROBOT_ARM_END_EFFECTOR){
-         return RobotType.ROBOT_ARM_END_EFFECTOR;
+     } else if (robot == RobotType.ROBOT_SHOULDER_END_EFFECTOR){
+         return RobotType.ROBOT_SHOULDER_END_EFFECTOR;
      }
      else {
         return RobotType.ROBOT_CHASSIS;
