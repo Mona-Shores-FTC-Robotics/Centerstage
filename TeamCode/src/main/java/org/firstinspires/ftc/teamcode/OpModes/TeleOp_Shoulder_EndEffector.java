@@ -35,9 +35,10 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Shoulder;
 
-@TeleOp(name="TeleOp_Arm_EndEffector")
-public class TeleOp_Arm_EndEffector extends LinearOpMode
+@TeleOp(name="TeleOp_Shoulder_EndEffector")
+public class TeleOp_Shoulder_EndEffector extends LinearOpMode
 {
 
     /** Create the robot **/
@@ -46,7 +47,7 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_ARM_END_EFFECTOR);
+        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_SHOULDER_END_EFFECTOR);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
@@ -55,49 +56,26 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
 
         //initialize the Gamepads
         GamepadHandling.init();
-        robot.getVision().SwitchToInitVisionProcessor();
 
-        telemetry.setAutoClear(true);
         telemetry.clearAll();
 
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
 
-            // Add Vision Init Processor Telemetry
-            robot.getVision().telemetryForInitProcessing();
-
-            GamepadHandling.lockColorAndSide();
-
             telemetry.update();
             sleep(10);
         }
-
-        //Display the initVision telemetry a final time
-        robot.getVision().telemetryForInitProcessing();
-        telemetry.update();
-
-        //After Init switch the vision processing to AprilTags
-        robot.getVision().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
 
         while (opModeIsActive())
         {
-            telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
-            telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
 
             //Store the previous loop's gamepad values and new current gamepad values
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
-
-            //Update Gyro values
-            robot.getGyro().UpdateGyro();
-
-            //Look for AprilTags
-            robot.getVision().LookForAprilTags();
 
             //Process the Driver Controls
             GamepadHandling.DriverControls();
@@ -105,18 +83,22 @@ public class TeleOp_Arm_EndEffector extends LinearOpMode
             //Process the Operator Controls
             GamepadHandling.OperatorControls();
 
-            //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDriveController().setDriveStrafeTurnValues();
-
-            //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-                robot.getVision().telemetryAprilTag();
+            //for testing leaving these buttons out here, but once we move to real code we can put them in the OperatorControls()
+            //Don't forget its operator controlling these test buttons!
+            if (GamepadHandling.operatorButtonPressed("x")) {
+                Robot.getInstance().getEndEffector().GrabTwoPixels();
             }
 
-            //Add DriveTrain Telemetry
-            if (gamepad1.right_trigger>.1) {
-                robot.getMecanumDriveMona().telemetryDriveTrain();
-                robot.getGyro().telemetryGyro();
+            if (GamepadHandling.operatorButtonPressed("y")) {
+                Robot.getInstance().getEndEffector().ReleaseBothPixels();
+            }
+
+            if (GamepadHandling.operatorButtonPressed("a")) {
+                Robot.getInstance().getShoulder().Rotate(Shoulder.ShoulderPositions.INTAKE);
+            }
+
+            if (GamepadHandling.operatorButtonPressed("b")) {
+                Robot.getInstance().getShoulder().Rotate(Shoulder.ShoulderPositions.BACKDROP);
             }
             telemetry.update();
         }

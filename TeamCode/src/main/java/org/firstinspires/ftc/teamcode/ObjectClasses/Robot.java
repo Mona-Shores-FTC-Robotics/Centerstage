@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Arm;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Shoulder;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Gyro;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.EndEffector;
@@ -26,7 +23,7 @@ public class Robot {
     private static HardwareMap hardwareMap;
 
     private static MecanumDriveMona mecanumDrive;
-    private static Arm arm;
+    private static Shoulder shoulder;
     private static LiftSlide liftSlide;
     private static Gyro gyro;
     private static EndEffector endEffector;
@@ -42,7 +39,7 @@ public class Robot {
         teleOpRuntime = new ElapsedTime();
         mecanumDrive = new MecanumDriveMona();
         liftSlide = new LiftSlide();
-        arm = new Arm();
+        shoulder = new Shoulder();
         gyro = new Gyro();
         endEffector = new EndEffector();
         vision = new Vision();
@@ -58,8 +55,6 @@ public class Robot {
 
     public void initialize(HardwareMap hwMap) {
 
-
-
         switch (RobotConstants.getRobot()) {
             case ROBOT_CENTERSTAGE:
             {
@@ -67,7 +62,7 @@ public class Robot {
                 gyro.init();
                 mecanumDrive.init();
                 liftSlide.init();  //Uses a motor
-                arm.init(); // Uses a servo
+                shoulder.init(); // Uses a servo
                 endEffector.init(); //Uses a servo
                 break;
             }
@@ -89,13 +84,15 @@ public class Robot {
                 testIntake.init();
                 break;
             }
-            case ROBOT_ARM_END_EFFECTOR:
+            case ROBOT_SHOULDER_END_EFFECTOR:
             {
-                vision.init();
-                gyro.init();
-                mecanumDrive.init();
-                arm.init(); // Uses a servo
+                shoulder.init(); // Uses a servo
                 endEffector.init(); //Uses a servo
+                break;
+            }
+            case ROBOT_LIFT_TEST:
+            {
+                liftSlide.init();
                 break;
             }
 
@@ -128,7 +125,9 @@ public class Robot {
     public EndEffector getEndEffector()  {return endEffector;}
     public TestIntake getTestIntake()  {return testIntake;}
     public DriveController getDriveController()  {return driveController;}
-
+    public LiftSlide getLiftSlide()  {return liftSlide;}
+    public Shoulder getShoulder()  {return shoulder;}
 }
+
 
 

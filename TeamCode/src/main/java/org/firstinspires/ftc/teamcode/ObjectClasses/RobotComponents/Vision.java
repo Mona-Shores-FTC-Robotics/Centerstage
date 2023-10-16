@@ -5,6 +5,9 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Visio
 
 
 import android.util.Size;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -206,6 +209,9 @@ public class Vision {
                 activeOpMode.sleep(20);
             }
             telemetry.addData("Camera", "Ready");
+            TelemetryPacket p = new TelemetryPacket();
+            p.addLine("Camera is ready");
+            FtcDashboard.getInstance().sendTelemetryPacket(p);
             telemetry.update();
         }
 

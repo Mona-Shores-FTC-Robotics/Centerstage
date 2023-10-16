@@ -410,6 +410,36 @@ public class GamepadHandling {
         return (currentButton && !previousButton);
     }
 
+    public static boolean operatorButtonPressed(String buttonName) {
+        Field currentField= null;
+        try {
+            currentField = currentOperatorGamepad.getClass().getField(buttonName);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        Field previousField = null;
+        try {
+            previousField = previousOperatorGamepad.getClass().getField(buttonName);
+        } catch ( NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        boolean currentButton = false;
+        try {
+            currentButton = (boolean) currentField.getBoolean(currentOperatorGamepad);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        boolean previousButton = false;
+
+        try {
+            previousButton = (boolean) previousField.getBoolean(previousOperatorGamepad);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (currentButton && !previousButton);
+    }
+
     public static void endGameRumble() {
         Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
         Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);

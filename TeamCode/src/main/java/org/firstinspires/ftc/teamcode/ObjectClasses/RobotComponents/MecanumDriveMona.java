@@ -72,6 +72,8 @@ public final class MecanumDriveMona {
     public double current_strafe_ramp=0;
     public double current_turn_ramp=0;
 
+    public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
+
     private double leftFrontTargetSpeed;
     private double rightFrontTargetSpeed;
     private double leftBackTargetSpeed;
@@ -81,6 +83,7 @@ public final class MecanumDriveMona {
     public static ParamsRRMona MotorParametersRR = new ParamsRRMona();
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
 
+    public double unrampedDrive;
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -469,24 +472,24 @@ public final class MecanumDriveMona {
 
     public void mecanumDriveSpeedControl() {
 
-//        if (drive==0 && strafe ==0 && turn==0) {
+        if (drive==0 && strafe ==0 && turn==0) {
+
+            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+            leftFront.setPower(0);
+            leftBack.setPower(0);
+            rightFront.setPower(0);
+            rightBack.setPower(0);
 //
-//            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
-//            leftFront.setPower(0);
-//            leftBack.setPower(0);
-//            rightFront.setPower(0);
-//            rightBack.setPower(0);
-////
-////            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-////            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-////            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-////            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-////
-////            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-////            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-////            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-////            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        } else
+//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else
         {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
@@ -503,65 +506,15 @@ public final class MecanumDriveMona {
                 drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
 
+            //save this for telemetry
+            unrampedDrive = drive;
 
-            TelemetryPacket p = new TelemetryPacket();
-            p.put("drive", drive);
-
-            double THRESHOLD = .04;
-
-            if (Math.abs(current_drive_ramp)  + THRESHOLD  < Math.abs(drive)) {
-                current_drive_ramp =  Math.signum(drive) * (Math.abs(current_drive_ramp) + MotorParameters.DRIVE_RAMP);
-            }  else
-            {
-                current_drive_ramp = drive;
-            }
-
-            if (Math.abs(current_strafe_ramp)  + THRESHOLD  < Math.abs(strafe)) {
-                current_strafe_ramp =  Math.signum(strafe) * (Math.abs(current_strafe_ramp) + MotorParameters.STRAFE_RAMP);
-            }  else
-            {
-                current_strafe_ramp = strafe;
-            }
-
-            if (Math.abs(current_turn_ramp)  + THRESHOLD  < Math.abs(turn)) {
-                current_turn_ramp =  Math.signum(turn) * (Math.abs(current_turn_ramp) + MotorParameters.TURN_RAMP);
-            }  else
-            {
-                current_turn_ramp = turn;
-            }
-
+            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
             drive = current_drive_ramp;
+            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
             strafe = current_strafe_ramp;
-            turn = current_turn_ramp;
-
-            p.put("current drive ramp", current_drive_ramp);
-            p.put("current strafe ramp", current_strafe_ramp);
-            p.put("current turn ramp", current_turn_ramp);
-            Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
-
-            c.setStroke("#3F51B5");
-            drawRobot(c, pose);
-
-
-            FtcDashboard.getInstance().sendTelemetryPacket(p);
-
-//
-//
-//            if (last_strafe <.5 && strafe > .5) {
-//                strafe   = current_strafe_ramp + MotorParameters.STRAFE_RAMP;
-//            }else
-//            {
-//                current_strafe_ramp=0;
-//            }
-//
-//            if (last_turn <.5 && turn > .3) {
-//                turn = current_turn_ramp + MotorParameters.TURN_RAMP;
-//            } else
-//            {
-//                current_turn_ramp=0;
-//            }
-
+            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
+            turn = current_strafe_ramp;
 
             double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
             double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
@@ -601,12 +554,36 @@ public final class MecanumDriveMona {
 
             defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
+            driveDashboardTelemetry();
 
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;
             FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
+
         }
+    }
+
+    private double Ramp(double target, double currentValue, double ramp_amount) {
+
+        if (Math.abs(currentValue)  + RAMP_THRESHOLD < Math.abs(target)) {
+            return Math.signum(target) * (Math.abs(currentValue) + ramp_amount);
+        }  else
+        {
+            return target;
+        }
+
+    }
+
+    private void driveDashboardTelemetry() {
+
+        TelemetryPacket p = new TelemetryPacket();
+
+
+
+
+
+
     }
 
     public void mecanumDrivePowerControl (){
@@ -681,9 +658,6 @@ public final class MecanumDriveMona {
             p.put("y", pose.position.y);
             p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
 
-            p.put("leftFrontTargetSpeed",leftFrontTargetSpeed);
-            p.put("leftFrontCurrentSpeed",leftFront.getVelocity() );
-
             double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
             double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
             double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
@@ -703,6 +677,18 @@ public final class MecanumDriveMona {
 
             p.addLine("");
             p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyro().currentAbsoluteYawDegrees, 4, 0));
+
+            p.put("actualSpeedLF", actualSpeedLF);
+            p.put("actualSpeedRF", actualSpeedRF);
+            p.put("actualSpeedLB", actualSpeedLB);
+            p.put("actualSpeedRB", actualSpeedRB);
+            p.put("targetSpeedLF", targetSpeedLF);
+
+            Canvas c = p.fieldOverlay();
+            drawPoseHistory(c);
+
+            c.setStroke("#3F51B5");
+            drawRobot(c, pose);
 
             return false;
         }
@@ -777,6 +763,7 @@ public final class MecanumDriveMona {
         public double DRIVE_RAMP = .04;
         public double STRAFE_RAMP = .05;
         public double TURN_RAMP = .05;
+
 
         //TODO test driving around in teleop and tweak these
         //We either use these or the roadrunner ones, not both

@@ -10,8 +10,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Constants;
 
 public class RobotConstants {
 
-
-
   public static RobotType robot;
 
   public static void setRobot(RobotType type)
@@ -21,11 +19,12 @@ public class RobotConstants {
 
   public enum RobotType {
         ROBOT_CENTERSTAGE,
-        ROBOT_ARM_END_EFFECTOR,
+        ROBOT_SHOULDER_END_EFFECTOR,
         ROBOT_CHASSIS,
         ROBOT_VISION,
         ROBOT_VISION_FAST_MOTORS,
-        ROBOT_MOTOR_TEST_MECHANISM
+        ROBOT_MOTOR_TEST_MECHANISM,
+        ROBOT_LIFT_TEST
   }
 
   public static RobotType getRobot() {
@@ -41,12 +40,13 @@ public class RobotConstants {
      else if (robot == RobotType.ROBOT_MOTOR_TEST_MECHANISM){
          return RobotType.ROBOT_MOTOR_TEST_MECHANISM;
      }
+     else if (robot == RobotType.ROBOT_LIFT_TEST){
+         return RobotType.ROBOT_LIFT_TEST;
+     } else if (robot == RobotType.ROBOT_ARM_END_EFFECTOR){
+         return RobotType.ROBOT_ARM_END_EFFECTOR;
+     }
      else {
         return RobotType.ROBOT_CHASSIS;
       }
   }
-
-
-
-
 }

@@ -33,6 +33,7 @@ import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -79,6 +80,7 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.lockColorAndSide();
 
             telemetry.update();
+
             sleep(10);
         }
 
