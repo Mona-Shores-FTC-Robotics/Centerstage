@@ -36,7 +36,7 @@ public class Shoulder {
     public ShoulderPositions unknownShoulderPosition = ShoulderPositions.UNKNOWN;
     public ElapsedTime shoulderRotateTimer = new ElapsedTime();
 
-    private boolean safeToRotate = false;
+    private boolean safeToRotate = true;
     private boolean rotating = false;
 
     public Shoulder() {

@@ -77,28 +77,46 @@ public class TeleOp_Shoulder_EndEffector extends LinearOpMode
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
 
-            //Process the Driver Controls
-            GamepadHandling.DriverControls();
-
-            //Process the Operator Controls
-            GamepadHandling.OperatorControls();
-
             //for testing leaving these buttons out here, but once we move to real code we can put them in the OperatorControls()
             //Don't forget its operator controlling these test buttons!
             if (GamepadHandling.operatorButtonPressed("x")) {
                 Robot.getInstance().getEndEffector().GrabTwoPixels();
+                telemetry.addLine("end effector 1");
+                String name = Robot.getInstance().getShoulder().shoulder.getDeviceName();
+                double pos = Robot.getInstance().getShoulder().shoulder.getPosition();
+
+                telemetry.addData("name", name);
+                telemetry.addData("pos", pos);
             }
 
             if (GamepadHandling.operatorButtonPressed("y")) {
                 Robot.getInstance().getEndEffector().ReleaseBothPixels();
+                telemetry.addLine("end effector 0");
+                String name = Robot.getInstance().getShoulder().shoulder.getDeviceName();
+                double pos = Robot.getInstance().getShoulder().shoulder.getPosition();
+
+                telemetry.addData("name", name);
+                telemetry.addData("pos", pos);
             }
 
-            if (GamepadHandling.operatorButtonPressed("a")) {
+            if (GamepadHandling.getCurrentOperatorGamepad().a) {
                 Robot.getInstance().getShoulder().Rotate(Shoulder.ShoulderPositions.INTAKE);
+                telemetry.addLine("shoulder 1");
+                String name = Robot.getInstance().getShoulder().shoulder.getDeviceName();
+                double pos = Robot.getInstance().getShoulder().shoulder.getPosition();
+
+                telemetry.addData("name", name);
+                telemetry.addData("pos", pos);
             }
 
-            if (GamepadHandling.operatorButtonPressed("b")) {
+            if (GamepadHandling.getCurrentOperatorGamepad().b) {
                 Robot.getInstance().getShoulder().Rotate(Shoulder.ShoulderPositions.BACKDROP);
+                telemetry.addLine("shoulder 0");
+                String name = Robot.getInstance().getShoulder().shoulder.getDeviceName();
+                double pos = Robot.getInstance().getShoulder().shoulder.getPosition();
+
+                telemetry.addData("name", name);
+                telemetry.addData("pos", pos);
             }
             telemetry.update();
         }

@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Visio
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -30,29 +31,33 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class Vision {
+@Config
+public final class Vision {
 
-    // Adjust these numbers to suit your robot.
-    final double DESIRED_DISTANCE = 10; //  this is how close the camera should get to the target for alignment (inches)
-    final double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
+    public static Vision.TunableVisionConstants tunableVisionConstants = new Vision.TunableVisionConstants();
 
-    //this is the tolerance before we rumble if vision is seeing things that are close
-    final double PERCENT_TOLERANCE = 2;
+    public static class TunableVisionConstants {
+        // Adjust these numbers to suit your robot.
+        public double DESIRED_DISTANCE = 10; //  this is how close the camera should get to the target for alignment (inches)
+        public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
-    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-    //  applied to the drive motors to correct the error.
-    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double SAFETY_SPEED_GAIN = 0.01;   //
-    final double STRAFE_GAIN =  -0.025 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-    final double TURN_GAIN   =  -0.025  ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        //this is the tolerance before we rumble if vision is seeing things that are close
+        final double PERCENT_TOLERANCE = 2;
 
-    final double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_STRAFE= 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
-    final double MAX_AUTO_TURN  = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
+        //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
+        //  applied to the drive motors to correct the error.
+        //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
+        public double SPEED_GAIN = 0.02;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double SAFETY_SPEED_GAIN = 0.01;   //
+        public double STRAFE_GAIN = -0.025;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = -0.025;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_STRAFE = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_TURN = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
 
+        public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+    }
     private int blueTagFrameCount;
     private int redTagFrameCount;
 
@@ -298,10 +303,10 @@ public class Vision {
                 currentTag.setDetected();
                 currentTag.storeDetection(detection);
 
-                double rangeError = (currentTag.detection.ftcPose.range - DESIRED_DISTANCE_SAFETY);
+                double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
 
                 // Pick whichever value is lower
-                double manualDriveLimit = Math.min(rangeError * SAFETY_SPEED_GAIN, MAX_MANUAL_BACKDROP_SPEED);
+                double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
                 if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
                     mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
@@ -353,14 +358,14 @@ public class Vision {
             //if we can see the small april tag use that for navigation
             if (RED_AUDIENCE_WALL_SMALL.isDetected && RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range < 35) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range - DESIRED_DISTANCE);
+                double rangeError = (RED_AUDIENCE_WALL_SMALL.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
                 double headingError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing;
                 double yawError = RED_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
                 Robot.getInstance().getDriveController().aprilTagDrive = drive;
                 Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -370,15 +375,15 @@ public class Vision {
             } else if (RED_AUDIENCE_WALL_LARGE.isDetected) // use the large tag until we can see the small tag
             {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_AUDIENCE_WALL_LARGE.detection.ftcPose.range - DESIRED_DISTANCE);
+                double rangeError = (RED_AUDIENCE_WALL_LARGE.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
                 double headingError = RED_AUDIENCE_WALL_LARGE.detection.ftcPose.bearing;
                 double yawError = RED_AUDIENCE_WALL_LARGE.detection.ftcPose.yaw;
 
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
                 Robot.getInstance().getDriveController().aprilTagDrive = drive;
                 Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -395,14 +400,14 @@ public class Vision {
             //if we can see the small april tag use that for navigation
             if (BLUE_AUDIENCE_WALL_SMALL.isDetected && BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.range < 35) {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.range - DESIRED_DISTANCE);
+                double rangeError = (BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
                 double headingError = BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.bearing;
                 double yawError = BLUE_AUDIENCE_WALL_SMALL.detection.ftcPose.yaw;
 
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                // Use the speed and turn "gains" to calculate how we want the rtunableVisionConstants.obot to move.
+                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
                 Robot.getInstance().getDriveController().aprilTagDrive = drive;
                 Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -413,14 +418,14 @@ public class Vision {
             } else if (BLUE_AUDIENCE_WALL_LARGE.isDetected)// use the large tag until we can see the small tag
             {
                 // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.range - DESIRED_DISTANCE);
+                double rangeError = (BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
                 double headingError = BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.bearing;
                 double yawError = BLUE_AUDIENCE_WALL_LARGE.detection.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError *  STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+                double strafe = Range.clip(-yawError *  tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
                 Robot.getInstance().getDriveController().aprilTagDrive = drive;
                 Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -443,13 +448,13 @@ public class Vision {
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (BLUE_BACKDROP_RIGHT.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = BLUE_BACKDROP_RIGHT.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_RIGHT.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
             Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -469,13 +474,13 @@ public class Vision {
                     (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (BLUE_BACKDROP_CENTER.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = BLUE_BACKDROP_CENTER.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_CENTER.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             // set the drive/turn strafe values for AutoDriving
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
@@ -495,13 +500,13 @@ public class Vision {
                 (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (BLUE_BACKDROP_LEFT.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = BLUE_BACKDROP_LEFT.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_LEFT.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
             Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -522,13 +527,13 @@ public class Vision {
                 (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (RED_BACKDROP_LEFT.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = RED_BACKDROP_LEFT.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_LEFT.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
             Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -544,13 +549,13 @@ public class Vision {
         )
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (RED_BACKDROP_CENTER.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = RED_BACKDROP_CENTER.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_CENTER.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
             Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -567,13 +572,13 @@ public class Vision {
         {
 
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            double rangeError = (RED_BACKDROP_RIGHT.detection.ftcPose.range - DESIRED_DISTANCE);
+            double rangeError = (RED_BACKDROP_RIGHT.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             double headingError = RED_BACKDROP_RIGHT.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_RIGHT.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
+            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             Robot.getInstance().getDriveController().aprilTagDrive = drive;
             Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
@@ -636,7 +641,7 @@ public class Vision {
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .08) && (Math.abs(strafe) < .08) && (Math.abs(turn) <.08)){
+        if ((Math.abs(drive) < .10) && (Math.abs(strafe) < .1) && (Math.abs(turn) <.1)){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);

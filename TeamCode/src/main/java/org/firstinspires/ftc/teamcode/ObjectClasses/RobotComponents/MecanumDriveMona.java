@@ -479,16 +479,16 @@ public final class MecanumDriveMona {
             leftBack.setPower(0);
             rightFront.setPower(0);
             rightBack.setPower(0);
-//
-//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else
         {
 
@@ -511,10 +511,10 @@ public final class MecanumDriveMona {
 
             current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
             drive = current_drive_ramp;
-            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
-            strafe = current_strafe_ramp;
-            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
-            turn = current_strafe_ramp;
+//            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
+//            strafe = current_strafe_ramp;
+//            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
+//            turn = current_strafe_ramp;
 
             double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
             double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
@@ -566,7 +566,7 @@ public final class MecanumDriveMona {
 
     private double Ramp(double target, double currentValue, double ramp_amount) {
 
-        if (Math.abs(currentValue)  + RAMP_THRESHOLD < Math.abs(target)) {
+        if (Math.abs(currentValue) + RAMP_THRESHOLD < Math.abs(target)) {
             return Math.signum(target) * (Math.abs(currentValue) + ramp_amount);
         }  else
         {
@@ -760,7 +760,7 @@ public final class MecanumDriveMona {
 
         public double safetyDriveSpeedFactor =DRIVE_SPEED_FACTOR;
 
-        public double DRIVE_RAMP = .04;
+        public double DRIVE_RAMP = .06; //ken ramp
         public double STRAFE_RAMP = .05;
         public double TURN_RAMP = .05;
 
@@ -771,7 +771,7 @@ public final class MecanumDriveMona {
         public double P =0; // default = 10
         public double D =0; // default = 0
         public double I =0; // default = 3
-        public double F =12.5; // default = 0
+        public double F =11; // default = 0
 
     }
 

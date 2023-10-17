@@ -46,6 +46,11 @@ public class Robot {
         testIntake = new TestIntake();
         driveController = new DriveController();
 
+        //airplane launcher
+        //winch
+        //intake pick up
+        //lights
+
     }
 
     public static Robot createInstance(LinearOpMode opMode) {
