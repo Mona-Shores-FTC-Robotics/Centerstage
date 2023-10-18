@@ -21,6 +21,7 @@ public class DriveController {
     public double aprilTagTurn = 0.0;
 
     public boolean fieldOrientedControlFlag = true;
+    public boolean lockedHeadingFlag = false;
     public boolean drivingToAprilTag = false;
 
     private LinearOpMode activeOpMode;
@@ -58,6 +59,9 @@ public class DriveController {
             controllerTurn = driverGamepad.right_stick_x * mecanumDrive.MotorParameters.TURN_SPEED_FACTOR;
 
             //Check if we are turning automatically using Turn or TurnTo and change the turn value if we are
+            if (lockedHeadingFlag == true) {
+                turnTo(0);
+            }
             if (autoTurning) {
                 turnUpdate();
                 controllerTurn = autoTurn;
@@ -67,6 +71,8 @@ public class DriveController {
             if (fieldOrientedControlFlag == true) {
                 fieldOrientedControl();
             }
+
+
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
             if (controllerDrive < -.1) drivingToAprilTag = false;
@@ -114,7 +120,6 @@ public class DriveController {
         mecanumDrive.turn = controllerTurn;
     }
 
-
     public void fieldOrientedControl (){
         double y = controllerDrive;
         double x = controllerStrafe;
@@ -136,7 +141,7 @@ public class DriveController {
 
     public void turnUpdate () {
         if (Math.abs(currentTurnError) > 2){
-            double motorPower = (currentTurnError < 0 ? 0.7 : -0.7);
+            double motorPower = (currentTurnError < 0 ? 0.5 : -0.5);
             autoTurn = motorPower;
             currentTurnError = turnDegrees - Robot.getInstance().getGyro().getCurrentRelativeYaw();
             Robot.getInstance().getActiveOpMode().telemetry.addData("error", currentTurnError);

@@ -160,6 +160,12 @@ public class GamepadHandling {
             overrideAprilTagDriving = true;
         } else overrideAprilTagDriving =false;
 
+        if (currentDriverGamepad.right_bumper)
+        {
+            Robot.getInstance().getDriveController().lockedHeadingFlag = true;
+        } else Robot.getInstance().getDriveController().lockedHeadingFlag = false;
+
+
 
         //Reset Gyro Button
         if (GamepadHandling.driverButtonPressed("x")){
