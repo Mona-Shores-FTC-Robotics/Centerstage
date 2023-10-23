@@ -106,6 +106,7 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             robot.getVision().LookForAprilTags();
 
+
             //Process the Driver Controls
             GamepadHandling.DriverControls();
 

@@ -473,8 +473,12 @@ public final class MecanumDriveMona {
     public void mecanumDriveSpeedControl() {
 
         if (drive==0 && strafe ==0 && turn==0) {
-
             //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+            leftFront.setVelocity(0);
+            leftBack.setVelocity(0);
+            rightFront.setVelocity(0);
+            rightBack.setVelocity(0);
+
             leftFront.setPower(0);
             leftBack.setPower(0);
             rightFront.setPower(0);
@@ -485,10 +489,6 @@ public final class MecanumDriveMona {
             rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else
         {
 
@@ -694,65 +694,6 @@ public final class MecanumDriveMona {
         }
     }
 
-    //old parameters i cant figure out how to switch between them easily
-//    public static class ParamsMona {
-//        /** Set our motor parameters for slower drive motors **/
-//        public double DRIVE_SPEED_FACTOR = .8;
-//        public double STRAFE_SPEED_FACTOR = .9;
-//        public double TURN_SPEED_FACTOR = .6;
-//
-//        public double safetyDriveSpeedFactor = DRIVE_SPEED_FACTOR;
-//
-//        public double DEFAULT_P = 11; // default = 10
-//        public double DEFAULT_D = 3; // default = 0
-//        public double DEFAULT_I = 0; // default = 3
-//        public double DEFAULT_F = 12; // default = 0
-//
-//        public double P = DEFAULT_P; // default = 10
-//        public double D = DEFAULT_D; // default = 0
-//        public double I = DEFAULT_I; // default = 3
-//        public double F = DEFAULT_F; // default = 0
-//
-//        // DriveTrain physical constants
-//        public double MAX_MOTOR_SPEED_RPS = 312.0 / 60.0;
-//        public double TICKS_PER_REV = 537.7;
-//        public double DRIVE_GEAR_REDUCTION = 1.0;
-//        public double WHEEL_DIAMETER_INCHES = 3.93701;
-//        public double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-//        public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
-//
-//        /** Set Roadrunner motor parameters for slower drive motors **/
-//
-//        // drive model parameters
-//        public double inPerTick = 0.022365950344252; // 90.8in-37.2 2396.5ticks
-//        public double lateralInPerTick = 0.0280188186095139; //1913
-//        public double trackWidthTicks = 893.5920803662788;
-//
-//        // feedforward parameters (in tick units)
-//        public double kS = 0.7703864947833408;
-//        public double kV = 0.00436466666183017;
-//        public double kA = 0.00055;
-//
-//        // path profile parameters (in inches)
-//        public double maxWheelVel = 25;
-//        public double minProfileAccel = -30;
-//        public double maxProfileAccel = 30;
-//
-//        // turn profile parameters (in radians)
-//        public double maxAngVel = Math.PI; // shared with path
-//        public double maxAngAccel = Math.PI;
-//
-//        // path controller gains
-//        public double axialGain = 8;
-//        public double lateralGain = 8;
-//        public double headingGain = 4; // shared with turn
-//
-//        public double axialVelGain = .5;
-//        public double lateralVelGain = .5;
-//        public double headingVelGain = .5; // shared with turn
-//    }
-
-
     public static class ParamsMona {
         public double DRIVE_SPEED_FACTOR=.8;
         public double STRAFE_SPEED_FACTOR=.8;
@@ -763,9 +704,6 @@ public final class MecanumDriveMona {
         public double DRIVE_RAMP = .06; //ken ramp
         public double STRAFE_RAMP = .05;
         public double TURN_RAMP = .05;
-
-        //TODO test driving around in teleop and tweak these
-        //We either use these or the roadrunner ones, not both
 
         //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
         public double P =0; // default = 10
