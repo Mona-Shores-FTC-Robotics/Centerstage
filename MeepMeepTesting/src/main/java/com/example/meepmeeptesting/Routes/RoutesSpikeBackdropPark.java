@@ -100,7 +100,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_225_DEGREES)
+                .turnTo(FACE_45_DEGREES)
                 .build();
 
         redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -111,31 +111,30 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_135_DEGREES)
+                .turnTo(FACE_315_DEGREES)
                 .build();
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
         blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_RED)
+                .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_AUDIENCE_SPIKE_C), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_RED)
                 .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_225_DEGREES)
+                .turnTo(FACE_45_DEGREES)
                 .build();
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_135_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_BLUE)
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BLUE)
                 .splineToConstantHeading(PoseToVector(RED_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_135_DEGREES)
+                .turnTo(FACE_315_DEGREES)
                 .build();
 
         /** BLUE AUDIENCE CENTER / RED AUDIENCE CENTER **/
@@ -148,7 +147,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_225_DEGREES)
+                .turnTo(FACE_45_DEGREES)
                 .build();
 
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -160,7 +159,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_135_DEGREES)
+                .turnTo(FACE_315_DEGREES)
                 .build();
 
     }
