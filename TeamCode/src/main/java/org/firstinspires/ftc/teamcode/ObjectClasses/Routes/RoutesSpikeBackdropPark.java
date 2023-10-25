@@ -34,7 +34,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                //.splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
@@ -42,7 +42,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, TANGENT_45_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                //.splineToConstantHeading(PoseToVector(RED_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
                 .build();
 

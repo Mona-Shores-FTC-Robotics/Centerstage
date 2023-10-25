@@ -7,7 +7,9 @@ import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_PARK_LANE_A;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_PARK_LANE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
@@ -91,7 +93,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
@@ -107,7 +109,7 @@ public class RoutesSpikePickup1BackdropPark {
         blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP, TANGENT_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP_RIGHT, TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
@@ -122,7 +124,7 @@ public class RoutesSpikePickup1BackdropPark {
         blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
                 .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
@@ -140,7 +142,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_R), TANGENT_TOWARD_RED)
                 .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .turnTo(FACE_225_DEGREES)
                 .build();
@@ -163,7 +165,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_RED)
                 .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .turnTo(FACE_225_DEGREES)
                 .build();
@@ -186,7 +188,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, TANGENT_TOWARD_RED)
                 .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .turnTo(FACE_225_DEGREES)
                 .build();
