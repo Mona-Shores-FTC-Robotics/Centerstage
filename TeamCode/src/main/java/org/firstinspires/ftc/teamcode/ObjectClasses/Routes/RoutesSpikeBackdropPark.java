@@ -57,7 +57,7 @@ public class RoutesSpikeBackdropPark {
         redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, TANGENT_135_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP, TANGENT_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
                 .build();
 
@@ -72,7 +72,7 @@ public class RoutesSpikeBackdropPark {
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP, TANGENT_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_BACKDROP_CENTER, TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
                 .build();
 
@@ -94,7 +94,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_L), TANGENT_TOWARD_BLUE)
                 .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_BACKDROP), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
                 .turnTo(FACE_135_DEGREES)
                 .build();
