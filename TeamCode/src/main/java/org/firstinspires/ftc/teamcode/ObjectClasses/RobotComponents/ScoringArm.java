@@ -27,39 +27,15 @@ public final class ScoringArm{
     }
 
     public SequentialAction grabAndScorePixelOnBackdropLow = new SequentialAction(
-            liftSlide.liftToLowHeight(),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            endEffector.closeEndEffector(),
-            liftSlide.liftToLowHeight(),
-            shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            liftSlide.liftToLowHeight()
+
     );
 
     public SequentialAction grabAndScorePixelOnBackdropMid = new SequentialAction(
-            liftSlide.liftToLowHeight(),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            endEffector.closeEndEffector(),
-            liftSlide.liftToMidHeight(),
-            shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            liftSlide.liftToLowHeight()
+
     );
 
     public SequentialAction grabAndScorePixelOnBackdropHigh = new SequentialAction(
-            liftSlide.liftToLowHeight(),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            endEffector.closeEndEffector(),
-            liftSlide.liftToHighHeight(),
-            shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-            endEffector.openEndEffector(),
-            shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-            liftSlide.liftToLowHeight()
+
     );
 
 

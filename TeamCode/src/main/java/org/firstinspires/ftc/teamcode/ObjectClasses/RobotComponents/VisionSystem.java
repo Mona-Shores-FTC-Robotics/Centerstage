@@ -323,7 +323,6 @@ public final class VisionSystem {
     }
 
     private boolean CheckBlueBackdropAprilTags() {
-        //TODO should we change the framecount? How does this work?
         if (BLUE_BACKDROP_LEFT_TAG.isDetected || BLUE_BACKDROP_RIGHT_TAG.isDetected || BLUE_BACKDROP_CENTER_TAG.isDetected) {
             blueTagFrameCount++;
         } else
@@ -469,7 +468,6 @@ public final class VisionSystem {
         // if its left, but left is not detected or
         // if its right, but right is not detected
 
-        //TODO Thaylen, do you know why this logic is flagging for simplification, but the other cases aren't?
         else if (   BLUE_BACKDROP_CENTER_TAG.isDetected && (
                     getDeliverLocationBlue().equals(DeliverLocation.CENTER) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected) ||
