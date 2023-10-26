@@ -382,9 +382,6 @@ public class InitVisionProcessor implements VisionProcessor {
 
     private void DetermineSideOfField() {
 
-        //TODO You write the pseudo code for error checking the side of the field
-        // Step 1 - if there was a problem with alliance color determination - then set that there is a problem with side of field too
-
         // Here is our steps for Side of Field selection
         // 1. Reset Backstage/Audience determination problem flag
         // 2. check if the total left vs. right box are too close to call - set problem flag if it is but continue

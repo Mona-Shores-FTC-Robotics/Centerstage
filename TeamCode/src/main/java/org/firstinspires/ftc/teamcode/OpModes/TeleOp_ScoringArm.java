@@ -77,8 +77,7 @@ public class TeleOp_ScoringArm extends LinearOpMode
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
 
-            //This is a loop that we can use for tuning
-
+            //todo this is how we can execute an action using button presses
             if (GamepadHandling.driverButtonPressed("x")) {
                 runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
             }
@@ -90,7 +89,6 @@ public class TeleOp_ScoringArm extends LinearOpMode
             if (GamepadHandling.driverButtonPressed("b")) {
                 runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
             }
-
 
             telemetry.update();
         }

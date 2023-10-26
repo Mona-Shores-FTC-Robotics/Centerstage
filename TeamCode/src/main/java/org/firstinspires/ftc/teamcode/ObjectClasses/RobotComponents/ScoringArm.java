@@ -26,6 +26,7 @@ public final class ScoringArm{
         shoulder.init();
     }
 
+    //todo write code for these sequential actions
     public SequentialAction grabAndScorePixelOnBackdropLow = new SequentialAction(
 
     );
