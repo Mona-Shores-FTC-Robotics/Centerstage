@@ -24,7 +24,7 @@ public class RobotConstants {
         ROBOT_VISION,
         ROBOT_VISION_FAST_MOTORS,
         ROBOT_MOTOR_TEST_MECHANISM,
-        ROBOT_LIFT_TEST
+      ROBOT_SCORING_ARM, ROBOT_LIFT_TEST
   }
 
   public static RobotType getRobot() {

@@ -29,27 +29,25 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.LiftSlide;
 
-@TeleOp(name="TeleOp_LiftSlide")
-public class TeleOp_LiftSlide extends LinearOpMode
+@TeleOp(name="TeleOp_ScoringArm")
+public class TeleOp_ScoringArm extends LinearOpMode
 {
-
-
-
     /** Create the robot **/
     Robot robot = Robot.createInstance(this);
 
     @Override public void runOpMode()
     {
         //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_LIFT_TEST);
+        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_SCORING_ARM);
 
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
@@ -80,18 +78,17 @@ public class TeleOp_LiftSlide extends LinearOpMode
             GamepadHandling.storeCurrentGamepadValues();
 
             //This is a loop that we can use for tuning
-            Robot.getInstance().getLiftSlide().loop();
 
             if (GamepadHandling.driverButtonPressed("x")) {
-                Robot.getInstance().getLiftSlide().LiftToPresetHeight(LiftSlide.LiftHeights.LOW);
+                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
             }
 
             if (GamepadHandling.driverButtonPressed("y")) {
-                Robot.getInstance().getLiftSlide().LiftToPresetHeight(LiftSlide.LiftHeights.MID);
+                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropMid);
             }
 
             if (GamepadHandling.driverButtonPressed("b")) {
-                Robot.getInstance().getLiftSlide().LiftToPresetHeight(LiftSlide.LiftHeights.HIGH);
+                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
             }
 
 

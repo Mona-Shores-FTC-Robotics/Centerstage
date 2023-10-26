@@ -12,24 +12,20 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponent
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.LiftSlide;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.PixelIntake;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ScoringArm;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
 
 public class Robot {
 
     private static Robot robot = null;
-
     private static ElapsedTime teleOpRuntime;
     private static LinearOpMode activeOpMode;
     private static HardwareMap hardwareMap;
-
     private static MecanumDriveMona mecanumDrive;
-    private static Shoulder shoulder;
-    private static LiftSlide liftSlide;
     private static Gyro gyro;
-    private static EndEffector endEffector;
     private static VisionSystem visionSystem;
-    private static PixelIntake testIntake;
-
+    private static PixelIntake Intake;
+    private static ScoringArm scoringArm;
     private static DriveController driveController;
 
     /* Constructor */
@@ -38,13 +34,11 @@ public class Robot {
         hardwareMap = opMode.hardwareMap;
         teleOpRuntime = new ElapsedTime();
         mecanumDrive = new MecanumDriveMona();
-        liftSlide = new LiftSlide();
-        shoulder = new Shoulder();
         gyro = new Gyro();
-        endEffector = new EndEffector();
         visionSystem = new VisionSystem();
-        testIntake = new PixelIntake();
+        Intake = new PixelIntake();
         driveController = new DriveController();
+        scoringArm = new ScoringArm();
 
         //airplane launcher
         //winch
@@ -66,9 +60,7 @@ public class Robot {
                 visionSystem.init();
                 gyro.init();
                 mecanumDrive.init();
-                liftSlide.init();  //Uses a motor
-                shoulder.init(); // Uses a servo
-                endEffector.init(); //Uses a servo
+                scoringArm.init();
                 break;
             }
             case ROBOT_CHASSIS:
@@ -86,21 +78,14 @@ public class Robot {
                 break;
             }
             case ROBOT_MOTOR_TEST_MECHANISM: {
-                testIntake.init();
+                Intake.init();
                 break;
             }
-            case ROBOT_SHOULDER_END_EFFECTOR:
+            case ROBOT_SCORING_ARM:
             {
-                shoulder.init(); // Uses a servo
-                endEffector.init(); //Uses a servo
+                scoringArm.init();
                 break;
             }
-            case ROBOT_LIFT_TEST:
-            {
-                liftSlide.init();
-                break;
-            }
-
             default:
                 break;
         }
@@ -127,11 +112,10 @@ public class Robot {
     public Gyro getGyro()  {return gyro;    }
     public MecanumDriveMona getMecanumDriveMona()  {return mecanumDrive;}
     public VisionSystem getVision()  {return visionSystem;}
-    public EndEffector getEndEffector()  {return endEffector;}
-    public PixelIntake getTestIntake()  {return testIntake;}
+    public PixelIntake getTestIntake()  {return Intake;}
     public DriveController getDriveController()  {return driveController;}
-    public LiftSlide getLiftSlide()  {return liftSlide;}
-    public Shoulder getShoulder()  {return shoulder;}
+    public ScoringArm getScoringArm()  {return scoringArm;}
+
 }
 
 
