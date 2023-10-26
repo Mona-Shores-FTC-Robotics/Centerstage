@@ -17,6 +17,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
@@ -41,7 +42,9 @@ public class RoutesSpikeBackdropPark {
     public static Action redBackstageBotTeamPropRightRoute;
     public static Action redAudienceBotTeamPropRightRoute;
     public static Action blueBackstageBotTeamPropRightRoute;
-    public static Action blueAudienceBotTeamPropRightRoute;
+    //public static Action blueAudienceBotTeamPropRightRoute;
+    public static Action blueAudienceBotTeamPropRightSequentialAction;
+
 
     public static void BuildRoutes() {
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
@@ -115,22 +118,34 @@ public class RoutesSpikeBackdropPark {
                 .build();
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
-        blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        Action blueAudienceBotTeamPropRightRouteA = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_AUDIENCE_SPIKE_C), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_RED)
-                .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_L), TANGENT_TOWARD_RED)
+                .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
+                .afterDisp(0, CustomActions.extendSlide())
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
+                .build();
+
+        Action blueAudienceBotTeamPropRightRouteB = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_RIGHT)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .turnTo(FACE_45_DEGREES)
                 .build();
 
+        blueAudienceBotTeamPropRightSequentialAction = new SequentialAction(
+                blueAudienceBotTeamPropRightRouteA,
+                CustomActions.alignToRightSideOfBackDropWithAprilTag(),
+                CustomActions.dropPixelOnBackdrop(),
+                CustomActions.retractSlide(),
+                blueAudienceBotTeamPropRightRouteB
+        );
+
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_135_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BLUE)
-                .splineToConstantHeading(PoseToVector(RED_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
+                .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_R), TANGENT_TOWARD_BLUE)
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
@@ -184,7 +199,7 @@ public class RoutesSpikeBackdropPark {
 
     public static void setTeamPropRightRoutes() {
         blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropRightSequentialAction);
         redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
         redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
     }
@@ -197,7 +212,7 @@ public class RoutesSpikeBackdropPark {
 
         blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
         blueAudienceBotLeft.runAction(blueAudienceBotTeamPropLeftRoute);
-        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightRoute);
+        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightSequentialAction);
 
         redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
         redBackstageBotLeft.runAction(redBackstageBotTeamPropLeftRoute);

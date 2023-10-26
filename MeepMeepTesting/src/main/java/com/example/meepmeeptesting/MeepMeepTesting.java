@@ -27,7 +27,7 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.CENTER;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.LEFT;
     public static routesToRun routesToRunSelection = routesToRun.SPIKE_BACKDROP_PARK;
 
     /** Set which robots should show up **/
@@ -145,26 +145,6 @@ public class MeepMeepTesting {
                 .start();
 
     }
-
-    /** Methods for dropping pixels **/
-    static Action dropPixelOnBackdrop()
-    {
-        SleepAction sleep = new SleepAction(.1);
-        return sleep;
-    }
-
-    static Action dropPixelOnGround()
-    {
-        SleepAction sleep = new SleepAction(.1);
-        return sleep;
-    }
-
-    static Action pickupPixel()
-    {
-        SleepAction sleep = new SleepAction(.1);
-        return sleep;
-    }
-
 
 }
 
