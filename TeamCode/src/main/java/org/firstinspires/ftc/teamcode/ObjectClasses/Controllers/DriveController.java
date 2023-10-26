@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 @Config
@@ -47,7 +47,7 @@ public class DriveController {
     private double turnDegrees;
 
     private InitVisionProcessor initVisionProcessor;
-    private Vision vision;
+    private VisionSystem visionSystem;
     private MecanumDriveMona mecanumDrive;
 
     /* Constructor */
@@ -59,7 +59,7 @@ public class DriveController {
         activeOpMode = Robot.getInstance().getActiveOpMode();
         driverGamepad = GamepadHandling.getCurrentDriverGamepad();
         initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
-        vision = Robot.getInstance().getVision();
+        visionSystem = Robot.getInstance().getVision();
         mecanumDrive = Robot.getInstance().getMecanumDriveMona();
     }
 
@@ -101,10 +101,10 @@ public class DriveController {
 
             //Aligning to the Backdrop AprilTags - CASE RED
             if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    vision.redBackdropAprilTagFound &&
+                    visionSystem.redBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropRed();
+                visionSystem.AutoDriveToBackdropRed();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
@@ -113,10 +113,10 @@ public class DriveController {
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                    vision.blueBackdropAprilTagFound &&
+                    visionSystem.blueBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                vision.AutoDriveToBackdropBlue();
+                visionSystem.AutoDriveToBackdropBlue();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;

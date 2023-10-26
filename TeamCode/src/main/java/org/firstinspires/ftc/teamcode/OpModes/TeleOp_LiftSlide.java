@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.LiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.LiftSlide;
 
 @TeleOp(name="TeleOp_LiftSlide")
 public class TeleOp_LiftSlide extends LinearOpMode
@@ -87,7 +87,7 @@ public class TeleOp_LiftSlide extends LinearOpMode
             }
 
             if (GamepadHandling.driverButtonPressed("y")) {
-                Robot.getInstance().getLiftSlide().LiftToPresetHeight(LiftSlide.LiftHeights.MEDIUM);
+                Robot.getInstance().getLiftSlide().LiftToPresetHeight(LiftSlide.LiftHeights.MID);
             }
 
             if (GamepadHandling.driverButtonPressed("b")) {

@@ -5,14 +5,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Shoulder;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.Shoulder;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Gyro;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.EndEffector;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.LiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.EndEffector;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.LiftSlide;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.TestIntake;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.PixelIntake;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
 
 public class Robot {
 
@@ -27,8 +27,8 @@ public class Robot {
     private static LiftSlide liftSlide;
     private static Gyro gyro;
     private static EndEffector endEffector;
-    private static Vision vision;
-    private static TestIntake testIntake;
+    private static VisionSystem visionSystem;
+    private static PixelIntake testIntake;
 
     private static DriveController driveController;
 
@@ -42,8 +42,8 @@ public class Robot {
         shoulder = new Shoulder();
         gyro = new Gyro();
         endEffector = new EndEffector();
-        vision = new Vision();
-        testIntake = new TestIntake();
+        visionSystem = new VisionSystem();
+        testIntake = new PixelIntake();
         driveController = new DriveController();
 
         //airplane launcher
@@ -63,7 +63,7 @@ public class Robot {
         switch (RobotConstants.getRobot()) {
             case ROBOT_CENTERSTAGE:
             {
-                vision.init();
+                visionSystem.init();
                 gyro.init();
                 mecanumDrive.init();
                 liftSlide.init();  //Uses a motor
@@ -79,7 +79,7 @@ public class Robot {
             }
             case ROBOT_VISION:
             case ROBOT_VISION_FAST_MOTORS: {
-                vision.init();
+                visionSystem.init();
                 gyro.init();
                 mecanumDrive.init();
                 driveController.init();
@@ -126,9 +126,9 @@ public class Robot {
     public HardwareMap getHardwareMap() {return activeOpMode.hardwareMap;}
     public Gyro getGyro()  {return gyro;    }
     public MecanumDriveMona getMecanumDriveMona()  {return mecanumDrive;}
-    public Vision getVision()  {return vision;}
+    public VisionSystem getVision()  {return visionSystem;}
     public EndEffector getEndEffector()  {return endEffector;}
-    public TestIntake getTestIntake()  {return testIntake;}
+    public PixelIntake getTestIntake()  {return testIntake;}
     public DriveController getDriveController()  {return driveController;}
     public LiftSlide getLiftSlide()  {return liftSlide;}
     public Shoulder getShoulder()  {return shoulder;}

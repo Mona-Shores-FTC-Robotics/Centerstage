@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-public class TestIntake {
+public class PixelIntake {
     public static double motorFwd;
     public static double motorRev;
 
@@ -19,7 +19,7 @@ public class TestIntake {
 
 //I like turtles
 
-    public TestIntake(){
+    public PixelIntake(){
 
     }
 

@@ -1,24 +1,15 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.ConstantTrajectoryBuilder;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TimeTurn;
-import com.acmerobotics.roadrunner.TurnActionFactory;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 import java.lang.reflect.Field;
@@ -262,13 +253,13 @@ public class GamepadHandling {
 
     // the X/Y/B buttons set the deliver location to left, center, or right
             if(currentOperatorGamepad.x && !previousOperatorGamepad.x){
-        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.LEFT);
+        Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.LEFT);
     }
             if(currentOperatorGamepad.y && !previousOperatorGamepad.y){
-        Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.CENTER);
+        Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.CENTER);
     }
             if(currentOperatorGamepad.b && !previousOperatorGamepad.b) {
-                Robot.getInstance().getVision().setDeliverLocation(Vision.DeliverLocation.RIGHT);
+                Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.RIGHT);
     }
 }
 

@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.Vision.AprilTagID.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem.AprilTagID.*;
 
 
 import android.util.Size;
@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Config
-public final class Vision {
+public final class VisionSystem {
 
-    public static Vision.TunableVisionConstants tunableVisionConstants = new Vision.TunableVisionConstants();
+    public static VisionSystem.TunableVisionConstants tunableVisionConstants = new VisionSystem.TunableVisionConstants();
 
     public static class TunableVisionConstants {
         // Adjust these numbers to suit your robot.
@@ -148,7 +148,7 @@ public final class Vision {
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
 
-    public Vision() {
+    public VisionSystem() {
 
     }
 
