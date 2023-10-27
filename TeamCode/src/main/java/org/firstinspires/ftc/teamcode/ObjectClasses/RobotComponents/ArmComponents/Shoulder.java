@@ -51,11 +51,11 @@ public class Shoulder {
         public Rotate(ShoulderStates s) {
             targetState = s;
             targetPosition = targetState.position;
-            shoulder.setPosition(targetPosition);
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            shoulder.setPosition(targetPosition);
             currentPosition = shoulder.getPosition();
 
             telemetryPacket.put("Target Shoulder State", targetState);

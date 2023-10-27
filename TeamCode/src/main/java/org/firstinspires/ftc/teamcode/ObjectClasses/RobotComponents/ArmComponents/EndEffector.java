@@ -12,12 +12,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 
-//todo Write the code for an action to actuate the end effector
 @Config
 public final class EndEffector {
 
     public static class EndEffectorParameters {
-        public double END_EFFECTOR_POSITION_THRESHOLD = .03;
+        public double END_EFFECTOR_POSITION_THRESHOLD = .1;
         public EndEffectorStates END_EFFECTOR_STARTING_STATE = EndEffectorStates.CLOSED;
         public double CLOSED_POSITION = 1.0;
         public double OPEN_POSITION = 0.0;
@@ -26,8 +25,8 @@ public final class EndEffector {
     public static EndEffectorParameters endEffectorParameters = new EndEffectorParameters();
 
     public enum EndEffectorStates {
-        CLOSED (endEffectorParameters.CLOSED_POSITION),
-        OPEN (endEffectorParameters.OPEN_POSITION);
+        CLOSED (1),
+        OPEN (0);
 
         private double position;
 
@@ -37,11 +36,9 @@ public final class EndEffector {
     }
 
     private Servo endEffector;
+    EndEffectorStates currentState;
+    double currentPosition;
 
-    //declare the currentState variable and set it to the starting state
-    EndEffectorStates currentState = endEffectorParameters.END_EFFECTOR_STARTING_STATE;
-    //declare the current position variable and set it to the starting position
-    double currentPosition = currentState.position;
     public EndEffector() {
 
     }
@@ -50,8 +47,9 @@ public final class EndEffector {
         endEffector = Robot.getInstance().getHardwareMap().servo.get("endeffector");
         //set the initial position of the servo to the current position
         //endEffector.setPosition([current position variable]);
+        currentState= endEffectorParameters.END_EFFECTOR_STARTING_STATE;
+        currentPosition = currentState.position;
         endEffector.setPosition(currentPosition);
-
     }
 
     public Action actuate(EndEffectorStates s){
@@ -69,22 +67,22 @@ public final class EndEffector {
             targetState = inputState;
             //get the target position from the input state
             targetPosition = targetState.position;
-            //set the Servo position to the target - we only have to set the servo position one time here in this constructor
-            endEffector.setPosition (targetPosition);
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            //set the Servo position to the target - we only have to set the servo position one time here in this constructor
+            endEffector.setPosition(targetPosition);
             //STEP 1
             //get the current position of the servo and save it in the current position variable
             currentPosition = endEffector.getPosition();
             //STEP 2
             // add telemetry for targetState, currentState, targetPosition, and currentPosition
             // each line should look like this: telemetryPacket.put("[label]", [variable]);
-            telemetryPacket.put("Target State: ", targetState);
-            telemetryPacket.put("Current State", currentState);
-            telemetryPacket.put("targetPosition", targetPosition);
-            telemetryPacket.put("currentPosition", currentPosition);
+            telemetryPacket.put("Target EndEffector State: ", targetState);
+            telemetryPacket.put("Current EndEffector State", currentState);
+            telemetryPacket.put("Target EndEffector Position", targetPosition);
+            telemetryPacket.put("Current EndEffector Position", currentPosition);
 
             //STEP 3
             //check if the current position is close enough to say we are done [how would you do this?]
@@ -95,7 +93,10 @@ public final class EndEffector {
             //STEP 4
             //if true, then save the target state as the current state since we are now at the target and return true so the Action completes
             //if false, then return false so this action keeps getting called every loop
-            if (done) return true; else return false;
+            if (done){
+                currentState = targetState;
+                return true;
+            } else return false;
         }
     }
 }
