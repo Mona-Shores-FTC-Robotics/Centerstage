@@ -31,36 +31,36 @@ public final class ScoringArm{
 
         grabAndScorePixelOnBackdropLow = new SequentialAction(
                 liftSlide.liftToLowHeight(),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-                endEffector.closeEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.CLOSED),
                 liftSlide.liftToLowHeight(),
                 shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
                 liftSlide.liftToLowHeight()
         );
 
         grabAndScorePixelOnBackdropMid = new SequentialAction(
                 liftSlide.liftToLowHeight(),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-                endEffector.closeEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.CLOSED),
                 liftSlide.liftToMidHeight(),
                 shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
                 liftSlide.liftToLowHeight()
         );
 
         grabAndScorePixelOnBackdropHigh = new SequentialAction(
                 liftSlide.liftToLowHeight(),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
-                endEffector.closeEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.CLOSED),
                 liftSlide.liftToHighHeight(),
                 shoulder.rotate(Shoulder.ShoulderStates.BACKDROP),
-                endEffector.openEndEffector(),
+                endEffector.actuate(EndEffector.EndEffectorStates.OPEN),
                 shoulder.rotate(Shoulder.ShoulderStates.INTAKE),
                 liftSlide.liftToLowHeight()
         );
