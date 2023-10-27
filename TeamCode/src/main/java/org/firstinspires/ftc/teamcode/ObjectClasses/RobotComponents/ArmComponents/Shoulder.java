@@ -66,8 +66,8 @@ public class Shoulder {
             if (Math.abs(currentPosition - targetPosition) < SHOULDER_VALUE_THRESHOLD)
             {
                 currentState = targetState;
-                return true;
-            } else return false;
+                return false;
+            } else return true;
         }
     }
 }

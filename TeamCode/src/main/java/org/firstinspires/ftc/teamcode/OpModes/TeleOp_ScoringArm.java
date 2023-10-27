@@ -32,13 +32,19 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.EndEffector;
 
 @TeleOp(name="TeleOp_ScoringArm")
 public class TeleOp_ScoringArm extends LinearOpMode
@@ -82,20 +88,34 @@ public class TeleOp_ScoringArm extends LinearOpMode
             //This is a loop that we can use for tuning
 
             if (GamepadHandling.driverButtonPressed("x")) {
-                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
+//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
+                Robot.getInstance().getScoringArm().liftSlide.liftToLowHeight().run(new TelemetryPacket());
             }
 
             if (GamepadHandling.driverButtonPressed("y")) {
-                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropMid);
+
+                Robot.getInstance().getScoringArm().liftSlide.liftToHighHeight().run(new TelemetryPacket());
+//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropMid);
             }
 
             if (GamepadHandling.driverButtonPressed("b")) {
-                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
+//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
+                runBlocking(Robot.getInstance().getScoringArm().makeGrabAndScorePixelOnBackdropMid());
             }
 
+            if (GamepadHandling.driverButtonPressed("a")) {
+//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
+                runBlocking(new ParallelAction(
+                        Robot.getInstance().getMecanumDriveMona().actionBuilder(Robot.getInstance().getMecanumDriveMona().pose)
+                                .strafeTo(new Vector2d(0,5))
+                                .build(),
+                        Robot.getInstance().getScoringArm().makeGrabAndScorePixelOnBackdropMid()));
 
+            }
             telemetry.update();
         }
         robot.getVision().getVisionPortal().close();
     }
+
+
 }

@@ -5,18 +5,15 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
 
 @Config
 public final class EndEffector {
 
     public static class EndEffectorParameters {
-        public double END_EFFECTOR_POSITION_THRESHOLD = .1;
+        public double END_EFFECTOR_POSITION_THRESHOLD = .02;
         public EndEffectorStates END_EFFECTOR_STARTING_STATE = EndEffectorStates.CLOSED;
         public double CLOSED_POSITION = 1.0;
         public double OPEN_POSITION = 0.0;
@@ -95,8 +92,8 @@ public final class EndEffector {
             //if false, then return false so this action keeps getting called every loop
             if (done){
                 currentState = targetState;
-                return true;
-            } else return false;
+                return false;
+            } else return true;
         }
     }
 }

@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 @Config
 public class LiftSlide {
 
-    private static int LIFT_HEIGHT_TICK_THRESHOLD = 20;
-    private static double STARTING_LIFT_POWER = .5;
+    private static int LIFT_HEIGHT_TICK_THRESHOLD = 5;
+    private static double STARTING_LIFT_POWER = .2;
     private static DcMotorEx lift;
     private static LinearOpMode activeOpMode;
 
@@ -90,8 +90,8 @@ public class LiftSlide {
             telemetryPacket.put("Current Ticks", currentTicks);
             if (Math.abs(currentTicks - targetTicks) < LIFT_HEIGHT_TICK_THRESHOLD)
             {
-                return true;
-            } else return false;
+                return false;
+            } else return true;
         }
     }
 
@@ -108,8 +108,8 @@ public class LiftSlide {
             telemetryPacket.put("Current Ticks", currentTicks);
             if (Math.abs(currentTicks - targetTicks) < LIFT_HEIGHT_TICK_THRESHOLD)
             {
-                return true;
-            } else return false;
+                return false;
+            } else return true;
         }
     }
 
@@ -121,13 +121,14 @@ public class LiftSlide {
             targetLiftHeight = LiftHeights.HIGH;
             lift.setTargetPosition(targetTicks);
             lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            telemetryPacket.put("Current Lift Height", currentliftHeight);
             telemetryPacket.put("Target Lift Height", targetLiftHeight);
             telemetryPacket.put("Target Ticks", targetTicks);
             telemetryPacket.put("Current Ticks", currentTicks);
             if (Math.abs(currentTicks - targetTicks) < LIFT_HEIGHT_TICK_THRESHOLD)
             {
-                return true;
-            } else return false;
+                return false;
+            } else return true;
         }
     }
 }
