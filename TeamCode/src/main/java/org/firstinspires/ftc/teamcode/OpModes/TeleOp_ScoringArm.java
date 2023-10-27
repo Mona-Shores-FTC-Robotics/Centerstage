@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -52,7 +54,7 @@ public class TeleOp_ScoringArm extends LinearOpMode
         //Initialize the Robot
         robot.initialize(robot.getHardwareMap());
 
-        telemetry = robot.getActiveOpMode().telemetry;
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         //initialize the Gamepads
         GamepadHandling.init();
