@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,19 +13,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
-    Robot robot = Robot.createInstance(this);
+    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
-    public static MecanumDriveMona roadRunnerDrive;
+    public static DriveSubsystem roadRunnerDriveSubsystem;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private InitVisionProcessor.AllianceColor allianceColor;
@@ -37,26 +34,23 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_VISION_FAST_MOTORS);
-
         //Initialize the Robot
-        robot.initialize(robot.getHardwareMap());
+        robot.initialize();
 
         //initialize the Gamepads
         GamepadHandling.init();
-        robot.getVision().SwitchToInitVisionProcessor();
+        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
-        roadRunnerDrive = Robot.getInstance().getMecanumDriveMona();
+        roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem();
 
-        RoutesSpikeBackdropPark.BuildRoutes(roadRunnerDrive);
+        RoutesSpikeBackdropPark.BuildRoutes(roadRunnerDriveSubsystem);
 
         while (opModeInInit()) {
             GamepadHandling.storeGamepadValuesFromLastLoop();
             GamepadHandling.storeCurrentGamepadValues();
 
             // Add Vision Init Processor Telemetry
-            robot.getVision().telemetryForInitProcessing();
+            robot.getVisionSubsystem().telemetryForInitProcessing();
             GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
@@ -64,20 +58,20 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
 
         //Reset Gyro
-        robot.getGyro().resetAbsoluteYaw();
+        robot.getGyroSubsystem().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
-        robot.getVision().telemetryForInitProcessing();
+        robot.getVisionSubsystem().telemetryForInitProcessing();
         telemetry.update();
 
-        teamPropLoc = Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal();
-        allianceColor = Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
-        sideOfField = Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
+        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal();
+        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
+        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
 
-        robot.getVision().setStartingPose(allianceColor, sideOfField);
+        robot.getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //After Init switch the vision processing to AprilTags
-        robot.getVision().SwitchToAprilTagProcessor();
+        robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
@@ -98,7 +92,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckRedAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDrive.pose = RED_AUDIENCE_START_POSE;
+            roadRunnerDriveSubsystem.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -113,7 +107,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckRedBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDrive.pose = RED_BACKSTAGE_START_POSE;
+            roadRunnerDriveSubsystem.pose = RED_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -128,7 +122,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckBlueAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDrive.pose = BLUE_AUDIENCE_START_POSE;
+            roadRunnerDriveSubsystem.pose = BLUE_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -143,7 +137,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckBlueBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDrive.pose = BLUE_BACKSTAGE_START_POSE;
+            roadRunnerDriveSubsystem.pose = BLUE_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -160,9 +154,9 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-            double x = roadRunnerDrive.pose.position.x;
-            double y = roadRunnerDrive.pose.position.y;
-            double combined = roadRunnerDrive.pose.heading.real + roadRunnerDrive.pose.heading.imag;
+            double x = roadRunnerDriveSubsystem.pose.position.x;
+            double y = roadRunnerDriveSubsystem.pose.position.y;
+            double combined = roadRunnerDriveSubsystem.pose.heading.real + roadRunnerDriveSubsystem.pose.heading.imag;
 
             telemetry.addData("Current Pose x", "%.1f", x);
             telemetry.addData("Current Pose y", "%.1f", y);

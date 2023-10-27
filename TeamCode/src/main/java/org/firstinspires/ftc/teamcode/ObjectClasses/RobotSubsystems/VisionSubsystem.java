@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem.AprilTagID.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem.AprilTagID.*;
 
 
 import android.util.Size;
@@ -11,7 +11,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,9 +34,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Config
-public final class VisionSystem {
+public final class VisionSubsystem extends SubsystemBase {
 
-    public static VisionSystem.TunableVisionConstants tunableVisionConstants = new VisionSystem.TunableVisionConstants();
+    public static VisionSubsystem.TunableVisionConstants tunableVisionConstants = new VisionSubsystem.TunableVisionConstants();
 
     public static class TunableVisionConstants {
         // Adjust these numbers to suit your robot.
@@ -66,7 +68,7 @@ public final class VisionSystem {
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
-    private MecanumDriveMona mecanumDrive;
+    private DriveSubsystem mecanumDriveSubsystem;
 
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
@@ -80,13 +82,13 @@ public final class VisionSystem {
 
     public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
-            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
+            mecanumDriveSubsystem.pose = BLUE_BACKSTAGE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
-            mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
+            mecanumDriveSubsystem.pose = BLUE_AUDIENCE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
-            mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
+            mecanumDriveSubsystem.pose = RED_BACKSTAGE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
-            mecanumDrive.pose = RED_AUDIENCE_START_POSE;
+            mecanumDriveSubsystem.pose = RED_AUDIENCE_START_POSE;
         }
     }
 
@@ -144,22 +146,14 @@ public final class VisionSystem {
     private DeliverLocation deliverLocationBlue = DeliverLocation.CENTER;
     private DeliverLocation deliverLocationRed = DeliverLocation.CENTER;
 
-
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
 
-    public VisionSystem() {
-
-    }
-
-    public void init() {
-
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
-        // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
+    public VisionSubsystem(final HardwareMap hMap, final String name) {
+        // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
-        // Initialize the AprilTag Processor
+        // Create the AprilTag Processor
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
@@ -171,13 +165,18 @@ public final class VisionSystem {
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(Robot.getInstance().getHardwareMap().get(WebcamName.class, "Webcam 1"))
+                .setCamera(hMap.get(WebcamName.class, name))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .addProcessor(initVisionProcessor)
                 .addProcessor(aprilTagProcessor)
                 .build();
+    }
+
+    public void init() {
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        mecanumDriveSubsystem = Robot.getInstance().getDriveSubsystem();
 
         // During Init the AprilTag processor is off
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
@@ -307,15 +306,15 @@ public final class VisionSystem {
 
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
-                    mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                if (manualDriveLimit < mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor) {
+                    mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
         //If no april tags are detected then reset the safety drive speed factor
         if (currentDetections.size() == 0) {
-            mecanumDrive.MotorParameters.safetyDriveSpeedFactor = mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
+            mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor = mecanumDriveSubsystem.MotorParameters.DRIVE_SPEED_FACTOR;
         }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
@@ -609,12 +608,12 @@ public final class VisionSystem {
 
     public void telemetryForInitProcessing() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
-        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
+        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
+        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
 
         telemetry.addData("Alliance Color", allianceColor);
         telemetry.addData("Side of the Field", sideOfField);
-        telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+        telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal());
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
@@ -652,7 +651,7 @@ public final class VisionSystem {
             Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
             //TODO  need to change the facing here based on metadata to make this generic
             Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
-            Robot.getInstance().getMecanumDriveMona().pose = realPose;
+            Robot.getInstance().getDriveSubsystem().pose = realPose;
             telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
         }
     }

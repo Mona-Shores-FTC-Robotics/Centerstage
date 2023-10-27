@@ -1,17 +1,15 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Controllers;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
-@Config
 public class DriveController {
 
     public static class TURN_PARAMS {
@@ -47,8 +45,8 @@ public class DriveController {
     private double turnDegrees;
 
     private InitVisionProcessor initVisionProcessor;
-    private VisionSystem visionSystem;
-    private MecanumDriveMona mecanumDrive;
+    private VisionSubsystem visionSubsystem;
+    private DriveSubsystem mecanumDriveSubsystem;
 
     /* Constructor */
     public DriveController() {
@@ -58,9 +56,9 @@ public class DriveController {
     public void init() {
         activeOpMode = Robot.getInstance().getActiveOpMode();
         driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-        initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
-        visionSystem = Robot.getInstance().getVision();
-        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
+        initVisionProcessor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
+        visionSubsystem = Robot.getInstance().getVisionSubsystem();
+        mecanumDriveSubsystem = Robot.getInstance().getDriveSubsystem();
     }
 
     public void setDriveStrafeTurnValues(){
@@ -69,14 +67,14 @@ public class DriveController {
 
             //Store the adjusted gamepad values as drive/strafe/turn
             driverGamepad = GamepadHandling.getCurrentDriverGamepad();
-            controllerDrive = -driverGamepad.left_stick_y * mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
+            controllerDrive = -driverGamepad.left_stick_y * mecanumDriveSubsystem.MotorParameters.DRIVE_SPEED_FACTOR;
 
             //more strafe deadzone
             if (Math.abs(GamepadHandling.getCurrentDriverGamepad().left_stick_x) > .2) {
-                controllerStrafe = driverGamepad.left_stick_x * mecanumDrive.MotorParameters.STRAFE_SPEED_FACTOR;
+                controllerStrafe = driverGamepad.left_stick_x * mecanumDriveSubsystem.MotorParameters.STRAFE_SPEED_FACTOR;
             } else controllerStrafe = 0;
 
-            controllerTurn = driverGamepad.right_stick_x * mecanumDrive.MotorParameters.TURN_SPEED_FACTOR;
+            controllerTurn = driverGamepad.right_stick_x * mecanumDriveSubsystem.MotorParameters.TURN_SPEED_FACTOR;
 
             //Check if we are turning automatically using Turn or TurnTo and change the turn value if we are
             if (lockedHeadingFlag == true) {
@@ -100,11 +98,11 @@ public class DriveController {
             //if (controllerDrive < -.1 || controllerStrafe > .1 || controllerStrafe < -.1 || controllerTurn <-.1 || controllerTurn > .1) drivingToAprilTag = false;
 
             //Aligning to the Backdrop AprilTags - CASE RED
-            if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    visionSystem.redBackdropAprilTagFound &&
+            if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                    visionSubsystem.redBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                visionSystem.AutoDriveToBackdropRed();
+                visionSubsystem.AutoDriveToBackdropRed();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
@@ -112,11 +110,11 @@ public class DriveController {
             }
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSystem.blueBackdropAprilTagFound &&
+            else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                    visionSubsystem.blueBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                visionSystem.AutoDriveToBackdropBlue();
+                visionSubsystem.AutoDriveToBackdropBlue();
                 controllerDrive = aprilTagDrive;
                 controllerStrafe = aprilTagStrafe;
                 controllerTurn = aprilTagTurn;
@@ -134,15 +132,15 @@ public class DriveController {
             controllerStrafe = 0;
             controllerTurn = 0;
         }
-        mecanumDrive.drive = controllerDrive;
-        mecanumDrive.strafe = controllerStrafe;
-        mecanumDrive.turn = controllerTurn;
+        mecanumDriveSubsystem.drive = controllerDrive;
+        mecanumDriveSubsystem.strafe = controllerStrafe;
+        mecanumDriveSubsystem.turn = controllerTurn;
     }
 
     public void fieldOrientedControl (){
         double y = controllerDrive;
         double x = controllerStrafe;
-        double botHeading = Robot.getInstance().getGyro().currentAbsoluteYawRadians;
+        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
 
         // Rotate the movement direction counter to the bot's rotation
         controllerStrafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -160,9 +158,9 @@ public class DriveController {
         targetAngle = m_targetAngle;
     }
     public void turnToPIDUpdate() {
-        if (Math.abs(targetAngle - Robot.getInstance().getGyro().currentAbsoluteYawDegrees) > 1)
+        if (Math.abs(targetAngle - Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees) > 1)
         {
-            autoTurn = pid.updatePID(Robot.getInstance().getGyro().currentAbsoluteYawDegrees);
+            autoTurn = pid.updatePID(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees);
         } else
         {
             autoTurn=0;
@@ -171,7 +169,7 @@ public class DriveController {
     }
 
     public void turnPID(double degrees) {
-        turnToPID(degrees + Robot.getInstance().getGyro().currentAbsoluteYawDegrees);
+        turnToPID(degrees + Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees);
     }
 
 

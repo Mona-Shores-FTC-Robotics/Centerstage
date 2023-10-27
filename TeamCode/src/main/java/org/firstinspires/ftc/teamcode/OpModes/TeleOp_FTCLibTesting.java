@@ -32,33 +32,27 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents.EndEffector;
 
-@TeleOp(name="TeleOp_ScoringArm")
-public class TeleOp_ScoringArm extends LinearOpMode
+@TeleOp(name="TeleOp_FTCLib")
+public class TeleOp_FTCLibTesting extends LinearOpMode
 {
+
     /** Create the robot **/
-    Robot robot = Robot.createInstance(this);
+    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
     @Override public void runOpMode()
     {
-        //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_SCORING_ARM);
-
         //Initialize the Robot
-        robot.initialize(robot.getHardwareMap());
+        robot.initialize();
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -89,12 +83,12 @@ public class TeleOp_ScoringArm extends LinearOpMode
 
             if (GamepadHandling.driverButtonPressed("x")) {
 //                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
-                Robot.getInstance().getScoringArm().liftSlide.liftToLowHeight().run(new TelemetryPacket());
+                Robot.getInstance().getLiftSlideSubsystem().liftToLowHeight().run(new TelemetryPacket());
             }
 
             if (GamepadHandling.driverButtonPressed("y")) {
 
-                Robot.getInstance().getScoringArm().liftSlide.liftToHighHeight().run(new TelemetryPacket());
+                Robot.getInstance().getLiftSlideSubsystem().liftToHighHeight().run(new TelemetryPacket());
 //                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropMid);
             }
 
@@ -106,7 +100,7 @@ public class TeleOp_ScoringArm extends LinearOpMode
             if (GamepadHandling.driverButtonPressed("a")) {
 //                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
                 runBlocking(new ParallelAction(
-                        Robot.getInstance().getMecanumDriveMona().actionBuilder(Robot.getInstance().getMecanumDriveMona().pose)
+                        Robot.getInstance().getDriveSubsystem().actionBuilder(Robot.getInstance().getDriveSubsystem().pose)
                                 .strafeTo(new Vector2d(0,5))
                                 .build(),
                         Robot.getInstance().getScoringArm().makeGrabAndScorePixelOnBackdropMid()));
@@ -114,7 +108,7 @@ public class TeleOp_ScoringArm extends LinearOpMode
             }
             telemetry.update();
         }
-        robot.getVision().getVisionPortal().close();
+        robot.getVisionSubsystem().getVisionPortal().close();
     }
 
 

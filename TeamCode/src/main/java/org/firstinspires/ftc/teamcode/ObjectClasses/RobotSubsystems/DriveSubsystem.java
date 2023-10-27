@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems;
 
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -37,6 +36,7 @@ import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -58,7 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Config
-public final class MecanumDriveMona {
+public final class DriveSubsystem extends SubsystemBase {
 
     public double drive;
     public double strafe;
@@ -85,11 +85,21 @@ public final class MecanumDriveMona {
 
     public double unrampedDrive;
 
-    public MecanumKinematics kinematics;
-    public MotorFeedforward feedforward;
-    public TurnConstraints defaultTurnConstraints;
-    public VelConstraint defaultVelConstraint;
-    public AccelConstraint defaultAccelConstraint;
+    public final MecanumKinematics kinematics = new MecanumKinematics(
+            MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
+
+    public final MotorFeedforward feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
+
+    public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
+            MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
+
+    public final VelConstraint defaultVelConstraint =
+            new MinVelConstraint(Arrays.asList(
+                    kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
+                    new AngularVelConstraint(MotorParametersRR.maxAngVel)
+            ));
+
+    public final AccelConstraint defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
     public DcMotorEx leftFront;
     public DcMotorEx leftBack;
@@ -100,12 +110,45 @@ public final class MecanumDriveMona {
 
     public Localizer localizer;
     public Pose2d pose;
-    private Gyro gyro;
+    private GyroSubsystem gyroSubsystem;
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
-    /** Empty Constructor **/
-    public MecanumDriveMona() {
+    public DriveSubsystem(final HardwareMap hMap, String lf, String lb, String rf, String rb) {
+        this.pose = new Pose2d(0, 0, 0);
+        gyroSubsystem = Robot.getInstance().getGyroSubsystem();
+
+        LynxFirmware.throwIfModulesAreOutdated(hMap);
+
+        for (LynxModule module : hMap.getAll(LynxModule.class)) {
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
+
+        leftFront = hMap.get(DcMotorEx.class, lf);
+        leftBack = hMap.get(DcMotorEx.class, lb);
+        rightFront = hMap.get(DcMotorEx.class, rf);
+        rightBack = hMap.get(DcMotorEx.class, rb);
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        voltageSensor = hMap.voltageSensor.iterator().next();
+
+        localizer = new DriveLocalizer();
+
+        //set the PID values one time
+        leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+
+        FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
+        FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
     }
 
     /** Localizer **/
@@ -117,10 +160,10 @@ public final class MecanumDriveMona {
 
         public DriveLocalizer() {
 
-            RawEncoder LFEncoder = new RawEncoder(MecanumDriveMona.this.leftFront);
-            RawEncoder LBEncoder = new RawEncoder(MecanumDriveMona.this.leftBack);
-            RawEncoder RFEncoder = new RawEncoder(MecanumDriveMona.this.rightFront);
-            RawEncoder RBEncoder = new RawEncoder(MecanumDriveMona.this.rightBack);
+            RawEncoder LFEncoder = new RawEncoder(DriveSubsystem.this.leftFront);
+            RawEncoder LBEncoder = new RawEncoder(DriveSubsystem.this.leftBack);
+            RawEncoder RFEncoder = new RawEncoder(DriveSubsystem.this.rightFront);
+            RawEncoder RBEncoder = new RawEncoder(DriveSubsystem.this.rightBack);
 
             LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -138,7 +181,7 @@ public final class MecanumDriveMona {
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-            lastHeading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            lastHeading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
         }
 
@@ -149,7 +192,7 @@ public final class MecanumDriveMona {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation2d heading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            Rotation2d heading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             double headingDelta = heading.minus(lastHeading);
 
             Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
@@ -186,57 +229,11 @@ public final class MecanumDriveMona {
     }
 
     public void init() {
-        HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
-        this.pose = new Pose2d(0, 0, 0);
-        gyro = Robot.getInstance().getGyro();
 
-        LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
+    }
 
-        for (LynxModule module : hardwareMap.getAll(LynxModule.class)) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-        }
-
-        leftFront = hardwareMap.get(DcMotorEx.class, "LFDrive");
-        leftBack = hardwareMap.get(DcMotorEx.class, "LBDrive");
-        rightBack = hardwareMap.get(DcMotorEx.class, "RBDrive");
-        rightFront = hardwareMap.get(DcMotorEx.class, "RFDrive");
-
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        voltageSensor = hardwareMap.voltageSensor.iterator().next();
-
-        localizer = new DriveLocalizer();
-
-        //set the PID values one time
-        leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-
-        kinematics = new MecanumKinematics(
-                MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
-
-        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
-
-        defaultTurnConstraints = new TurnConstraints(
-                MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
-
-        defaultVelConstraint =
-                new MinVelConstraint(Arrays.asList(
-                        kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
-                        new AngularVelConstraint(MotorParametersRR.maxAngVel)
-                ));
-
-        defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
-
-        FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
-        FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
+    public void periodic(){
+        Robot.getInstance().getDriveController().setDriveStrafeTurnValues();
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
@@ -494,14 +491,14 @@ public final class MecanumDriveMona {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
-            if (Robot.getInstance().getVision().blueBackdropAprilTagFound &&
-                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     drive > .1) {
                 drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            else if (Robot.getInstance().getVision().redBackdropAprilTagFound &&
-                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .1) {
                 drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
             }
@@ -538,29 +535,11 @@ public final class MecanumDriveMona {
             leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
             rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
-            kinematics = new MecanumKinematics(
-                    MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
-
-            feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
-
-            defaultTurnConstraints = new TurnConstraints(
-                    MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
-
-            defaultVelConstraint =
-                    new MinVelConstraint(Arrays.asList(
-                            kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
-                            new AngularVelConstraint(MotorParametersRR.maxAngVel)
-                    ));
-
-            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
-
             driveDashboardTelemetry();
 
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;
-            FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
-
         }
     }
 
@@ -676,7 +655,7 @@ public final class MecanumDriveMona {
             p.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
 
             p.addLine("");
-            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyro().currentAbsoluteYawDegrees, 4, 0));
+            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 4, 0));
 
             p.put("actualSpeedLF", actualSpeedLF);
             p.put("actualSpeedRF", actualSpeedRF);

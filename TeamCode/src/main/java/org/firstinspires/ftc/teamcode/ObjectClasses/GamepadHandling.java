@@ -8,8 +8,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 import java.lang.reflect.Field;
@@ -31,7 +31,7 @@ public class GamepadHandling {
     public static boolean ManualOverrideInitSettingsFlag = false;
     private static HashMap<String, Integer> buttonMap = new HashMap<String, Integer>();
 
-    private static MecanumDriveMona mecanumDrive;
+    private static DriveSubsystem mecanumDriveSubsystem;
     private static Telemetry telemetry;
 
     private static Gamepad.RumbleEffect endGameRumbleEffect;
@@ -54,7 +54,7 @@ public class GamepadHandling {
         driverGamepad = Robot.getInstance().getActiveOpMode().gamepad1;
         operatorGamepad = Robot.getInstance().getActiveOpMode().gamepad2;
 
-        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
+        mecanumDriveSubsystem = Robot.getInstance().getDriveSubsystem();
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
 
@@ -160,7 +160,7 @@ public class GamepadHandling {
 
         //Reset Gyro Button
         if (GamepadHandling.driverButtonPressed("x")){
-            Robot.getInstance().getGyro().resetAbsoluteYaw();
+            Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
         }
 
         if (GamepadHandling.driverButtonPressed("y"))
@@ -253,13 +253,13 @@ public class GamepadHandling {
 
     // the X/Y/B buttons set the deliver location to left, center, or right
             if(currentOperatorGamepad.x && !previousOperatorGamepad.x){
-        Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.LEFT);
+        Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.LEFT);
     }
             if(currentOperatorGamepad.y && !previousOperatorGamepad.y){
-        Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.CENTER);
+        Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.CENTER);
     }
             if(currentOperatorGamepad.b && !previousOperatorGamepad.b) {
-                Robot.getInstance().getVision().setDeliverLocation(VisionSystem.DeliverLocation.RIGHT);
+                Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
     }
 }
 
@@ -294,7 +294,7 @@ public class GamepadHandling {
 
     public static void lockColorAndSide() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        InitVisionProcessor initVisionProcessor = Robot.getInstance().getVision().getInitVisionProcessor();
+        InitVisionProcessor initVisionProcessor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
         telemetry.addLine("");
 
         if (LockedInitSettingsFlag)

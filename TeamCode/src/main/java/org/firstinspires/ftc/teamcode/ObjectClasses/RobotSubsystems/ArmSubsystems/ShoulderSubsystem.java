@@ -1,19 +1,14 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.TimeTrajectory;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-
-import java.util.List;
-
-public class Shoulder {
+public class ShoulderSubsystem extends SubsystemBase {
 
     private double SHOULDER_VALUE_THRESHOLD = .03;
     private ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
@@ -31,17 +26,20 @@ public class Shoulder {
     public ShoulderStates currentState = SHOULDER_STARTING_STATE;
     public double currentPosition;
 
-    public Shoulder() {
-
+    public ShoulderSubsystem(final HardwareMap hMap, final String name) {
+        shoulder = hMap.servo.get("shoulder");
     }
 
     public void init() {
-        shoulder = Robot.getInstance().getHardwareMap().servo.get("shoulder");
         shoulder.setPosition(SHOULDER_STARTING_STATE.position);
     }
 
+    public void periodic(){
+
+    }
+
     public Action rotate(ShoulderStates s){
-        return new Shoulder.Rotate(s);
+        return new ShoulderSubsystem.Rotate(s);
     }
 
     public class Rotate implements Action {

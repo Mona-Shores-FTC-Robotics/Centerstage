@@ -1,16 +1,16 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-
 @Config
-public final class EndEffector {
+public final class EndEffectorSubsystem extends SubsystemBase {
 
     public static class EndEffectorParameters {
         public double END_EFFECTOR_POSITION_THRESHOLD = .02;
@@ -24,9 +24,7 @@ public final class EndEffector {
     public enum EndEffectorStates {
         CLOSED (1),
         OPEN (0);
-
         private double position;
-
         private EndEffectorStates(double pos) {
             this.position = pos;
         }
@@ -36,12 +34,11 @@ public final class EndEffector {
     EndEffectorStates currentState;
     double currentPosition;
 
-    public EndEffector() {
-
+    public EndEffectorSubsystem(final HardwareMap hMap, final String name) {
+        endEffector = hMap.get(Servo.class, name);
     }
 
     public void init() {
-        endEffector = Robot.getInstance().getHardwareMap().servo.get("endeffector");
         //set the initial position of the servo to the current position
         //endEffector.setPosition([current position variable]);
         currentState= endEffectorParameters.END_EFFECTOR_STARTING_STATE;
@@ -49,8 +46,13 @@ public final class EndEffector {
         endEffector.setPosition(currentPosition);
     }
 
+    public void periodic(){
+
+    }
+
+
     public Action actuate(EndEffectorStates s){
-        return new EndEffector.Actuate(s);
+        return new EndEffectorSubsystem.Actuate(s);
     }
 
     public class Actuate implements Action {

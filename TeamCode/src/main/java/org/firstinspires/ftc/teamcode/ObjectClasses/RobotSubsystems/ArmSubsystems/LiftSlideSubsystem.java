@@ -1,24 +1,24 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.ArmComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-
 @Config
-public class LiftSlide {
+public class LiftSlideSubsystem extends SubsystemBase {
 
     private static int LIFT_HEIGHT_TICK_THRESHOLD = 5;
     private static double STARTING_LIFT_POWER = .2;
-    private static DcMotorEx lift;
+    private static DcMotorEx liftSlide;
     private static LinearOpMode activeOpMode;
 
     public static double p=5, i=0, d=0;
@@ -45,23 +45,25 @@ public class LiftSlide {
     LiftHeights currentliftHeight = LiftHeights.LOW;
 
     /* Constructor     */
-    public LiftSlide() {
-
+    public LiftSlideSubsystem(final HardwareMap hMap, final String name) {
+        liftSlide = hMap.get(DcMotorEx.class, name);
     }
 
     /* Initialization */
     public void init (){
-        activeOpMode = Robot.getInstance().getActiveOpMode();
-        //TODO change this to the name of the lift slide motor
-        lift = Robot.getInstance().getHardwareMap().get(DcMotorEx.class, "LBDrive");
-        lift.setDirection(DcMotorSimple.Direction.FORWARD);
+        liftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         pidfCoefficients = new  PIDFCoefficients(p,i,d,f);
-        lift.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lift.setPower(power);
-        lift.setTargetPosition(0);
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftSlide.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);
+        liftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftSlide.setPower(power);
+        liftSlide.setTargetPosition(0);
+        liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
+    public void periodic(){
+
+    }
+
 
     public Action liftToHighHeight(){
         return new LiftToHighHeight();
@@ -78,13 +80,13 @@ public class LiftSlide {
     public static class LiftToLowHeight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            currentTicks = lift.getCurrentPosition();
+            currentTicks = liftSlide.getCurrentPosition();
             targetLiftHeight = LiftHeights.LOW;
             targetTicks = LiftHeights.LOW.ticks;
 
-            lift.setTargetPosition(targetTicks);
+            liftSlide.setTargetPosition(targetTicks);
 
-            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             telemetryPacket.put("Target Lift Height", targetLiftHeight);
             telemetryPacket.put("Target Ticks", targetTicks);
             telemetryPacket.put("Current Ticks", currentTicks);
@@ -98,11 +100,11 @@ public class LiftSlide {
     public class LiftToMidHeight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            currentTicks = lift.getCurrentPosition();
+            currentTicks = liftSlide.getCurrentPosition();
             targetTicks = LiftHeights.MID.ticks;
             targetLiftHeight = LiftHeights.MID;
-            lift.setTargetPosition(targetTicks);
-            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftSlide.setTargetPosition(targetTicks);
+            liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             telemetryPacket.put("Target Lift Height", targetLiftHeight);
             telemetryPacket.put("Target Ticks", targetTicks);
             telemetryPacket.put("Current Ticks", currentTicks);
@@ -116,11 +118,11 @@ public class LiftSlide {
     public class LiftToHighHeight implements Action{
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            currentTicks = lift.getCurrentPosition();
+            currentTicks = liftSlide.getCurrentPosition();
             targetTicks = LiftHeights.HIGH.ticks;
             targetLiftHeight = LiftHeights.HIGH;
-            lift.setTargetPosition(targetTicks);
-            lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftSlide.setTargetPosition(targetTicks);
+            liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             telemetryPacket.put("Current Lift Height", currentliftHeight);
             telemetryPacket.put("Target Lift Height", targetLiftHeight);
             telemetryPacket.put("Target Ticks", targetTicks);
