@@ -34,6 +34,4 @@ public class DefaultDrive extends CommandBase {
     public void execute() {
             driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(drive.getAsDouble(), strafe.getAsDouble(), turn.getAsDouble());
     }
-
-
 }

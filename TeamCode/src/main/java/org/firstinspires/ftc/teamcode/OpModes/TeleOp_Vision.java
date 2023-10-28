@@ -33,13 +33,17 @@ import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DefaultDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithLockedHeading;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.MoveLiftSlide;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 
 
 @TeleOp(name="TeleOp_Vision")
@@ -81,6 +85,7 @@ public class TeleOp_Vision extends LinearOpMode
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 GamepadHandling.getDriverGamepad()::getRightX
                 );
+
         CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
 
         while (opModeIsActive())
@@ -94,6 +99,16 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
+
+            //lock heading if right bumper
+            if (GamepadHandling.getDriverGamepad().isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
+                CommandScheduler.getInstance().schedule(
+                        new DriveWithLockedHeading(robot.getDriveSubsystem(),
+                                GamepadHandling.getDriverGamepad()::getLeftY,
+                                GamepadHandling.getDriverGamepad()::getLeftX,
+                                90)
+                );
+            }
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
