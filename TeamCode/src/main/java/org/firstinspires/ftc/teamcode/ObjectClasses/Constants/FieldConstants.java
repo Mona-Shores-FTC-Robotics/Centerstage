@@ -41,9 +41,9 @@ public class FieldConstants {
     public static double TANGENT_TOWARD_RED = Math.toRadians(270);
     public static double TANGENT_315_DEGREES = Math.toRadians(315);
 
-    //these two entries are dummy entries
-    public static Pose2d RED_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_AUDIENCE);
-    public static Pose2d BLUE_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_AUDIENCE);
+    public static Pose2d BLUE_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
+
 
     public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, TILE+HALF_TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
