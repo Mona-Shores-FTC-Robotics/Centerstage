@@ -10,10 +10,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
@@ -46,9 +44,6 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         RoutesSpikeBackdropPark.BuildRoutes(roadRunnerDriveSubsystem);
 
         while (opModeInInit()) {
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
-
             // Add Vision Init Processor Telemetry
             robot.getVisionSubsystem().telemetryForInitProcessing();
             GamepadHandling.lockColorAndSide();

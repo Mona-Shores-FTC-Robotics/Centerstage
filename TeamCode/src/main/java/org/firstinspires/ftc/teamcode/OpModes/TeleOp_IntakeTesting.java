@@ -35,14 +35,15 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name="Motor_Mechanism_Test")
+@TeleOp(name="TeleOp_IntakeTesting")
 public class TeleOp_IntakeTesting extends LinearOpMode
 {
-    /** Create the robot **/
-    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
+    public Robot robot;
 
     @Override public void runOpMode()
     {
+        /** Create the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
         //Initialize the Robot
         robot.initialize();
@@ -59,8 +60,6 @@ public class TeleOp_IntakeTesting extends LinearOpMode
         while (opModeIsActive())
         {
             //Store the previous loop's gamepad values and new current gamepad values
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
 
             Robot.getInstance().getIntakeSubsystem().move();
 

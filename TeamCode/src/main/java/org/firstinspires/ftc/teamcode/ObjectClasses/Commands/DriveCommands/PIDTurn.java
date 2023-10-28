@@ -1,12 +1,13 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.Controllers;
+package org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands;
 
 import static java.lang.Math.signum;
 
+import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-public class TurnPIDController {
+public class PIDTurn extends CommandBase {
     private double targetAngle;
     double accumulatedError = 0;
     private ElapsedTime timer = new ElapsedTime();
@@ -19,7 +20,7 @@ public class TurnPIDController {
     private double Ki=0;
     private double Kd=0;
 
-    public TurnPIDController(double target, double p, double i, double d, double f){
+    public PIDTurn(double target, double p, double i, double d, double f){
         targetAngle = target;
         Kp = p;
         Ki= i;

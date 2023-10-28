@@ -42,14 +42,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name="TeleOp_ScoringArm")
+@TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
 {
-    /** Create the robot **/
-    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
+    public Robot robot;
 
     @Override public void runOpMode()
     {
+        /** Create the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
+
         //Initialize the Robot
         robot.initialize();
 
@@ -61,8 +63,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         telemetry.clearAll();
 
         while (opModeInInit()) {
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
 
             telemetry.update();
             sleep(10);
@@ -73,38 +73,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
         while (opModeIsActive())
         {
-
-            //Store the previous loop's gamepad values and new current gamepad values
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
-
-            //This is a loop that we can use for tuning
-
-            if (GamepadHandling.driverButtonPressed("x")) {
-//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropLow);
-                Robot.getInstance().getLiftSlideSubsystem().liftToLowHeight().run(new TelemetryPacket());
-            }
-
-            if (GamepadHandling.driverButtonPressed("y")) {
-
-                Robot.getInstance().getLiftSlideSubsystem().liftToHighHeight().run(new TelemetryPacket());
-//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropMid);
-            }
-
-            if (GamepadHandling.driverButtonPressed("b")) {
-//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
-                runBlocking(Robot.getInstance().getScoringArm().makeGrabAndScorePixelOnBackdropMid());
-            }
-
-            if (GamepadHandling.driverButtonPressed("a")) {
-//                runBlocking(Robot.getInstance().getScoringArm().grabAndScorePixelOnBackdropHigh);
-                runBlocking(new ParallelAction(
-                        Robot.getInstance().getDriveSubsystem().actionBuilder(Robot.getInstance().getDriveSubsystem().pose)
-                                .strafeTo(new Vector2d(0,5))
-                                .build(),
-                        Robot.getInstance().getScoringArm().makeGrabAndScorePixelOnBackdropMid()));
-
-            }
             telemetry.update();
         }
         robot.getVisionSubsystem().getVisionPortal().close();

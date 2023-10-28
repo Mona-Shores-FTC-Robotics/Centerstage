@@ -7,7 +7,6 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Visio
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -24,6 +23,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -33,7 +33,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Config
 public final class VisionSubsystem extends SubsystemBase {
 
     public static VisionSubsystem.TunableVisionConstants tunableVisionConstants = new VisionSubsystem.TunableVisionConstants();
@@ -68,7 +67,7 @@ public final class VisionSubsystem extends SubsystemBase {
     private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
-    private DriveSubsystem mecanumDriveSubsystem;
+    private MecanumDriveMona mecanumDrive;
 
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
@@ -82,13 +81,13 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
-            mecanumDriveSubsystem.pose = BLUE_BACKSTAGE_START_POSE;
+            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
-            mecanumDriveSubsystem.pose = BLUE_AUDIENCE_START_POSE;
+            mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
-            mecanumDriveSubsystem.pose = RED_BACKSTAGE_START_POSE;
+            mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
         } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE){
-            mecanumDriveSubsystem.pose = RED_AUDIENCE_START_POSE;
+            mecanumDrive.pose = RED_AUDIENCE_START_POSE;
         }
     }
 
@@ -176,7 +175,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public void init() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        mecanumDriveSubsystem = Robot.getInstance().getDriveSubsystem();
+        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
         // During Init the AprilTag processor is off
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
@@ -306,15 +305,15 @@ public final class VisionSubsystem extends SubsystemBase {
 
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor) {
-                    mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
+                    mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
         //If no april tags are detected then reset the safety drive speed factor
         if (currentDetections.size() == 0) {
-            mecanumDriveSubsystem.MotorParameters.safetyDriveSpeedFactor = mecanumDriveSubsystem.MotorParameters.DRIVE_SPEED_FACTOR;
+            mecanumDrive.MotorParameters.safetyDriveSpeedFactor = mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
         }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();

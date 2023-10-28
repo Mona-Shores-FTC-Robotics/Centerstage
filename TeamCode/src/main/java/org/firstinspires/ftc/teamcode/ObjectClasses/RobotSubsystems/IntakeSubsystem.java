@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,8 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void move() {
         //Test Mechanism
-        motorFwd = GamepadHandling.getCurrentOperatorGamepad().right_trigger;
-        motorRev = -GamepadHandling.getCurrentOperatorGamepad().left_trigger;
+        motorFwd = GamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+        motorRev = -GamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);;
 
         if(motorFwd > 0){
             intakeMotor.setPower(motorFwd);

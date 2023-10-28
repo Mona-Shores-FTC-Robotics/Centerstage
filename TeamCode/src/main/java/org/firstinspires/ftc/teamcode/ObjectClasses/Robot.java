@@ -6,15 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Controllers.DriveController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArm;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 
 public class Robot {
 
@@ -29,7 +27,6 @@ public class Robot {
         ROBOT_INTAKE
     }
 
-
     private static ElapsedTime teleOpRuntime;
     private static LinearOpMode activeOpMode;
     private static DriveSubsystem mecanumDriveSubsystem;
@@ -39,9 +36,6 @@ public class Robot {
     private static EndEffectorSubsystem endEffectorSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
-
-    private static ScoringArm scoringArm;
-    private static DriveController driveController;
 
     /* Constructor */
     private Robot(LinearOpMode opMode, RobotType type) {
@@ -54,16 +48,15 @@ public class Robot {
             //Just the drive base
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
-                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap, "LFDrive", "LBDrive", "RFDrive", "RBDRive");
-                driveController = new DriveController();
+                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
+
                 break;
             }
 
             case ROBOT_VISION: {
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
-                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap, "LFDrive", "LBDrive", "RFDrive", "RBDRive");
-                driveController = new DriveController();
+                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 break;
             }
 
@@ -71,7 +64,6 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
-                scoringArm = new ScoringArm();
                 break;
             }
 
@@ -81,15 +73,13 @@ public class Robot {
             }
 
             case ROBOT_CENTERSTAGE: {
-                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap, "LFDrive", "LBDrive", "RFDrive", "RBDRive");
+                mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
-                driveController = new DriveController();
-                scoringArm = new ScoringArm();
 
                 //airplane launcher
                 //winch
@@ -113,8 +103,6 @@ public class Robot {
        if (endEffectorSubsystem!=null) endEffectorSubsystem.init();
        if (liftSlideSubsystem!=null) liftSlideSubsystem.init();
        if (shoulderSubsystem!=null) shoulderSubsystem.init();
-       if (scoringArm!=null) scoringArm.init();
-       if (driveController!=null) driveController.init();
     }
 
     /** Getters **/
@@ -138,8 +126,6 @@ public class Robot {
     public EndEffectorSubsystem getEndEffectorSubsystem()  {return endEffectorSubsystem;}
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
-    public DriveController getDriveController()  {return driveController;}
-    public ScoringArm getScoringArm()  {return scoringArm;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
 
 }

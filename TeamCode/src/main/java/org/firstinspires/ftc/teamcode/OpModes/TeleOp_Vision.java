@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 
 
 @TeleOp(name="TeleOp_Vision")
@@ -63,9 +62,6 @@ public class TeleOp_Vision extends LinearOpMode
         DriveSubsystem.SendSpeedAndPositionDataToDashboard sendSpeedAndPositionDataToDashboard = driveSubsystem.new SendSpeedAndPositionDataToDashboard();
 
         while (opModeInInit()) {
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
-
             // Add Vision Init Processor Telemetry
             robot.getVisionSubsystem().telemetryForInitProcessing();
 
@@ -87,22 +83,11 @@ public class TeleOp_Vision extends LinearOpMode
 
         while (opModeIsActive())
         {
-
-            //Store the previous loop's gamepad values and new current gamepad values
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
-
             //Update Gyro values
             robot.getGyroSubsystem().UpdateGyro();
 
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
-
-            //Process the Driver Controls
-            GamepadHandling.DriverControls();
-
-            //Process the Operator Controls
-            GamepadHandling.OperatorControls();
 
             //Drive the Robot (manual if driver controls are active - or automatically if flag set)
             robot.getDriveController().setDriveStrafeTurnValues();
@@ -126,9 +111,9 @@ public class TeleOp_Vision extends LinearOpMode
                 robot.getDriveSubsystem().telemetryDriveTrain();
                 robot.getGyroSubsystem().telemetryGyro();
 
-                telemetry.addData("leftstick y", GamepadHandling.getCurrentDriverGamepad().left_stick_y );
-                telemetry.addData("leftstick x", GamepadHandling.getCurrentDriverGamepad().left_stick_x );
-                telemetry.addData("rightstick x", GamepadHandling.getCurrentDriverGamepad().right_stick_x );
+                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
+                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
+                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
 
             }
             //this sends speed and position data to the dashboard
@@ -143,12 +128,3 @@ public class TeleOp_Vision extends LinearOpMode
     }
 }
 
-
-//This is how RR runs its drive
-//            mecanumDrive.setDrivePowers(new PoseVelocity2d(
-//                    new Vector2d(
-//                            -gamepad1.left_stick_y,
-//                            -gamepad1.left_stick_x
-//                    ),
-//                    -gamepad1.right_stick_x
-//            ));

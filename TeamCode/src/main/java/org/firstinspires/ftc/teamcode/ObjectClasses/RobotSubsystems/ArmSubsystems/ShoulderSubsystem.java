@@ -10,20 +10,24 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class ShoulderSubsystem extends SubsystemBase {
 
-    private double SHOULDER_VALUE_THRESHOLD = .03;
-    private ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
+    public static class ShoulderParameters {
+        public ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
+        public double SHOULDER_VALUE_THRESHOLD = .03;
+    }
+
+    public static ShoulderParameters shoulderParameters;
 
     public enum ShoulderStates {
-        INTAKE (1.0),
-        BACKDROP (0.0);
-        private double position;
+        INTAKE (0),
+        BACKDROP (1);
+        public double position;
         ShoulderStates(double p) {
             this.position = p;
         }
     }
 
-    private Servo shoulder;
-    public ShoulderStates currentState = SHOULDER_STARTING_STATE;
+    public Servo shoulder;
+    public ShoulderStates currentState;
     public double currentPosition;
 
     public ShoulderSubsystem(final HardwareMap hMap, final String name) {
@@ -31,41 +35,14 @@ public class ShoulderSubsystem extends SubsystemBase {
     }
 
     public void init() {
-        shoulder.setPosition(SHOULDER_STARTING_STATE.position);
+        shoulderParameters = new ShoulderParameters();
+        currentState = shoulderParameters.SHOULDER_STARTING_STATE;
+        currentPosition = currentState.position;
+        shoulder.setPosition(currentPosition);
     }
 
     public void periodic(){
 
     }
 
-    public Action rotate(ShoulderStates s){
-        return new ShoulderSubsystem.Rotate(s);
-    }
-
-    public class Rotate implements Action {
-        public final ShoulderStates targetState;
-        public final double targetPosition;
-
-        public Rotate(ShoulderStates s) {
-            targetState = s;
-            targetPosition = targetState.position;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            shoulder.setPosition(targetPosition);
-            currentPosition = shoulder.getPosition();
-
-            telemetryPacket.put("Target Shoulder State", targetState);
-            telemetryPacket.put("Current Shoulder State", currentState);
-            telemetryPacket.put("Target Position", targetPosition);
-            telemetryPacket.put("Current Position", currentPosition);
-
-            if (Math.abs(currentPosition - targetPosition) < SHOULDER_VALUE_THRESHOLD)
-            {
-                currentState = targetState;
-                return false;
-            } else return true;
-        }
-    }
 }
