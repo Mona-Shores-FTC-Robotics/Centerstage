@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsyste
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -11,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+@Config
 public class LiftSlideSubsystem extends SubsystemBase {
 
     public static class LiftSlideParameters {
@@ -19,7 +21,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public double p=5, i=0, d=0, f=0;
     }
 
-    public static LiftSlideParameters liftSlideParameters;
+    public static LiftSlideParameters liftSlideParameters = new LiftSlideParameters();
 
     public enum LiftStates {
         HIGH (20),
@@ -50,7 +52,6 @@ public class LiftSlideSubsystem extends SubsystemBase {
     }
 
     public void init (){
-        liftSlideParameters = new LiftSlideParameters();
         liftSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         pidfCoefficients = new  PIDFCoefficients(liftSlideParameters.p,liftSlideParameters.i,liftSlideParameters.d,liftSlideParameters.f);
         liftSlide.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, pidfCoefficients);

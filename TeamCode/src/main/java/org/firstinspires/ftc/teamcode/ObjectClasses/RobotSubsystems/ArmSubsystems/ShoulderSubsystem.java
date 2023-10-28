@@ -2,20 +2,24 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsyste
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Config
 public class ShoulderSubsystem extends SubsystemBase {
 
     public static class ShoulderParameters {
         public ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
         public double SHOULDER_VALUE_THRESHOLD = .03;
+        public double INTAKE = 0;
+        public double BACKDROP = 1;
     }
 
-    public static ShoulderParameters shoulderParameters;
+    public static ShoulderParameters shoulderParameters = new ShoulderParameters();
 
     public enum ShoulderStates {
         INTAKE (0),
@@ -23,6 +27,9 @@ public class ShoulderSubsystem extends SubsystemBase {
         public double position;
         ShoulderStates(double p) {
             this.position = p;
+        }
+        void SetState(double pos){
+            this.position = pos;
         }
     }
 
@@ -35,7 +42,9 @@ public class ShoulderSubsystem extends SubsystemBase {
     }
 
     public void init() {
-        shoulderParameters = new ShoulderParameters();
+        ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP);
+        ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE);
+
         currentState = shoulderParameters.SHOULDER_STARTING_STATE;
         currentPosition = currentState.position;
         shoulder.setPosition(currentPosition);

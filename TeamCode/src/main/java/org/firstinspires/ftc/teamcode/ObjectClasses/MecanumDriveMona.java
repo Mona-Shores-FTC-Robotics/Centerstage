@@ -46,6 +46,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
@@ -500,13 +501,13 @@ public final class MecanumDriveMona {
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
                     Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     drive > .1) {
-                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
                     Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .1) {
-                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 
             //save this for telemetry
@@ -698,11 +699,7 @@ public final class MecanumDriveMona {
     }
 
     public static class ParamsMona {
-        public double DRIVE_SPEED_FACTOR=.8;
-        public double STRAFE_SPEED_FACTOR=.8;
-        public double TURN_SPEED_FACTOR=.4;
 
-        public double safetyDriveSpeedFactor =DRIVE_SPEED_FACTOR;
 
         public double DRIVE_RAMP = .06; //ken ramp
         public double STRAFE_RAMP = .05;

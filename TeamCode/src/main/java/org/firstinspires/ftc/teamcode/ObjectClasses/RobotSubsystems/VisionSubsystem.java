@@ -305,15 +305,15 @@ public final class VisionSubsystem extends SubsystemBase {
 
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
-                    mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                if (manualDriveLimit < DriveSubsystem.driveParameters.safetyDriveSpeedFactor) {
+                    DriveSubsystem.driveParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
         //If no april tags are detected then reset the safety drive speed factor
         if (currentDetections.size() == 0) {
-            mecanumDrive.MotorParameters.safetyDriveSpeedFactor = mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
+            DriveSubsystem.driveParameters.safetyDriveSpeedFactor = DriveSubsystem.driveParameters.DRIVE_SPEED_FACTOR;
         }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
