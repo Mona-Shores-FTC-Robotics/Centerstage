@@ -38,7 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.MoveLiftSlide;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 
@@ -51,19 +51,19 @@ public class TeleOp_FTCLibTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create the robot **/
-        robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
+        /** Create and Initialize the robot **/
+        robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM, Robot.OpModeType.TELEOP);
 
-        /** Initialize the robot **/
-        robot.initialize();
+        /** Initialize Gamepad and Robot - Order Important **/
+        GamepadHandling.init();
+        robot.init();
 
         /** Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        /** Initialize the gamepads **/
-        GamepadHandling.init();
-        GamepadHandling.bindDriverGamepadButtons();
-        GamepadHandling.bindOperatorGamepadButtons();
+        /** Setup Button Bindings **/
+        GamepadHandling.bindDriverGamepadButtons(robot.opModeType, robot.robotType);
+        GamepadHandling.bindOperatorGamepadButtons(robot.opModeType, robot.robotType);
 
         telemetry.clearAll();
 
@@ -79,19 +79,9 @@ public class TeleOp_FTCLibTesting extends LinearOpMode
         {
             //Run the Scheduler
             CommandScheduler.getInstance().run();
+
+            //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.A)) {
-                CommandScheduler.getInstance().schedule(
-                        new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.LOW)
-                );
-            }
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.B)) {
-                CommandScheduler.getInstance().schedule(
-                        new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HIGH)
-                );
-            }
 
             telemetry.update();
         }

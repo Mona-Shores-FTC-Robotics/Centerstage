@@ -4,13 +4,15 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark.*;
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeBackdropPark;
@@ -19,8 +21,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionP
 
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
-
-    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
     public static MecanumDriveMona roadRunnerDriveSubsystem;
 
@@ -32,12 +32,16 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        /** Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.AUTO);
 
-        //Initialize the Robot
-        robot.initialize();
-
-        //initialize the Gamepads
+        /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
+        robot.init();
+
+        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
         roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;

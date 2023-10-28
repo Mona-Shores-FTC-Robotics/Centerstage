@@ -29,17 +29,13 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name="TeleOp_ScoringArmTesting")
@@ -49,16 +45,15 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
+        /** Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM, Robot.OpModeType.TELEOP);
 
-        //Initialize the Robot
-        robot.initialize();
-
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
-        //initialize the Gamepads
+        /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
+        robot.init();
+
+        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.clearAll();
 
@@ -73,6 +68,12 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
         while (opModeIsActive())
         {
+            //Run the Scheduler
+            CommandScheduler.getInstance().run();
+
+            //Read all buttons
+            GamepadHandling.getDriverGamepad().readButtons();
+
             telemetry.update();
         }
         robot.getVisionSubsystem().getVisionPortal().close();

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses;
+package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads;
 
 import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 
@@ -8,11 +8,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.ActuateEndEffector;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.RotateShoulder;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 import java.util.HashMap;
@@ -53,18 +50,27 @@ public class GamepadHandling {
         CreateLEDEffects();
     }
 
-
-    public static void bindDriverGamepadButtons() {
-        driverGamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN))
-                .whenReleased(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
-
-        driverGamepad.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.INTAKE))
-                .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
+    public static void bindDriverGamepadButtons(Robot.OpModeType opModeType, Robot.RobotType robotType) {
+        if (Robot.getInstance().opModeType == opModeType)
+        {
+            //Create the bindings for the driver to use during the teleop mode
+            new DriverTeleOpBindings(driverGamepad, robotType);
+        } else
+        {
+            //Create the bindings for the driver to use during init of the auto
+            new DriverAutoInitBindings(driverGamepad, robotType);
+        }
     }
-
-    public static void bindOperatorGamepadButtons() {
+    public static void bindOperatorGamepadButtons(Robot.OpModeType opModeType, Robot.RobotType robotType) {
+        if (Robot.getInstance().opModeType == opModeType)
+        {
+            //Create the bindings for the driver to use during the teleop mode
+            new OperatorTeleOpBindings(operatorGamepad, robotType);
+        } else
+        {
+            //Create the bindings for the driver to use during init of the auto
+            new OperatorAutoInitBindings(operatorGamepad, robotType);
+        }
     }
 
     private static void CreateLEDEffects() {

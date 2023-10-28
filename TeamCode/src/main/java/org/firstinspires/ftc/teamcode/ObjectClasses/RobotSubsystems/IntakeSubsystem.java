@@ -1,47 +1,64 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems;
 
+
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
-
+@Config
 public class IntakeSubsystem extends SubsystemBase {
-    public static double motorFwd;
-    public static double motorRev;
 
-    public DcMotor intakeMotor = null;
+    public static class IntakeParameters {
+        public double STARTING_INTAKE_POWER = 0;
+        public double INTAKE_REVERSE_VELOCITY = -30;
+    }
 
-    /* local OpMode members. */
-    HardwareMap hwMap = null;
-    LinearOpMode activeOpMode = null;
+    public static double INTAKE_ON_VELOCITY = 30;
+
+    public IntakeSubsystem.IntakeParameters intakeParameters = new IntakeSubsystem.IntakeParameters();
+
+    public enum IntakeStates {
+        INTAKE_ON (30),
+        INTAKE_REVERSE (-150),
+        INTAKE_OFF (0);
+
+        public double velocity;
+
+        IntakeStates(double vel) {
+            this.velocity = vel;
+        }
+        void SetStateVelocity(double vel){
+            this.velocity = vel;
+        }
+    }
+
+    public DcMotorEx intake;
+    public PIDFCoefficients pidfCoefficients;
+
+    public IntakeStates currentState;
+    public double power;
 
     public IntakeSubsystem(final HardwareMap hMap, final String name){
-        intakeMotor = hMap.get(DcMotor.class, name);
+        intake = hMap.get(DcMotorEx.class, name);
     }
 
     public void init() {
-        intakeMotor.setDirection(DcMotor.Direction.FORWARD);
-        intakeMotor.setPower(0);
-    }
-
-    public void move() {
-        //Test Mechanism
-        motorFwd = GamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        motorRev = -GamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);;
-
-        if(motorFwd > 0){
-            intakeMotor.setPower(motorFwd);
-        }
-        else if (motorRev < 0) {
-            intakeMotor.setPower(motorRev);
-        }else intakeMotor.setPower(0);
+        intake.setDirection(DcMotor.Direction.FORWARD);
+        intake.setPower(intakeParameters.STARTING_INTAKE_POWER);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        currentState = IntakeStates.INTAKE_OFF;
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        power = intakeParameters.STARTING_INTAKE_POWER;
+        intake.setPower(0);
+        intake.setVelocity(0);
     }
 
     @Override
     public void periodic(){
-        //This will be called once per scheduler run
+        //this is the only way i can find to make it tunable
+       IntakeStates.INTAKE_ON.SetStateVelocity(INTAKE_ON_VELOCITY);
     }
 }

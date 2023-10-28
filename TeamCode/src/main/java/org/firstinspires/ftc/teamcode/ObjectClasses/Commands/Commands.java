@@ -1,16 +1,13 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Commands;
 
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DefaultDrive;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithLockedHeading;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.PIDTurn;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithConstantHeading;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
-
-import java.util.function.DoubleSupplier;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 public abstract class Commands {
 
@@ -32,15 +29,25 @@ public abstract class Commands {
                 GamepadHandling.getDriverGamepad()::getRightX
         );
 
-        turnTo0 = new PIDTurn(0, .5,0,0,0);
-        turnTo90 = new PIDTurn(90, .5,0,0,0);
-        turnTo180 = new PIDTurn(180, .5,0,0,0);
-        turnTo270 = new PIDTurn(270, .5,0,0,0);
-
-        driveLockedTo90 = new DriveWithLockedHeading(driveSubsystem,
+        turnTo0 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
-                90);
+                0));
+
+        turnTo90 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+                GamepadHandling.getDriverGamepad()::getLeftY,
+                GamepadHandling.getDriverGamepad()::getLeftX,
+                90));
+
+        turnTo180 =  new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+                GamepadHandling.getDriverGamepad()::getLeftY,
+                GamepadHandling.getDriverGamepad()::getLeftX,
+                180));
+
+        turnTo270 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+                GamepadHandling.getDriverGamepad()::getLeftY,
+                GamepadHandling.getDriverGamepad()::getLeftX,
+                270));
     }
 
 }

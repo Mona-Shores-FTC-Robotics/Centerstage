@@ -3,21 +3,24 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 public class Robot {
 
     private static Robot robot = null;
-    public static RobotType robotType;
+    public RobotType robotType;
+    public OpModeType opModeType;
 
     public enum RobotType {
         ROBOT_CENTERSTAGE,
@@ -26,6 +29,33 @@ public class Robot {
         ROBOT_SCORING_ARM,
         ROBOT_INTAKE
     }
+
+    public enum OpModeType {
+        TELEOP, AUTO
+    }
+
+    public Robot(OpModeType type) {
+        if (type == OpModeType.TELEOP) {
+            initTele();
+        } else {
+            initAuto();
+        }
+    }
+
+    /*
+     * Initialize teleop or autonomous, depending on which is used
+     */
+    private void initTele() {
+        // initialize teleop-specific scheduler
+
+        //Create Commands
+        Commands.MakeTeleOpCommands();
+    }
+
+    private void initAuto() {
+        // initialize auto-specific scheduler
+    }
+
 
     private static ElapsedTime teleOpRuntime;
     private static LinearOpMode activeOpMode;
@@ -38,17 +68,33 @@ public class Robot {
     private static ShoulderSubsystem shoulderSubsystem;
 
     /* Constructor */
-    private Robot(LinearOpMode opMode, RobotType type) {
+    private Robot(LinearOpMode opMode, RobotType rType, OpModeType oType) {
         activeOpMode = opMode;
-        robotType = type;
+        robotType = rType;
+        opModeType = oType;
         HardwareMap hardwareMap = opMode.hardwareMap;
         teleOpRuntime = new ElapsedTime();
 
+        CreateAndInitSubsystems(hardwareMap);
+    }
+
+    public void init(){
+        //Initialize the Robot
+        if (opModeType == OpModeType.TELEOP) {
+            initTele();
+        } else {
+            initAuto();
+        }
+    }
+
+    private void CreateAndInitSubsystems(HardwareMap hardwareMap) {
         switch (robotType) {
             //Just the drive base
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
                 break;
             }
 
@@ -56,6 +102,9 @@ public class Robot {
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
                 break;
             }
 
@@ -63,11 +112,15 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
                 break;
             }
 
             case ROBOT_INTAKE: {
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
+                intakeSubsystem.init();
                 break;
             }
 
@@ -79,6 +132,13 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                intakeSubsystem.init();
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
 
                 //airplane launcher
                 //winch
@@ -89,22 +149,11 @@ public class Robot {
         }
     }
 
-    public static Robot createInstance(LinearOpMode opMode, RobotType type) {
-        robot = new Robot(opMode, type);
+    public static Robot createInstance(LinearOpMode opMode, RobotType robotType, OpModeType opModeType ) {
+        robot = new Robot(opMode, robotType, opModeType);
         return robot;
     }
 
-    public void initialize() {
-       if (visionSubsystem!=null) visionSubsystem.init();
-       if (gyroSubsystem!=null) gyroSubsystem.init();
-       if (mecanumDriveSubsystem!=null) mecanumDriveSubsystem.init();
-       if (intakeSubsystem!=null) intakeSubsystem.init();
-       if (endEffectorSubsystem!=null) endEffectorSubsystem.init();
-       if (liftSlideSubsystem!=null) liftSlideSubsystem.init();
-       if (shoulderSubsystem!=null) shoulderSubsystem.init();
-    }
-
-    /** Getters **/
     // Static method to get single instance of Robot
     public static synchronized Robot getInstance() {
         if (robot == null) {

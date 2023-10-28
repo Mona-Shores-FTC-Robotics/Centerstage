@@ -35,12 +35,14 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.tur
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo270;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo90;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name="TeleOp_Vision")
@@ -49,25 +51,24 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        /** Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.TELEOP);
 
-        //Initialize the Robot
-        robot.initialize();
-
-        //initialize the Gamepads
+        /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
+        robot.init();
 
-        //Remove this from teleop eventually
-        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
+        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        //Create Commands
-        Commands.MakeTeleOpCommands();
+        /** Setup Button Bindings **/
+        GamepadHandling.bindDriverGamepadButtons(robot.opModeType, robot.robotType);
+        GamepadHandling.bindOperatorGamepadButtons(robot.opModeType, robot.robotType);
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             robot.getVisionSubsystem().telemetryForInitProcessing();
-            GamepadHandling.lockColorAndSide();
+
             telemetry.update();
             sleep(10);
         }
@@ -83,9 +84,6 @@ public class TeleOp_Vision extends LinearOpMode
 
         //set the Default command
         CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
-
-        GamepadHandling.bindDriverGamepadButtons();
-        GamepadHandling.bindOperatorGamepadButtons();
 
         while (opModeIsActive())
         {
@@ -141,7 +139,9 @@ public class TeleOp_Vision extends LinearOpMode
 
             telemetry.update();
         }
+
         robot.getVisionSubsystem().getVisionPortal().close();
+        CommandScheduler.getInstance().reset();
     }
 }
 
