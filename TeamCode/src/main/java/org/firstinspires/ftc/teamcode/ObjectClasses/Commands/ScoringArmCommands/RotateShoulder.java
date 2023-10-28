@@ -29,18 +29,19 @@ public class RotateShoulder extends CommandBase {
 
     @Override
     public void initialize() {
-        shoulderSubsystem.shoulder.setPosition(targetPosition);
+        shoulderSubsystem.shoulder.setPosition(targetState.position);
         //create a new telemetry packet for this command
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
     }
 
     public void execute() {
         shoulderSubsystem.currentPosition = shoulderSubsystem.shoulder.getPosition();
-        telemetry.clearAll();
-        telemetry.addData("Current Shoulder State", shoulderSubsystem.currentPosition);
+
+        telemetry.addData("Current Shoulder State", shoulderSubsystem.currentState);
         telemetry.addData("Current Position", shoulderSubsystem.currentPosition);
         telemetry.addData("Target Shoulder State", targetState);
         telemetry.addData("Target Position", targetPosition);
+
     }
 
     @Override

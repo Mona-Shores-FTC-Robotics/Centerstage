@@ -84,6 +84,7 @@ public class TeleOp_FTCLibTesting extends LinearOpMode
             GamepadHandling.getDriverGamepad().readButtons();
 
             telemetry.update();
+            sleep(10);
         }
         robot.getVisionSubsystem().getVisionPortal().close();
     }

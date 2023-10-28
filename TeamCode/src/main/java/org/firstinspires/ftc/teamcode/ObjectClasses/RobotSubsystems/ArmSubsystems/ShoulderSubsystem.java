@@ -15,8 +15,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static class ShoulderParameters {
         public ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
         public double SHOULDER_VALUE_THRESHOLD = .03;
-        public double INTAKE = 0;
-        public double BACKDROP = 1;
+        public double INTAKE_VALUE = 0;
+        public double BACKDROP_VALUE = 1;
     }
 
     public static ShoulderParameters shoulderParameters = new ShoulderParameters();
@@ -42,8 +42,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     }
 
     public void init() {
-        ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP);
-        ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE);
+        ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);
+        ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
 
         currentState = shoulderParameters.SHOULDER_STARTING_STATE;
         currentPosition = currentState.position;
@@ -51,6 +51,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     }
 
     public void periodic(){
+        ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
+        ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);
 
     }
 

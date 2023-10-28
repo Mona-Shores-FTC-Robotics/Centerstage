@@ -90,19 +90,20 @@ public abstract class Commands {
 
         Command wait = new WaitCommand(2000);
 
-        scorePixel = new SequentialCommandGroup(
-                liftMid,
-                wait,
-                rotateBackdrop,
-                wait,
-                openClaw,
-                wait,
-                closeClaw,
-                wait,
-                rotateIntake,
-                wait,
-                liftHome
-        );
+//        scorePixel = new SequentialCommandGroup(
+//                new ParallelCommandGroup(
+//                        liftMid,
+//                        rotateBackdrop
+//                ),
+//                wait,
+//                openClaw,
+//                wait,
+//                closeClaw,
+//                wait,
+//                rotateIntake,
+//                wait,
+//                liftHome
+//        );
     }
 
 }

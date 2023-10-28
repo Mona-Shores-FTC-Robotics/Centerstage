@@ -28,12 +28,12 @@ public class ChangeIntakeState extends CommandBase {
     public void initialize() {
         intakeSubsystem.intake.setVelocity(targetState.velocity);
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        telemetry.clearAll();
     }
 
     public void execute() {
 
         currentVelocity = intakeSubsystem.intake.getVelocity();
-
         telemetry.addData("Target Intake State", targetState);
         telemetry.addData("Target Intake Velocity", targetState.velocity);
         telemetry.addData("Current Intake State", intakeSubsystem.currentState);

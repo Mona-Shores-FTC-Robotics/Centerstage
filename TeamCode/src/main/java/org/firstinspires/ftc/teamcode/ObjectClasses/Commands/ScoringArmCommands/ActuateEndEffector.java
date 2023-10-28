@@ -59,7 +59,7 @@ public class ActuateEndEffector extends CommandBase {
             //check if the current position is close enough to say we are done [how would you do this?]
             // hint 1: absolute value
             // hint 2: END_EFFECTOR_POSITION_THRESHOLD is already declared at the top of this class for you to use
-            boolean done = Math.abs( endEffectorSubsystem.currentPosition-targetPosition) < EndEffectorSubsystem.endEffectorParameters.END_EFFECTOR_POSITION_THRESHOLD;
+            boolean done = Math.abs( endEffectorSubsystem.currentPosition-targetPosition) < EndEffectorSubsystem.END_EFFECTOR_POSITION_THRESHOLD;
             //STEP 4
             //if true, then save the target state as the current state since we are now at the target and return true so the Action completes
             //if false, then return false so this action keeps getting called every loop

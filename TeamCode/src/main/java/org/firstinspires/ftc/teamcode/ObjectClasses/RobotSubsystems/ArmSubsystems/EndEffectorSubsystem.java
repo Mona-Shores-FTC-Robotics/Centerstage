@@ -10,18 +10,14 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
 @Config
 public final class EndEffectorSubsystem extends SubsystemBase {
 
-    public static class EndEffectorParameters {
-        public EndEffectorStates END_EFFECTOR_STARTING_STATE = EndEffectorStates.CLOSED;
-        public double END_EFFECTOR_POSITION_THRESHOLD = .02;
-        public double OPEN_POSITION = 1;
-        public double CLOSED_POSITION = 0;
-    }
+    public static EndEffectorStates END_EFFECTOR_STARTING_STATE = EndEffectorStates.CLOSED;
+    public static double END_EFFECTOR_POSITION_THRESHOLD = .02;
+    public static double OPEN_POSITION = 1;
+    public static double CLOSED_POSITION = 0;
 
-    public static EndEffectorParameters endEffectorParameters = new EndEffectorParameters();
 
     public enum EndEffectorStates {
         CLOSED (0),
@@ -44,15 +40,16 @@ public final class EndEffectorSubsystem extends SubsystemBase {
     }
 
     public void init() {
-        EndEffectorStates.CLOSED.SetState(endEffectorParameters.CLOSED_POSITION);
-        EndEffectorStates.OPEN.SetState(endEffectorParameters.OPEN_POSITION);
-        currentState= endEffectorParameters.END_EFFECTOR_STARTING_STATE;
+        EndEffectorStates.CLOSED.SetState(CLOSED_POSITION);
+        EndEffectorStates.OPEN.SetState(OPEN_POSITION);
+        currentState= END_EFFECTOR_STARTING_STATE;
         currentPosition = currentState.position;
         endEffector.setPosition(currentPosition);
     }
 
     public void periodic(){
-
+        EndEffectorStates.CLOSED.SetState(CLOSED_POSITION);
+        EndEffectorStates.OPEN.SetState(OPEN_POSITION);
     }
 
 }

@@ -14,11 +14,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public static class IntakeParameters {
         public double STARTING_INTAKE_POWER = 0;
         public double INTAKE_REVERSE_VELOCITY = -30;
+        public double INTAKE_ON_VELOCITY = 30;
     }
-
-    public static double INTAKE_ON_VELOCITY = 30;
-
-    public IntakeSubsystem.IntakeParameters intakeParameters = new IntakeSubsystem.IntakeParameters();
+    public static IntakeParameters intakeParameters = new IntakeParameters();
 
     public enum IntakeStates {
         INTAKE_ON (30),
@@ -59,6 +57,6 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         //this is the only way i can find to make it tunable
-       IntakeStates.INTAKE_ON.SetStateVelocity(INTAKE_ON_VELOCITY);
+       IntakeStates.INTAKE_ON.SetStateVelocity(intakeParameters.INTAKE_ON_VELOCITY);
     }
 }
