@@ -46,6 +46,7 @@ public class ActuateEndEffector extends CommandBase {
             //STEP 2
             // add telemetry for targetState, currentState, targetPosition, and currentPosition
             // each line should look like this: telemetryPacket.put("[label]", [variable]);
+            telemetry.clearAll();
             telemetry.addData("Current EndEffector State", endEffectorSubsystem.currentState);
             telemetry.addData("Current EndEffector Position", endEffectorSubsystem.currentPosition);
             telemetry.addData("Target EndEffector State: ", targetState);

@@ -44,6 +44,7 @@ public class MoveLiftSlide extends CommandBase {
     public void execute() {
         liftSlideSubsystem.currentTicks = liftSlideSubsystem.liftSlide.getCurrentPosition();
 
+        telemetry.clearAll();
         telemetry.addData("Target LiftSlide State", targetState);
         telemetry.addData("Target Ticks", targetTicks);
         telemetry.addData("Current LiftSlide State", liftSlideSubsystem.currentState);

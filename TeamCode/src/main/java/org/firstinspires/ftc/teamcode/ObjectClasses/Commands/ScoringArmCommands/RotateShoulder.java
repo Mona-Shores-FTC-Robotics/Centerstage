@@ -36,7 +36,7 @@ public class RotateShoulder extends CommandBase {
 
     public void execute() {
         shoulderSubsystem.currentPosition = shoulderSubsystem.shoulder.getPosition();
-
+        telemetry.clearAll();
         telemetry.addData("Current Shoulder State", shoulderSubsystem.currentPosition);
         telemetry.addData("Current Position", shoulderSubsystem.currentPosition);
         telemetry.addData("Target Shoulder State", targetState);

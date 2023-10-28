@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.IntakeCommands.ChangeIntakeState;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.ActuateEndEffector;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.MoveLiftSlide;
@@ -62,5 +63,8 @@ public class DriverTeleOpBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID))
                 .whenReleased(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(Commands.scorePixel);
     }
 }
