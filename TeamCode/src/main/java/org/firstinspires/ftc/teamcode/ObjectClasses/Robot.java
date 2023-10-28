@@ -49,7 +49,6 @@ public class Robot {
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
-
                 break;
             }
 
