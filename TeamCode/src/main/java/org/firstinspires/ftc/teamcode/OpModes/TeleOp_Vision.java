@@ -29,22 +29,19 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo0;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo180;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo270;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo90;
 
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DefaultDrive;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithLockedHeading;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.MoveLiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
-
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -60,7 +57,12 @@ public class TeleOp_Vision extends LinearOpMode
 
         //initialize the Gamepads
         GamepadHandling.init();
+
+        //Remove this from teleop eventually
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
+
+        //Create Commands
+        Commands.MakeTeleOpCommands();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -80,13 +82,10 @@ public class TeleOp_Vision extends LinearOpMode
         robot.getTeleOpRuntime().reset();
 
         //set the Default command
-        Command defaultCommand = new DefaultDrive(robot.getDriveSubsystem(),
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                GamepadHandling.getDriverGamepad()::getRightX
-                );
-
         CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+
+        GamepadHandling.bindDriverGamepadButtons();
+        GamepadHandling.bindOperatorGamepadButtons();
 
         while (opModeIsActive())
         {
@@ -100,15 +99,23 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
 
-            //lock heading if right bumper
-            if (GamepadHandling.getDriverGamepad().isDown(GamepadKeys.Button.RIGHT_BUMPER)) {
-                CommandScheduler.getInstance().schedule(
-                        new DriveWithLockedHeading(robot.getDriveSubsystem(),
-                                GamepadHandling.getDriverGamepad()::getLeftY,
-                                GamepadHandling.getDriverGamepad()::getLeftX,
-                                90)
-                );
+            //Test turning
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
+                CommandScheduler.getInstance().schedule(turnTo90);
             }
+
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+                CommandScheduler.getInstance().schedule(turnTo180);
+            }
+
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
+                CommandScheduler.getInstance().schedule(turnTo270);
+            }
+
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
+                CommandScheduler.getInstance().schedule(turnTo0);
+            }
+
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
@@ -130,7 +137,6 @@ public class TeleOp_Vision extends LinearOpMode
                 telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
                 telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
                 telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
-
             }
 
             telemetry.update();

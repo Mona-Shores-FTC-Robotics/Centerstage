@@ -6,13 +6,18 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.DriveSubsystem;
 
 public class PIDTurn extends CommandBase {
+
+    private double FINISH_THRESHOLD_IN_DEGREES=2;
+
     private double targetAngle;
     double accumulatedError = 0;
     private ElapsedTime timer = new ElapsedTime();
     private double lastError=0;
     private double lastTime=0;
+    private double currentAngle;
 
     private double feedforward;
 
@@ -28,7 +33,15 @@ public class PIDTurn extends CommandBase {
         feedforward = f;
     }
 
-    public double updatePID(double currentAngle) {
+    @Override
+    public void initialize(){
+
+    }
+
+    @Override
+    public void execute() {
+        currentAngle = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees;
+
         //P Term
         double error = targetAngle - currentAngle;
         error %= 360;
@@ -52,14 +65,21 @@ public class PIDTurn extends CommandBase {
         lastError = error;
 
         //motor power calcualtion
-        double output = feedforward * Math.signum(error) + .9 * Math.tanh(
+        double output = feedforward * Math.signum(error) + .2 * Math.tanh(
                     (error * Kp) + (accumulatedError*Ki) + (slope*Kd));
-
 
         Robot.getInstance().getActiveOpMode().telemetry.addData("error", error);
         Robot.getInstance().getActiveOpMode().telemetry.update();
 
-        return -output;
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.mecanumDriveSpeedControl(0,0, -output);
+    }
+
+    @Override
+    public boolean isFinished() {
+        if (Math.abs(currentAngle-targetAngle) < FINISH_THRESHOLD_IN_DEGREES)
+        {
+            return true;
+        } else return false;
     }
 }
 

@@ -62,9 +62,6 @@ public class GamepadHandling {
         driverGamepad.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.INTAKE))
                 .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
-
-        driverAreader = new ButtonReader(driverGamepad, GamepadKeys.Button.A);
-        driverBreader = new ButtonReader(driverGamepad, GamepadKeys.Button.B);
     }
 
     public static void bindOperatorGamepadButtons() {

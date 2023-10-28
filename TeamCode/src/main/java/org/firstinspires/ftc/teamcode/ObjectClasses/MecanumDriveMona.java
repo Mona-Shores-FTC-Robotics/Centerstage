@@ -534,30 +534,6 @@ public final class MecanumDriveMona {
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
-            //set the param values in the loop for tuning (after we have tuned using dashbaord these can be moved to init()
-            //We should investigate if assigning PID values is messing up the feedforward that roadrunner uses
-
-            leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-
-            kinematics = new MecanumKinematics(
-                    MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
-
-            feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
-
-            defaultTurnConstraints = new TurnConstraints(
-                    MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
-
-            defaultVelConstraint =
-                    new MinVelConstraint(Arrays.asList(
-                            kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
-                            new AngularVelConstraint(MotorParametersRR.maxAngVel)
-                    ));
-
-            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
-
             driveDashboardTelemetry();
 
             last_drive=drive;
