@@ -98,10 +98,10 @@ public class GamepadHandling {
         timeoutRumbleCounter=0;
     }
 
-    public static Boolean driverGamepadIsActive() {
-        if     (Math.abs(GamepadHandling.getDriverGamepad().getLeftX()) > .2 ||
-                Math.abs(GamepadHandling.getDriverGamepad().getLeftY()) > .1 ||
-                Math.abs(GamepadHandling.getDriverGamepad().getRightX()) > .1 ){
+    public static Boolean driverGamepadIsActive(double d, double s, double t) {
+        if     (Math.abs(d) > .15 ||
+                Math.abs(s) > .15 ||
+                Math.abs(t) > .15 ){
             return true;
         } else return false;
     }

@@ -71,6 +71,10 @@ public final class MecanumDriveMona {
     public double current_strafe_ramp=0;
     public double current_turn_ramp=0;
 
+    public double aprilTagDrive;
+    public double aprilTagStrafe;
+    public double aprilTagTurn;
+
     public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
 
     private double leftFrontTargetSpeed;
