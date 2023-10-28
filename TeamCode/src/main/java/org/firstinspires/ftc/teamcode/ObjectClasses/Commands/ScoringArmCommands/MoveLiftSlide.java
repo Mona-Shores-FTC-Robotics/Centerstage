@@ -7,6 +7,8 @@ import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 
@@ -19,7 +21,7 @@ public class MoveLiftSlide extends CommandBase {
     private LiftSlideSubsystem.LiftStates targetState;
     private int targetTicks;
 
-    TelemetryPacket telemetryPacket;
+    Telemetry telemetry;
 
     public MoveLiftSlide(LiftSlideSubsystem subsystem, LiftSlideSubsystem.LiftStates inputState) {
         liftSlideSubsystem = subsystem;
@@ -36,16 +38,16 @@ public class MoveLiftSlide extends CommandBase {
         liftSlideSubsystem.liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //create a new telemetry packet for this command
-        telemetryPacket = new TelemetryPacket();
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
     }
 
     public void execute() {
         liftSlideSubsystem.currentTicks = liftSlideSubsystem.liftSlide.getCurrentPosition();
 
-        telemetryPacket.put("Target LiftSlide State", targetState);
-        telemetryPacket.put("Target Ticks", targetTicks);
-        telemetryPacket.put("Current LiftSlide State", liftSlideSubsystem.currentState);
-        telemetryPacket.put("Current Ticks", liftSlideSubsystem.currentTicks);
+        telemetry.addData("Target LiftSlide State", targetState);
+        telemetry.addData("Target Ticks", targetTicks);
+        telemetry.addData("Current LiftSlide State", liftSlideSubsystem.currentState);
+        telemetry.addData("Current Ticks", liftSlideSubsystem.currentTicks);
     }
 
     @Override
