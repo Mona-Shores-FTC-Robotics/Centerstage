@@ -32,8 +32,8 @@ public class Gyro {
 
 
     private final RevHubOrientationOnRobot hubOrientation =
-            new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, // direction of control hub logo on robot
-                    RevHubOrientationOnRobot.UsbFacingDirection.LEFT); // direction of USB ports on robot
+            new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, // direction of control hub logo on robot
+                    RevHubOrientationOnRobot.UsbFacingDirection.UP); // direction of USB ports on robot
 
     public double currentAbsoluteYawDegrees;
     public double currentAbsoluteYawRadians;
