@@ -506,10 +506,10 @@ public final class MecanumDriveMona {
             }
 
             //save this for telemetry
-            unrampedDrive = drive;
-
-            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
-            drive = current_drive_ramp;
+//            unrampedDrive = drive;
+//
+//            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
+//            drive = current_drive_ramp;
 //            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
 //            strafe = current_strafe_ramp;
 //            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
