@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
 
 public class RotateShoulder extends CommandBase {
@@ -13,7 +16,7 @@ public class RotateShoulder extends CommandBase {
     private ShoulderSubsystem.ShoulderStates targetState;
     private double targetPosition;
 
-    TelemetryPacket telemetryPacket;
+    Telemetry telemetry;
 
     public RotateShoulder(ShoulderSubsystem subsystem, ShoulderSubsystem.ShoulderStates inputState) {
             shoulderSubsystem = subsystem;
@@ -28,16 +31,16 @@ public class RotateShoulder extends CommandBase {
     public void initialize() {
         shoulderSubsystem.shoulder.setPosition(targetPosition);
         //create a new telemetry packet for this command
-        telemetryPacket = new TelemetryPacket();
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
     }
 
     public void execute() {
         shoulderSubsystem.currentPosition = shoulderSubsystem.shoulder.getPosition();
 
-        telemetryPacket.put("Current Shoulder State", shoulderSubsystem.currentPosition);
-        telemetryPacket.put("Current Position", shoulderSubsystem.currentPosition);
-        telemetryPacket.put("Target Shoulder State", targetState);
-        telemetryPacket.put("Target Position", targetPosition);
+        telemetry.addData("Current Shoulder State", shoulderSubsystem.currentPosition);
+        telemetry.addData("Current Position", shoulderSubsystem.currentPosition);
+        telemetry.addData("Target Shoulder State", targetState);
+        telemetry.addData("Target Position", targetPosition);
     }
 
     @Override
