@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
@@ -20,7 +21,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionP
 public class Spike_Only_Auto extends LinearOpMode {
 
     Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
-    private DriveSubsystem roadRunnerDriveSubsystem;
+    private MecanumDriveMona roadRunnerDriveSubsystem;
 //    public static MecanumDrive roadRunnerDrive;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
@@ -40,7 +41,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
 //       roadRunnerDrive = new MecanumDrive(Robot.getInstance().getHardwareMap(), new Pose2d(0, 0, 0));
-        roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem();
+        roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         RoutesSpikeOnly.BuildRoutes(roadRunnerDriveSubsystem);
 
         while (opModeInInit()) {

@@ -14,15 +14,13 @@ public class DriveSubsystem extends SubsystemBase {
     public final MecanumDriveMona mecanumDrive;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        mecanumDrive = new MecanumDriveMona(hardwareMap, new Pose2d(0,0,0));
+        mecanumDrive = new MecanumDriveMona();
     }
 
     public void init()
     {
-        mecanumDrive.();
+        mecanumDrive.init();
     }
-
-
 
     public Command driveRobotCentric(DoubleSupplier leftX, DoubleSupplier leftY, DoubleSupplier rightX) {
         return new RunCommand(

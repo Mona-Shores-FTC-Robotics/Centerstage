@@ -31,10 +31,14 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DefaultDrive;
 import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 
@@ -42,33 +46,23 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 public class TeleOp_Vision extends LinearOpMode
 {
 
-    /** Create the robot **/
-    Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
-    DriveSubsystem driveSubsystem;
-
     @Override public void runOpMode()
     {
+        /** Create the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+
         //Initialize the Robot
         robot.initialize();
-
-        driveSubsystem = robot.getDriveSubsystem();
 
         //initialize the Gamepads
         GamepadHandling.init();
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
-        //Create the action for drawing the Robot during TeleOp
-        DriveSubsystem.DrawCurrentPosition drawTeleOpRobot = driveSubsystem.new DrawCurrentPosition();
-        DriveSubsystem.SendSpeedAndPositionDataToDashboard sendSpeedAndPositionDataToDashboard = driveSubsystem.new SendSpeedAndPositionDataToDashboard();
-
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             robot.getVisionSubsystem().telemetryForInitProcessing();
-
             GamepadHandling.lockColorAndSide();
-
             telemetry.update();
-
             sleep(10);
         }
 
@@ -81,20 +75,27 @@ public class TeleOp_Vision extends LinearOpMode
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
 
+        //set the Default command
+        Command defaultCommand = new DefaultDrive(robot.getDriveSubsystem(),
+                GamepadHandling.getDriverGamepad()::getLeftY,
+                GamepadHandling.getDriverGamepad()::getLeftX,
+                GamepadHandling.getDriverGamepad()::getRightX
+                );
+        CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+
         while (opModeIsActive())
         {
+            //Run the Scheduler
+            CommandScheduler.getInstance().run();
+            GamepadHandling.getDriverGamepad().readButtons();
+
             //Update Gyro values
             robot.getGyroSubsystem().UpdateGyro();
 
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
 
-            //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDriveController().setDriveStrafeTurnValues();
-
-            driveSubsystem.mecanumDriveSpeedControl();
-
-            driveSubsystem.updatePoseEstimate();
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
@@ -108,7 +109,7 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                robot.getDriveSubsystem().telemetryDriveTrain();
+                robot.getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
                 robot.getGyroSubsystem().telemetryGyro();
 
                 telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
@@ -116,11 +117,6 @@ public class TeleOp_Vision extends LinearOpMode
                 telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
 
             }
-            //this sends speed and position data to the dashboard
-            runBlocking(sendSpeedAndPositionDataToDashboard);
-
-            //this sends info to dashboard to draw our robot on the field
-            runBlocking(drawTeleOpRobot);
 
             telemetry.update();
         }

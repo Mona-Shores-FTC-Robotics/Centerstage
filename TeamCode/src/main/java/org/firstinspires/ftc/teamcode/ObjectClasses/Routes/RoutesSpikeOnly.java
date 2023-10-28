@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 
 import com.acmerobotics.roadrunner.Action;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
+
 public class RoutesSpikeOnly {
 
     //Variables to store routes for team prop center for all four start locations
@@ -24,7 +26,7 @@ public class RoutesSpikeOnly {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildRoutes(DriveSubsystem roadRunnerDriveSubsystem) {
+    public static void BuildRoutes(MecanumDriveMona roadRunnerDriveSubsystem) {
         blueBackstageBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .build();

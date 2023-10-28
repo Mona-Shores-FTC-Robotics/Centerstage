@@ -32,7 +32,7 @@ public class DefaultDrive extends CommandBase {
 
     @Override
     public void execute() {
-            driveSubsystem.mecanumDriveSpeedControl(drive.getAsDouble(), strafe.getAsDouble(), turn.getAsDouble());
+            driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(drive.getAsDouble(), strafe.getAsDouble(), turn.getAsDouble());
     }
 
 
