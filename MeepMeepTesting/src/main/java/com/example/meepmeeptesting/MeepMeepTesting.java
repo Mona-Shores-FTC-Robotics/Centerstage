@@ -6,9 +6,12 @@ import com.example.meepmeeptesting.Routes.RoutesSpikeOnly;
 import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPark;
 import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark;
 import com.noahbres.meepmeep.MeepMeep;
+import com.noahbres.meepmeep.core.colorscheme.ColorScheme;
+import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import static com.example.meepmeeptesting.MeepMeepRobots.*;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +30,7 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.LEFT;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.CENTER;
     public static routesToRun routesToRunSelection = routesToRun.SPIKE_BACKDROP_PARK;
 
     /** Set which robots should show up **/
@@ -43,6 +46,8 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
 
         MeepMeep meepMeep = new MeepMeep(800);
+
+
 
         //This method makes 4 robots (2 red robots and 2 blue robots)
         MeepMeepRobots.createRobots(meepMeep);
@@ -140,8 +145,9 @@ public class MeepMeepTesting {
         }
 
 
-        meepMeep_local.setBackground(img)
-                .setBackgroundAlpha(0.95f)
+        meepMeep_local.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_OFFICIAL)
+                .setDarkMode(false)
+                .setBackgroundAlpha(.95f)
                 .start();
 
     }

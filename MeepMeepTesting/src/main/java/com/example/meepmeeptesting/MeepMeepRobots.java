@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.noahbres.meepmeep.MeepMeep;
+import com.noahbres.meepmeep.core.colorscheme.ColorScheme;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueDark;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeBlueLight;
 import com.noahbres.meepmeep.core.colorscheme.scheme.ColorSchemeRedDark;
@@ -29,6 +30,8 @@ public class MeepMeepRobots {
     public static RoadRunnerBotEntity roadRunnerBot;
 
     public static void createRobots( MeepMeep meepMeep ) {
+
+
         blueBackstageBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
@@ -53,7 +56,7 @@ public class MeepMeepRobots {
         blueAudienceBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .setColorScheme(new ColorSchemeBlueLight())
+                .setColorScheme(new ColorSchemeBlueDark())
                 .setDimensions(11.5,17.625)
                 .build();
 

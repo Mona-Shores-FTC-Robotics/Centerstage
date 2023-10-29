@@ -38,14 +38,14 @@ public class DriveSubsystem extends SubsystemBase {
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
         drivingToAprilTag=false;
-        mecanumDrive.init();
+        //mecanumDrive.init();
     }
 
 
     public void setDriveStrafeTurnValues(double controllerDrive, double controllerStrafe, double controllerTurn ){
 
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (GamepadHandling.driverGamepadIsActive(controllerDrive, controllerStrafe, controllerTurn) || drivingToAprilTag) {
+        if (GamepadHandling.driverGamepadIsActive() || drivingToAprilTag) {
 
             //Increase strafe dead zone to 30%
             if (Math.abs(controllerStrafe) < .3) {controllerStrafe=0;}

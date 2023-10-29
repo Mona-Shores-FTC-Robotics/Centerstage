@@ -31,28 +31,18 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo0;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo180;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo270;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo90;
-
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -78,8 +68,8 @@ public class TeleOp_Vision extends LinearOpMode
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+            telemetry.addData("Alliance Color", robot.getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", robot.getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
 
             telemetry.update();
             sleep(10);
@@ -96,9 +86,9 @@ public class TeleOp_Vision extends LinearOpMode
 
         //set the Default command
 
-        CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
 
-        Command testCommand = new MoveToPoint(Robot.getInstance().getDriveSubsystem(), 20, 0);
+       MecanumDriveMona.DrawCurrentPosition drawTeleOpRobot = Robot.getInstance().getDriveSubsystem().mecanumDrive.new DrawCurrentPosition();
 
         while (opModeIsActive())
         {
@@ -112,12 +102,7 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
 
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.A)) {
-                telemetry.addData("pose", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose);
-                testCommand.schedule();
-            }
+            //Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {

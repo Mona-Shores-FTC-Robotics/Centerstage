@@ -434,7 +434,7 @@ public final class MecanumDriveMona {
 
     }
 
-    private void drawPoseHistory(Canvas c) {
+    public void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];
 
@@ -451,7 +451,7 @@ public final class MecanumDriveMona {
         c.strokePolyline(xPoints, yPoints);
     }
 
-    private static void drawRobot(Canvas c, Pose2d t) {
+    public static void drawRobot(Canvas c, Pose2d t) {
         final double ROBOT_RADIUS = 9;
 
         c.setStrokeWidth(1);
@@ -492,6 +492,11 @@ public final class MecanumDriveMona {
             leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         } else
         {
@@ -539,7 +544,6 @@ public final class MecanumDriveMona {
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;
-            FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
 
         }
     }

@@ -100,7 +100,6 @@ public class Robot {
         // initialize auto-specific scheduler
     }
 
-
     private static ElapsedTime teleOpRuntime;
     private static LinearOpMode activeOpMode;
     private static DriveSubsystem mecanumDriveSubsystem;
