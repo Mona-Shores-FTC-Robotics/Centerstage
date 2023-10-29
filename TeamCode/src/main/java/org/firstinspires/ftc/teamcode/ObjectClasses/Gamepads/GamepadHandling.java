@@ -28,8 +28,7 @@ public class GamepadHandling {
     private static Telemetry telemetry;
 
     private static Gamepad.RumbleEffect endGameRumbleEffect;
-    private static Gamepad.RumbleEffect
-            problemRumbleEffect;
+    private static Gamepad.RumbleEffect problemRumbleEffect;
     private static Gamepad.LedEffect problemLedEffect;
 
     private static int timeoutRumbleCounter;
@@ -48,29 +47,6 @@ public class GamepadHandling {
         Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
         CreateRumbleEffects();
         CreateLEDEffects();
-    }
-
-    public static void bindDriverGamepadButtons(Robot.OpModeType opModeType, Robot.RobotType robotType) {
-        if (Robot.getInstance().opModeType == opModeType)
-        {
-            //Create the bindings for the driver to use during the teleop mode
-            new DriverTeleOpBindings(driverGamepad, robotType);
-        } else
-        {
-            //Create the bindings for the driver to use during init of the auto
-            new DriverAutoInitBindings(driverGamepad, robotType);
-        }
-    }
-    public static void bindOperatorGamepadButtons(Robot.OpModeType opModeType, Robot.RobotType robotType) {
-        if (Robot.getInstance().opModeType == opModeType)
-        {
-            //Create the bindings for the driver to use during the teleop mode
-            new OperatorTeleOpBindings(operatorGamepad, robotType);
-        } else
-        {
-            //Create the bindings for the driver to use during init of the auto
-            new OperatorAutoInitBindings(operatorGamepad, robotType);
-        }
     }
 
     private static void CreateLEDEffects() {

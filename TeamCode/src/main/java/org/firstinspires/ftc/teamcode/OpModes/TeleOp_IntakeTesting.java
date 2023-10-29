@@ -29,14 +29,18 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings.rightTrigger;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
 
 @TeleOp(name="TeleOp_IntakeTesting")
 public class TeleOp_IntakeTesting extends LinearOpMode
@@ -45,21 +49,27 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create and Initialize the robot **/
+        /* Create and Initialize the robot **/
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE, Robot.OpModeType.TELEOP);
 
-        /** Initialize Gamepad and Robot - Order Important **/
+        /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
         robot.init();
 
-        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        /* Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        /** Setup Button Bindings **/
-        GamepadHandling.bindDriverGamepadButtons(robot.opModeType, robot.robotType);
-        GamepadHandling.bindOperatorGamepadButtons(robot.opModeType, robot.robotType);
+        /* Setup Button Bindings **/
+        new IntakeTestingDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
+            // Add Vision Init Processor Telemetry
+            //todo does this print the final side/color from auto?
+            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+
+            TelemetryMona.intakeTestingButtons();
+
             telemetry.update();
             sleep(10);
         }
@@ -74,8 +84,12 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
-            telemetry.update();
+            //Right Trigger shows some telemetry about the buttons
+            if (rightTrigger.isDown()) {
+                TelemetryMona.intakeTestingButtons();
+            }
 
+            telemetry.update();
         }
     }
 }

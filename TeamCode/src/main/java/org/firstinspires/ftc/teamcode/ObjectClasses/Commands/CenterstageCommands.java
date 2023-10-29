@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystem
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
-public abstract class Commands {
+public abstract class CenterstageCommands {
 
     public static Command defaultCommand;
     public static Command turnTo0;
@@ -27,18 +27,33 @@ public abstract class Commands {
     public static Command turnTo270;
 
     public static Command driveLockedTo90;
+    public static Command rotateBackDrop;
+    public static Command rotateBackdrop;
+    public static Command rotateIntake;
+    public static Command openClaw;
+    public static Command closeClaw;
+    public static Command liftHome;
+    public static Command liftLow;
+    public static Command liftMid;
+    public static Command liftHigh;
+    public static Command wait;
 
     public static SequentialCommandGroup scorePixel;
 
-    public static void MakeTeleOpCommands(){
+    public static void MakeTeleOpCommands() {
 
         DriveSubsystem driveSubsystem = Robot.getInstance().getDriveSubsystem();
+        ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
+        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
         defaultCommand = new DefaultDrive(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 GamepadHandling.getDriverGamepad()::getRightX
         );
+
+        simpleTrajectory = new SimpleTrjaectory();
 
         turnTo0 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
@@ -50,7 +65,7 @@ public abstract class Commands {
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 90));
 
-        turnTo180 =  new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+        turnTo180 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 180));
@@ -60,50 +75,51 @@ public abstract class Commands {
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 270));
 
-        ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
-        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
-        LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
-        Command rotateBackdrop = new RotateShoulder(shoulderSubsystem,
+        rotateBackdrop = new RotateShoulder(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.BACKDROP);
 
-        Command rotateIntake = new RotateShoulder(shoulderSubsystem,
+        rotateIntake = new RotateShoulder(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.INTAKE);
 
-        Command openClaw =  new ActuateEndEffector(endEffectorSubsystem,
+        openClaw = new ActuateEndEffector(endEffectorSubsystem,
                 EndEffectorSubsystem.EndEffectorStates.OPEN);
 
-        Command closeClaw = new ActuateEndEffector(endEffectorSubsystem,
+        closeClaw = new ActuateEndEffector(endEffectorSubsystem,
                 EndEffectorSubsystem.EndEffectorStates.CLOSED);
 
-        Command liftHome = new MoveLiftSlide(liftSlideSubsystem,
+        liftHome = new MoveLiftSlide(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HOME);
 
-        Command liftLow = new MoveLiftSlide(liftSlideSubsystem,
+        liftLow = new MoveLiftSlide(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.LOW);
 
-        Command liftMid = new MoveLiftSlide(liftSlideSubsystem,
+        liftMid = new MoveLiftSlide(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.MID);
 
-        Command liftHigh = new MoveLiftSlide(liftSlideSubsystem,
+        liftHigh = new MoveLiftSlide(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HIGH);
 
-        Command wait = new WaitCommand(2000);
 
-//        scorePixel = new SequentialCommandGroup(
-//                new ParallelCommandGroup(
-//                        liftMid,
-//                        rotateBackdrop
-//                ),
-//                wait,
-//                openClaw,
-//                wait,
-//                closeClaw,
-//                wait,
-//                rotateIntake,
-//                wait,
-//                liftHome
-//        );
+        wait = new WaitCommand(2000);
+
+    }
+
+    public static Command MakeScorePixelCommand() {
+        scorePixel = new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                        liftMid,
+                        rotateBackdrop),
+                wait,
+                openClaw,
+                wait,
+                closeClaw,
+                wait,
+                rotateIntake,
+                wait,
+                liftHome
+        );
+        return scorePixel;
     }
 
 }

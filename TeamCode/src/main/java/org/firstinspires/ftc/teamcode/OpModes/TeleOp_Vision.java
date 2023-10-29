@@ -29,11 +29,11 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.defaultCommand;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo0;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo180;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo270;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.Commands.turnTo90;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo0;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo180;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo270;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo90;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -42,6 +42,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
@@ -51,23 +53,26 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create and Initialize the robot **/
+        //Create the Robot
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.TELEOP);
 
-        /** Initialize Gamepad and Robot - Order Important **/
+        //Initialize the Game-pads
         GamepadHandling.init();
+
+        //Initialize the Robot
         robot.init();
 
-        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        //Setup Telemetry for Driver Station and FTCDashboard
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        /** Setup Button Bindings **/
-        GamepadHandling.bindDriverGamepadButtons(robot.opModeType, robot.robotType);
-        GamepadHandling.bindOperatorGamepadButtons(robot.opModeType, robot.robotType);
+        /* Setup Button Bindings **/
+        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            robot.getVisionSubsystem().telemetryForInitProcessing();
+            //todo does this print the final side/color from auto?
+            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
 
             telemetry.update();
             sleep(10);
@@ -96,24 +101,6 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
-
-            //Test turning
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) {
-                CommandScheduler.getInstance().schedule(turnTo90);
-            }
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
-                CommandScheduler.getInstance().schedule(turnTo180);
-            }
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) {
-                CommandScheduler.getInstance().schedule(turnTo270);
-            }
-
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
-                CommandScheduler.getInstance().schedule(turnTo0);
-            }
-
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 

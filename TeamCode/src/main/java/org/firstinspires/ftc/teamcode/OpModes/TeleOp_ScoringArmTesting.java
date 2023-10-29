@@ -29,14 +29,19 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings.rightTrigger;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
 
 @TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
@@ -45,20 +50,28 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
-        /** Create and Initialize the robot **/
+        /* Create and Initialize the robot **/
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM, Robot.OpModeType.TELEOP);
 
-        /** Initialize Gamepad and Robot - Order Important **/
+        /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
         robot.init();
 
-        /** Setup Telemetry for Driver Station and FTCDashboard **/
+        /* Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.clearAll();
 
-        while (opModeInInit()) {
+        /* Setup Button Bindings **/
+        new ScoringArmTestingDriverBindings(GamepadHandling.getDriverGamepad());
 
+        while (opModeInInit()) {
+            // Add Vision Init Processor Telemetry
+            //todo does this print the final side/color from auto?
+            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+
+            TelemetryMona.scoringArmTestingButtons();
             telemetry.update();
             sleep(10);
         }
@@ -74,10 +87,13 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
+            //Right Trigger shows some telemetry about the buttons
+            if (rightTrigger.isDown()) {
+                TelemetryMona.scoringArmTestingButtons();
+            }
+
             telemetry.update();
         }
         robot.getVisionSubsystem().getVisionPortal().close();
     }
-
-
 }

@@ -63,9 +63,9 @@ public final class VisionSubsystem extends SubsystemBase {
     private int blueTagFrameCount;
     private int redTagFrameCount;
 
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
-    private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
+    private final VisionPortal visionPortal;               // Used to manage the video source.
+    private final AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
+    private final InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
@@ -143,8 +143,16 @@ public final class VisionSubsystem extends SubsystemBase {
         RIGHT
     }
 
+    public enum DeliverHeight {
+        LOW,
+        MID,
+        HIGH
+    }
+
     private DeliverLocation deliverLocationBlue = DeliverLocation.CENTER;
     private DeliverLocation deliverLocationRed = DeliverLocation.CENTER;
+
+    private DeliverHeight deliverHeight = DeliverHeight.LOW;
 
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
@@ -592,18 +600,27 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
 
-    public void setDeliverLocation(DeliverLocation d) {
-        deliverLocationRed = d;
-        deliverLocationBlue = d;
+    public void setDeliverLocation(DeliverLocation location) {
+        deliverLocationRed = location;
+        deliverLocationBlue = location;
     }
 
-
-    public DeliverLocation getDeliverLocationBlue() {
-        return deliverLocationBlue;
+    public void setDeliverHeight(DeliverHeight height) {
+        deliverHeight = height;
     }
 
     public DeliverLocation getDeliverLocationRed() {
         return deliverLocationRed;
+    }
+    public DeliverLocation getDeliverLocationBlue() {
+        return deliverLocationBlue;
+    }
+
+    public DeliverLocation getDeliverLocation(){
+        if (initVisionProcessor.getAllianceColorFinal()== InitVisionProcessor.AllianceColor.RED)
+        {
+            return deliverLocationRed;
+        } else return deliverLocationBlue;
     }
 
     public void telemetryForInitProcessing() {
