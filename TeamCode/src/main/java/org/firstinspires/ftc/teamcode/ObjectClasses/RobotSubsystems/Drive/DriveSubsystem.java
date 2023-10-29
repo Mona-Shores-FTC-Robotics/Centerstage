@@ -38,7 +38,7 @@ public class DriveSubsystem extends SubsystemBase {
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
         drivingToAprilTag=false;
-        //mecanumDrive.init();
+        mecanumDrive.init();
     }
 
 
