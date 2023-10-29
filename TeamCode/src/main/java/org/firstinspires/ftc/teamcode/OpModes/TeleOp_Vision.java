@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo0;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.turnTo180;
@@ -37,11 +38,17 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageC
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -63,7 +70,7 @@ public class TeleOp_Vision extends LinearOpMode
         robot.init();
 
         //Setup Telemetry for Driver Station and FTCDashboard
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        // telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
@@ -88,7 +95,10 @@ public class TeleOp_Vision extends LinearOpMode
         robot.getTeleOpRuntime().reset();
 
         //set the Default command
+
         CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+
+        Command testCommand = new MoveToPoint(Robot.getInstance().getDriveSubsystem(), 20, 0);
 
         while (opModeIsActive())
         {
@@ -103,6 +113,11 @@ public class TeleOp_Vision extends LinearOpMode
             robot.getVisionSubsystem().LookForAprilTags();
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.A)) {
+                telemetry.addData("pose", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose);
+                testCommand.schedule();
+            }
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {

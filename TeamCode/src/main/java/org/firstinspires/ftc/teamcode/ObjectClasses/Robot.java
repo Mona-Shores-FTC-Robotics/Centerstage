@@ -47,6 +47,51 @@ public class Robot {
     private void initTele() {
         // initialize teleop-specific scheduler
 
+        switch (robotType) {
+            //Just the drive base
+            case ROBOT_DRIVE_BASE: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                break;
+            }
+
+            case ROBOT_VISION: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                visionSubsystem.init();
+                break;
+            }
+
+            case ROBOT_SCORING_ARM: {
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+                break;
+            }
+
+            case ROBOT_INTAKE: {
+                intakeSubsystem.init();
+                break;
+            }
+
+            case ROBOT_CENTERSTAGE: {
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                intakeSubsystem.init();
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+
+                //airplane launcher
+                //winch
+                //intake pick up
+                //lights
+                break;
+            }
+        }
+
+
         //Create Commands
         CenterstageCommands.MakeTeleOpCommands();
     }
@@ -92,8 +137,6 @@ public class Robot {
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
                 break;
             }
 
@@ -101,9 +144,6 @@ public class Robot {
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
-                visionSubsystem.init();
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
                 break;
             }
 
@@ -111,15 +151,11 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
-                endEffectorSubsystem.init();
-                liftSlideSubsystem.init();
-                shoulderSubsystem.init();
                 break;
             }
 
             case ROBOT_INTAKE: {
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
-                intakeSubsystem.init();
                 break;
             }
 
@@ -131,13 +167,6 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
-                visionSubsystem.init();
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
-                intakeSubsystem.init();
-                endEffectorSubsystem.init();
-                liftSlideSubsystem.init();
-                shoulderSubsystem.init();
 
                 //airplane launcher
                 //winch

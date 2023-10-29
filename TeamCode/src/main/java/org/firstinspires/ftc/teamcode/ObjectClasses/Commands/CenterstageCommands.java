@@ -53,8 +53,6 @@ public abstract class CenterstageCommands {
                 GamepadHandling.getDriverGamepad()::getRightX
         );
 
-        simpleTrajectory = new SimpleTrjaectory();
-
         turnTo0 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
