@@ -16,9 +16,11 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithConstantHeading;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 public class VisionDriverBindings {
     private Action turn270;
@@ -53,6 +55,8 @@ public class VisionDriverBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.B)
                 .whenHeld(new ActionAsCommand(Robot.getInstance().getDriveSubsystem(), CenterstageActions.moveToPoint(25, 25)));
 
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(new DriveWithConstantHeading(Robot.getInstance().getDriveSubsystem(), gamepad::getLeftX, gamepad::getLeftX, 0));
 
 //        gamepad.getGamepadButton(GamepadKeys.Button.B)
 //                .whenPressed(new InstantCommand(()->{
