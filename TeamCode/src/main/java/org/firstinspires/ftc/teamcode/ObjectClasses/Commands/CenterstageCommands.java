@@ -73,7 +73,6 @@ public abstract class CenterstageCommands {
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 270));
 
-
         rotateBackdrop = new RotateShoulder(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.BACKDROP);
 
