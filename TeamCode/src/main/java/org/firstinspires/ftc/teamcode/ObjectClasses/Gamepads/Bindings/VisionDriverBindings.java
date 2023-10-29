@@ -26,7 +26,6 @@ public class VisionDriverBindings {
 
     public VisionDriverBindings(GamepadEx gamepad) {
 
-
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(turnTo0);
 
