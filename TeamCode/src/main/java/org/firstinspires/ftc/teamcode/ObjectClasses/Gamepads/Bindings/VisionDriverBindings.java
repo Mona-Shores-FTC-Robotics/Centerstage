@@ -61,7 +61,7 @@ public class VisionDriverBindings {
                 .whenHeld(new ActionAsCommand(Robot.getInstance().getDriveSubsystem(), CenterstageActions.moveToPoint(25, 25)));
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(new DriveWithConstantHeading(Robot.getInstance().getDriveSubsystem(), gamepad::getLeftX, gamepad::getLeftX, 0));
+                .whenHeld(new DriveWithConstantHeading(Robot.getInstance().getDriveSubsystem(), gamepad::getLeftY, gamepad::getLeftX, 0));
 
     }
 

@@ -1,22 +1,33 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Commands;
 
+
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
+
+import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DefaultDrive;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.DriveWithConstantHeading;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.ActuateEndEffector;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.MoveLiftSlide;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands.RotateShoulder;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+
+import java.lang.reflect.Field;
 
 public abstract class CenterstageCommands {
 
@@ -40,13 +51,20 @@ public abstract class CenterstageCommands {
 
     public static SequentialCommandGroup scorePixel;
 
+    private static DriveSubsystem driveSubsystem;
+    private static ShoulderSubsystem shoulderSubsystem;
+    private static EndEffectorSubsystem endEffectorSubsystem;
+    private static LiftSlideSubsystem liftSlideSubsystem;
+    private static MecanumDriveMona mecanumDrive;
+
     public static void MakeTeleOpCommands() {
+        driveSubsystem = Robot.getInstance().getDriveSubsystem();
+        shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
+        endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
+        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
-        DriveSubsystem driveSubsystem = Robot.getInstance().getDriveSubsystem();
-        ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
-        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
-        LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
-
+        //this command broke things when the subsystem was not Robot.getInstance().getDriveSubsystem - and instead just used driveSubsystem from above.
         defaultCommand = new DefaultDrive(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
@@ -119,4 +137,22 @@ public abstract class CenterstageCommands {
         return scorePixel;
     }
 
+
+
+
+    public static ParallelRaceGroup BackupFromBlueBackdropCommand() {
+        ParallelRaceGroup seqCommand = new ParallelRaceGroup(
+                new ActionAsCommand(Robot.getInstance().getDriveSubsystem(), CenterstageActions.backUpFromBlueBackdrop()),
+                new IsGamepadActiveCommand()
+        );
+        return seqCommand;
+    }
+
+    public static ParallelRaceGroup BackupFromRedBackdropCommand() {
+        ParallelRaceGroup seqCommand = new ParallelRaceGroup(
+                new ActionAsCommand(Robot.getInstance().getDriveSubsystem(), CenterstageActions.backUpFromRedBackdrop()),
+                new IsGamepadActiveCommand()
+        );
+        return seqCommand;
+    }
 }

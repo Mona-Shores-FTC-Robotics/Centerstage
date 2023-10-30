@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Actions;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.roadrunner.AccelConstraint;
@@ -65,4 +67,47 @@ public class CenterstageActions {
         return t;
     }
 
+    public static Action backUpFromBlueBackdrop() {
+        drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(5),
+                        new AngularVelConstraint(5)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-10, 10);
+
+        overrideTurnConstraint = new TurnConstraints(
+                Math.toRadians(5), -Math.toRadians(5), Math.toRadians(5));
+
+        t = drive.actionBuilder(drive.pose)
+                .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
+                .turn(Math.toRadians(90))
+                .build();
+        return t;
+    }
+
+    public static Action backUpFromRedBackdrop() {
+        drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(5),
+                        new AngularVelConstraint(5)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-10, 10);
+
+        overrideTurnConstraint = new TurnConstraints(
+                Math.toRadians(5), -Math.toRadians(5), Math.toRadians(5));
+
+        t = drive.actionBuilder(drive.pose)
+                .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
+                .turn(Math.toRadians(-90))
+                .build();
+        return t;
+    }
 }

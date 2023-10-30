@@ -42,7 +42,7 @@ public class DriveWithConstantHeading extends CommandBase {
 
     @Override
     public void initialize() {
-        pid = new TurnPIDController(lockedHeadingDegrees, 1, 0, 0, 0);
+        pid = new TurnPIDController(lockedHeadingDegrees, .1, 0, 0, 0);
         dash = FtcDashboard.getInstance();
         c = new Canvas();
     }
