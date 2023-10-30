@@ -37,11 +37,14 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 @TeleOp(name="TeleOp_Vision")
@@ -102,7 +105,15 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             robot.getVisionSubsystem().LookForAprilTags();
 
-            //Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
+            {
+                new ActionAsCommand(Robot.getInstance().getDriveSubsystem(),
+                        new CenterstageActions().moveToPoint(
+                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x + 15,
+                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y + 15));
+            }
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {

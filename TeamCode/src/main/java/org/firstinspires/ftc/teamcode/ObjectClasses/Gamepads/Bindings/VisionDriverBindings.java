@@ -7,7 +7,9 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageC
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_SPIKE_C;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_RED;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -21,6 +23,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveT
 import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+
+import java.util.function.Supplier;
 
 public class VisionDriverBindings {
     private Action turn270;
@@ -49,6 +53,7 @@ public class VisionDriverBindings {
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_RED)
                 .build();
 
+
         gamepad.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new ActionAsCommand(Robot.getInstance().getDriveSubsystem(), selectedRoute));
 
@@ -58,11 +63,7 @@ public class VisionDriverBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenHeld(new DriveWithConstantHeading(Robot.getInstance().getDriveSubsystem(), gamepad::getLeftX, gamepad::getLeftX, 0));
 
-//        gamepad.getGamepadButton(GamepadKeys.Button.B)
-//                .whenPressed(new InstantCommand(()->{
-//                    if (GamepadHandling.driverGamepadIsActive()) CommandScheduler.getInstance().cancelAll();
-//                }));
-
     }
+
 }
 
