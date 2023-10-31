@@ -58,38 +58,38 @@ public abstract class CenterstageCommands {
     private static MecanumDriveMona mecanumDrive;
 
     public static void MakeTeleOpCommands() {
-        driveSubsystem = Robot.getInstance().getDriveSubsystem();
+//        driveSubsystem = Robot.getInstance().getDriveSubsystem();
         shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
-        endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+//        endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
-        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+//        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
         //this command broke things when the subsystem was not Robot.getInstance().getDriveSubsystem - and instead just used driveSubsystem from above.
-        defaultCommand = new DefaultDrive(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                GamepadHandling.getDriverGamepad()::getRightX
-        );
+//        defaultCommand = new DefaultDrive(driveSubsystem,
+//                GamepadHandling.getDriverGamepad()::getLeftY,
+//                GamepadHandling.getDriverGamepad()::getLeftX,
+//                GamepadHandling.getDriverGamepad()::getRightX
+//        );
 
-        turnTo0 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                0));
-
-        turnTo90 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                90));
-
-        turnTo180 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                180));
-
-        turnTo270 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                270));
+//        turnTo0 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+//                GamepadHandling.getDriverGamepad()::getLeftY,
+//                GamepadHandling.getDriverGamepad()::getLeftX,
+//                0));
+//
+//        turnTo90 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+//                GamepadHandling.getDriverGamepad()::getLeftY,
+//                GamepadHandling.getDriverGamepad()::getLeftX,
+//                90));
+//
+//        turnTo180 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+//                GamepadHandling.getDriverGamepad()::getLeftY,
+//                GamepadHandling.getDriverGamepad()::getLeftX,
+//                180));
+//
+//        turnTo270 = new InstantCommand(() -> new DriveWithConstantHeading(driveSubsystem,
+//                GamepadHandling.getDriverGamepad()::getLeftY,
+//                GamepadHandling.getDriverGamepad()::getLeftX,
+//                270));
 
         rotateBackdrop = new RotateShoulder(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.BACKDROP);
@@ -97,11 +97,11 @@ public abstract class CenterstageCommands {
         rotateIntake = new RotateShoulder(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.INTAKE);
 
-        openClaw = new ActuateEndEffector(endEffectorSubsystem,
-                EndEffectorSubsystem.EndEffectorStates.OPEN);
-
-        closeClaw = new ActuateEndEffector(endEffectorSubsystem,
-                EndEffectorSubsystem.EndEffectorStates.CLOSED);
+//        openClaw = new ActuateEndEffector(endEffectorSubsystem,
+//                EndEffectorSubsystem.EndEffectorStates.OPEN);
+//
+//        closeClaw = new ActuateEndEffector(endEffectorSubsystem,
+//                EndEffectorSubsystem.EndEffectorStates.CLOSED);
 
         liftHome = new MoveLiftSlide(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HOME);

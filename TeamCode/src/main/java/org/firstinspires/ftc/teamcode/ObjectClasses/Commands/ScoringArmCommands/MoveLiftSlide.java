@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Commands.ScoringArmCommands
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -39,16 +40,16 @@ public class MoveLiftSlide extends CommandBase {
 
         //create a new telemetry packet for this command
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+
     }
 
     public void execute() {
         liftSlideSubsystem.currentTicks = liftSlideSubsystem.liftSlide.getCurrentPosition();
 
-        telemetry.clearAll();
-        telemetry.addData("Target LiftSlide State", targetState);
-        telemetry.addData("Target Ticks", targetTicks);
-        telemetry.addData("Current LiftSlide State", liftSlideSubsystem.currentState);
-        telemetry.addData("Current Ticks", liftSlideSubsystem.currentTicks);
+        TelemetryPacket p = new TelemetryPacket();
+        p.put("Target LiftSlide State", targetState);
+        p.put("Target Ticks", targetTicks);
+        FtcDashboard.getInstance().sendTelemetryPacket(p);
     }
 
     @Override

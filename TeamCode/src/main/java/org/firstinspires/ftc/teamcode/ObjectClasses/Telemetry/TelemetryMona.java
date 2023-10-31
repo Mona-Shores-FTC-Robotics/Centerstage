@@ -23,9 +23,12 @@ public class TelemetryMona {
     public static void scoringArmTestingButtons() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         telemetry.addLine("");
-        telemetry.addLine("A Button - Shoulder Servo");
-        telemetry.addLine("Y Button - Claw Servo");
-        telemetry.addLine("X Button - Lift Motor");
+//        telemetry.addLine("A Button - Shoulder Servo");
+//        telemetry.addLine("Y Button - Claw Servo");
+        telemetry.addLine("X Button - Lift Motor LOW");
+        telemetry.addLine("Y Button - Lift Motor MID");
+        telemetry.addLine("B Button - Lift Motor HIGH");
+
     }
 
 }

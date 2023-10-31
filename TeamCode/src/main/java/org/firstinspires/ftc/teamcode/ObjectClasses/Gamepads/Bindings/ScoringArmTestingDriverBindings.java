@@ -17,16 +17,27 @@ public class ScoringArmTestingDriverBindings {
     public ScoringArmTestingDriverBindings(GamepadEx gamepad) {
         rightTrigger = new TriggerReader(gamepad, GamepadKeys.Trigger.RIGHT_TRIGGER);
 
-        gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN))
-                .whenReleased(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
+//        gamepad.getGamepadButton(GamepadKeys.Button.Y)
+//                .whenPressed(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN))
+//                .whenReleased(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
+//
+//        gamepad.getGamepadButton(GamepadKeys.Button.A)
+//                .whenPressed(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.INTAKE))
+//                .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
 
-        gamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.INTAKE))
-                .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
+        gamepad.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.LOW));
+
+
+        gamepad.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID));
+
 
         gamepad.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID))
-                .whenReleased(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
-        }
+                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HIGH));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
+
+    }
     }

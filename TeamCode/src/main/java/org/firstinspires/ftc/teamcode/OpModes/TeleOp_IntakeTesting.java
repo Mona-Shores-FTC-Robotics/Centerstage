@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings.rightTrigger;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -38,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
@@ -85,7 +84,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             GamepadHandling.getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
-            if (rightTrigger.isDown()) {
+            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
                 TelemetryMona.intakeTestingButtons();
             }
 

@@ -66,7 +66,7 @@ public class Robot {
             }
 
             case ROBOT_SCORING_ARM: {
-                endEffectorSubsystem.init();
+//                endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
                 break;
@@ -150,7 +150,7 @@ public class Robot {
             }
 
             case ROBOT_SCORING_ARM: {
-                endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
+//                endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
                 break;

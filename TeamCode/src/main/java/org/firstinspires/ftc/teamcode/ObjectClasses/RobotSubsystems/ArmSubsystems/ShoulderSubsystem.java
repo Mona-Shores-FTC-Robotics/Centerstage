@@ -47,7 +47,7 @@ public class ShoulderSubsystem extends SubsystemBase {
 
         currentState = shoulderParameters.SHOULDER_STARTING_STATE;
         currentPosition = currentState.position;
-        shoulder.setPosition(currentPosition);
+//        shoulder.setPosition(currentPosition);
     }
 
     public void periodic(){

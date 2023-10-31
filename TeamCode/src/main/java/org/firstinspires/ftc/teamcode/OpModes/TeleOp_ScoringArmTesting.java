@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings.rightTrigger;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -58,7 +56,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         robot.init();
 
         /* Setup Telemetry for Driver Station and FTCDashboard **/
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.clearAll();
 
@@ -68,8 +66,8 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+//            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+//            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
 
             TelemetryMona.scoringArmTestingButtons();
             telemetry.update();
@@ -88,12 +86,16 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             GamepadHandling.getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
-            if (rightTrigger.isDown()) {
+            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
                 TelemetryMona.scoringArmTestingButtons();
             }
 
+            telemetry.addData("Ticks", Robot.getInstance().getLiftSlideSubsystem().liftSlide.getCurrentPosition());
+
+            sleep(10);
             telemetry.update();
         }
         robot.getVisionSubsystem().getVisionPortal().close();
     }
 }
+

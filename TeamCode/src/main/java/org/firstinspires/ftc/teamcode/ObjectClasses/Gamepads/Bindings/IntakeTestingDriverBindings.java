@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystem
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
 
 public class IntakeTestingDriverBindings {
-    public static TriggerReader rightTrigger;
+    public TriggerReader rightTrigger;
 
     public IntakeTestingDriverBindings(GamepadEx gamepad) {
         rightTrigger = new TriggerReader(gamepad, GamepadKeys.Trigger.RIGHT_TRIGGER);

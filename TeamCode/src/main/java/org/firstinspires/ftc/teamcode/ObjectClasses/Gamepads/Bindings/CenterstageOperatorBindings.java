@@ -31,9 +31,9 @@ public class CenterstageOperatorBindings {
                 .whenPressed(new InstantCommand( ()-> {
                     visionSubsystem.setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);}));
 
-        /** A Button **/
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(CenterstageCommands::MakeScorePixelCommand);
+//        /** A Button **/
+//        operatorGamepad.getGamepadButton(GamepadKeys.Button.A)
+//                .whenPressed(CenterstageCommands::MakeScorePixelCommand);
 
 
         //can we make one of the commands in our sequential command group a variable and then use the bumpers
