@@ -14,8 +14,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsyste
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 public class Robot {
+    public static InitVisionProcessor.AllianceColor superFinalallianceColor= InitVisionProcessor.AllianceColor.RED;
+    public static InitVisionProcessor.SideOfField superFinalSide= InitVisionProcessor.SideOfField.BACKSTAGE;
 
     private static Robot robot = null;
     public RobotType robotType;

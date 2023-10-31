@@ -689,7 +689,7 @@ public final class MecanumDriveMona {
         public double P =0; // default = 10
         public double D =0; // default = 0
         public double I =0; // default = 3
-        public double F =11; // default = 0
+        public double F =8; // default = 0
 
     }
 
@@ -717,12 +717,12 @@ public final class MecanumDriveMona {
 
         // path controller gains
         public double axialGain =12;
-        public double lateralGain =3;
+        public double lateralGain =8;
         public double headingGain =8; // shared with turn
 
-        public double axialVelGain =1;
-        public double lateralVelGain =1;
-        public double headingVelGain =1; // shared with turn
+        public double axialVelGain =1.1;
+        public double lateralVelGain =1.1;
+        public double headingVelGain =1.1; // shared with turn
     }
 
     public static class ParamsDriveTrainConstants {

@@ -659,7 +659,7 @@ public final class VisionSubsystem extends SubsystemBase {
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .10) && (Math.abs(strafe) < .1) && (Math.abs(turn) <.1)){
+        if ((Math.abs(drive) < .13) && (Math.abs(strafe) < .13) && (Math.abs(turn) <.13)){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);

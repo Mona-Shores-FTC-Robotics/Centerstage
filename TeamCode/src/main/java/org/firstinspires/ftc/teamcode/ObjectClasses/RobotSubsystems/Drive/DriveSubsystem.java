@@ -59,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
             if (controllerDrive < driveParameters.APRIL_TAG_CANCEL_THRESHOLD) drivingToAprilTag = false;
 
             //Align to the Backdrop AprilTags - CASE RED
-            if (visionSubsystem.getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+            if (Robot.superFinalallianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
@@ -71,7 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
             }
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (visionSubsystem.getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+            else if (Robot.superFinalallianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {

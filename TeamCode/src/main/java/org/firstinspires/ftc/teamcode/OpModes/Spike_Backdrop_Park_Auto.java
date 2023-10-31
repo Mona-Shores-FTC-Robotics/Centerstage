@@ -33,7 +33,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         /** Create and Initialize the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.AUTO);
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.TELEOP);
 
         /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
@@ -67,6 +67,9 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal();
         allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
         sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
+
+        Robot.superFinalallianceColor =allianceColor;
+        Robot.superFinalSide= sideOfField;
 
         robot.getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
