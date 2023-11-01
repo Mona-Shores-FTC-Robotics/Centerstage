@@ -97,6 +97,7 @@ public class MoveLiftSlide extends CommandBase {
         //compare the elapsed time to a timeout threshold and if the elapsed time is greater than the threshold return true
 
         //if the command isn't finished and the command isn't timed out then return false because the command should still run
+        return false;
     }
 
     @Override
