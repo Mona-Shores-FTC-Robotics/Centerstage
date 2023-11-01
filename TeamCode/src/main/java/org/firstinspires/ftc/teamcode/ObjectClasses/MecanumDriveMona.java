@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -47,7 +46,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 
@@ -71,6 +71,10 @@ public final class MecanumDriveMona {
     public double current_drive_ramp =0;
     public double current_strafe_ramp=0;
     public double current_turn_ramp=0;
+
+    public double aprilTagDrive;
+    public double aprilTagStrafe;
+    public double aprilTagTurn;
 
     public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
 
@@ -100,7 +104,7 @@ public final class MecanumDriveMona {
 
     public Localizer localizer;
     public Pose2d pose;
-    private Gyro gyro;
+    private GyroSubsystem gyroSubsystem;
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
@@ -138,7 +142,7 @@ public final class MecanumDriveMona {
             lastRightRearPos = rightRear.getPositionAndVelocity().position;
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-            lastHeading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            lastHeading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
         }
 
@@ -149,7 +153,7 @@ public final class MecanumDriveMona {
             PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
             PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            Rotation2d heading = Rotation2d.exp(gyro.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            Rotation2d heading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
             double headingDelta = heading.minus(lastHeading);
 
             Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
@@ -188,7 +192,7 @@ public final class MecanumDriveMona {
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
         this.pose = new Pose2d(0, 0, 0);
-        gyro = Robot.getInstance().getGyro();
+        gyroSubsystem = Robot.getInstance().getGyroSubsystem();
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -430,7 +434,7 @@ public final class MecanumDriveMona {
 
     }
 
-    private void drawPoseHistory(Canvas c) {
+    public void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];
 
@@ -447,7 +451,7 @@ public final class MecanumDriveMona {
         c.strokePolyline(xPoints, yPoints);
     }
 
-    private static void drawRobot(Canvas c, Pose2d t) {
+    public static void drawRobot(Canvas c, Pose2d t) {
         final double ROBOT_RADIUS = 9;
 
         c.setStrokeWidth(1);
@@ -470,7 +474,7 @@ public final class MecanumDriveMona {
         );
     }
 
-    public void mecanumDriveSpeedControl() {
+    public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
 
         if (drive==0 && strafe ==0 && turn==0) {
             //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
@@ -484,33 +488,38 @@ public final class MecanumDriveMona {
             rightFront.setPower(0);
             rightBack.setPower(0);
 
-            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         } else
         {
 
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
-            if (Robot.getInstance().getVision().blueBackdropAprilTagFound &&
-                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
                     drive > .1) {
-                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            else if (Robot.getInstance().getVision().redBackdropAprilTagFound &&
-                    Robot.getInstance().getVision().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .1) {
-                drive = Math.min(drive, MotorParameters.safetyDriveSpeedFactor);
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 
             //save this for telemetry
-            unrampedDrive = drive;
-
-            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
-            drive = current_drive_ramp;
+//            unrampedDrive = drive;
+//
+//            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
+//            drive = current_drive_ramp;
 //            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
 //            strafe = current_strafe_ramp;
 //            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
@@ -530,36 +539,11 @@ public final class MecanumDriveMona {
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
-            //set the param values in the loop for tuning (after we have tuned using dashbaord these can be moved to init()
-            //We should investigate if assigning PID values is messing up the feedforward that roadrunner uses
-
-            leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-            rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-
-            kinematics = new MecanumKinematics(
-                    MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
-
-            feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
-
-            defaultTurnConstraints = new TurnConstraints(
-                    MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
-
-            defaultVelConstraint =
-                    new MinVelConstraint(Arrays.asList(
-                            kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
-                            new AngularVelConstraint(MotorParametersRR.maxAngVel)
-                    ));
-
-            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
-
             driveDashboardTelemetry();
 
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;
-            FlightRecorder.write("MECANUM_PARAMS", MotorParameters);
 
         }
     }
@@ -676,7 +660,7 @@ public final class MecanumDriveMona {
             p.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
 
             p.addLine("");
-            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyro().currentAbsoluteYawDegrees, 4, 0));
+            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 4, 0));
 
             p.put("actualSpeedLF", actualSpeedLF);
             p.put("actualSpeedRF", actualSpeedRF);
@@ -695,11 +679,7 @@ public final class MecanumDriveMona {
     }
 
     public static class ParamsMona {
-        public double DRIVE_SPEED_FACTOR=.8;
-        public double STRAFE_SPEED_FACTOR=.8;
-        public double TURN_SPEED_FACTOR=.4;
 
-        public double safetyDriveSpeedFactor =DRIVE_SPEED_FACTOR;
 
         public double DRIVE_RAMP = .06; //ken ramp
         public double STRAFE_RAMP = .05;
@@ -709,7 +689,7 @@ public final class MecanumDriveMona {
         public double P =0; // default = 10
         public double D =0; // default = 0
         public double I =0; // default = 3
-        public double F =11; // default = 0
+        public double F =8; // default = 0
 
     }
 
@@ -737,12 +717,12 @@ public final class MecanumDriveMona {
 
         // path controller gains
         public double axialGain =12;
-        public double lateralGain =3;
+        public double lateralGain =8;
         public double headingGain =8; // shared with turn
 
-        public double axialVelGain =1;
-        public double lateralVelGain =1;
-        public double headingVelGain =1; // shared with turn
+        public double axialVelGain =1.1;
+        public double lateralVelGain =1.1;
+        public double headingVelGain =1.1; // shared with turn
     }
 
     public static class ParamsDriveTrainConstants {

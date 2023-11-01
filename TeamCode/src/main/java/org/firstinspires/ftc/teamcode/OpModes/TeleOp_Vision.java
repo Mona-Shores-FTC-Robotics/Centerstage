@@ -30,133 +30,132 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
 
-    /** Create the robot **/
-    Robot robot = Robot.createInstance(this);
-    MecanumDriveMona mecanumDrive;
-
     @Override public void runOpMode()
     {
-        //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_VISION);
+        //Create the Robot
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.TELEOP);
+
+        //Initialize the Game-pads
+        GamepadHandling.init();
 
         //Initialize the Robot
-        robot.initialize(robot.getHardwareMap());
+        robot.init();
 
-        mecanumDrive= robot.getMecanumDriveMona();
+        //Setup Telemetry for Driver Station and FTCDashboard
+        //This seems to make things worse not better
+        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        //initialize the Gamepads
-        GamepadHandling.init();
-        robot.getVision().SwitchToInitVisionProcessor();
+        /* Setup Button Bindings **/
+        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
-        //Create the action for drawing the Robot during TeleOp
-        MecanumDriveMona.DrawCurrentPosition drawTeleOpRobot = mecanumDrive.new DrawCurrentPosition();
-        MecanumDriveMona.SendSpeedAndPositionDataToDashboard sendSpeedAndPositionDataToDashboard = mecanumDrive.new SendSpeedAndPositionDataToDashboard();
 
         while (opModeInInit()) {
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
-
             // Add Vision Init Processor Telemetry
-            robot.getVision().telemetryForInitProcessing();
 
-            GamepadHandling.lockColorAndSide();
+            //robot.getVisionSubsystem().telemetryForInitProcessing();
+
+            //todo does this print the final side/color from auto?
+            telemetry.addData("Alliance Color", Robot.superFinalallianceColor);
+            telemetry.addData("Side of the Field", Robot.superFinalSide);
+
 
             telemetry.update();
-
             sleep(10);
         }
 
-        robot.getVision().telemetryForInitProcessing();
+        robot.getVisionSubsystem().getInitVisionProcessor().setAllianceColorFinal(Robot.superFinalallianceColor);
+
+        robot.getVisionSubsystem().getInitVisionProcessor().setSideOfFieldFinal(Robot.superFinalSide);
+
+
+        robot.getVisionSubsystem().telemetryForInitProcessing();
         telemetry.update();
 
         //After Init switch the vision processing to AprilTags
-        robot.getVision().SwitchToAprilTagProcessor();
+        robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
         robot.getTeleOpRuntime().reset();
 
+        //set the Default command
+       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+
         while (opModeIsActive())
         {
-
-            //Store the previous loop's gamepad values and new current gamepad values
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
+            //Run the Scheduler
+            CommandScheduler.getInstance().run();
+            GamepadHandling.getDriverGamepad().readButtons();
 
             //Update Gyro values
-            robot.getGyro().UpdateGyro();
+            robot.getGyroSubsystem().UpdateGyro();
 
             //Look for AprilTags
-            robot.getVision().LookForAprilTags();
+            robot.getVisionSubsystem().LookForAprilTags();
 
-            //Process the Driver Controls
-            GamepadHandling.DriverControls();
+            //Update robot pose
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
-            //Process the Operator Controls
-            GamepadHandling.OperatorControls();
-
-            //Drive the Robot (manual if driver controls are active - or automatically if flag set)
-            robot.getDriveController().setDriveStrafeTurnValues();
-
-            mecanumDrive.mecanumDriveSpeedControl();
-
-            mecanumDrive.updatePoseEstimate();
+            //drive backwards and rotate toward wing
+            //we could make this cleaner, but for now I like knowing this is based on Alliance Color - easy to forget if we bury it
+            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
+            {
+                if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
+                    CenterstageCommands.BackupFromBlueBackdropCommand().schedule();
+                } else{
+                    CenterstageCommands.BackupFromRedBackdropCommand().schedule();
+                }
+            }
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
 
-                telemetry.addData("Alliance Color", Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal());
-                telemetry.addData("Side of the Field", Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal());
-                telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+                telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+                telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+                telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal());
 
-                robot.getVision().telemetryAprilTag();
+                robot.getVisionSubsystem().telemetryAprilTag();
             }
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                robot.getMecanumDriveMona().telemetryDriveTrain();
-                robot.getGyro().telemetryGyro();
+                robot.getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
+                robot.getGyroSubsystem().telemetryGyro();
 
-                telemetry.addData("leftstick y", GamepadHandling.getCurrentDriverGamepad().left_stick_y );
-                telemetry.addData("leftstick x", GamepadHandling.getCurrentDriverGamepad().left_stick_x );
-                telemetry.addData("rightstick x", GamepadHandling.getCurrentDriverGamepad().right_stick_x );
-
+                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
+                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
+                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
             }
-            //this sends speed and position data to the dashboard
-            runBlocking(sendSpeedAndPositionDataToDashboard);
-
-            //this sends info to dashboard to draw our robot on the field
-            runBlocking(drawTeleOpRobot);
 
             telemetry.update();
         }
-        robot.getVision().getVisionPortal().close();
+        CommandScheduler.getInstance().cancelAll();
+        robot.getVisionSubsystem().getVisionPortal().close();
     }
 }
 
-
-//This is how RR runs its drive
-//            mecanumDrive.setDrivePowers(new PoseVelocity2d(
-//                    new Vector2d(
-//                            -gamepad1.left_stick_y,
-//                            -gamepad1.left_stick_x
-//                    ),
-//                    -gamepad1.right_stick_x
-//            ));

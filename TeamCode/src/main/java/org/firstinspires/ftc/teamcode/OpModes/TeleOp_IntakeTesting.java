@@ -29,46 +29,66 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.RobotConstants;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
 
-@TeleOp(name="Motor_Mechanism_Test")
-public class Motor_Mechanism_Test extends LinearOpMode
+@TeleOp(name="TeleOp_IntakeTesting")
+public class TeleOp_IntakeTesting extends LinearOpMode
 {
-    /** Create the robot **/
-    Robot robot = Robot.createInstance(this);
+    public Robot robot;
 
     @Override public void runOpMode()
     {
-        //Set the type of Robot
-        RobotConstants.setRobot(RobotConstants.RobotType.ROBOT_MOTOR_TEST_MECHANISM);
+        /* Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE, Robot.OpModeType.TELEOP);
 
-        //Initialize the Robot
-        robot.initialize(robot.getHardwareMap());
-
-        //initialize the Gamepads
+        /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
+        robot.init();
+
+        /* Setup Telemetry for Driver Station and FTCDashboard **/
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        /* Setup Button Bindings **/
+        new IntakeTestingDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
+            // Add Vision Init Processor Telemetry
+            //todo does this print the final side/color from auto?
+            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
+            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
 
+            TelemetryMona.intakeTestingButtons();
+
+            telemetry.update();
+            sleep(10);
         }
 
         robot.getTeleOpRuntime().reset();
 
         while (opModeIsActive())
         {
-            //Store the previous loop's gamepad values and new current gamepad values
-            GamepadHandling.storeGamepadValuesFromLastLoop();
-            GamepadHandling.storeCurrentGamepadValues();
+            //Run the Scheduler
+            CommandScheduler.getInstance().run();
 
-            Robot.getInstance().getTestIntake().move();
+            //Read all buttons
+            GamepadHandling.getDriverGamepad().readButtons();
+
+            //Right Trigger shows some telemetry about the buttons
+            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
+                TelemetryMona.intakeTestingButtons();
+            }
 
             telemetry.update();
-
         }
     }
 }

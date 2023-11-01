@@ -4,8 +4,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 
 import com.acmerobotics.roadrunner.Action;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 
 public class RoutesSpikeOnly {
 
@@ -27,52 +26,52 @@ public class RoutesSpikeOnly {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static void BuildRoutes(MecanumDriveMona roadRunnerDrive) {
-        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+    public static void BuildRoutes(MecanumDriveMona roadRunnerDriveSubsystem) {
+        blueBackstageBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_TOWARD_RED)
                 .build();
 
-        blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, FACE_TOWARD_RED)
                 .build();
 
-        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
                 .build();
 
-        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_TOWARD_BLUE)
                 .build();
 
-        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+        blueBackstageBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_TOWARD_RED)
                 .build();
 
-        blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_TOWARD_RED)
                 .build();
 
-        redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_TOWARD_BLUE)
                 .build();
 
-        redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_R, FACE_TOWARD_BLUE)
                 .build();
 
-        blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+        blueBackstageBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
                 .build();
 
-        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, FACE_TOWARD_RED)
                 .build();
 
-        redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
                 .build();
 
-        redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
                 .build();
     }

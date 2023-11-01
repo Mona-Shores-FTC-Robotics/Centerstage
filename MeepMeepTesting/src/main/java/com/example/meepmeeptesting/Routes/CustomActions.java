@@ -19,7 +19,7 @@ public class CustomActions {
 
     static Action alignToRightSideOfBackDropWithAprilTag()
     {
-        SleepAction sleep = new SleepAction(10);
+        SleepAction sleep = new SleepAction(.5);
         return sleep;
     }
 

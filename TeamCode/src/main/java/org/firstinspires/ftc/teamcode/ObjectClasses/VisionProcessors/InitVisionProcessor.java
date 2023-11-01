@@ -26,7 +26,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors;
 import android.graphics.Canvas;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
@@ -46,13 +46,13 @@ public class InitVisionProcessor implements VisionProcessor {
     private final int STAGE_DOOR_THRESHOLD = 4;
 
     /** Our Default Values **/
-    public AllianceColor allianceColorFinal = AllianceColor.RED;
-    public SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
-    public TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
+    public static AllianceColor allianceColorFinal = AllianceColor.RED;
+    public static SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
+    public static TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
 
-    public AllianceColor allianceColorOverride = AllianceColor.RED;
-    public SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
-    public TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
+    public static AllianceColor allianceColorOverride = AllianceColor.RED;
+    public static SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
+    public static TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
 
     /** Our Vision enums **/
     public enum AllianceColor {BLUE, RED}

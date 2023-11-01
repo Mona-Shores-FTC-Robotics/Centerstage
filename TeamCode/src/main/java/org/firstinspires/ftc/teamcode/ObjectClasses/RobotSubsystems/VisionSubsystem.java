@@ -1,17 +1,18 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotComponents.VisionSystem.AprilTagID.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem.AprilTagID.*;
 
 
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,8 +22,10 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -31,10 +34,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Config
-public final class VisionSystem {
+public final class VisionSubsystem extends SubsystemBase {
 
-    public static VisionSystem.TunableVisionConstants tunableVisionConstants = new VisionSystem.TunableVisionConstants();
+    public static VisionSubsystem.TunableVisionConstants tunableVisionConstants = new VisionSubsystem.TunableVisionConstants();
 
     public static class TunableVisionConstants {
         // Adjust these numbers to suit your robot.
@@ -61,9 +63,9 @@ public final class VisionSystem {
     private int blueTagFrameCount;
     private int redTagFrameCount;
 
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
-    private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
+    private final VisionPortal visionPortal;               // Used to manage the video source.
+    private final AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
+    private final InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
@@ -141,25 +143,25 @@ public final class VisionSystem {
         RIGHT
     }
 
+    public enum DeliverHeight {
+        LOW,
+        MID,
+        HIGH
+    }
+
     private DeliverLocation deliverLocationBlue = DeliverLocation.CENTER;
     private DeliverLocation deliverLocationRed = DeliverLocation.CENTER;
 
+    private DeliverHeight deliverHeight = DeliverHeight.LOW;
 
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
 
-    public VisionSystem() {
-
-    }
-
-    public void init() {
-
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        mecanumDrive = Robot.getInstance().getMecanumDriveMona();
-        // Initialize the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
+    public VisionSubsystem(final HardwareMap hMap, final String name) {
+        // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
-        // Initialize the AprilTag Processor
+        // Create the AprilTag Processor
         aprilTagProcessor = new AprilTagProcessor.Builder()
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
@@ -171,13 +173,18 @@ public final class VisionSystem {
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(Robot.getInstance().getHardwareMap().get(WebcamName.class, "Webcam 1"))
+                .setCamera(hMap.get(WebcamName.class, name))
                 .setStreamFormat(VisionPortal.StreamFormat.YUY2)
                 .setCameraResolution(new Size(640, 480))
                 .enableLiveView(true)
                 .addProcessor(initVisionProcessor)
                 .addProcessor(aprilTagProcessor)
                 .build();
+    }
+
+    public void init() {
+        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
         // During Init the AprilTag processor is off
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
@@ -307,15 +314,15 @@ public final class VisionSystem {
 
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < mecanumDrive.MotorParameters.safetyDriveSpeedFactor) {
-                    mecanumDrive.MotorParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                if (manualDriveLimit < DriveSubsystem.driveParameters.safetyDriveSpeedFactor) {
+                    DriveSubsystem.driveParameters.safetyDriveSpeedFactor = manualDriveLimit;
                 }
             }
         }
 
         //If no april tags are detected then reset the safety drive speed factor
         if (currentDetections.size() == 0) {
-            mecanumDrive.MotorParameters.safetyDriveSpeedFactor = mecanumDrive.MotorParameters.DRIVE_SPEED_FACTOR;
+            DriveSubsystem.driveParameters.safetyDriveSpeedFactor = DriveSubsystem.driveParameters.DRIVE_SPEED_FACTOR;
         }
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
@@ -366,9 +373,9 @@ public final class VisionSystem {
                 double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveController().aprilTagDrive = drive;
-                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveController().aprilTagTurn = turn;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             } else if (RED_AUDIENCE_WALL_LARGE_TAG.isDetected) // use the large tag until we can see the small tag
@@ -384,9 +391,9 @@ public final class VisionSystem {
                 double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveController().aprilTagDrive = drive;
-                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveController().aprilTagTurn = turn;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -408,9 +415,9 @@ public final class VisionSystem {
                 double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveController().aprilTagDrive = drive;
-                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveController().aprilTagTurn = turn;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
@@ -426,9 +433,9 @@ public final class VisionSystem {
                 double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
                 double strafe = Range.clip(-yawError *  tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-                Robot.getInstance().getDriveController().aprilTagDrive = drive;
-                Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveController().aprilTagTurn = turn;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
                 telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             }
@@ -455,9 +462,9 @@ public final class VisionSystem {
             double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
@@ -483,9 +490,9 @@ public final class VisionSystem {
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
             // set the drive/turn strafe values for AutoDriving
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_CENTER_TAG);
             telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
@@ -508,9 +515,9 @@ public final class VisionSystem {
             double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_LEFT_TAG);
 
@@ -535,9 +542,9 @@ public final class VisionSystem {
             double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
 
@@ -557,9 +564,9 @@ public final class VisionSystem {
             double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
 
@@ -580,9 +587,9 @@ public final class VisionSystem {
             double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
             double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
 
-            Robot.getInstance().getDriveController().aprilTagDrive = drive;
-            Robot.getInstance().getDriveController().aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveController().aprilTagTurn = turn;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_RIGHT_TAG);
 
@@ -591,28 +598,37 @@ public final class VisionSystem {
     }
 
 
-    public void setDeliverLocation(DeliverLocation d) {
-        deliverLocationRed = d;
-        deliverLocationBlue = d;
+    public void setDeliverLocation(DeliverLocation location) {
+        deliverLocationRed = location;
+        deliverLocationBlue = location;
     }
 
-
-    public DeliverLocation getDeliverLocationBlue() {
-        return deliverLocationBlue;
+    public void setDeliverHeight(DeliverHeight height) {
+        deliverHeight = height;
     }
 
     public DeliverLocation getDeliverLocationRed() {
         return deliverLocationRed;
     }
+    public DeliverLocation getDeliverLocationBlue() {
+        return deliverLocationBlue;
+    }
+
+    public DeliverLocation getDeliverLocation(){
+        if (initVisionProcessor.getAllianceColorFinal()== InitVisionProcessor.AllianceColor.RED)
+        {
+            return deliverLocationRed;
+        } else return deliverLocationBlue;
+    }
 
     public void telemetryForInitProcessing() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVision().getInitVisionProcessor().getAllianceColorFinal();
-        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVision().getInitVisionProcessor().getSideOfFieldFinal();
+        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
+        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
 
         telemetry.addData("Alliance Color", allianceColor);
         telemetry.addData("Side of the Field", sideOfField);
-        telemetry.addData("Team Prop Location", Robot.getInstance().getVision().getInitVisionProcessor().getTeamPropLocationFinal());
+        telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal());
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
@@ -641,7 +657,7 @@ public final class VisionSystem {
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .10) && (Math.abs(strafe) < .1) && (Math.abs(turn) <.1)){
+        if ((Math.abs(drive) < .13) && (Math.abs(strafe) < .13) && (Math.abs(turn) <.13)){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);
@@ -650,7 +666,7 @@ public final class VisionSystem {
             Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
             //TODO  need to change the facing here based on metadata to make this generic
             Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
-            Robot.getInstance().getMecanumDriveMona().pose = realPose;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = realPose;
             telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
         }
     }
