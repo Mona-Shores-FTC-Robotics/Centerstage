@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystem
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
 
 public class MoveLiftSlide extends CommandBase {
-
+    //Declare and set a timeout threshold for the command called TIMEOUT_TIME_SECONDS - I suggest 1.5 seconds for now
     private double TIMEOUT_TIME_SECONDS = 1.5;
 
     //Declare the local variable to hold the liftsubsystem
@@ -86,6 +86,7 @@ public class MoveLiftSlide extends CommandBase {
 
         //Put the target state in the packet
         p.put("Target LiftSlide State", targetState);
+
         //put the target ticks in the packet
         p.put("Target Ticks", targetTicks);
 
