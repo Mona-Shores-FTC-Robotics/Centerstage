@@ -6,19 +6,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.CenterstageGamepadCommands;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 public class Robot {
-    public static InitVisionProcessor.AllianceColor superFinalallianceColor= InitVisionProcessor.AllianceColor.RED;
-    public static InitVisionProcessor.SideOfField superFinalSide= InitVisionProcessor.SideOfField.BACKSTAGE;
+    public static InitVisionProcessor.AllianceColor superFinalallianceColor = InitVisionProcessor.AllianceColor.RED;
+    public static InitVisionProcessor.SideOfField superFinalSide = InitVisionProcessor.SideOfField.BACKSTAGE;
 
     private static Robot robot = null;
     public RobotType robotType;
@@ -96,7 +96,7 @@ public class Robot {
 
 
         //Create Commands
-        CenterstageCommands.MakeTeleOpCommands();
+        CenterstageGamepadCommands.MakeTeleOpCommands();
     }
 
     private void initAuto() {

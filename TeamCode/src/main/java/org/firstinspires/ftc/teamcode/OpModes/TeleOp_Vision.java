@@ -29,28 +29,18 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.CenterstageGamepadCommands.defaultCommand;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.CenterstageGamepadCommands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -67,13 +57,8 @@ public class TeleOp_Vision extends LinearOpMode
         //Initialize the Robot
         robot.init();
 
-        //Setup Telemetry for Driver Station and FTCDashboard
-        //This seems to make things worse not better
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
-
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -126,9 +111,9 @@ public class TeleOp_Vision extends LinearOpMode
             if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
             {
                 if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
-                    CenterstageCommands.BackupFromBlueBackdropCommand().schedule();
+                    CenterstageGamepadCommands.BackupFromBlueBackdropCommand().schedule();
                 } else{
-                    CenterstageCommands.BackupFromRedBackdropCommand().schedule();
+                    CenterstageGamepadCommands.BackupFromRedBackdropCommand().schedule();
                 }
             }
 

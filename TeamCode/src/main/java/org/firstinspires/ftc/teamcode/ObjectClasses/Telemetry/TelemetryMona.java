@@ -1,13 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry;
 
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.IntakeCommands.ChangeIntakeState;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.IntakeCommands.ChangeIntakeStateVelocity;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
 
 public class TelemetryMona {
     static Telemetry telemetry;
