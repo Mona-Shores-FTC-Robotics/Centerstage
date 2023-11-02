@@ -9,12 +9,13 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDrive;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeading;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.DefaultLiftSlideCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeBackUpFromRedBackdropAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlide;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulder;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
@@ -23,9 +24,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveS
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
-public abstract class CenterstageCommands {
-
-    public static Command defaultCommand;
+public abstract class RobotCommands {
+    public static Command defaultDriveCommand;
+    public static Command defaultLiftSlideCommand;
     public static Command driveWhileAt0Heading;
     public static Command driveWhileAt90Heading;
     public static Command driveWhileAt180Heading;
@@ -53,28 +54,28 @@ public abstract class CenterstageCommands {
     public static void MakeRobotDriveBaseCommands() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         mecanumDrive = driveSubsystem.mecanumDrive;
-        defaultCommand = new DefaultDrive(driveSubsystem,
+        defaultDriveCommand = new DefaultDriveCommand(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 GamepadHandling.getDriverGamepad()::getRightX
         );
 
-        driveWhileAt0Heading = new DriveWithConstantHeading(driveSubsystem,
+        driveWhileAt0Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 0);
 
-        driveWhileAt90Heading = new DriveWithConstantHeading(driveSubsystem,
+        driveWhileAt90Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 90);
 
-        driveWhileAt180Heading = new DriveWithConstantHeading(driveSubsystem,
+        driveWhileAt180Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 180);
 
-        driveWhileAt270Heading = new DriveWithConstantHeading(driveSubsystem,
+        driveWhileAt270Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 270);
@@ -94,26 +95,30 @@ public abstract class CenterstageCommands {
 
 
     public static void MakeRobotScoringArmCommands() {
+
 //        endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
-        rotateShoulderToBackdrop = new RotateShoulder(shoulderSubsystem,
+        defaultLiftSlideCommand = new DefaultLiftSlideCommand(liftSlideSubsystem,
+                GamepadHandling.getDriverGamepad()::getLeftY);
+
+        rotateShoulderToBackdrop = new RotateShoulderCommand(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.BACKDROP);
 
-        rotateShoulderToIntake = new RotateShoulder(shoulderSubsystem,
+        rotateShoulderToIntake = new RotateShoulderCommand(shoulderSubsystem,
                 ShoulderSubsystem.ShoulderStates.INTAKE);
 
-        liftHome = new MoveLiftSlide(liftSlideSubsystem,
+        liftHome = new MoveLiftSlideCommand(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HOME);
 
-        liftLow = new MoveLiftSlide(liftSlideSubsystem,
+        liftLow = new MoveLiftSlideCommand(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.LOW);
 
-        liftMid = new MoveLiftSlide(liftSlideSubsystem,
+        liftMid = new MoveLiftSlideCommand(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.MID);
 
-        liftHigh = new MoveLiftSlide(liftSlideSubsystem,
+        liftHigh = new MoveLiftSlideCommand(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HIGH);
 
 //        openClaw = new ActuateEndEffector(endEffectorSubsystem,

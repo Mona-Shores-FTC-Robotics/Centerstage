@@ -120,26 +120,26 @@ public class Robot {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 //Create Commands
-                CenterstageCommands.MakeRobotDriveBaseCommands();
+                RobotCommands.MakeRobotDriveBaseCommands();
                 break;
             }
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 visionSubsystem.init();
-                CenterstageCommands.MakeRobotVisionCommands();
+                RobotCommands.MakeRobotVisionCommands();
                 break;
             }
             case ROBOT_SCORING_ARM: {
 //                endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-                CenterstageCommands.MakeRobotScoringArmCommands();
+                RobotCommands.MakeRobotScoringArmCommands();
                 break;
             }
             case ROBOT_INTAKE: {
                 intakeSubsystem.init();
-                CenterstageCommands.MakeRobotIntakeCommands();
+                RobotCommands.MakeRobotIntakeCommands();
                 break;
             }
             case ROBOT_CENTERSTAGE: {
@@ -150,7 +150,7 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-                CenterstageCommands.MakeRobotCenterStageCommands();
+                RobotCommands.MakeRobotCenterStageCommands();
                 //Systems to be added:
                 //Servo - Drone launch release
                 //Servo - Push Pixel put-away device

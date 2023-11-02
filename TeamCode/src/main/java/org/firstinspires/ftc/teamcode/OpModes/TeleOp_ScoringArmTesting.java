@@ -29,6 +29,9 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultDriveCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultLiftSlideCommand;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -70,6 +73,9 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
         //Start the TeleOp Timer
         robot.getTeleOpTimer().reset();
+
+        //Set the default lift command
+        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
         while (opModeIsActive())
         {

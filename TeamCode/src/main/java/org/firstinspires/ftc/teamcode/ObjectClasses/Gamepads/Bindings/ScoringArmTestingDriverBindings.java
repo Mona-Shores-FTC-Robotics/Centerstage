@@ -4,7 +4,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlide;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 
@@ -22,18 +22,18 @@ public class ScoringArmTestingDriverBindings {
 //                .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
 
         gamepad.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.LOW));
+                .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.LOW));
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID));
+                .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID));
 
 
         gamepad.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HIGH));
+                .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HIGH));
 
         gamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
+                .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
 
     }
     }

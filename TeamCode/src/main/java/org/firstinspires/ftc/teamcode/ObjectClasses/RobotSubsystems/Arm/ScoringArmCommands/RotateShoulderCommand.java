@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 
-public class RotateShoulder extends CommandBase {
+public class RotateShoulderCommand extends CommandBase {
 
     // The subsystem the command runs on
     private final ShoulderSubsystem shoulderSubsystem;
@@ -17,7 +17,7 @@ public class RotateShoulder extends CommandBase {
 
     Telemetry telemetry;
 
-    public RotateShoulder(ShoulderSubsystem subsystem, ShoulderSubsystem.ShoulderStates inputState) {
+    public RotateShoulderCommand(ShoulderSubsystem subsystem, ShoulderSubsystem.ShoulderStates inputState) {
             shoulderSubsystem = subsystem;
             targetState = inputState;
             targetPosition = targetState.position;

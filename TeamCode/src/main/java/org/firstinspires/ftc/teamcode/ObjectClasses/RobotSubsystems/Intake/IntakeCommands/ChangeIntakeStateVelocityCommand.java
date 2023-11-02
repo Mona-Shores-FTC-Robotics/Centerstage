@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 
 import java.util.function.DoubleSupplier;
 
-public class ChangeIntakeStateVelocity extends CommandBase {
+public class ChangeIntakeStateVelocityCommand extends CommandBase {
 
     // The subsystem the command runs on
     private final IntakeSubsystem intakeSubsystem;
@@ -20,7 +20,7 @@ public class ChangeIntakeStateVelocity extends CommandBase {
 
     TelemetryPacket telemetryPacket;
 
-    public ChangeIntakeStateVelocity(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState, DoubleSupplier vel) {
+    public ChangeIntakeStateVelocityCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState, DoubleSupplier vel) {
         intakeSubsystem = subsystem;
         targetState = inputState;
         targetVelocity = vel;

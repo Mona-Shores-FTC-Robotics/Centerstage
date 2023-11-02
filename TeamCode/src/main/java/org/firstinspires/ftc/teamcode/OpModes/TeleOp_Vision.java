@@ -29,14 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.CenterstageCommands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultDriveCommand;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.CenterstageCommands;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -82,7 +82,7 @@ public class TeleOp_Vision extends LinearOpMode
         robot.getTeleOpTimer().reset();
 
         //set the Default command
-       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultDriveCommand);
 
         while (opModeIsActive())
         {
@@ -104,9 +104,9 @@ public class TeleOp_Vision extends LinearOpMode
             if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
             {
                 if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
-                    CenterstageCommands.redBackdropBackup.schedule();
+                    RobotCommands.redBackdropBackup.schedule();
                 } else{
-                    CenterstageCommands.blueBackdropBackup.schedule();
+                    RobotCommands.blueBackdropBackup.schedule();
                 }
             }
 

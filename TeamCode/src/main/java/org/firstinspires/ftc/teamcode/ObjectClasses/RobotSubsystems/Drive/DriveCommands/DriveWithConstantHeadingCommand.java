@@ -8,42 +8,41 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.TurnPIDController;
 
 import java.util.function.DoubleSupplier;
 
-/**
- * A command to drive the robot with joystick input *
- */
-public class DefaultDrive extends CommandBase {
+public class DriveWithConstantHeadingCommand extends CommandBase {
 
     private final DriveSubsystem driveSubsystem;
+
     private final DoubleSupplier driveSupplier;
     private final DoubleSupplier strafeSupplier;
-    private final DoubleSupplier turnSupplier;
+    private final double lockedHeadingDegrees;
 
     private FtcDashboard dash;
     private Canvas c;
     private TelemetryPacket p;
 
-    private MecanumDriveMona mecanumDrive;
+    private TurnPIDController pid;
+    private double currentAngle;
+    private MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
     /**
-     * Creates a new DefaultDrive.
-     *
-     * @param subsystem The drive subsystem this command will run on.
+     * Creates a new command to drive with heading locked.
      */
-    public DefaultDrive(DriveSubsystem subsystem,
-                        DoubleSupplier driveInput, DoubleSupplier strafeInput, DoubleSupplier turnInput) {
+    public DriveWithConstantHeadingCommand(DriveSubsystem subsystem,
+                                           DoubleSupplier driveInput, DoubleSupplier strafeInput, double headingDegrees) {
         driveSubsystem = subsystem;
         driveSupplier = driveInput;
         strafeSupplier = strafeInput;
-        turnSupplier = turnInput;
+        lockedHeadingDegrees = headingDegrees;
         addRequirements(driveSubsystem);
     }
 
     @Override
     public void initialize() {
-        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        pid = new TurnPIDController(lockedHeadingDegrees, .1, 0, 0, 0);
         dash = FtcDashboard.getInstance();
         c = new Canvas();
     }
@@ -53,8 +52,10 @@ public class DefaultDrive extends CommandBase {
         p = new TelemetryPacket();
         p.fieldOverlay().getOperations().addAll(c.getOperations());
 
+        currentAngle = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees;
+
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
-        driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), turnSupplier.getAsDouble());
+        driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), pid.update(currentAngle));
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
 
         p.put("x", mecanumDrive.pose.position.x);

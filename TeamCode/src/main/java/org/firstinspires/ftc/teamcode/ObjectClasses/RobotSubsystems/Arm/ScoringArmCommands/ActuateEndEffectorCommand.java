@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 
-public class ActuateEndEffector extends CommandBase {
+public class ActuateEndEffectorCommand extends CommandBase {
 
         // The subsystem the command runs on
         private final EndEffectorSubsystem endEffectorSubsystem;
@@ -17,7 +17,7 @@ public class ActuateEndEffector extends CommandBase {
 
         Telemetry telemetry;
 
-        public ActuateEndEffector(EndEffectorSubsystem subsystem, EndEffectorSubsystem.EndEffectorStates inputState) {
+        public ActuateEndEffectorCommand(EndEffectorSubsystem subsystem, EndEffectorSubsystem.EndEffectorStates inputState) {
             endEffectorSubsystem = subsystem;
             //save the input state, s, as the target state
             targetState = inputState;

@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
-public class ChangeIntakeState extends CommandBase {
+public class ChangeIntakeStateCommand extends CommandBase {
 
     // The subsystem the command runs on
     private final IntakeSubsystem intakeSubsystem;
@@ -17,7 +17,7 @@ public class ChangeIntakeState extends CommandBase {
 
     Telemetry telemetry;
 
-    public ChangeIntakeState(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
+    public ChangeIntakeStateCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
         intakeSubsystem = subsystem;
         targetState = inputState;
         addRequirements(intakeSubsystem);

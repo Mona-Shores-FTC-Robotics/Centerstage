@@ -9,7 +9,7 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeMoveToPointAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
-public class MoveToPoint extends CommandBase {
+public class MoveToPointCommand extends CommandBase {
 
     private double xTarget;
     private double yTarget;
@@ -21,7 +21,7 @@ public class MoveToPoint extends CommandBase {
     private TelemetryPacket telemetryPacket;
     private Action internalAction;
 
-    public MoveToPoint(DriveSubsystem subsystem, double x, double y) {
+    public MoveToPointCommand(DriveSubsystem subsystem, double x, double y) {
         driveSubsystem = subsystem;
         xTarget = x;
         yTarget = y;
