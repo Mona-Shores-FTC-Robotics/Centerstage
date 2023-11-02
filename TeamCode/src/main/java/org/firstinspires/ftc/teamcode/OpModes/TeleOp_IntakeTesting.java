@@ -73,7 +73,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             sleep(10);
         }
 
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
 
         while (opModeIsActive())
         {

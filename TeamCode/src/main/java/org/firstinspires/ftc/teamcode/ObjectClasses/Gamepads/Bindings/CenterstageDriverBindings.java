@@ -14,17 +14,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 public class CenterstageDriverBindings {
 
     public CenterstageDriverBindings(GamepadEx gamepad) {
-            gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                    .whenPressed(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN))
-                    .whenReleased(new ActuateEndEffector(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
-
-            gamepad.getGamepadButton(GamepadKeys.Button.A)
-                    .whenPressed(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.INTAKE))
-                    .whenReleased(new RotateShoulder(Robot.getInstance().getShoulderSubsystem(), ShoulderSubsystem.ShoulderStates.BACKDROP));
-
-            gamepad.getGamepadButton(GamepadKeys.Button.B)
-                    .whenPressed(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID))
-                    .whenReleased(new MoveLiftSlide(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
 
 
         }

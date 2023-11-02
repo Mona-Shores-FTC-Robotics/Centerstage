@@ -69,7 +69,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         }
 
         //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
 
         while (opModeIsActive())
         {

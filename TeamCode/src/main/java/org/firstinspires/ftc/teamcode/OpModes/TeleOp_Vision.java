@@ -29,14 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.CenterstageGamepadCommands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.CenterstageCommands.defaultCommand;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.CenterstageGamepadCommands;
+import org.firstinspires.ftc.teamcode.ObjectClasses.CenterstageCommands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -79,7 +79,7 @@ public class TeleOp_Vision extends LinearOpMode
         robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
 
         //set the Default command
        CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
@@ -104,9 +104,9 @@ public class TeleOp_Vision extends LinearOpMode
             if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
             {
                 if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
-                    CenterstageGamepadCommands.BackupFromBlueBackdropCommand().schedule();
+                    CenterstageCommands.redBackdropBackup.schedule();
                 } else{
-                    CenterstageGamepadCommands.BackupFromRedBackdropCommand().schedule();
+                    CenterstageCommands.blueBackdropBackup.schedule();
                 }
             }
 

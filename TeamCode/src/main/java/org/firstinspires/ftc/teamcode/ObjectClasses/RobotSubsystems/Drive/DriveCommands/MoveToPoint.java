@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeMoveToPointAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 public class MoveToPoint extends CommandBase {
@@ -33,7 +33,8 @@ public class MoveToPoint extends CommandBase {
         dash = FtcDashboard.getInstance();
         canvas = new Canvas();
         running=true;
-        internalAction = CenterstageActions.moveToPoint(xTarget, yTarget);
+        MakeMoveToPointAction makeMoveToPointAction = new MakeMoveToPointAction();
+        internalAction = makeMoveToPointAction.moveToPoint(xTarget, yTarget);
         internalAction.preview(canvas);
     }
 

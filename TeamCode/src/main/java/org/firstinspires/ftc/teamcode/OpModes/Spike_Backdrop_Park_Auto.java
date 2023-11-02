@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeBackdropPark.*;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -70,7 +68,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
 
         //Check each AllianceColor/SideOfField combination and drive the route according to the team prop location
         CheckBlueBackstage();
