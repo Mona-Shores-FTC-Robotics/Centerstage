@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.CenterstageActions;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 public class MoveToPoint extends CommandBase {

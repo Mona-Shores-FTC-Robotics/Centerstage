@@ -190,9 +190,6 @@ public final class VisionSubsystem extends SubsystemBase {
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
         visionPortal.setProcessorEnabled(aprilTagProcessor, false);
 
-        //I think the default value is like 2.5f or so
-//        aprilTagProcessor.setDecimation(2f);
-
         telemetry.addLine("AprilTag on? " + visionPortal.getProcessorEnabled(aprilTagProcessor) + "       initVisionProcessor on? " + visionPortal.getProcessorEnabled(initVisionProcessor));
         telemetry.addLine("");
 
@@ -262,7 +259,6 @@ public final class VisionSubsystem extends SubsystemBase {
         AprilTagDetection myAprilTagDetection;
 
         myAprilTagDetections = aprilTagProcessor.getDetections();
-        //myAprilTagDetections = aprilTagProcessor.getFreshDetections();
 
         if (myAprilTagDetections != null) {
             telemetry.addData("# AprilTags Detected", JavaUtil.listLength(myAprilTagDetections));
@@ -337,7 +333,7 @@ public final class VisionSubsystem extends SubsystemBase {
             blueTagFrameCount=0;
         }
 
-        //this method only returns true if we see 20 frames of one of the tags being detected
+        //this method only returns true if we see 1 frame of one of the tags being detected
         if (blueTagFrameCount>0)
         {
             return true;
@@ -352,7 +348,7 @@ public final class VisionSubsystem extends SubsystemBase {
             redTagFrameCount=0;
         }
 
-        //this method only returns true if we see 20 frames of one of the tags being detected
+        //this method only returns true if we see 1 frame of one of the tags being detected
         if (redTagFrameCount>0)
         {
             return true;

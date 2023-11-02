@@ -58,5 +58,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic(){
         //this is the only way i can find to make it tunable
        IntakeStates.INTAKE_ON.SetStateVelocity(intakeParameters.INTAKE_ON_VELOCITY);
+
+       //todo code for turning on lights when we sense a pixel in the intake should go here
     }
 }

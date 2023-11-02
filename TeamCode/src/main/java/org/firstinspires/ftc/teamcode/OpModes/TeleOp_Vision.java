@@ -60,29 +60,22 @@ public class TeleOp_Vision extends LinearOpMode
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
+        InitVisionProcessor.AllianceColor allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
+
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
 
-            //robot.getVisionSubsystem().telemetryForInitProcessing();
-
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.superFinalallianceColor);
-            telemetry.addData("Side of the Field", Robot.superFinalSide);
-
+            telemetry.addData("Alliance Color", allianceColor);
 
             telemetry.update();
             sleep(10);
         }
 
-        robot.getVisionSubsystem().getInitVisionProcessor().setAllianceColorFinal(Robot.superFinalallianceColor);
-
-        robot.getVisionSubsystem().getInitVisionProcessor().setSideOfFieldFinal(Robot.superFinalSide);
-
-
         robot.getVisionSubsystem().telemetryForInitProcessing();
         telemetry.update();
 
-        //After Init switch the vision processing to AprilTags
+        //Switch the vision processing to AprilTags
         robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer

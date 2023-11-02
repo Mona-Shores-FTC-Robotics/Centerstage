@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.OpModes.Spike_Backdrop_Park_Auto.roadRunnerDriveSubsystem;
+import static org.firstinspires.ftc.teamcode.OpModes.Spike_Backdrop_Park_Auto.mecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
@@ -27,7 +27,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
 
     public static void BuildRoutes() {
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
-        blueBackstageBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+        blueBackstageBotTeamPropLeftRoute = mecanumDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
@@ -35,7 +35,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
-        redBackstageBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropRightRoute = mecanumDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, TANGENT_45_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
@@ -44,14 +44,14 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .build();
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
-        blueBackstageBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+        blueBackstageBotTeamPropRightRoute = mecanumDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP, TANGENT_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
-        redBackstageBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropLeftRoute = mecanumDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, FACE_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP, TANGENT_TOWARD_BACKSTAGE)
@@ -59,14 +59,14 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .build();
 
         /** BLUE BACKSTAGE CENTER / RED BACKSTAGE CENTER **/
-        blueBackstageBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+        blueBackstageBotTeamPropCenterRoute = mecanumDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, FACE_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
                 .build();
 
-        redBackstageBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(RED_BACKSTAGE_START_POSE)
+        redBackstageBotTeamPropCenterRoute = mecanumDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, FACE_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP, FACE_TOWARD_BACKSTAGE)
@@ -74,7 +74,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .build();
 
         /** BLUE AUDIENCE LEFT / RED AUDIENCE RIGHT **/
-        blueAudienceBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropLeftRoute = mecanumDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, TANGENT_TOWARD_RED)
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_R), TANGENT_TOWARD_RED)
@@ -85,7 +85,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .turnTo(FACE_225_DEGREES)
                 .build();
 
-        redAudienceBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropRightRoute = mecanumDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_R, FACE_45_DEGREES)
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_L), TANGENT_TOWARD_BLUE)
@@ -97,7 +97,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .build();
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
-        blueAudienceBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropRightRoute = mecanumDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_RED)
@@ -108,7 +108,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .turnTo(FACE_225_DEGREES)
                 .build();
 
-        redAudienceBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropLeftRoute = mecanumDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_BLUE)
@@ -120,7 +120,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .build();
 
         /** BLUE AUDIENCE CENTER / RED AUDIENCE CENTER **/
-        blueAudienceBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_AUDIENCE_START_POSE)
+        blueAudienceBotTeamPropCenterRoute = mecanumDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, TANGENT_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, TANGENT_TOWARD_RED)
@@ -131,7 +131,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .turnTo(FACE_225_DEGREES)
                 .build();
 
-        redAudienceBotTeamPropCenterRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
+        redAudienceBotTeamPropCenterRoute = mecanumDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(RED_SAFE_STRAFE, TANGENT_TOWARD_BLUE)

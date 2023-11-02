@@ -25,7 +25,7 @@ public class Spike_Only_Auto extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
-    private InitVisionProcessor.AllianceColor allianceColor;
+    private  InitVisionProcessor.AllianceColor allianceColor;
     private InitVisionProcessor.SideOfField sideOfField;
 
     private Action selectedRoute;
@@ -38,9 +38,6 @@ public class Spike_Only_Auto extends LinearOpMode {
         /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
         robot.init();
-
-        /** Setup Telemetry for Driver Station and FTCDashboard **/
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
@@ -84,9 +81,6 @@ public class Spike_Only_Auto extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(selectedRoute);
-
-        sleep(30000);
-
     }
 
     private boolean CheckRedAudience() {
@@ -147,26 +141,6 @@ public class Spike_Only_Auto extends LinearOpMode {
             return true;
         }
         return false;
-    }
-
-    public class PoseTelemetry implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-            double x = roadRunnerDriveSubsystem.pose.position.x;
-            double y = roadRunnerDriveSubsystem.pose.position.y;
-            double combined = roadRunnerDriveSubsystem.pose.heading.real + roadRunnerDriveSubsystem.pose.heading.imag;
-
-            telemetry.addData("Current Pose x", "%.1f", x);
-            telemetry.addData("Current Pose y", "%.1f", y);
-            telemetry.addData("Current Heading", "%.1f", combined);
-
-            telemetryPacket.put("myX", x);
-
-            telemetry.update();
-
-            return false;
-        }
     }
 }
 

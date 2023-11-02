@@ -108,8 +108,7 @@ public class GamepadHandling {
             {
                 LockedInitSettingsFlag = false;
             }
-        } else if (!LockedInitSettingsFlag)
-        {
+        } else {
             if (ManualOverrideInitSettingsFlag)
             {
                 initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;

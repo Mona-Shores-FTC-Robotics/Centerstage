@@ -39,7 +39,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTest
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
 @TeleOp(name="TeleOp_IntakeTesting")
 public class TeleOp_IntakeTesting extends LinearOpMode

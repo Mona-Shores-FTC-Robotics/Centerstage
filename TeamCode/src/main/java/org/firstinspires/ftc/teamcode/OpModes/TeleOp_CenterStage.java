@@ -29,11 +29,12 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageOperatorBindings;
@@ -44,6 +45,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 public class TeleOp_CenterStage extends LinearOpMode
 {
     public Robot robot;
+    public ElapsedTime timer;
 
     @Override public void runOpMode()
     {
@@ -53,9 +55,6 @@ public class TeleOp_CenterStage extends LinearOpMode
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
         robot.init();
-
-        /* Setup Telemetry for Driver Station and FTCDashboard **/
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         /* Setup Button Bindings **/
         new CenterstageDriverBindings(GamepadHandling.getDriverGamepad());
@@ -73,8 +72,9 @@ public class TeleOp_CenterStage extends LinearOpMode
             sleep(10);
         }
 
-        //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        //create the teleOp timer and reset it
+        timer = new ElapsedTime();
+        timer.reset();
 
         while (opModeIsActive())
         {
@@ -84,11 +84,37 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
+            EndGameRumble();
+            ActivateEndGameButtons();
+
+
             telemetry.update();
             sleep(10);
         }
         robot.getVisionSubsystem().getVisionPortal().close();
     }
 
+    private void EndGameRumble() {
+        if (timer.seconds()>END_GAME_TIME-5){
+
+            //Rumble the controllers
+            //Flash lights on controller?
+            //Flash lights on robot?
+
+        }
+    }
+
+    void ActivateEndGameButtons(){
+        if (timer.seconds()>END_GAME_TIME){
+            //check buttons for Wench and drone
+            //Right Trigger shows some telemetry about the buttons
+            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
+                //schedule the Wench release command here
+            }
+            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
+                //schedule the Drone release command here
+            }
+        }
+    }
 
 }

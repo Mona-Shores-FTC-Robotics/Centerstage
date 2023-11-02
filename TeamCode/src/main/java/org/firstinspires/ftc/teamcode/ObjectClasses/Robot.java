@@ -17,8 +17,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveS
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 public class Robot {
-    public static InitVisionProcessor.AllianceColor superFinalallianceColor = InitVisionProcessor.AllianceColor.RED;
-    public static InitVisionProcessor.SideOfField superFinalSide = InitVisionProcessor.SideOfField.BACKSTAGE;
 
     private static Robot robot = null;
     public RobotType robotType;
@@ -101,6 +99,32 @@ public class Robot {
 
     private void initAuto() {
         // initialize auto-specific scheduler
+
+        switch (robotType) {
+
+            case ROBOT_VISION: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                visionSubsystem.init();
+                break;
+            }
+
+            case ROBOT_CENTERSTAGE: {
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                intakeSubsystem.init();
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+
+                //airplane launcher
+                //winch
+                //intake pick up
+                //lights
+                break;
+            }
+        }
     }
 
     private static ElapsedTime teleOpRuntime;
