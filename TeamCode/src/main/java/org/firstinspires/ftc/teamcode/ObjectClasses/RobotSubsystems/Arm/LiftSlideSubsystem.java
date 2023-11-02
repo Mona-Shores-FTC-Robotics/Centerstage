@@ -102,7 +102,6 @@ public class LiftSlideSubsystem extends SubsystemBase {
         currentTicks = LiftStates.HOME.ticks;
         liftSlide.setTargetPosition(currentTicks);
         liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        dash = FtcDashboard.getInstance();
     }
 
     public void periodic(){
