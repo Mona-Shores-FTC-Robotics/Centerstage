@@ -29,28 +29,18 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static com.acmerobotics.roadrunner.ftc.Actions.runBlocking;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands.defaultCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultDriveCommand;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Actions.CenterstageActions;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.ActionAsCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.DriveCommands.MoveToPoint;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -67,44 +57,32 @@ public class TeleOp_Vision extends LinearOpMode
         //Initialize the Robot
         robot.init();
 
-        //Setup Telemetry for Driver Station and FTCDashboard
-        //This seems to make things worse not better
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
+        InitVisionProcessor.AllianceColor allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
 
-            //robot.getVisionSubsystem().telemetryForInitProcessing();
-
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.superFinalallianceColor);
-            telemetry.addData("Side of the Field", Robot.superFinalSide);
-
+            telemetry.addData("Alliance Color", allianceColor);
 
             telemetry.update();
             sleep(10);
         }
 
-        robot.getVisionSubsystem().getInitVisionProcessor().setAllianceColorFinal(Robot.superFinalallianceColor);
-
-        robot.getVisionSubsystem().getInitVisionProcessor().setSideOfFieldFinal(Robot.superFinalSide);
-
-
         robot.getVisionSubsystem().telemetryForInitProcessing();
         telemetry.update();
 
-        //After Init switch the vision processing to AprilTags
+        //Switch the vision processing to AprilTags
         robot.getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
 
         //set the Default command
-       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultCommand);
+       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultDriveCommand);
 
         while (opModeIsActive())
         {
@@ -126,9 +104,9 @@ public class TeleOp_Vision extends LinearOpMode
             if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
             {
                 if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
-                    CenterstageCommands.BackupFromBlueBackdropCommand().schedule();
+                    RobotCommands.redBackdropBackup.schedule();
                 } else{
-                    CenterstageCommands.BackupFromRedBackdropCommand().schedule();
+                    RobotCommands.blueBackdropBackup.schedule();
                 }
             }
 

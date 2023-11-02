@@ -29,8 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -40,22 +40,18 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.Centerstag
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@TeleOp(name="TeleOp_FTCLibTesting")
+@TeleOp(name="TeleOp_CenterStage")
 public class TeleOp_CenterStage extends LinearOpMode
 {
-    public Robot robot;
-
-    @Override public void runOpMode()
+    @Override
+    public void runOpMode()
     {
-        /* Create and Initialize the robot **/
-        robot = Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE, Robot.OpModeType.TELEOP);
+        /* Create the robot **/
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE, Robot.OpModeType.TELEOP);
 
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        robot.init();
-
-        /* Setup Telemetry for Driver Station and FTCDashboard **/
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        Robot.getInstance().init();
 
         /* Setup Button Bindings **/
         new CenterstageDriverBindings(GamepadHandling.getDriverGamepad());
@@ -72,9 +68,8 @@ public class TeleOp_CenterStage extends LinearOpMode
             telemetry.update();
             sleep(10);
         }
-
-        //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        //Reset the teleOp timer as soon as play is pressed
+        Robot.getInstance().getTeleOpTimer().reset();
 
         while (opModeIsActive())
         {
@@ -84,11 +79,34 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
+            EndGameRumble();
+            ActivateEndGameButtons();
+
             telemetry.update();
             sleep(10);
         }
-        robot.getVisionSubsystem().getVisionPortal().close();
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().close();
     }
 
+    private void EndGameRumble() {
+        if ( Robot.getInstance().getTeleOpTimer().seconds()>END_GAME_TIME-5){
+            //Rumble the controllers
+            //Flash lights on controller?
+            //Flash lights on robot?
+        }
+    }
+
+    void ActivateEndGameButtons(){
+        if ( Robot.getInstance().getTeleOpTimer().seconds()>END_GAME_TIME){
+            //check buttons for Wench and drone
+            //Right Trigger shows some telemetry about the buttons
+            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
+                //schedule the Wench release command here
+            }
+            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
+                //schedule the Drone release command here
+            }
+        }
+    }
 
 }

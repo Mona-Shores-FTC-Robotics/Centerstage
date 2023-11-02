@@ -29,17 +29,17 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultDriveCommand;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultLiftSlideCommand;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Telemetry.TelemetryMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
 @TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
@@ -54,9 +54,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
         robot.init();
-
-        /* Setup Telemetry for Driver Station and FTCDashboard **/
-        //telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         telemetry.clearAll();
 
@@ -75,7 +72,10 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         }
 
         //Start the TeleOp Timer
-        robot.getTeleOpRuntime().reset();
+        robot.getTeleOpTimer().reset();
+
+        //Set the default lift command
+        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
         while (opModeIsActive())
         {

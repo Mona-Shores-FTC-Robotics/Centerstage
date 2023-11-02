@@ -3,14 +3,15 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.IntakeCommands.ChangeIntakeState;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class CenterstageOperatorBindings {
+
+    public static TriggerReader rightTrigger;
+    public static TriggerReader leftTrigger;
 
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
 
@@ -48,5 +49,9 @@ public class CenterstageOperatorBindings {
                 .whenPressed(new InstantCommand( ()-> {
                     visionSubsystem.setDeliverHeight(VisionSubsystem.DeliverHeight.HIGH);}));
 
-    }
+        //These triggers are used for the Wench and the Drone Commands
+            rightTrigger = new TriggerReader(operatorGamepad, GamepadKeys.Trigger.RIGHT_TRIGGER);
+            leftTrigger = new TriggerReader(operatorGamepad, GamepadKeys.Trigger.LEFT_TRIGGER);
+
+        }
 }

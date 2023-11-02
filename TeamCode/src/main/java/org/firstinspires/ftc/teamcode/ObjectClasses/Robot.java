@@ -6,104 +6,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Commands.CenterstageCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.EndEffectorSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.ArmSubsystems.ShoulderSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.GyroSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.VisionProcessors.InitVisionProcessor;
 
 public class Robot {
-    public static InitVisionProcessor.AllianceColor superFinalallianceColor= InitVisionProcessor.AllianceColor.RED;
-    public static InitVisionProcessor.SideOfField superFinalSide= InitVisionProcessor.SideOfField.BACKSTAGE;
 
     private static Robot robot = null;
     public RobotType robotType;
     public OpModeType opModeType;
+    public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
+    public enum OpModeType {TELEOP, AUTO}
 
-    public enum RobotType {
-        ROBOT_CENTERSTAGE,
-        ROBOT_DRIVE_BASE,
-        ROBOT_VISION,
-        ROBOT_SCORING_ARM,
-        ROBOT_INTAKE
-    }
-
-    public enum OpModeType {
-        TELEOP, AUTO
-    }
-
-    public Robot(OpModeType type) {
-        if (type == OpModeType.TELEOP) {
-            initTele();
-        } else {
-            initAuto();
-        }
-    }
-
-    /*
-     * Initialize teleop or autonomous, depending on which is used
-     */
-    private void initTele() {
-        // initialize teleop-specific scheduler
-
-        switch (robotType) {
-            //Just the drive base
-            case ROBOT_DRIVE_BASE: {
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
-                break;
-            }
-
-            case ROBOT_VISION: {
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
-                visionSubsystem.init();
-                break;
-            }
-
-            case ROBOT_SCORING_ARM: {
-//                endEffectorSubsystem.init();
-                liftSlideSubsystem.init();
-                shoulderSubsystem.init();
-                break;
-            }
-
-            case ROBOT_INTAKE: {
-                intakeSubsystem.init();
-                break;
-            }
-
-            case ROBOT_CENTERSTAGE: {
-                visionSubsystem.init();
-                gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
-                intakeSubsystem.init();
-                endEffectorSubsystem.init();
-                liftSlideSubsystem.init();
-                shoulderSubsystem.init();
-
-                //airplane launcher
-                //winch
-                //intake pick up
-                //lights
-                break;
-            }
-        }
-
-
-        //Create Commands
-        CenterstageCommands.MakeTeleOpCommands();
-    }
-
-    private void initAuto() {
-        // initialize auto-specific scheduler
-    }
-
-    private static ElapsedTime teleOpRuntime;
+    private static ElapsedTime teleOpTimer;
     private static LinearOpMode activeOpMode;
     private static DriveSubsystem mecanumDriveSubsystem;
     private static GyroSubsystem gyroSubsystem;
@@ -119,21 +38,11 @@ public class Robot {
         robotType = rType;
         opModeType = oType;
         HardwareMap hardwareMap = opMode.hardwareMap;
-        teleOpRuntime = new ElapsedTime();
-
-        CreateAndInitSubsystems(hardwareMap);
+        teleOpTimer = new ElapsedTime();
+        CreateSubsystems(hardwareMap);
     }
 
-    public void init(){
-        //Initialize the Robot
-        if (opModeType == OpModeType.TELEOP) {
-            initTele();
-        } else {
-            initAuto();
-        }
-    }
-
-    private void CreateAndInitSubsystems(HardwareMap hardwareMap) {
+    private void CreateSubsystems(HardwareMap hardwareMap) {
         switch (robotType) {
             //Just the drive base
             case ROBOT_DRIVE_BASE: {
@@ -179,24 +88,110 @@ public class Robot {
         }
     }
 
-    public static Robot createInstance(LinearOpMode opMode, RobotType robotType, OpModeType opModeType ) {
-        robot = new Robot(opMode, robotType, opModeType);
+    //Ensures only one robot object is ever created
+    public static Robot createInstance(LinearOpMode opMode, RobotType robotType, OpModeType opModeType) {
+        if (robot == null) {
+            robot = new Robot(opMode, robotType, opModeType);
+        }
         return robot;
     }
 
     // Static method to get single instance of Robot
     public static synchronized Robot getInstance() {
         if (robot == null) {
-            //error
             telemetry.addLine("error");
         }
         return robot;
     }
 
-    public ElapsedTime getTeleOpRuntime() {
-        return teleOpRuntime;
+
+    // Initialize teleop or autonomous, depending on which is used
+    public void init(){
+        if (opModeType == OpModeType.TELEOP) {
+            initTele();
+        } else {
+            initAuto();
+        }
     }
 
+    private void initTele() {
+        switch (robotType) {
+            case ROBOT_DRIVE_BASE: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                //Create Commands
+                RobotCommands.MakeRobotDriveBaseCommands();
+                break;
+            }
+            case ROBOT_VISION: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                visionSubsystem.init();
+                RobotCommands.MakeRobotVisionCommands();
+                break;
+            }
+            case ROBOT_SCORING_ARM: {
+//                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+                RobotCommands.MakeRobotScoringArmCommands();
+                break;
+            }
+            case ROBOT_INTAKE: {
+                intakeSubsystem.init();
+                RobotCommands.MakeRobotIntakeCommands();
+                break;
+            }
+            case ROBOT_CENTERSTAGE: {
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                intakeSubsystem.init();
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+                RobotCommands.MakeRobotCenterStageCommands();
+                //Systems to be added:
+                //Servo - Drone launch release
+                //Servo - Push Pixel put-away device
+                //Motor - Winch for hanging
+                //Lights for identifying pixels in intake
+                break;
+            }
+        }
+    }
+
+    private void initAuto() {
+        // initialize auto-specific scheduler
+
+        switch (robotType) {
+
+            case ROBOT_VISION: {
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                visionSubsystem.init();
+                break;
+            }
+
+            case ROBOT_CENTERSTAGE: {
+                visionSubsystem.init();
+                gyroSubsystem.init();
+                mecanumDriveSubsystem.init();
+                intakeSubsystem.init();
+                endEffectorSubsystem.init();
+                liftSlideSubsystem.init();
+                shoulderSubsystem.init();
+
+                //airplane launcher
+                //winch
+                //intake pick up
+                //lights
+                break;
+            }
+        }
+    }
+
+    public ElapsedTime getTeleOpTimer() {return teleOpTimer;}
     public GyroSubsystem getGyroSubsystem()  {return gyroSubsystem;    }
     public DriveSubsystem getDriveSubsystem()  {return mecanumDriveSubsystem;}
     public VisionSubsystem getVisionSubsystem()  {return visionSubsystem;}
@@ -205,7 +200,6 @@ public class Robot {
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
-
 }
 
 
