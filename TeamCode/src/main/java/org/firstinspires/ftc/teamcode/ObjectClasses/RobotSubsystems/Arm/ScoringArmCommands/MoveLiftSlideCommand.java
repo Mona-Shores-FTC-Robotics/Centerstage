@@ -11,101 +11,77 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 
 public class MoveLiftSlideCommand extends CommandBase {
-    //Declare and set a timeout threshold for the command called TIMEOUT_TIME_SECONDS - I suggest 1.5 seconds for now
-    private double TIMEOUT_TIME_SECONDS = 3;
+    //Declare and set a private final timeout threshold for the command called TIMEOUT_TIME_SECONDS - I suggest 3 seconds for now
 
-    //Declare the local variable to hold the liftsubsystem
-    private final LiftSlideSubsystem liftSlideSubsystem;
+    //Declare a final local variable to hold the command subsystem
 
-    //Declare currentTicks and targetTicks for use locally
-    private int targetTicks;
-    private int currentTicks;
-    private LiftSlideSubsystem.LiftStates targetState;
+    //Declare private variables for currentTicks, targetTicks, and targetState
 
     //declare a timeoutTimer (type ElapsedTime) to timeout the command if it doesn't finish
-    private ElapsedTime timeoutTimer;
 
-    //declare a timeout boolean
-    boolean timeout;
+    //declare a timeout boolean variable
+
 
     public MoveLiftSlideCommand(LiftSlideSubsystem subsystem, LiftSlideSubsystem.LiftStates inputState) {
-        liftSlideSubsystem = subsystem;
-        targetState = inputState;
-        timeoutTimer = new ElapsedTime();
+        //save the subsystem as your local final variable declared above
+
+        //save the input state as the local targetstate variable
+
+        //make a new ElapsedTime() object and save it as your timeoutTimer
+
         //add the subsystem to the requirements
-        addRequirements(liftSlideSubsystem);
     }
 
         @Override
         public void initialize() {
-        //When the command is first run set the targetState of the subsystem to the targetState and set the target ticks to the target ticks of that state
-            liftSlideSubsystem.setTargetState(targetState);
-            liftSlideSubsystem.setTargetTicks(liftSlideSubsystem.getTargetState().ticks);
+            //initialize is called once when the command is first run
 
-            //reset the timer
-        timeoutTimer.reset();
-        //set the timeout to false since we have not timed out yet
-        timeout=false;
+            //Set the targetState of the subsystem to the local targetState
+            //liftSlideSubsystem.[use the dot to look for the method you need];
 
-        //get the currentTicks and the targetTicks from the subsystem
-        currentTicks = liftSlideSubsystem.getCurrentTicks();
-        targetTicks = liftSlideSubsystem.getTargetTicks();
+            //Set the targetTicks of the subsystem based on the targetState - this one is a freebie
+            //liftSlideSubsystem.setTargetTicks(liftSlideSubsystem.getTargetState().ticks);
 
-        //Check if targetTicks is greater than MAX_TARGET_TICKS and if it is set the target to the max
-        //This makes sure that if we accidentally put a very large number as our target ticks we don't break the robot
-        if (targetTicks> liftSlideSubsystem.MAX_TARGET_TICKS)
-        {
-            targetTicks=liftSlideSubsystem.MAX_TARGET_TICKS;
-        }
+            //reset the timeoutTimer
 
-        //Check if targetTicks is lower than MIN_TARGET_TICKS and if it is set the target to the min
-        //This makes sure that if we accidentally put a very low negative number as our target ticks we don't break the robot
-        if (targetTicks < liftSlideSubsystem.MIN_TARGET_TICKS)
-        {
-            targetTicks=liftSlideSubsystem.MIN_TARGET_TICKS;
-        }
+            //set the timeout to false since we have not timed out yet
 
-        //if the target ticks are higher than the current ticks, then use EXTENSION_POWER
-        if (targetTicks > currentTicks) {
-            liftSlideSubsystem.liftSlide.setPower(EXTENSION_LIFT_POWER);
-        }
+            //get currentTicks from the subsystem and save locally as currentTicks
 
-        //if the target ticks are lower than the current ticks, then use RETRACTION_POWER
-        if (targetTicks < currentTicks) {
-            liftSlideSubsystem.liftSlide.setPower(RETRACTION_LIFT_POWER);
-        }
+            //get targetTicks from the subsystem and save locally as targetTicks
 
-        //Set the target position using the targetTicks
-        liftSlideSubsystem.liftSlide.setTargetPosition(targetTicks);
+            //Check if targetTicks is greater than liftSlideSubsystem.MAX_TARGET_TICKS and if it is set the target to the max
+            //This makes sure that if we accidentally put a very large number as our target ticks we don't break the robot
 
-        //set the lift motor to RUN TO POSITION - this might not be necessary
-        liftSlideSubsystem.liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            //Check if targetTicks is lower than MIN_TARGET_TICKS and if it is set the target to the min
+            //This makes sure that if we accidentally put a very low negative number as our target ticks we don't break the robot
+
+            //if the target ticks are higher than the current ticks, then set the liftSlide power to EXTENSION_LIFT_POWER
+
+            //if the target ticks are lower than the current ticks, then set the liftSlide power to RETRACTION_POWER
+
+            //Set the target position of the liftSlide of the liftSlideSubsystem using the targetTicks
+
+            //set the liftSlide motor to RUN TO POSITION
     }
 
     public void execute() {
         //The execute of this command is empty because we don't need to do anything while the command is active
-        //the RUN_TO_POSITION we set in the intialize means that the lift motor is going to automatically try to reach the target
-        //there is telemetry in the periodic() method of the lift subsystem that will give us updates in the dashboard about the current ticks and current state
+        //the RUN_TO_POSITION we set in the initialize means that the lift motor is going to automatically try to reach the target
+        //there is telemetry in the periodic() method of the lift subsystem that will give us updates in the dashboard about the current ticks, current state, target state, and target ticks
     }
 
     @Override
     public boolean isFinished() {
-        // Declare a boolean variable (e.g., finished)
-        // Compare the currentTicks to the targetTicks to a threshold (LIFT_HEIGHT_TICK_THRESHOLD) and save as the boolean
-        // For example, say our target is 2000 ticks and we are at 1997 - we would want that to count as being close enough
-        boolean finished = Math.abs(liftSlideSubsystem.getCurrentTicks() - liftSlideSubsystem.getTargetTicks()) <  LIFT_HEIGHT_TICK_THRESHOLD;
+        // Declare a boolean variable called finished
 
-        //write an if statement to change the currentState to the targetState and return true if the finished boolean is true
-        if (finished){
-            //if the command is finished, then return true (meaning the command will stop running once it runs end() one time)
-            return true;
-        }
+        // Compare the currentTicks to the targetTicks to a threshold (LIFT_HEIGHT_TICK_THRESHOLD) and save as the boolean
+        // For example, say our target is 2000 ticks and we are at 1997 - we would want that to count as being close enough to finished
+
+        //if the command is finished, then return true (meaning the command will stop running once it runs end() one time)
 
         //compare the elapsed time to a timeout threshold and if the elapsed time is greater than the threshold return true
-        timeout = timeoutTimer.seconds() > TIMEOUT_TIME_SECONDS;
-        if (timeout){
-            return true;
-        }
 
         //if the command isn't finished and the command isn't timed out then return false because the command should still run
         return false;
@@ -114,24 +90,25 @@ public class MoveLiftSlideCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         TelemetryPacket p = new TelemetryPacket();
-        //write an if statement that tells the user the command didn't finish normally but instead timed out
-        if (!timeout && !interrupted)
+        //If !timeout and !interrupted, then report the command finished and change the currentState
         {
-            //Report the command finished
-            p.addLine("LiftSlide Move COMPLETE From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " in " + String.format("%.2f", timeoutTimer.seconds()) + " seconds");
-            //change the current state to the target state
-            liftSlideSubsystem.setCurrentState(liftSlideSubsystem.getTargetState());
-        }
-        if (timeout){
-            //Put the target state in the packet
-            p.addLine("LiftSlide Move TIMEOUT");
-            p.put("Timeout Timer", timeoutTimer.seconds());
-        }
-        if (interrupted){
-            //Put the target state in the packet
-            p.addLine("LiftSlide Move INTERRUPTED From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " at " + timeoutTimer.seconds() + " seconds");
+            //Report the command finished - this is pre-written for you in the comment below
+            //p.addLine("LiftSlide Move COMPLETE From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " in " + String.format("%.2f", timeoutTimer.seconds()) + " seconds");
+
+            //set the currentState in the subsystem to the target state - you have to write this
         }
 
+        //if timeout is true, then tell the user
+        {
+            //Put the target state in the packet - the next two lines can just be uncommented
+            //p.addLine("LiftSlide Move TIMEOUT");
+            //p.put("Timeout Timer", timeoutTimer.seconds());
+        }
+        //if interrupted, then tell the user
+        if (interrupted){
+            //Put the interruption telemetry in the packet - just uncomment the next line
+            //p.addLine("LiftSlide Move INTERRUPTED From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " at " + timeoutTimer.seconds() + " seconds");
+        }
         FtcDashboard.getInstance().sendTelemetryPacket(p);
     }
 }
