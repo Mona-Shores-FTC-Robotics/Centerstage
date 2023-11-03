@@ -70,19 +70,19 @@ public class DefaultLiftSlideCommand extends CommandBase {
     //Write a private method that returns an integer based on the left stick
     //The name of the method should be calculateNewTargetTicks and it should receive as input a DoubleSupplier variable
     //try using chatGPT to write this method
-
+    private int calculateNewTargetTicks(DoubleSupplier leftStick)
     {
         //get the double from the double supplier by (e.g., liftSupplier.getAsDouble())
 
         //multiply the double by a scaling factor (SCALE_FACTOR_FOR_MANUAL_LIFT) - scaling factor is availbale in the subsystem parameters.
-
+        double scaledStick =  leftStick.getAsDouble()*SCALE_FACTOR_FOR_MANUAL_LIFT;
         //round the result and cast as an integer so that we have the change in ticks (this could be a positive or negative number)
-
+        int deltaTicks = (int) Math.round(scaledStick);
         //add the result to the current ticks to get the new tickTarget
-
+//        int newTicks = liftSubsystem.getcurrentticks()+deltaTicks;
         // Ensure the new target is within the range of MIN_TICKS to MAX_TICKS using Range.clip
 
         //return the result
-
+return 1;
     }
 }
