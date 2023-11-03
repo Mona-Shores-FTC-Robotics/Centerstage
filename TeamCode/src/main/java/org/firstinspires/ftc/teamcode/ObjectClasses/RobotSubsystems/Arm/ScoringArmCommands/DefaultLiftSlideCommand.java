@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Scoring
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.*;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
@@ -13,42 +14,47 @@ import java.util.function.DoubleSupplier;
 //This is a default command to move the lift with the gamepad stick
 public class DefaultLiftSlideCommand extends CommandBase {
     //Declare the local variable to hold the liftsubsystem
-
+    public LiftSlideSubsystem liftSlideSubsystem;
     //Declare the local variable liftSupplier to hold the lift stick - can you figure out what type it should be?
-
+    public DoubleSupplier liftSupplier;
     public DefaultLiftSlideCommand(LiftSlideSubsystem subsystem, DoubleSupplier liftStick) {
         //save the input subsystem to the local variable
-
+        liftSlideSubsystem = subsystem;
         //save the liftStick as the liftSupplier
-
+        liftSupplier = liftStick;
         //add the subsystem to the requirements
+        addRequirements(liftSlideSubsystem);
     }
 
     @Override
     public void initialize() {
         //Set the target ticks of the subsystem to the current ticks of the subsystem so that movements are relative to where the lift is right now
-
+        liftSlideSubsystem.setTargetTicks(liftSlideSubsystem.getCurrentTicks());
     }
 
     public void execute() {
         //if liftSupplier is positive and above deadzone...
-
+        if (liftSupplier.getAsDouble() > .1)
         {
             //then set the currentState of the subsystem to MANUAL... and
-
+            liftSlideSubsystem.setCurrentState(LiftSlideSubsystem.LiftStates.MANUAL);
             //then set the power of the lift to EXTENSION_LIFT_POWER
-
+            liftSlideSubsystem.liftSlide.setPower(EXTENSION_LIFT_POWER);
         }
 
         //else if liftSupplier is negative and lower than deadzone...
+        else if (liftSupplier.getAsDouble() < .1)
         {
             //then set the currentState of the subsystem to MANUAL... and
-
+            liftSlideSubsystem.setCurrentState(LiftSlideSubsystem.LiftStates.MANUAL);
             //then set the power of the lift to RETRACTION_LIFT_POWER
+            liftSlideSubsystem.liftSlide.setPower(RETRACTION_LIFT_POWER);
         }
 
         //else if we are in the dead zone we should set extension lift power to maintain our position
+        else if (liftSupplier.getAsDouble() == .1)
          {
+             liftSlideSubsystem.liftSlide.getCurrentPosition();
 
         }
 
