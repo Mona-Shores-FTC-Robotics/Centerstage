@@ -33,56 +33,49 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
 
+
+
     @Override public void runOpMode()
     {
         //Create the Robot
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.TELEOP);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         //Initialize the Game-pads
         GamepadHandling.init();
 
         //Initialize the Robot
-        robot.init();
+        Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
-
-        // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
-        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
-
-
-        InitVisionProcessor.AllianceColor allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
-
         while (opModeInInit()) {
-            // Add Vision Init Processor Telemetry
-
-            //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", allianceColor);
+            //This is the alliance color that is saved between opMode; it defaults to Red
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
 
             telemetry.update();
             sleep(10);
         }
 
-        robot.getVisionSubsystem().telemetryForInitProcessing();
-        telemetry.update();
-
         //Switch the vision processing to AprilTags
-        robot.getVisionSubsystem().SwitchToAprilTagProcessor();
+        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Start the TeleOp Timer
-        robot.getTeleOpTimer().reset();
+        ElapsedTime teleOpTimer = new ElapsedTime();
+        teleOpTimer.reset();
 
         while (opModeIsActive())
         {
@@ -94,10 +87,10 @@ public class TeleOp_Vision extends LinearOpMode
             GamepadHandling.getDriverGamepad().readButtons();
 
             //Update Gyro values
-            robot.getGyroSubsystem().UpdateGyro();
+            Robot.getInstance().getGyroSubsystem().UpdateGyro();
 
             //Look for AprilTags
-            robot.getVisionSubsystem().LookForAprilTags();
+            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Update robot pose
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
@@ -106,7 +99,7 @@ public class TeleOp_Vision extends LinearOpMode
             //we could make this cleaner, but for now I like knowing this is based on Alliance Color - easy to forget if we bury it
             if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
             {
-                if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED) {
+                if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
                     RobotCommands.redBackdropBackup.schedule();
                 } else{
                     RobotCommands.blueBackdropBackup.schedule();
@@ -116,17 +109,15 @@ public class TeleOp_Vision extends LinearOpMode
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
 
-                telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-                telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
-                telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal());
+                telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
 
-                robot.getVisionSubsystem().telemetryAprilTag();
+                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
             }
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                robot.getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
-                robot.getGyroSubsystem().telemetryGyro();
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
+                Robot.getInstance().getGyroSubsystem().telemetryGyro();
 
                 telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
                 telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
@@ -136,7 +127,7 @@ public class TeleOp_Vision extends LinearOpMode
             telemetry.update();
         }
         CommandScheduler.getInstance().cancelAll();
-        robot.getVisionSubsystem().getVisionPortal().close();
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().close();
     }
 }
 

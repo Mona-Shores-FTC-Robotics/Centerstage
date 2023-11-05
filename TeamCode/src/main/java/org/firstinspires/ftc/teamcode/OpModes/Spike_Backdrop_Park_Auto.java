@@ -9,18 +9,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+import org.opencv.core.Mat;
 
 
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
-
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
-    public static InitVisionProcessor.AllianceColor allianceColor;
+    private InitVisionProcessor.AllianceColor allianceColor;
     private InitVisionProcessor.SideOfField sideOfField;
 
     private Action selectedRoute;
@@ -28,46 +29,47 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Create and Initialize the robot
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.AUTO);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         // Initialize Gamepad and Robot - Order Important
         GamepadHandling.init();
-        robot.init();
+        Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
-        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
+        Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
         RoutesSpikeBackdropPark.BuildRoutes(Robot.getInstance().getDriveSubsystem().mecanumDrive);
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            robot.getVisionSubsystem().telemetryForInitProcessing();
+            VisionTelemetry.telemetryForInitProcessing();
 
             // Allow driver to override/lock the vision
+            GamepadHandling.getDriverGamepad().readButtons();
             GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
 
         //Reset Gyro
-        robot.getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
-        robot.getVisionSubsystem().telemetryForInitProcessing();
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
-        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal();
-        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
-        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
+        teamPropLoc = MatchConfig.finalTeamPropLocation;
+        allianceColor = MatchConfig.finalAllianceColor;
+        sideOfField = MatchConfig.finalSideOfField;
 
-        robot.getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+
+        //this saves the alliance color in a spot that persists between opModes
+        MatchConfig.finalAllianceColor = allianceColor;
 
         //After Init switch the vision processing to AprilTags
-        robot.getVisionSubsystem().SwitchToAprilTagProcessor();
-
-        //Start the TeleOp Timer
-        robot.getTeleOpTimer().reset();
+        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Check each AllianceColor/SideOfField combination and drive the route according to the team prop location
         CheckBlueBackstage();

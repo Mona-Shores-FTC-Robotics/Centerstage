@@ -39,6 +39,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTest
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
 @TeleOp(name="TeleOp_IntakeTesting")
@@ -49,11 +50,11 @@ public class TeleOp_IntakeTesting extends LinearOpMode
     @Override public void runOpMode()
     {
         /* Create and Initialize the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE, Robot.OpModeType.TELEOP);
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        robot.init();
+        robot.init(Robot.OpModeType.TELEOP);
 
         /* Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -64,16 +65,13 @@ public class TeleOp_IntakeTesting extends LinearOpMode
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
 
             TelemetryMona.intakeTestingButtons();
 
             telemetry.update();
             sleep(10);
         }
-
-        robot.getTeleOpTimer().reset();
 
         while (opModeIsActive())
         {

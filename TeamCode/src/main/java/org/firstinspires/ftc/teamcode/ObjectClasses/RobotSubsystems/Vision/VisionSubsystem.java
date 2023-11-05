@@ -22,7 +22,6 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -63,9 +62,9 @@ public final class VisionSubsystem extends SubsystemBase {
     private int blueTagFrameCount;
     private int redTagFrameCount;
 
-    private VisionPortal visionPortal;               // Used to manage the video source.
-    private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
-    private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
+    private static VisionPortal visionPortal;               // Used to manage the video source.
+    private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
+    private static InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
@@ -162,11 +161,7 @@ public final class VisionSubsystem extends SubsystemBase {
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
 
-    public VisionSubsystem() {
-
-    }
-
-    public void init(final HardwareMap hMap, final String name) {
+    public VisionSubsystem(final HardwareMap hMap, final String name) {
         // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
@@ -189,8 +184,9 @@ public final class VisionSubsystem extends SubsystemBase {
                 .addProcessor(initVisionProcessor)
                 .addProcessor(aprilTagProcessor)
                 .build();
+    }
 
-
+    public void init() {
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
@@ -619,44 +615,12 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public DeliverLocation getDeliverLocation(){
-        if (initVisionProcessor.getAllianceColorFinal()== InitVisionProcessor.AllianceColor.RED)
+        if (initVisionProcessor.allianceColor == InitVisionProcessor.AllianceColor.RED)
         {
             return deliverLocationRed;
         } else return deliverLocationBlue;
     }
 
-    public void telemetryForInitProcessing() {
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
-        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
-
-        telemetry.addData("Alliance Color", allianceColor);
-        telemetry.addData("Side of the Field", sideOfField);
-        telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal());
-        telemetry.addLine("");
-        telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getLeftPercent(), 4, 1));
-        telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getCenterPercent(), 4, 1));
-        telemetry.addData("Right Square Blue/Red Percent", JavaUtil.formatNumber(getInitVisionProcessor().getRightPercent(), 4, 1));
-
-        telemetry.addData("Total Red", JavaUtil.formatNumber(getInitVisionProcessor().percentRedTotal, 4, 1));
-        telemetry.addData("Total Blue", JavaUtil.formatNumber(getInitVisionProcessor().percentBlueTotal, 4, 1));
-        telemetry.addData("Alliance Color Problem Flag", getInitVisionProcessor().allianceColorDeterminationProblem);
-
-        telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentLeftStageDoorZone, 4, 1));
-        telemetry.addData("Stage Door Right Percent", JavaUtil.formatNumber(getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
-
-        //Set the gamepads to Green if there is a problem and the driver hasn't overridden
-        if ( getInitVisionProcessor().allianceColorDeterminationProblem && GamepadHandling.ManualOverrideInitSettingsFlag==false) {
-            GamepadHandling.problemInInitLed();
-        } else {
-            //show the color of the Alliance on the drivergamepad
-            if (allianceColor == InitVisionProcessor.AllianceColor.RED) {
-                GamepadHandling.setRed();
-            } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
-                GamepadHandling.setBlue();
-            }
-        }
-    }
 
     private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 

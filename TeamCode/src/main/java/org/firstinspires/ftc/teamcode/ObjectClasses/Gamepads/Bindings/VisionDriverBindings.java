@@ -22,7 +22,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveC
 public class VisionDriverBindings {
     public static Command defaultDriveCommand;
     public static Command driveWhileAt0Heading;
-    private static DriveSubsystem driveSubsystem;
 
     public VisionDriverBindings(GamepadEx gamepad) {
         //Make the commands to use for the bindings
@@ -33,7 +32,7 @@ public class VisionDriverBindings {
         // LEFT STICK / RIGHT STICK - Default Driving           //
         //                                                      //
         //////////////////////////////////////////////////////////
-        CommandScheduler.getInstance().setDefaultCommand(driveSubsystem, defaultDriveCommand);
+        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultDriveCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -118,13 +117,13 @@ public class VisionDriverBindings {
     }
 
     private void MakeCommands() {
-        defaultDriveCommand = new DefaultDriveCommand(driveSubsystem,
+        defaultDriveCommand = new DefaultDriveCommand(Robot.getInstance().getDriveSubsystem(),
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 GamepadHandling.getDriverGamepad()::getRightX
         );
 
-        driveWhileAt0Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
+        driveWhileAt0Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 Math.toDegrees(FACE_TOWARD_BACKSTAGE));

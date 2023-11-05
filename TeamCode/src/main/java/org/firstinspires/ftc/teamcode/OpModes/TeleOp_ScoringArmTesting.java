@@ -34,6 +34,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.default
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -48,11 +49,11 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
     @Override public void runOpMode()
     {
         /* Create and Initialize the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM, Robot.OpModeType.TELEOP);
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        robot.init();
+        robot.init(Robot.OpModeType.TELEOP);
 
         telemetry.clearAll();
 
@@ -71,7 +72,8 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         }
 
         //Start the TeleOp Timer
-        robot.getTeleOpTimer().reset();
+        ElapsedTime teleOpTimer = new ElapsedTime();
+        teleOpTimer.reset();
 
         //Set the default lift command
         CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);

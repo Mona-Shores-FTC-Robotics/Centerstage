@@ -12,7 +12,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @Autonomous(name = "Spike Only Auto")
 public class Spike_Only_Auto extends LinearOpMode {
@@ -28,11 +30,11 @@ public class Spike_Only_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         /** Create and Initialize the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION, Robot.OpModeType.AUTO);
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        robot.init();
+        robot.init(Robot.OpModeType.AUTO);
 
         robot.getVisionSubsystem().SwitchToInitVisionProcessor();
 
@@ -41,7 +43,8 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            robot.getVisionSubsystem().telemetryForInitProcessing();
+            VisionTelemetry.telemetryForInitProcessing();
+            GamepadHandling.getDriverGamepad().readButtons();
             GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
@@ -51,21 +54,21 @@ public class Spike_Only_Auto extends LinearOpMode {
         robot.getGyroSubsystem().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
-        robot.getVisionSubsystem().telemetryForInitProcessing();
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
-        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocationFinal();
-        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
-        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal();
+        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();
+        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
+        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
 
         //Set the starting pose of the robot
         robot.getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
+        //this saves the alliance color in a spot that persists between opModes
+        MatchConfig.finalAllianceColor = allianceColor;
+
         //After Init switch the vision processing to AprilTags
         robot.getVisionSubsystem().SwitchToAprilTagProcessor();
-
-        //Start the TeleOp Timer
-        robot.getTeleOpTimer().reset();
 
         //Check each AllianceColor/SideOfField combination and drive the route according to the team prop location
         CheckBlueBackstage();

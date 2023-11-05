@@ -1,11 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.DualNum;
-import com.acmerobotics.roadrunner.MecanumKinematics;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.PoseVelocity2dDual;
-import com.acmerobotics.roadrunner.Time;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -45,7 +40,6 @@ public class DriveSubsystem extends SubsystemBase {
         mecanumDrive.init();
     }
 
-
     public void setDriveStrafeTurnValues(double controllerDrive, double controllerStrafe, double controllerTurn ){
 
         //Check if driver controls are active so we can cancel automated driving if they are
@@ -63,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
             if (controllerDrive < driveParameters.APRIL_TAG_CANCEL_THRESHOLD) drivingToAprilTag = false;
 
             //Align to the Backdrop AprilTags - CASE RED
-            if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.RED &&
+            if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
@@ -75,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
             }
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal() == InitVisionProcessor.AllianceColor.BLUE &&
+            else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
                     (controllerDrive > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {

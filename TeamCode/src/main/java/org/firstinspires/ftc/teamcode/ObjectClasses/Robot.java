@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -18,11 +19,9 @@ public class Robot {
 
     private static Robot robot = null;
     public RobotType robotType;
-    public OpModeType opModeType;
     public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
     public enum OpModeType {TELEOP, AUTO}
 
-    private static ElapsedTime teleOpTimer;
     private static LinearOpMode activeOpMode;
     private static DriveSubsystem mecanumDriveSubsystem;
     private static GyroSubsystem gyroSubsystem;
@@ -33,12 +32,10 @@ public class Robot {
     private static ShoulderSubsystem shoulderSubsystem;
 
     /* Constructor */
-    private Robot(LinearOpMode opMode, RobotType rType, OpModeType oType) {
+    private Robot(LinearOpMode opMode, RobotType rType) {
         activeOpMode = opMode;
         robotType = rType;
-        opModeType = oType;
         HardwareMap hardwareMap = opMode.hardwareMap;
-        teleOpTimer = new ElapsedTime();
         CreateSubsystems(hardwareMap);
     }
 
@@ -52,7 +49,7 @@ public class Robot {
             }
 
             case ROBOT_VISION: {
-                visionSubsystem = new VisionSubsystem();
+                visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 break;
@@ -73,7 +70,7 @@ public class Robot {
             case ROBOT_CENTERSTAGE: {
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
-                visionSubsystem = new VisionSubsystem();
+                visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
@@ -89,12 +86,16 @@ public class Robot {
     }
 
     //Ensures only one robot object is ever created
-    public static Robot createInstance(LinearOpMode opMode, RobotType robotType, OpModeType opModeType) {
-        if (robot == null) {
-            robot = new Robot(opMode, robotType, opModeType);
-        }
+    public static Robot createInstance(LinearOpMode opMode, RobotType robotType) {
+
+        robot = new Robot(opMode, robotType);
         return robot;
     }
+
+    public static void reset() {
+        robot = null;
+    }
+
 
     // Static method to get single instance of Robot
     public static synchronized Robot getInstance() {
@@ -106,7 +107,7 @@ public class Robot {
 
 
     // Initialize teleop or autonomous, depending on which is used
-    public void init(){
+    public void init(OpModeType opModeType){
         if (opModeType == OpModeType.TELEOP) {
             initTele();
         } else {
@@ -126,7 +127,7 @@ public class Robot {
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
-                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
+                visionSubsystem.init();
                 RobotCommands.MakeRobotVisionCommands();
                 break;
             }
@@ -143,7 +144,7 @@ public class Robot {
                 break;
             }
             case ROBOT_CENTERSTAGE: {
-                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
+                visionSubsystem.init();
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();
@@ -169,12 +170,12 @@ public class Robot {
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
-                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
+                visionSubsystem.init();
                 break;
             }
 
             case ROBOT_CENTERSTAGE: {
-                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
+                visionSubsystem.init();
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();
@@ -191,7 +192,6 @@ public class Robot {
         }
     }
 
-    public ElapsedTime getTeleOpTimer() {return teleOpTimer;}
     public GyroSubsystem getGyroSubsystem()  {return gyroSubsystem;    }
     public DriveSubsystem getDriveSubsystem()  {return mecanumDriveSubsystem;}
     public VisionSubsystem getVisionSubsystem()  {return visionSubsystem;}

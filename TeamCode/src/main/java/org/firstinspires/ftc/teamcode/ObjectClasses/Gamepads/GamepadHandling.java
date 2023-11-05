@@ -5,11 +5,13 @@ import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 import java.util.HashMap;
@@ -111,12 +113,19 @@ public class GamepadHandling {
         } else {
             if (ManualOverrideInitSettingsFlag)
             {
-                initVisionProcessor.allianceColorFinal = initVisionProcessor.allianceColorOverride;
-                initVisionProcessor.sideOfFieldFinal = initVisionProcessor.sideOfFieldOverride;
-                initVisionProcessor.teamPropLocationFinal = initVisionProcessor.teamPropLocationOverride;
+                MatchConfig.finalAllianceColor = initVisionProcessor.allianceColorOverride;
+                MatchConfig.finalSideOfField = initVisionProcessor.sideOfFieldOverride;
+                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocationOverride;
+            } else {
+                MatchConfig.finalAllianceColor = initVisionProcessor.allianceColor;
+                MatchConfig.finalSideOfField = initVisionProcessor.sideOfField;
+                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
             }
+
             telemetry.addLine("Lock with B");
-            telemetry.addLine( initVisionProcessor.allianceColorFinal + " " + initVisionProcessor.sideOfFieldFinal + " " + initVisionProcessor.teamPropLocationFinal);
+            telemetry.addLine( MatchConfig.finalAllianceColor + " "
+                                + MatchConfig.finalSideOfField + " "
+                                + MatchConfig.finalTeamPropLocation);
 
             if (driverGamepad.wasJustPressed(GamepadKeys.Button.B))
             {

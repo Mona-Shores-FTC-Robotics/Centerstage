@@ -26,7 +26,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visi
 import android.graphics.Canvas;
 
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
@@ -45,20 +44,6 @@ public class InitVisionProcessor implements VisionProcessor {
     //This constant defines how much of a stage door zone needs to be yellow to count as being detected
     private final int STAGE_DOOR_THRESHOLD = 4;
 
-    /** Our Default Values **/
-    public static AllianceColor allianceColorFinal = AllianceColor.RED;
-    public static SideOfField sideOfFieldFinal = SideOfField.BACKSTAGE;
-    public static TeamPropLocation teamPropLocationFinal = TeamPropLocation.CENTER;
-
-    public static AllianceColor allianceColorOverride = AllianceColor.RED;
-    public static SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
-    public static TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
-
-    /** Our Vision enums **/
-    public enum AllianceColor {BLUE, RED}
-    public enum SideOfField {BACKSTAGE, AUDIENCE}
-    public enum TeamPropLocation {LEFT, CENTER, RIGHT}
-
     /** Scalars for filtering out certain pixel HSV ranges **/
     //Red1
     public Scalar lowerRed1 = new Scalar(0, 100, 20);
@@ -69,12 +54,29 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar upperRed2 = new Scalar(179, 255, 255);
 
     //Blue Filter
-    public Scalar lowerBlue = new Scalar(58.1, 80.8, 0);
-    public Scalar upperBlue = new Scalar(120.4, 255, 255);
+    public Scalar lowerBlue = new Scalar(39.7, 65.2, 0);
+    public Scalar upperBlue = new Scalar(121.8, 255, 255);
 
-       //Stage Door Filter (yellow)
+    //Stage Door Filter (yellow)
     public Scalar lowerStageDoor = new Scalar(0, 127.5, 134.6);
     public Scalar upperStageDoor = new Scalar(86.4, 255, 255);
+
+
+    /** Our Default Values **/
+    public AllianceColor allianceColor = AllianceColor.RED;
+    public SideOfField sideOfField = SideOfField.BACKSTAGE;
+    public TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
+
+    public AllianceColor allianceColorOverride = AllianceColor.RED;
+    public SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
+    public TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
+
+    /** Our Vision enums **/
+    public enum AllianceColor {BLUE, RED}
+    public enum SideOfField {BACKSTAGE, AUDIENCE}
+    public enum TeamPropLocation {LEFT, CENTER, RIGHT}
+
+
 
     /** Matrices to store the camera images we are changing **/
     private Mat hsvMat       = new Mat();
@@ -245,6 +247,8 @@ public class InitVisionProcessor implements VisionProcessor {
 
         /** use gamepad so we can easily see what our camera is filtering for
          * the blue filter / red filter / or yellow(stage door) **/
+
+
         if (Robot.getInstance().getActiveOpMode().gamepad1.left_trigger>.1) {
             binaryRedMatFinal.copyTo(frame);
         }
@@ -289,18 +293,18 @@ public class InitVisionProcessor implements VisionProcessor {
         //frame should be in a helpful state due to processing above
 
         //Draw green rectangle to represent where the vision code thinks the prop is located
-        if (teamPropLocationFinal == TeamPropLocation.LEFT)
+        if (teamPropLocation == TeamPropLocation.LEFT)
         {
             Imgproc.rectangle(frame, rectL, rectangleColorGreen, 2);
             Imgproc.rectangle(frame, rectM, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectR, rectangleColorWhite, 2);
-        } else if (teamPropLocationFinal == TeamPropLocation.CENTER)
+        } else if (teamPropLocation == TeamPropLocation.CENTER)
 
         {
             Imgproc.rectangle(frame, rectM, rectangleColorGreen, 2);
             Imgproc.rectangle(frame, rectL, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectR, rectangleColorWhite, 2);
-        } else if (teamPropLocationFinal == TeamPropLocation.RIGHT)
+        } else if (teamPropLocation == TeamPropLocation.RIGHT)
         {
             Imgproc.rectangle(frame, rectR, rectangleColorGreen, 2);
             Imgproc.rectangle(frame, rectL, rectangleColorWhite, 2);
@@ -309,18 +313,18 @@ public class InitVisionProcessor implements VisionProcessor {
 
         //Draw colored rectangle where the stage door is to represent
         // we know our alliance color and we know the side of the field we are on
-        if (allianceColorFinal == AllianceColor.RED &&  sideOfFieldFinal == SideOfField.BACKSTAGE) {
+        if (allianceColor == AllianceColor.RED &&  sideOfField == SideOfField.BACKSTAGE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorRed, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorWhite, 2);
-        } else if (allianceColorFinal == AllianceColor.RED && sideOfFieldFinal == SideOfField.AUDIENCE) {
+        } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.AUDIENCE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorRed, 2);
 
-        } else if (allianceColorFinal == AllianceColor.BLUE &&  sideOfFieldFinal == SideOfField.BACKSTAGE) {
+        } else if (allianceColor == AllianceColor.BLUE &&  sideOfField == SideOfField.BACKSTAGE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorWhite, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorBlue, 2);
 
-        } else if (allianceColorFinal == AllianceColor.BLUE && sideOfFieldFinal == SideOfField.AUDIENCE) {
+        } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
             Imgproc.rectangle(frame, rectLeftSideOfField, rectangleColorBlue, 2);
             Imgproc.rectangle(frame, rectRightSideOfField, rectangleColorWhite, 2);
 
@@ -348,34 +352,34 @@ public class InitVisionProcessor implements VisionProcessor {
     }
 
     private void DetermineTeamPropLocation() {
-        if (allianceColorFinal == AllianceColor.RED) {
+        if (allianceColor == AllianceColor.RED) {
             //Figure out and Store the Team Prop Location
             if (percentLeftZoneRed > percentCenterZoneRed && percentLeftZoneRed > percentRightZoneRed) {
                 // Red Team Prop is on the Left
-                teamPropLocationFinal = TeamPropLocation.LEFT;
+                teamPropLocation = TeamPropLocation.LEFT;
             } else if (percentCenterZoneRed > percentLeftZoneRed && percentCenterZoneRed > percentRightZoneRed) {
                 // Team Prop is in the Middle
-                teamPropLocationFinal = TeamPropLocation.CENTER;
+                teamPropLocation = TeamPropLocation.CENTER;
             } else if (percentRightZoneRed > percentCenterZoneRed && percentRightZoneRed > percentLeftZoneRed) {
                 // Team Prop is on th Right
-                teamPropLocationFinal = TeamPropLocation.RIGHT;
+                teamPropLocation = TeamPropLocation.RIGHT;
             } else {
-                teamPropLocationFinal = TeamPropLocation.CENTER;
+                teamPropLocation = TeamPropLocation.CENTER;
             }
         }
 
-        if (allianceColorFinal == AllianceColor.BLUE) {
+        if (allianceColor == AllianceColor.BLUE) {
             if (percentLeftZoneBlue > percentCenterZoneBlue && percentLeftZoneBlue > percentRightZoneBlue) {
                 // Red Team Prop is on the Left
-                teamPropLocationFinal = TeamPropLocation.LEFT;
+                teamPropLocation = TeamPropLocation.LEFT;
             } else if (percentCenterZoneBlue > percentLeftZoneBlue && percentCenterZoneBlue > percentRightZoneBlue) {
                 // Team Prop is in the Middle
-                teamPropLocationFinal = TeamPropLocation.CENTER;
+                teamPropLocation = TeamPropLocation.CENTER;
             } else if (percentRightZoneBlue > percentCenterZoneBlue && percentRightZoneBlue > percentLeftZoneBlue) {
                 // Team Prop is on the Right
-                teamPropLocationFinal = TeamPropLocation.RIGHT;
+                teamPropLocation = TeamPropLocation.RIGHT;
             } else {
-                teamPropLocationFinal = TeamPropLocation.CENTER;
+                teamPropLocation = TeamPropLocation.CENTER;
             }
         }
     }
@@ -391,26 +395,26 @@ public class InitVisionProcessor implements VisionProcessor {
         // 4. If only the left box or the right box is over the threshold, then set the side of field based on that using the alliance color
         //      if they are both over the threshold set the side of field to default (Backstage) and flag an error
 
-        if (allianceColorFinal == AllianceColor.RED) {
+        if (allianceColor == AllianceColor.RED) {
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Red Alliance so we are BACKSTAGE
-                setSideOfFieldFinal(SideOfField.BACKSTAGE);
+                sideOfField = SideOfField.BACKSTAGE;
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Red Alliance so we are AUDIENCE
-                setSideOfFieldFinal(SideOfField.AUDIENCE);
+                sideOfField = SideOfField.AUDIENCE;
             }
         }
 
-        if (allianceColorFinal == AllianceColor.BLUE) {
+        if (allianceColor == AllianceColor.BLUE) {
             //Figure out where the Stage Door is
             if (percentLeftStageDoorZone >= percentRightStageDoorZone && percentLeftStageDoorZone > STAGE_DOOR_THRESHOLD) {
                 // Stage Door is on the left and we are Blue Alliance so we are FRONTSTAGE
-                sideOfFieldFinal = SideOfField.AUDIENCE;
+                sideOfField = SideOfField.AUDIENCE;
             } else if (percentRightStageDoorZone > percentLeftStageDoorZone && percentRightStageDoorZone > STAGE_DOOR_THRESHOLD)
             {
                 // Stage Door is on the right and we are Blue Alliance so we are BACKSTAGE
-                sideOfFieldFinal = SideOfField.BACKSTAGE;
+                sideOfField = SideOfField.BACKSTAGE;
             }
         }
     }
@@ -453,21 +457,21 @@ public class InitVisionProcessor implements VisionProcessor {
         if (!redOverThreshold && !blueOverThreshold)
         {
             //if neither red or blue percents are over the threshold anywhere, then default to red, but tell the driver using the problem boolean
-            setAllianceColorFinal(AllianceColor.RED);
+            allianceColor = AllianceColor.RED;
             allianceColorDeterminationProblem=true;
         }
 
         //if both red and blue are over the threshold, then default to red, but tell the driver using the problem boolean
         if (redOverThreshold && blueOverThreshold)
         {
-            setAllianceColorFinal(AllianceColor.RED);
+            allianceColor = AllianceColor.RED;
             allianceColorDeterminationProblem=true;
         } else if (redOverThreshold)
         {
-            setAllianceColorFinal(AllianceColor.RED);
+            allianceColor = AllianceColor.RED;
         } else if (blueOverThreshold)
         {
-            setAllianceColorFinal(AllianceColor.BLUE);
+            allianceColor = AllianceColor.BLUE;
         }
     }
 
@@ -477,18 +481,18 @@ public class InitVisionProcessor implements VisionProcessor {
 
 
     public double getLeftPercent() {
-        if (allianceColorFinal.equals(AllianceColor.RED)) {
+        if (allianceColor.equals(AllianceColor.RED)) {
             return percentLeftZoneRed;
-        } else if (allianceColorFinal.equals(AllianceColor.BLUE)) {
+        } else if (allianceColor.equals(AllianceColor.BLUE)) {
             return percentLeftZoneBlue;
         }
         return percentLeftZoneBlue;
     }
 
     public double getCenterPercent() {
-        if (allianceColorFinal == AllianceColor.RED) {
+        if (allianceColor == AllianceColor.RED) {
             return percentCenterZoneRed;
-        } else if (allianceColorFinal == AllianceColor.BLUE) {
+        } else if (allianceColor == AllianceColor.BLUE) {
             return percentCenterZoneBlue;
         }
         return percentCenterZoneBlue;
@@ -496,50 +500,50 @@ public class InitVisionProcessor implements VisionProcessor {
 
     public double getRightPercent()
     {
-        if (allianceColorFinal == AllianceColor.RED) {
+        if (allianceColor == AllianceColor.RED) {
             return percentRightZoneRed;
-        } else if (allianceColorFinal == AllianceColor.BLUE) {
+        } else if (allianceColor == AllianceColor.BLUE) {
             return percentRightZoneBlue;
         }
         return percentRightZoneBlue;
     }
 
-    public TeamPropLocation getTeamPropLocationFinal()
+    public TeamPropLocation getTeamPropLocation()
     {
-        return teamPropLocationFinal;
+        return teamPropLocation;
     }
 
-    public void setSideOfFieldFinal(SideOfField side) {
-        if (GamepadHandling.LockedInitSettingsFlag != true)
-        {
-            sideOfFieldFinal = side;
-        }
-    }
+//    public void setSideOfFieldFinal(SideOfField side) {
+//        if (GamepadHandling.LockedInitSettingsFlag != true)
+//        {
+//            sideOfFieldFinal = side;
+//        }
+//    }
 
-    public SideOfField getSideOfFieldFinal()
-    {
-        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
-            return sideOfFieldOverride;
-        } else
-        {
-            return sideOfFieldFinal;
-        }
-    }
+//    public SideOfField getSideOfFieldFinal()
+//    {
+//        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
+//            return sideOfFieldOverride;
+//        } else
+//        {
+//            return sideOfFieldFinal;
+//        }
+//    }
 
-    public void setAllianceColorFinal(AllianceColor color) {
-        if (GamepadHandling.LockedInitSettingsFlag != true)
-        {
-            allianceColorFinal = color;
-        }
-    }
-
-    public AllianceColor getAllianceColorFinal()
-    {
-        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
-            return allianceColorOverride;
-        } else
-        {
-            return allianceColorFinal;
-        }
-    }
+//    public void setAllianceColorFinal(AllianceColor color) {
+//        if (GamepadHandling.LockedInitSettingsFlag != true)
+//        {
+//            allianceColorFinal = color;
+//        }
+//    }
+//
+//    public AllianceColor getAllianceColorFinal()
+//    {
+//        if (GamepadHandling.ManualOverrideInitSettingsFlag == true) {
+//            return allianceColorOverride;
+//        } else
+//        {
+//            return allianceColorFinal;
+//        }
+//    }
 }

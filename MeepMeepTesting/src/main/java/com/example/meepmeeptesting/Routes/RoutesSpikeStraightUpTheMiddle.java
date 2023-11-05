@@ -109,10 +109,9 @@ public class RoutesSpikeStraightUpTheMiddle {
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
         Action blueBackstageBotTeamPropLeftRoute1 = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_115_DEGREES)
-                .turnTo(FACE_TOWARD_BACKSTAGE)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, FACE_TOWARD_BACKSTAGE)
-                .lineToX(BLUE_BACKDROP_CENTER.position.x)
+//                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+//                .lineToX(BLUE_BACKDROP_CENTER.position.x)
                 .build();
 
         CustomActions blah5 = new CustomActions();
@@ -136,19 +135,19 @@ public class RoutesSpikeStraightUpTheMiddle {
                 .build();
 
         blueBackstageBotTeamPropLeftRoute = new SequentialAction(
-                blueBackstageBotTeamPropLeftRoute1,
-                blueBackstageBotTeamPropLeftRoute2,
-                blueBackstageBotTeamPropLeftRoute2a,
-                blueBackstageBotTeamPropLeftRoute3,
-                blueBackstageBotTeamPropLeftRoute2,
-                blueBackstageBotTeamPropLeftRoute5
+                blueBackstageBotTeamPropLeftRoute1
+//                blueBackstageBotTeamPropLeftRoute2,
+//                blueBackstageBotTeamPropLeftRoute2a,
+//                blueBackstageBotTeamPropLeftRoute3,
+//                blueBackstageBotTeamPropLeftRoute2,
+//                blueBackstageBotTeamPropLeftRoute5
         );
 
         Action redBackstageBotTeamPropRightRoute1 = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_115_DEGREES)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
                 .setReversed(true)
-                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, FACE_TOWARD_AUDIENCE)
                 .lineToX(RED_BACKDROP_STAGING.position.x)
                 .build();
 

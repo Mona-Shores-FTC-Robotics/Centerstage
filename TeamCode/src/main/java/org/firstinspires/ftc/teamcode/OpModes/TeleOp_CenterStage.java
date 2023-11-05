@@ -34,24 +34,28 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageOperatorBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 
 @TeleOp(name="TeleOp_CenterStage")
 public class TeleOp_CenterStage extends LinearOpMode
 {
+    private ElapsedTime teleOpTimer;
+
     @Override
     public void runOpMode()
     {
         /* Create the robot **/
-        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE, Robot.OpModeType.TELEOP);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        Robot.getInstance().init();
+        Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
         new CenterstageDriverBindings(GamepadHandling.getDriverGamepad());
@@ -62,14 +66,15 @@ public class TeleOp_CenterStage extends LinearOpMode
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
 
             telemetry.update();
             sleep(10);
         }
-        //Reset the teleOp timer as soon as play is pressed
-        Robot.getInstance().getTeleOpTimer().reset();
+
+        //Start the TeleOp Timer
+        teleOpTimer = new ElapsedTime();
+        teleOpTimer.reset();
 
         while (opModeIsActive())
         {
@@ -89,7 +94,7 @@ public class TeleOp_CenterStage extends LinearOpMode
     }
 
     private void EndGameRumble() {
-        if ( Robot.getInstance().getTeleOpTimer().seconds()>END_GAME_TIME-5){
+        if ( teleOpTimer.seconds()>END_GAME_TIME-5){
             //Rumble the controllers
             //Flash lights on controller?
             //Flash lights on robot?
@@ -97,7 +102,7 @@ public class TeleOp_CenterStage extends LinearOpMode
     }
 
     void ActivateEndGameButtons(){
-        if ( Robot.getInstance().getTeleOpTimer().seconds()>END_GAME_TIME){
+        if ( teleOpTimer.seconds()>END_GAME_TIME){
             //check buttons for Wench and drone
             //Right Trigger shows some telemetry about the buttons
             if (CenterstageOperatorBindings.rightTrigger.isDown()) {
