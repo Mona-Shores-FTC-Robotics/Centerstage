@@ -45,13 +45,17 @@ public final class Constants {
   public static double THREE_QUARTER_TILE = TILE*.75;
 
   public static double FACE_TOWARD_BACKSTAGE = Math.toRadians(0);
+  public static double FACE_30_DEGREES = Math.toRadians(30);
   public static double FACE_45_DEGREES = Math.toRadians(45);
   public static double FACE_TOWARD_BLUE = Math.toRadians(90);
+  public static double FACE_115_DEGREES = Math.toRadians(115);
   public static double FACE_135_DEGREES = Math.toRadians(135);
+  public static double FACE_160_DEGREES = Math.toRadians(160);
   public static double FACE_TOWARD_AUDIENCE = Math.toRadians(180);
   public static double FACE_225_DEGREES = Math.toRadians(225);
   public static double FACE_TOWARD_RED = Math.toRadians(270);
   public static double FACE_315_DEGREES = Math.toRadians(315);
+  public static double FACE_340_DEGREES = Math.toRadians(340);
 
   public static double TANGENT_TOWARD_BACKSTAGE = Math.toRadians(0);
   public static double TANGENT_45_DEGREES = Math.toRadians(45);
@@ -89,6 +93,10 @@ public final class Constants {
   public static Pose2d BLUE_BACKSTAGE_SPIKE_C = new Pose2d(HALF_TILE, TILE+HALF_TILE, FACE_TOWARD_RED);
   public static Pose2d BLUE_BACKSTAGE_SPIKE_R = new Pose2d(TILE-THREE_QUARTER_TILE, TILE+HALF_TILE, FACE_225_DEGREES);
 
+  public static Pose2d BLUE_BACKSTAGE_ALIGNMENT = new Pose2d(0, TILE+HALF_TILE+3, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d BLUE_AUDIENCE_ALIGNMENT = new Pose2d(-TILE-HALF_TILE, TILE+HALF_TILE+3, FACE_TOWARD_BACKSTAGE);
+
+
   public static Pose2d RED_AUDIENCE_SPIKE_R = new Pose2d(-TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
   public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE, FACE_TOWARD_BLUE);
   public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-TILE-THREE_QUARTER_TILE, -TILE-HALF_TILE, FACE_135_DEGREES);
@@ -115,7 +123,7 @@ public final class Constants {
 
   public static Pose2d RED_NEUTRAL_PIXEL_STAGEDOOR = new Pose2d(-TILE*2-QUARTER_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
   public static Pose2d RED_NEUTRAL_PIXEL_CENTERSPIKE = new Pose2d(-TILE*2-QUARTER_TILE, -TILE, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d RED_NEUTRAL_PIXEL_WING = new Pose2d(-TILE*2-QUARTER_TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d RED_NEUTRAL_PIXEL_WING = new Pose2d(-TILE*2-6, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
   public static Pose2d BLUE_NEUTRAL_PIXEL_STAGEDOOR = flipYAxis(RED_NEUTRAL_PIXEL_STAGEDOOR);
   public static Pose2d BLUE_NEUTRAL_PIXEL_CENTERSPIKE = flipYAxis(RED_NEUTRAL_PIXEL_CENTERSPIKE);

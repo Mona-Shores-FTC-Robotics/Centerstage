@@ -25,9 +25,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveC
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 public abstract class RobotCommands {
-    public static Command defaultDriveCommand;
     public static Command defaultLiftSlideCommand;
-    public static Command driveWhileAt0Heading;
+
     public static Command driveWhileAt90Heading;
     public static Command driveWhileAt180Heading;
     public static Command driveWhileAt270Heading;
@@ -54,31 +53,7 @@ public abstract class RobotCommands {
     public static void MakeRobotDriveBaseCommands() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         mecanumDrive = driveSubsystem.mecanumDrive;
-        defaultDriveCommand = new DefaultDriveCommand(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                GamepadHandling.getDriverGamepad()::getRightX
-        );
 
-        driveWhileAt0Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                0);
-
-        driveWhileAt90Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                90);
-
-        driveWhileAt180Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                180);
-
-        driveWhileAt270Heading = new DriveWithConstantHeadingCommand(driveSubsystem,
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                270);
 
         blueBackdropBackup = MakeCancelableBackupFromBlueBackdropCommand();
         redBackdropBackup = MakeCancelableBackupFromRedBackdropCommand();

@@ -81,8 +81,7 @@ public class TeleOp_Vision extends LinearOpMode
         //Start the TeleOp Timer
         robot.getTeleOpTimer().reset();
 
-        //set the Default command
-       CommandScheduler.getInstance().setDefaultCommand(robot.getDriveSubsystem(), defaultDriveCommand);
+
 
         while (opModeIsActive())
         {
