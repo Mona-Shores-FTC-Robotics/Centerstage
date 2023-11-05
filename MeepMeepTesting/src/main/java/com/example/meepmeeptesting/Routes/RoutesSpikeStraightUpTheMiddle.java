@@ -36,6 +36,7 @@ import static com.example.meepmeeptesting.Constants.FACE_TOWARD_AUDIENCE;
 import static com.example.meepmeeptesting.Constants.FACE_TOWARD_BACKSTAGE;
 import static com.example.meepmeeptesting.Constants.FACE_TOWARD_BLUE;
 import static com.example.meepmeeptesting.Constants.FACE_TOWARD_RED;
+import static com.example.meepmeeptesting.Constants.HALF_TILE;
 import static com.example.meepmeeptesting.Constants.PoseToVector;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L;
@@ -44,6 +45,7 @@ import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
+import static com.example.meepmeeptesting.Constants.RED_BACKDROP_STAGING;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_D;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
@@ -51,6 +53,7 @@ import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;
+import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_PIXEL_WING;
 import static com.example.meepmeeptesting.Constants.RED_SAFE_STRAFE;
 import static com.example.meepmeeptesting.Constants.RED_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.Constants.RED_THROUGH_DOOR;
@@ -77,6 +80,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
@@ -92,7 +96,7 @@ public class RoutesSpikeStraightUpTheMiddle {
     //Variables to store routes for team prop left for all four start locations
     private static Action redBackstageBotTeamPropLeftRoute;
     private static Action blueAudienceBotTeamPropLeftRoute;
-    private static Action redAudienceBotTeamPropLeftRoute;
+    private static SequentialAction redAudienceBotTeamPropLeftRoute;
     private static Action blueBackstageBotTeamPropLeftRoute;
 
     //Variables to store routes for team prop right for all four start locations
@@ -177,13 +181,13 @@ public class RoutesSpikeStraightUpTheMiddle {
         redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_R, FACE_45_DEGREES)
                 .setReversed(true)
-                .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_L), TANGENT_TOWARD_BLUE)
-                .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_135_DEGREES)
+                .splineToConstantHeading(PoseToVector(RED_NEUTRAL_PIXEL_WING), TANGENT_TOWARD_BLUE)
+                .setReversed(true)
+                .lineToX(-40)
                 .build();
+
+
+
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
         blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
@@ -197,16 +201,38 @@ public class RoutesSpikeStraightUpTheMiddle {
                 .turnTo(FACE_225_DEGREES)
                 .build();
 
-        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, TANGENT_TOWARD_BLUE)
+        Action redAudienceBotTeamPropLeftRoute1 = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_115_DEGREES)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_AUDIENCE), TANGENT_TOWARD_BLUE)
-                .splineToConstantHeading(PoseToVector(RED_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_135_DEGREES)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
                 .build();
+
+        CustomActions blah = new CustomActions();
+        CustomActions blah2 = new CustomActions();
+        Action redAudienceBotTeamPropLeftRoute2 = blah.alignToLeftSideOfBackDropWithAprilTag();
+
+        Action redAudienceBotTeamPropLeftRoute3 = roadRunnerDrive.actionBuilder(RED_BACKDROP_LEFT)
+                .splineToConstantHeading(PoseToVector(RED_BACKDROP_STAGING), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
+                .build();
+
+        Action redAudienceBotTeamPropLeftRoute4 = blah2.alignToLeftSideOfBackDropWithAprilTag();
+
+        Action redAudienceBotTeamPropLeftRoute5 = roadRunnerDrive.actionBuilder(RED_BACKDROP_LEFT)
+                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
+                .turnTo(FACE_315_DEGREES)
+                .build();
+
+        redAudienceBotTeamPropLeftRoute = new SequentialAction(
+                redAudienceBotTeamPropLeftRoute1,
+                redAudienceBotTeamPropLeftRoute2,
+                redAudienceBotTeamPropLeftRoute3,
+                redAudienceBotTeamPropLeftRoute4,
+                redAudienceBotTeamPropLeftRoute5
+        );
+
 
         /** BLUE AUDIENCE CENTER / RED AUDIENCE CENTER **/
         blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
