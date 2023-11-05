@@ -39,7 +39,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public static class TunableVisionConstants {
         // Adjust these numbers to suit your robot.
-        public double DESIRED_DISTANCE = 10; //  this is how close the camera should get to the target for alignment (inches)
+        public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
         public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
         //this is the tolerance before we rumble if vision is seeing things that are close
@@ -48,14 +48,14 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-        public double SPEED_GAIN = 0.02;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double SPEED_GAIN = 0.06;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.025;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = -0.025;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.034;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = -0.034;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-        public double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double MAX_AUTO_STRAFE = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double MAX_AUTO_TURN = 0.6;   //  Clip the turn speed to this max value (adjust for your robot)
+        public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     }
