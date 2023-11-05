@@ -47,6 +47,8 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.FollowTrajectoryAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 
@@ -111,83 +113,6 @@ public final class MecanumDriveMona {
     public MecanumDriveMona() {
     }
 
-    /** Localizer **/
-    public class DriveLocalizer implements Localizer {
-        public final Encoder leftFront, leftRear, rightRear, rightFront;
-
-        private int lastLeftFrontPos, lastLeftRearPos, lastRightRearPos, lastRightFrontPos;
-        private Rotation2d lastHeading;
-
-        public DriveLocalizer() {
-
-            RawEncoder LFEncoder = new RawEncoder(MecanumDriveMona.this.leftFront);
-            RawEncoder LBEncoder = new RawEncoder(MecanumDriveMona.this.leftBack);
-            RawEncoder RFEncoder = new RawEncoder(MecanumDriveMona.this.rightFront);
-            RawEncoder RBEncoder = new RawEncoder(MecanumDriveMona.this.rightBack);
-
-            LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
-            RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
-
-
-            leftFront = new OverflowEncoder(LFEncoder);
-            leftRear = new OverflowEncoder(LBEncoder);
-            rightRear = new OverflowEncoder(RBEncoder);
-            rightFront = new OverflowEncoder(RFEncoder);
-
-            lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
-            lastLeftRearPos = leftRear.getPositionAndVelocity().position;
-            lastRightRearPos = rightRear.getPositionAndVelocity().position;
-            lastRightFrontPos = rightFront.getPositionAndVelocity().position;
-
-            lastHeading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-
-        }
-
-        @Override
-        public Twist2dDual<Time> update() {
-            PositionVelocityPair leftFrontPosVel = leftFront.getPositionAndVelocity();
-            PositionVelocityPair leftRearPosVel = leftRear.getPositionAndVelocity();
-            PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
-            PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
-
-            Rotation2d heading = Rotation2d.exp(gyroSubsystem.getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-            double headingDelta = heading.minus(lastHeading);
-
-            Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
-                    new DualNum<Time>(new double[]{
-                            (leftFrontPosVel.position - lastLeftFrontPos),
-                            leftFrontPosVel.velocity,
-                    }).times(MotorParametersRR.inPerTick),
-                    new DualNum<Time>(new double[]{
-                            (leftRearPosVel.position - lastLeftRearPos),
-                            leftRearPosVel.velocity,
-                    }).times(MotorParametersRR.inPerTick),
-                    new DualNum<Time>(new double[]{
-                            (rightRearPosVel.position - lastRightRearPos),
-                            rightRearPosVel.velocity,
-                    }).times(MotorParametersRR.inPerTick),
-                    new DualNum<Time>(new double[]{
-                            (rightFrontPosVel.position - lastRightFrontPos),
-                            rightFrontPosVel.velocity,
-                    }).times(MotorParametersRR.inPerTick)
-            ));
-
-            lastLeftFrontPos = leftFrontPosVel.position;
-            lastLeftRearPos = leftRearPosVel.position;
-            lastRightRearPos = rightRearPosVel.position;
-            lastRightFrontPos = rightFrontPosVel.position;
-
-            lastHeading = heading;
-
-            return new Twist2dDual<>(
-                    twist.line,
-                    DualNum.cons(headingDelta, twist.angle.drop(1))
-            );
-        }
-    }
-
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
         this.pose = new Pose2d(0, 0, 0);
@@ -222,6 +147,11 @@ public final class MecanumDriveMona {
         leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
+        //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
+        SetRoadRunnerParameters();
+    }
+
+    private void SetRoadRunnerParameters() {
         kinematics = new MecanumKinematics(
                 MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
@@ -242,182 +172,7 @@ public final class MecanumDriveMona {
         FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
     }
 
-    public void setDrivePowers(PoseVelocity2d powers) {
-        MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
-                PoseVelocity2dDual.constant(powers, 1));
 
-        double maxPowerMag = 1;
-        for (DualNum<Time> power : wheelVels.all()) {
-            maxPowerMag = Math.max(maxPowerMag, power.value());
-        }
-
-        leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag);
-        leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag);
-        rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag);
-        rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
-    }
-
-    public final class FollowTrajectoryAction implements Action {
-        public final TimeTrajectory timeTrajectory;
-        private double beginTs = -1;
-
-        private final double[] xPoints, yPoints;
-
-        public FollowTrajectoryAction(TimeTrajectory t) {
-            timeTrajectory = t;
-
-            List<Double> disps = com.acmerobotics.roadrunner.Math.range(
-                    0, t.path.length(),
-                    (int) Math.ceil(t.path.length() / 2));
-            xPoints = new double[disps.size()];
-            yPoints = new double[disps.size()];
-            for (int i = 0; i < disps.size(); i++) {
-                Pose2d p = t.path.get(disps.get(i), 1).value();
-                xPoints[i] = p.position.x;
-                yPoints[i] = p.position.y;
-            }
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket p) {
-            double t;
-            if (beginTs < 0) {
-                beginTs = Actions.now();
-                t = 0;
-            } else {
-                t = Actions.now() - beginTs;
-            }
-
-            if (t >= timeTrajectory.duration) {
-                leftFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
-
-                return false;
-            }
-
-            Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
-
-            PoseVelocity2d robotVelRobot = updatePoseEstimate();
-
-            PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
-                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
-            )
-                    .compute(txWorldTarget, pose, robotVelRobot);
-
-            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
-            double voltage = voltageSensor.getVoltage();
-            leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
-            leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
-            rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
-            rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
-
-            FlightRecorder.write("TARGET_POSE", new PoseMessage(txWorldTarget.value()));
-
-            p.put("x", pose.position.x);
-            p.put("y", pose.position.y);
-            p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
-
-            Pose2d error = txWorldTarget.value().minusExp(pose);
-            p.put("xError", error.position.x);
-            p.put("yError", error.position.y);
-            p.put("headingError (deg)", Math.toDegrees(error.heading.log()));
-
-            // only draw when active; only one drive action should be active at a time
-            Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
-
-            c.setStroke("#4CAF50");
-            drawRobot(c, txWorldTarget.value());
-
-            c.setStroke("#3F51B5");
-            drawRobot(c, pose);
-
-            c.setStroke("#4CAF50FF");
-            c.setStrokeWidth(1);
-            c.strokePolyline(xPoints, yPoints);
-
-            return true;
-        }
-
-        @Override
-        public void preview(Canvas c) {
-            c.setStroke("#4CAF507A");
-            c.setStrokeWidth(1);
-            c.strokePolyline(xPoints, yPoints);
-        }
-    }
-
-    public final class TurnAction implements Action {
-        private final TimeTurn turn;
-
-        private double beginTs = -1;
-
-        public TurnAction(TimeTurn turn) {
-            this.turn = turn;
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket p) {
-            double t;
-            if (beginTs < 0) {
-                beginTs = Actions.now();
-                t = 0;
-            } else {
-                t = Actions.now() - beginTs;
-            }
-
-            if (t >= turn.duration) {
-                leftFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
-
-                return false;
-            }
-
-            Pose2dDual<Time> txWorldTarget = turn.get(t);
-
-            PoseVelocity2d robotVelRobot = updatePoseEstimate();
-
-            PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
-                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
-            )
-                    .compute(txWorldTarget, pose, robotVelRobot);
-
-            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
-            double voltage = voltageSensor.getVoltage();
-            leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
-            leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
-            rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
-            rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
-
-            FlightRecorder.write("TARGET_POSE", new PoseMessage(txWorldTarget.value()));
-
-            Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
-
-            c.setStroke("#4CAF50");
-            drawRobot(c, txWorldTarget.value());
-
-            c.setStroke("#3F51B5");
-            drawRobot(c, pose);
-
-            c.setStroke("#7C4DFFFF");
-            c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);
-
-            return true;
-        }
-
-        @Override
-        public void preview(Canvas c) {
-            c.setStroke("#7C4DFF7A");
-            c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);
-        }
-    }
 
     public PoseVelocity2d updatePoseEstimate() {
         Twist2dDual<Time> twist = localizer.update();
@@ -487,16 +242,6 @@ public final class MecanumDriveMona {
             rightFront.setPower(0);
             rightBack.setPower(0);
 
-//            leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         } else
         {
 
@@ -514,6 +259,8 @@ public final class MecanumDriveMona {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 
+
+            //todo how can we get ramping working
             //save this for telemetry
 //            unrampedDrive = drive;
 //
@@ -538,12 +285,9 @@ public final class MecanumDriveMona {
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
-            driveDashboardTelemetry();
-
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;
-
         }
     }
 
@@ -555,17 +299,6 @@ public final class MecanumDriveMona {
         {
             return target;
         }
-
-    }
-
-    private void driveDashboardTelemetry() {
-
-        TelemetryPacket p = new TelemetryPacket();
-
-
-
-
-
 
     }
 
@@ -622,64 +355,7 @@ public final class MecanumDriveMona {
         rightBack.setPower(rB);
     }
 
-    public class DrawCurrentPosition implements Action {
-        public boolean run(@NonNull TelemetryPacket p) {
-
-            Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
-
-            c.setStroke("#3F51B5");
-            drawRobot(c, pose);
-
-            return false;
-        }
-    }
-    public class SendSpeedAndPositionDataToDashboard implements Action {
-        public boolean run(@NonNull TelemetryPacket p) {
-
-            p.put("x", pose.position.x);
-            p.put("y", pose.position.y);
-            p.put("heading (deg)", Math.toDegrees(pose.heading.log()));
-
-            double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-            double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-            double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-            double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-
-            double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-            double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-            double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-            double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-
-            p.addLine("");
-
-            p.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
-            p.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
-            p.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
-            p.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
-
-            p.addLine("");
-            p.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 4, 0));
-
-            p.put("actualSpeedLF", actualSpeedLF);
-            p.put("actualSpeedRF", actualSpeedRF);
-            p.put("actualSpeedLB", actualSpeedLB);
-            p.put("actualSpeedRB", actualSpeedRB);
-            p.put("targetSpeedLF", targetSpeedLF);
-
-            Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
-
-            c.setStroke("#3F51B5");
-            drawRobot(c, pose);
-
-            return false;
-        }
-    }
-
     public static class ParamsMona {
-
-
         public double DRIVE_RAMP = .06; //ken ramp
         public double STRAFE_RAMP = .05;
         public double TURN_RAMP = .05;
@@ -689,7 +365,6 @@ public final class MecanumDriveMona {
         public double D =0; // default = 0
         public double I =0; // default = 3
         public double F =8; // default = 0
-
     }
 
     public static class ParamsRRMona {

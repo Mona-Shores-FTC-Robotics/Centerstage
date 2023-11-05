@@ -153,7 +153,7 @@ public class Robot {
                 RobotCommands.MakeRobotCenterStageCommands();
                 //Systems to be added:
                 //Servo - Drone launch release
-                //Servo - Push Pixel put-away device
+
                 //Motor - Winch for hanging
                 //Lights for identifying pixels in intake
                 break;

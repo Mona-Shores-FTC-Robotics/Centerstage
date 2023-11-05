@@ -28,25 +28,92 @@ public class VisionDriverBindings {
         //Make the commands to use for the bindings
         MakeCommands();
 
-        // LEFT STICK / RIGHT STICK - Normal Driving
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // LEFT STICK / RIGHT STICK - Default Driving           //
+        //                                                      //
+        //////////////////////////////////////////////////////////
         CommandScheduler.getInstance().setDefaultCommand(driveSubsystem, defaultDriveCommand);
 
-        //RIGHT BUMPER - While held down, drive normally but hold camera heading toward backdrop
-        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(driveWhileAt0Heading);
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // RIGHT BUMPER                                         //
+        //                                                      //
+        //////////////////////////////////////////////////////////
 
-        //X BUTTON
-        //backup through the truss right behind the backdrop to see the other april tag?
+        //While held down, drive normally but hold camera heading toward backdrop
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(driveWhileAt0Heading);
 
-        //Y BUTTON
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // LEFT BUMPER                                          //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+        //While held down, drive normally but hold camera heading toward backdrop
+//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+//                .whenPressed();
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  X BUTTON                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+        // backup through the truss right behind the backdrop to see the other april tag?
+//        gamepad.getGamepadButton(GamepadKeys.Button.X)
+//                .whenPressed()
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  Y BUTTON                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
         // move to just outside the correct color wing?
+        //        gamepad.getGamepadButton(GamepadKeys.Button.Y)
+//                .whenPressed()
 
-        //todo test these three button bindings - having issues with them only running one time
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  A BUTTON                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+        //todo test - having issues with them only running one time
         gamepad.getGamepadButton(GamepadKeys.Button.A)
                 .whenHeld(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), MakeTestRoute()));
 
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  B BUTTON                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.B)
                 .whenHeld(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(),
                         new MakeMoveToPointAction().moveToPoint(25, 25)));
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  LEFT TRIGGER                                        //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  RIGHT TRIGGER                                       //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  OPTIONS BUTTON                                      //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  START BUTTON                                        //
+        //                                                      //
+        //////////////////////////////////////////////////////////
 
     }
 
