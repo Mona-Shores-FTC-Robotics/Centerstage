@@ -24,7 +24,6 @@ public class GyroSubsystem extends SubsystemBase {
     private double currentRelativeYaw;
     private double lastRelativeYaw;
 
-
     public GyroSubsystem(final HardwareMap hMap, final String name) {
         imu = hMap.get(IMU.class, name);
     }

@@ -4,6 +4,7 @@ import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -61,34 +62,68 @@ import java.util.List;
 @Config
 public final class MecanumDriveMona {
 
-    public double drive;
-    public double strafe;
-    public double turn;
+    public static class ParamsMona {
+        public double DRIVE_RAMP = .06; //ken ramp
+        public double STRAFE_RAMP = .05;
+        public double TURN_RAMP = .05;
 
-    public double last_drive=0;
-    public double last_strafe=0;
-    public double last_turn=0;
+        public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
 
-    public double current_drive_ramp =0;
-    public double current_strafe_ramp=0;
-    public double current_turn_ramp=0;
+        //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
+        public double P =0; // default = 10
+        public double D =0; // default = 0
+        public double I =0; // default = 3
+        public double F =8; // default = 0
+    }
 
-    public double aprilTagDrive;
-    public double aprilTagStrafe;
-    public double aprilTagTurn;
+    public static class ParamsRRMona {
+        /** Set Roadrunner motor parameters for faster drive motors **/
 
-    public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
+        // drive model parameters
+        public double inPerTick =0.0317919075144509; //60.5\1903
+        public double lateralInPerTick =0.0325115144947169; // 60\1845.5
+        public double trackWidthTicks =631.8289216104534;
 
-    private double leftFrontTargetSpeed;
-    private double rightFrontTargetSpeed;
-    private double leftBackTargetSpeed;
-    private double rightBackTargetSpeed;
+        // feedforward parameters (in tick units)
+        public double kS =0.9574546275336608;
+        public double kV =0.004264232249424524;
+        public double kA =0.00055;
+
+        // path profile parameters (in inches)
+        public double maxWheelVel =25;
+        public double minProfileAccel =-30;
+        public double maxProfileAccel =30;
+
+        // turn profile parameters (in radians)
+        public double maxAngVel =Math.PI; // shared with path
+        public double maxAngAccel =Math.PI;
+
+        // path controller gains
+        public double axialGain =12;
+        public double lateralGain =8;
+        public double headingGain =8; // shared with turn
+
+        public double axialVelGain =1.1;
+        public double lateralVelGain =1.1;
+        public double headingVelGain =1.1; // shared with turn
+    }
+
+    public static class ParamsDriveTrainConstants {
+        // DriveTrain physical constants
+        public static double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
+        public static double TICKS_PER_REV = 384.5;
+        public static double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+    }
 
     public static ParamsMona MotorParameters = new ParamsMona();
     public static ParamsRRMona MotorParametersRR = new ParamsRRMona();
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
 
-    public double unrampedDrive;
+    public double drive, strafe, turn;
+    public double last_drive=0, last_strafe=0, last_turn=0;
+    public double current_drive_ramp = 0, current_strafe_ramp=0, current_turn_ramp=0;
+    public double aprilTagDrive, aprilTagStrafe, aprilTagTurn;
+    private double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -96,27 +131,19 @@ public final class MecanumDriveMona {
     public VelConstraint defaultVelConstraint;
     public AccelConstraint defaultAccelConstraint;
 
-    public DcMotorEx leftFront;
-    public DcMotorEx leftBack;
-    public DcMotorEx rightBack;
-    public DcMotorEx rightFront;
-
+    public DcMotorEx leftFront, leftBack, rightBack, rightFront;
     public VoltageSensor voltageSensor;
-
     public Localizer localizer;
     public Pose2d pose;
-    private GyroSubsystem gyroSubsystem;
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
-    /** Empty Constructor **/
     public MecanumDriveMona() {
     }
 
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
         this.pose = new Pose2d(0, 0, 0);
-        gyroSubsystem = Robot.getInstance().getGyroSubsystem();
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -173,7 +200,74 @@ public final class MecanumDriveMona {
     }
 
 
+    public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
+        if (drive==0 && strafe ==0 && turn==0) {
+            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+            leftFront.setVelocity(0);
+            leftBack.setVelocity(0);
+            rightFront.setVelocity(0);
+            rightBack.setVelocity(0);
 
+            leftFront.setPower(0);
+            leftBack.setPower(0);
+            rightFront.setPower(0);
+            rightBack.setPower(0);
+
+        } else
+        {
+
+            //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
+                    drive > .1) {
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
+            }
+            //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
+                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
+                    drive > .1) {
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
+            }
+
+
+            //todo cleaned this up, it needs to be tested
+            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
+            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
+            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
+
+            double dPercent = abs(current_drive_ramp) / (abs(current_drive_ramp) + abs(current_strafe_ramp) + abs(current_turn_ramp));
+            double sPercent = abs(current_strafe_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
+            double tPercent = abs(current_turn_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
+
+            leftFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (current_strafe_ramp * sPercent) + (current_turn_ramp * tPercent));
+            rightFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (-current_strafe_ramp * sPercent) + (-current_turn_ramp * tPercent));
+            leftBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (-current_strafe_ramp * sPercent) + (current_turn_ramp * tPercent));
+            rightBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (current_strafe_ramp * sPercent) + (-current_turn_ramp * tPercent));
+
+            leftFront.setVelocity(leftFrontTargetSpeed);
+            rightFront.setVelocity(rightFrontTargetSpeed);
+            leftBack.setVelocity(leftBackTargetSpeed);
+            rightBack.setVelocity(rightBackTargetSpeed);
+
+            last_drive=drive;
+            last_strafe=strafe;
+            last_turn=turn;
+        }
+    }
+
+    private double Ramp(double target, double currentValue, double ramp_amount) {
+        if (Math.abs(currentValue) + MotorParameters.RAMP_THRESHOLD < Math.abs(target)) {
+            return Math.signum(target) * (Math.abs(currentValue) + ramp_amount);
+        }  else
+        {
+            return target;
+        }
+    }
+
+
+
+    // This is what updates the pose estimate of the robot using the localizer
     public PoseVelocity2d updatePoseEstimate() {
         Twist2dDual<Time> twist = localizer.update();
         pose = pose.plus(twist.value());
@@ -185,7 +279,6 @@ public final class MecanumDriveMona {
 
         FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
         return twist.velocity().value();
-
     }
 
     public void drawPoseHistory(Canvas c) {
@@ -228,99 +321,6 @@ public final class MecanumDriveMona {
         );
     }
 
-    public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
-
-        if (drive==0 && strafe ==0 && turn==0) {
-            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
-            leftFront.setVelocity(0);
-            leftBack.setVelocity(0);
-            rightFront.setVelocity(0);
-            rightBack.setVelocity(0);
-
-            leftFront.setPower(0);
-            leftBack.setPower(0);
-            rightFront.setPower(0);
-            rightBack.setPower(0);
-
-        } else
-        {
-
-            //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see
-            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
-                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.RED &&
-                    drive > .1) {
-                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
-            }
-            //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
-                    Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorFinal == InitVisionProcessor.AllianceColor.BLUE &&
-                    drive > .1) {
-                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
-            }
-
-
-            //todo how can we get ramping working
-            //save this for telemetry
-//            unrampedDrive = drive;
-//
-//            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
-//            drive = current_drive_ramp;
-//            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
-//            strafe = current_strafe_ramp;
-//            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
-//            turn = current_strafe_ramp;
-
-            double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
-            double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
-            double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
-
-            leftFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-            rightFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-            leftBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-            rightBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-
-            leftFront.setVelocity(leftFrontTargetSpeed);
-            rightFront.setVelocity(rightFrontTargetSpeed);
-            leftBack.setVelocity(leftBackTargetSpeed);
-            rightBack.setVelocity(rightBackTargetSpeed);
-
-            last_drive=drive;
-            last_strafe=strafe;
-            last_turn=turn;
-        }
-    }
-
-    private double Ramp(double target, double currentValue, double ramp_amount) {
-
-        if (Math.abs(currentValue) + RAMP_THRESHOLD < Math.abs(target)) {
-            return Math.signum(target) * (Math.abs(currentValue) + ramp_amount);
-        }  else
-        {
-            return target;
-        }
-
-    }
-
-    public void mecanumDrivePowerControl (){
-
-        // Put Mecanum Drive math and motor commands here.
-        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
-        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
-        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
-
-        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
-        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
-        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
-        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
-
-        leftFront.setPower(leftFrontPower);
-        rightFront.setPower(rightFrontPower);
-        leftBack.setPower(leftBackPower);
-        rightBack.setPower(rightBackPower);
-    }
-
-
     public void telemetryDriveTrain() {
 
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
@@ -344,6 +344,19 @@ public final class MecanumDriveMona {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
         Robot.getInstance().getActiveOpMode().telemetry.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
 
+        //todo make sure this doesn't mess up the field overlay in the dashboard (e.g., because this packet doesn't send that data)
+        TelemetryPacket p = new TelemetryPacket();
+
+        p.put("actualSpeedLF", actualSpeedLF);
+        p.put("actualSpeedRF", actualSpeedRF);
+        p.put("actualSpeedLB", actualSpeedLB);
+        p.put("actualSpeedRB", actualSpeedRB);
+        p.put("targetSpeedLF", targetSpeedLF);
+        p.put("targetSpeedRF", targetSpeedRF);
+        p.put("targetSpeedLB", targetSpeedLB);
+        p.put("targetSpeedRB", targetSpeedRB);
+
+        FtcDashboard.getInstance().sendTelemetryPacket(p);
     }
 
     public void setAllPower(double p) {setMotorPower(p,p,p,p);}
@@ -355,61 +368,21 @@ public final class MecanumDriveMona {
         rightBack.setPower(rB);
     }
 
-    public static class ParamsMona {
-        public double DRIVE_RAMP = .06; //ken ramp
-        public double STRAFE_RAMP = .05;
-        public double TURN_RAMP = .05;
 
-        //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
-        public double P =0; // default = 10
-        public double D =0; // default = 0
-        public double I =0; // default = 3
-        public double F =8; // default = 0
-    }
+    public void mecanumDrivePowerControl (){
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
-    public static class ParamsRRMona {
-        /** Set Roadrunner motor parameters for faster drive motors **/
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
 
-        // drive model parameters
-        public double inPerTick =0.0317919075144509; //60.5\1903
-        public double lateralInPerTick =0.0325115144947169; // 60\1845.5
-        public double trackWidthTicks =631.8289216104534;
-
-        // feedforward parameters (in tick units)
-        public double kS =0.9574546275336608;
-        public double kV =0.004264232249424524;
-        public double kA =0.00055;
-
-        // path profile parameters (in inches)
-        public double maxWheelVel =25;
-        public double minProfileAccel =-30;
-        public double maxProfileAccel =30;
-
-        // turn profile parameters (in radians)
-        public double maxAngVel =Math.PI; // shared with path
-        public double maxAngAccel =Math.PI;
-
-        // path controller gains
-        public double axialGain =12;
-        public double lateralGain =8;
-        public double headingGain =8; // shared with turn
-
-        public double axialVelGain =1.1;
-        public double lateralVelGain =1.1;
-        public double headingVelGain =1.1; // shared with turn
-    }
-
-    public static class ParamsDriveTrainConstants {
-        // DriveTrain physical constants
-        public static double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
-        public static double TICKS_PER_REV = 384.5;
-        public static double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
-
-        //These aren't actually being used...
-//        public static double DRIVE_GEAR_REDUCTION = 1.0;
-//        public static double WHEEL_DIAMETER_INCHES = 3.93701;
-//        public static double COUNTS_PER_INCH = (TICKS_PER_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
-
+        leftFront.setPower(leftFrontPower);
+        rightFront.setPower(rightFrontPower);
+        leftBack.setPower(leftBackPower);
+        rightBack.setPower(rightBackPower);
     }
 }
 
