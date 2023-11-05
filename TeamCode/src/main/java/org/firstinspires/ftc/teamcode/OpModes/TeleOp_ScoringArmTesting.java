@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultDriveCommand;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultLiftSlideCommand;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;

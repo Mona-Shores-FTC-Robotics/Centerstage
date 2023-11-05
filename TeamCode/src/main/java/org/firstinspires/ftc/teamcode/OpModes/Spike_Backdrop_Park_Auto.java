@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
-    public static MecanumDriveMona mecanumDrive;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     public static InitVisionProcessor.AllianceColor allianceColor;
@@ -83,7 +82,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckRedAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            mecanumDrive.pose = RED_AUDIENCE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -98,7 +97,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckRedBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -113,7 +112,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckBlueAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -128,7 +127,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
     private boolean CheckBlueBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
