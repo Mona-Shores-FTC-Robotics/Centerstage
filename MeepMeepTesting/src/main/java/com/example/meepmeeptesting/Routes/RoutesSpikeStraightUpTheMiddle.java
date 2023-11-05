@@ -107,21 +107,80 @@ public class RoutesSpikeStraightUpTheMiddle {
 
     public static void BuildRoutes() {
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
-        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
+        Action blueBackstageBotTeamPropLeftRoute1 = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, FACE_115_DEGREES)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
                 .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, FACE_TOWARD_BACKSTAGE)
+                .lineToX(BLUE_BACKDROP_CENTER.position.x)
                 .build();
 
-        redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, TANGENT_45_DEGREES)
-                .setReversed(true)
-                .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
-                .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+        CustomActions blah5 = new CustomActions();
+        CustomActions blah6 = new CustomActions();
+        Action blueBackstageBotTeamPropLeftRoute2 = blah5.alignToLeftSideOfBackDropWithAprilTag();
+
+        Action blueBackstageBotTeamPropLeftRoute2a = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
                 .build();
+
+        Action blueBackstageBotTeamPropLeftRoute3 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_LEFT)
+                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
+                .build();
+
+        Action blueBackstageBotTeamPropLeftRoute4 = blah6.alignToLeftSideOfBackDropWithAprilTag();
+
+        Action blueBackstageBotTeamPropLeftRoute5 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
+                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
+                .turnTo(FACE_45_DEGREES)
+                .build();
+
+        blueBackstageBotTeamPropLeftRoute = new SequentialAction(
+                blueBackstageBotTeamPropLeftRoute1,
+                blueBackstageBotTeamPropLeftRoute2,
+                blueBackstageBotTeamPropLeftRoute2a,
+                blueBackstageBotTeamPropLeftRoute3,
+                blueBackstageBotTeamPropLeftRoute2,
+                blueBackstageBotTeamPropLeftRoute5
+        );
+
+        Action redBackstageBotTeamPropRightRoute1 = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_115_DEGREES)
+                .turnTo(FACE_TOWARD_BACKSTAGE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, FACE_TOWARD_BACKSTAGE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
+                .build();
+
+        CustomActions blah3 = new CustomActions();
+        CustomActions blah4 = new CustomActions();
+        Action redBackstageBotTeamPropRightRoute2 = blah3.alignToRightSideOfBackDropWithAprilTag();
+
+        Action redBackstageBotTeamPropRightRoute2a = roadRunnerDrive.actionBuilder(RED_BACKDROP_CENTER)
+                .build();
+
+        Action redBackstageBotTeamPropRightRoute3 = roadRunnerDrive.actionBuilder(RED_BACKDROP_RIGHT)
+                .splineToConstantHeading(PoseToVector(RED_BACKDROP_STAGING), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
+                .build();
+
+        Action redBackstageBotTeamPropRightRoute4 = blah4.alignToLeftSideOfBackDropWithAprilTag();
+
+        Action redBackstageBotTeamPropRightRoute5 = roadRunnerDrive.actionBuilder(RED_BACKDROP_CENTER)
+                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
+                .turnTo(FACE_315_DEGREES)
+                .build();
+
+        redBackstageBotTeamPropRightRoute = new SequentialAction(
+                redBackstageBotTeamPropRightRoute1,
+                redBackstageBotTeamPropRightRoute2,
+                redBackstageBotTeamPropRightRoute2a,
+                redBackstageBotTeamPropRightRoute3,
+                redBackstageBotTeamPropRightRoute2,
+                redBackstageBotTeamPropRightRoute5
+        );
+
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
         blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
@@ -212,6 +271,9 @@ public class RoutesSpikeStraightUpTheMiddle {
         CustomActions blah2 = new CustomActions();
         Action redAudienceBotTeamPropLeftRoute2 = blah.alignToLeftSideOfBackDropWithAprilTag();
 
+        Action redAudienceBotTeamPropLeftRoute2a = roadRunnerDrive.actionBuilder(RED_BACKDROP_CENTER)
+                .build();
+
         Action redAudienceBotTeamPropLeftRoute3 = roadRunnerDrive.actionBuilder(RED_BACKDROP_LEFT)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_STAGING), TANGENT_TOWARD_AUDIENCE)
                 .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
@@ -220,7 +282,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         Action redAudienceBotTeamPropLeftRoute4 = blah2.alignToLeftSideOfBackDropWithAprilTag();
 
-        Action redAudienceBotTeamPropLeftRoute5 = roadRunnerDrive.actionBuilder(RED_BACKDROP_LEFT)
+        Action redAudienceBotTeamPropLeftRoute5 = roadRunnerDrive.actionBuilder(RED_BACKDROP_CENTER)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
                 .turnTo(FACE_315_DEGREES)
                 .build();
@@ -228,8 +290,9 @@ public class RoutesSpikeStraightUpTheMiddle {
         redAudienceBotTeamPropLeftRoute = new SequentialAction(
                 redAudienceBotTeamPropLeftRoute1,
                 redAudienceBotTeamPropLeftRoute2,
+                redAudienceBotTeamPropLeftRoute2a,
                 redAudienceBotTeamPropLeftRoute3,
-                redAudienceBotTeamPropLeftRoute4,
+                redAudienceBotTeamPropLeftRoute2,
                 redAudienceBotTeamPropLeftRoute5
         );
 

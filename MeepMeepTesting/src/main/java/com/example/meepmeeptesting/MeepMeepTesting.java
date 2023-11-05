@@ -35,10 +35,10 @@ public class MeepMeepTesting {
     public static routesToRun routesToRunSelection = routesToRun.SPIKE_STRAIGHT;
 
     /** Set which robots should show up **/
-    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
-    public static boolean SHOW_BLUE_BACKSTAGE_BOT = false;
-    public static boolean SHOW_RED_AUDIENCE_BOT = true;
-    public static boolean SHOW_RED_BACKSTAGE_BOT = false;
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
+    public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
+    public static boolean SHOW_RED_AUDIENCE_BOT = false;
+    public static boolean SHOW_RED_BACKSTAGE_BOT = true;
 
     public static DriveShim roadRunnerDrive;
     enum teamPropLocation {LEFT, CENTER, RIGHT, ALL}
