@@ -70,6 +70,11 @@ public final class VisionSubsystem extends SubsystemBase {
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
 
+    public void periodic()
+    {
+
+    }
+
     public void SwitchToAprilTagProcessor() {
         visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
         visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), true);

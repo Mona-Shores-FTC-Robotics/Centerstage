@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.OpModes.Spike_Backdrop_Park_Auto.mecanumDrive;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+
 public class RoutesSpikePickup1BackdropPickup2BackdropPark {
+    static MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
     //Variables to store routes for team prop center for all four start locations
     public static Action redAudienceBotTeamPropCenterRoute;
