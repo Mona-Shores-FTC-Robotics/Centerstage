@@ -52,7 +52,7 @@ public class Robot {
             }
 
             case ROBOT_VISION: {
-                visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
+                visionSubsystem = new VisionSubsystem();
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 break;
@@ -73,7 +73,7 @@ public class Robot {
             case ROBOT_CENTERSTAGE: {
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
-                visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
+                visionSubsystem = new VisionSubsystem();
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
@@ -126,7 +126,7 @@ public class Robot {
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
-                visionSubsystem.init();
+                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
                 RobotCommands.MakeRobotVisionCommands();
                 break;
             }
@@ -143,7 +143,7 @@ public class Robot {
                 break;
             }
             case ROBOT_CENTERSTAGE: {
-                visionSubsystem.init();
+                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();
@@ -169,12 +169,12 @@ public class Robot {
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
-                visionSubsystem.init();
+                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
                 break;
             }
 
             case ROBOT_CENTERSTAGE: {
-                visionSubsystem.init();
+                visionSubsystem.init(Robot.getInstance().getActiveOpMode().hardwareMap, "Webcam 1");
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();

@@ -58,6 +58,11 @@ public class TeleOp_Vision extends LinearOpMode
         /* Setup Button Bindings **/
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
+
+        // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
+        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
+
+
         InitVisionProcessor.AllianceColor allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal();
 
         while (opModeInInit()) {
@@ -79,11 +84,12 @@ public class TeleOp_Vision extends LinearOpMode
         //Start the TeleOp Timer
         robot.getTeleOpTimer().reset();
 
-
-
         while (opModeIsActive())
         {
             //Run the Scheduler
+
+            CommandScheduler hi = CommandScheduler.getInstance();
+
             CommandScheduler.getInstance().run();
             GamepadHandling.getDriverGamepad().readButtons();
 

@@ -63,9 +63,9 @@ public final class VisionSubsystem extends SubsystemBase {
     private int blueTagFrameCount;
     private int redTagFrameCount;
 
-    private final VisionPortal visionPortal;               // Used to manage the video source.
-    private final AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
-    private final InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
+    private VisionPortal visionPortal;               // Used to manage the video source.
+    private AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
+    private InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
@@ -162,7 +162,11 @@ public final class VisionSubsystem extends SubsystemBase {
     public boolean blueBackdropAprilTagFound = false;
     public boolean redBackdropAprilTagFound = false;
 
-    public VisionSubsystem(final HardwareMap hMap, final String name) {
+    public VisionSubsystem() {
+
+    }
+
+    public void init(final HardwareMap hMap, final String name) {
         // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
@@ -185,9 +189,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 .addProcessor(initVisionProcessor)
                 .addProcessor(aprilTagProcessor)
                 .build();
-    }
 
-    public void init() {
+
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 

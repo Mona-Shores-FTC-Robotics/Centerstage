@@ -27,9 +27,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 public abstract class RobotCommands {
     public static Command defaultLiftSlideCommand;
 
-    public static Command driveWhileAt90Heading;
-    public static Command driveWhileAt180Heading;
-    public static Command driveWhileAt270Heading;
     public static Command rotateShoulderToBackdrop;
     public static Command rotateShoulderToIntake;
     public static Command openClaw;
