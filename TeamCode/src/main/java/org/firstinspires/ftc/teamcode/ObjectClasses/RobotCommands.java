@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlid
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IndicatorLight.IndicatorLightChangeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IndicatorLight.IndicatorLightSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 public abstract class RobotCommands {
@@ -50,6 +52,10 @@ public abstract class RobotCommands {
     private static IntakeSubsystem intakeSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static MecanumDriveMona mecanumDrive;
+
+    private static IndicatorLightSubsystem indicatorLightSubsystem;
+
+    private static Command indicatorLightChange;
 
     public static void MakeRobotDriveBaseCommands() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
@@ -134,6 +140,11 @@ public abstract class RobotCommands {
     public static void MakeRobotCenterStageCommands() {
         MakeRobotDriveBaseCommands();
 
+    }
+
+    public static void MakeRobotIndicatorLightChangeCommands(){
+        indicatorLightSubsystem = Robot.getInstance().getIndicatorLightSubsystem();
+        indicatorLightChange = new IndicatorLightChangeCommand(indicatorLightSubsystem);
     }
 
     private static SequentialCommandGroup MakeScorePixelCommand() {

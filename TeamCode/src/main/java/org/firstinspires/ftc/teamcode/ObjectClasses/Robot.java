@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffec
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.IndicatorLight.IndicatorLightSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -19,7 +20,7 @@ public class Robot {
     private static Robot robot = null;
     public RobotType robotType;
     public OpModeType opModeType;
-    public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
+    public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE, ROBOT_INDICATOR_LIGHT}
     public enum OpModeType {TELEOP, AUTO}
 
     private static ElapsedTime teleOpTimer;
@@ -31,6 +32,7 @@ public class Robot {
     private static EndEffectorSubsystem endEffectorSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
+    private static IndicatorLightSubsystem indicatorLightSubsystem;
 
     /* Constructor */
     private Robot(LinearOpMode opMode, RobotType rType, OpModeType oType) {
@@ -84,6 +86,11 @@ public class Robot {
                 //intake pick up
                 //lights
                 break;
+            }
+            case ROBOT_INDICATOR_LIGHT: {
+                    indicatorLightSubsystem = new IndicatorLightSubsystem(hardwareMap, "light");
+                    break;
+
             }
         }
     }
@@ -158,6 +165,10 @@ public class Robot {
                 //Lights for identifying pixels in intake
                 break;
             }
+            case ROBOT_INDICATOR_LIGHT: {
+                indicatorLightSubsystem.init();
+                break;
+            }
         }
     }
 
@@ -199,6 +210,7 @@ public class Robot {
     public EndEffectorSubsystem getEndEffectorSubsystem()  {return endEffectorSubsystem;}
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
+    public IndicatorLightSubsystem getIndicatorLightSubsystem() {return indicatorLightSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
 }
 

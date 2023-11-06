@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 @TeleOp(name = "Idicator Light Test")
 
-public class IndicatorlLight extends LinearOpMode {
+public class IndicatorlLightOld extends LinearOpMode {
 
     private DigitalChannel touch;
     private  DigitalChannel red;

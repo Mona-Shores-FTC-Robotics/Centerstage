@@ -19,10 +19,10 @@ public class IndicatorLightSubsystem extends SubsystemBase {
     }
 
 
-    public IndicatorLightSubsystem(final HardwareMap hMap, final String name) {
-        red = hMap.get(DigitalChannel.class, name);
-        green = hMap.get(DigitalChannel.class, name);
-        touch = hMap.get(DigitalChannel.class, name);
+    public IndicatorLightSubsystem(final HardwareMap hMap, String name) {
+        red = hMap.get(DigitalChannel.class, "red");
+        green = hMap.get(DigitalChannel.class, "green");
+        touch = hMap.get(DigitalChannel.class, "touch");
     }
 
     public void init() {
