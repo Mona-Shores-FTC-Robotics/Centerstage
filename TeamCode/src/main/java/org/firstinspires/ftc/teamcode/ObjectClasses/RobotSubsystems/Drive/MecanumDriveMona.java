@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.FollowTrajectoryAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnAction;
@@ -44,20 +45,6 @@ import java.util.LinkedList;
 
 @Config
 public final class MecanumDriveMona {
-
-    public static class ParamsMona {
-        public double DRIVE_RAMP = .06; //ken ramp
-        public double STRAFE_RAMP = .05;
-        public double TURN_RAMP = .05;
-
-        public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
-
-        //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
-        public double P =0; // default = 10
-        public double D =0; // default = 0
-        public double I =0; // default = 3
-        public double F =8; // default = 0
-    }
 
     public static class ParamsRRMona {
         /** Set Roadrunner motor parameters for faster drive motors **/
@@ -98,7 +85,7 @@ public final class MecanumDriveMona {
         public static double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
     }
 
-    public static ParamsMona MotorParameters = new ParamsMona();
+    public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
     public static ParamsRRMona MotorParametersRR = new ParamsRRMona();
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
 
@@ -196,6 +183,10 @@ public final class MecanumDriveMona {
             rightFront.setPower(0);
             rightBack.setPower(0);
 
+            current_drive_ramp=0;
+            current_strafe_ramp=0;
+            current_turn_ramp=0;
+
         } else
         {
 
@@ -213,12 +204,16 @@ public final class MecanumDriveMona {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 
+            TelemetryPacket packet = new TelemetryPacket();
 
 //            //todo cleaned this up, it needs to be tested
             current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
             current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
             current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
 
+            packet.put("current_drive_ramp", current_drive_ramp);
+            packet.put("current_strafe_ramp", current_strafe_ramp);
+            packet.put("current_turn_ramp", current_turn_ramp);
 
             double dPercent = abs(current_drive_ramp) / (abs(current_drive_ramp) + abs(current_strafe_ramp) + abs(current_turn_ramp));
             double sPercent = abs(current_strafe_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
@@ -234,6 +229,10 @@ public final class MecanumDriveMona {
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
+            packet.put("leftFrontTargetSpeed", leftFrontTargetSpeed);
+            packet.put("leftFrontCurrentSpeed", leftFront.getVelocity());
+
+            FtcDashboard.getInstance().sendTelemetryPacket(packet);
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;

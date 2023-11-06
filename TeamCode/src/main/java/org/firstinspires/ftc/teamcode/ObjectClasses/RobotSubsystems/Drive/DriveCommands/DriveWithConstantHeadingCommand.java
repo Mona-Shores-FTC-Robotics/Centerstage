@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Drive
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
@@ -11,8 +12,13 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveS
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.TurnPIDController;
 
 import java.util.function.DoubleSupplier;
-
+@Config
 public class DriveWithConstantHeadingCommand extends CommandBase {
+
+    public static double P_TERM = .1;
+    public static double I_TERM;
+    public static double D_TERM;
+    public static double F_TERM;
 
     private final DriveSubsystem driveSubsystem;
 
@@ -42,7 +48,7 @@ public class DriveWithConstantHeadingCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        pid = new TurnPIDController(lockedHeadingDegrees, .1, 0, 0, 0);
+        pid = new TurnPIDController(lockedHeadingDegrees, P_TERM, I_TERM, D_TERM, F_TERM);
         dash = FtcDashboard.getInstance();
         c = new Canvas();
     }

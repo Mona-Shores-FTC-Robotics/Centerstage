@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MecanumKinematics;
@@ -31,6 +33,21 @@ public class DriveSubsystem extends SubsystemBase {
         public double safetyDriveSpeedFactor = .7;
     }
 
+    public static class ParamsMona {
+        public double DRIVE_RAMP = .06; //ken ramp
+        public double STRAFE_RAMP = .05;
+        public double TURN_RAMP = .05;
+
+        public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
+
+        //it looks to me like just using a feedforward of 12.5 gets the actual speed to match the target. The PID doesn't seem to really do anything.
+        public double P =0; // default = 10
+        public double D =0; // default = 0
+        public double I =0; // default = 3
+        public double F =8; // default = 0
+    }
+
+
     public static DriveParameters driveParameters= new DriveParameters();
 
     public final MecanumDriveMona mecanumDrive;
@@ -56,6 +73,13 @@ public class DriveSubsystem extends SubsystemBase {
         drivingToAprilTag=false;
         fieldOrientedControl=false;
         mecanumDrive.init();
+    }
+
+    public void periodic(){
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
     }
 
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
@@ -111,39 +135,9 @@ public class DriveSubsystem extends SubsystemBase {
         turn = rightXAdjusted;
     }
 
-    public void setDrivePowers(PoseVelocity2d powers) {
-        MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
-                PoseVelocity2dDual.constant(powers, 1));
-
-        double maxPowerMag = 1;
-        for (DualNum<Time> power : wheelVels.all()) {
-            maxPowerMag = Math.max(maxPowerMag, power.value());
-        }
-
-        mecanumDrive.leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag);
-        mecanumDrive.leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag);
-        mecanumDrive.rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag);
-        mecanumDrive.rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
-    }
-
-    public Command  driveRobotCentric(DoubleSupplier leftY, DoubleSupplier leftX, DoubleSupplier rightX) {
-        return new RunCommand(
-                () -> Robot.getInstance().getDriveSubsystem().setDrivePowers(new PoseVelocity2d(
-                        new Vector2d(
-                            leftY.getAsDouble(),
-                            -leftX.getAsDouble()
-                    ),
-                    -rightX.getAsDouble()
-            )), this
-        );
-    }
-
-
     public void fieldOrientedControl (double leftY, double leftX){
-
         double y = leftY;
         double x = leftX;
-
         double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
 
         // Rotate the movement direction counter to the bot's rotation
@@ -152,29 +146,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
-
-
-
-//    This does not work.
-//    public Command driveFieldCentric(DoubleSupplier leftY, DoubleSupplier leftX, DoubleSupplier rightX) {
-//        Vector2d input = new Vector2d(
-//                leftY.getAsDouble(),
-//                -leftX.getAsDouble()
-//        );
-//
-//        Vector2d rotated = mecanumDrive.pose.heading.inverse().times(new Vector2d(-input.x, input.y));
-//
-//        return new RunCommand(
-//                () -> Robot.getInstance().getDriveSubsystem().setDrivePowers(new PoseVelocity2d(
-//                        new Vector2d(
-//                                rotated.x,
-//                                rotated.y
-//                        ),
-//                        -rightX.getAsDouble()
-//                )), this
-//        );
-//    }
-
 }
 
 

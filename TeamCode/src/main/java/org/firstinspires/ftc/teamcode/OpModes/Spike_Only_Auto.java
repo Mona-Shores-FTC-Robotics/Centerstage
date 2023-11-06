@@ -30,13 +30,13 @@ public class Spike_Only_Auto extends LinearOpMode {
     @Override
     public void runOpMode() {
         /** Create and Initialize the robot **/
-        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
-        robot.init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO);
 
-        robot.getVisionSubsystem().SwitchToInitVisionProcessor();
+        Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         RoutesSpikeOnly.BuildRoutes(roadRunnerDriveSubsystem);
@@ -51,7 +51,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         }
 
         //Reset Gyro
-        robot.getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
@@ -62,13 +62,13 @@ public class Spike_Only_Auto extends LinearOpMode {
         sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
 
         //Set the starting pose of the robot
-        robot.getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
 
         //After Init switch the vision processing to AprilTags
-        robot.getVisionSubsystem().SwitchToAprilTagProcessor();
+        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Check each AllianceColor/SideOfField combination and drive the route according to the team prop location
         CheckBlueBackstage();

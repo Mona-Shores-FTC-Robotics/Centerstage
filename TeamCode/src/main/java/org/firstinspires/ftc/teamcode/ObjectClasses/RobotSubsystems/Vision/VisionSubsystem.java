@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Visio
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -32,7 +33,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
+@Config
 public final class VisionSubsystem extends SubsystemBase {
 
     public static VisionSubsystem.TunableVisionConstants tunableVisionConstants = new VisionSubsystem.TunableVisionConstants();
@@ -447,7 +448,7 @@ public final class VisionSubsystem extends SubsystemBase {
     //  1) the delivery location is right; or
     //  2) the delivery location is center, but center isn't found
     //  3) the delivery location is left, but left isn't found
-    public void AutoDriveToBackdropBlue() {
+    public boolean AutoDriveToBackdropBlue() {
         if (        BLUE_BACKDROP_RIGHT_TAG.isDetected && (
                     getDeliverLocationBlue().equals(DeliverLocation.RIGHT)    ||
                     (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)       ||
@@ -467,9 +468,7 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_RIGHT_TAG);
-
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_RIGHT_TAG);
         }
         //Drive to the Center backdrop if its the deliver location, or
         // if its left, but left is not detected or
@@ -494,8 +493,8 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_CENTER_TAG);
             telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_CENTER_TAG);
         }
 
         //Drive to the Right backdrop if its the deliver location, or
@@ -519,14 +518,13 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_LEFT_TAG);
-
             telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, BLUE_BACKDROP_LEFT_TAG);
         }
-
+        return false;
     }
 
-    public void AutoDriveToBackdropRed() {
+    public boolean AutoDriveToBackdropRed() {
 
         if (    RED_BACKDROP_LEFT_TAG.isDetected && (
                 getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
@@ -546,9 +544,9 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
-
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
+
         } else if (     RED_BACKDROP_CENTER_TAG.isDetected && (
                         getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
                        (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
@@ -568,9 +566,9 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
-
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
+
         }
         else if ( RED_BACKDROP_RIGHT_TAG.isDetected && (
                  getDeliverLocationRed().equals(DeliverLocation.RIGHT) ||
@@ -591,10 +589,10 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_RIGHT_TAG);
-
             telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_RIGHT_TAG);
         }
+        return false;
     }
 
 
@@ -621,8 +619,7 @@ public final class VisionSubsystem extends SubsystemBase {
         } else return deliverLocationBlue;
     }
 
-
-    private void resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
+    private boolean resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
         if ((Math.abs(drive) < .13) && (Math.abs(strafe) < .13) && (Math.abs(turn) <.13)){
@@ -636,7 +633,9 @@ public final class VisionSubsystem extends SubsystemBase {
             Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = realPose;
             telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
+            return true;
         }
+        return false;
     }
 
 }
