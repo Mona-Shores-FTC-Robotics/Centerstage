@@ -70,8 +70,9 @@ public class VisionDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.LEFT);}));
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.LEFT);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -79,8 +80,9 @@ public class VisionDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.CENTER);}));
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.CENTER);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -88,8 +90,9 @@ public class VisionDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);}));
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -99,7 +102,7 @@ public class VisionDriverBindings {
 
         //not sure if this should even be an option
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new InstantCommand( ()-> {
+                .whenPressed(new InstantCommand(() -> {
                     Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
                 }));
 
@@ -109,14 +112,12 @@ public class VisionDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.START)
-                .whenPressed(new InstantCommand( ()-> {
-                    if (!Robot.getInstance().getDriveSubsystem().fieldOrientedControl) {
-                        Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-                        Robot.getInstance().getDriveSubsystem().fieldOrientedControl=true;
-                    } else {
-                        Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
-                        Robot.getInstance().getDriveSubsystem().fieldOrientedControl=false;
-                    }
+                .toggleWhenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+                }), new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
                 }));
     }
 
