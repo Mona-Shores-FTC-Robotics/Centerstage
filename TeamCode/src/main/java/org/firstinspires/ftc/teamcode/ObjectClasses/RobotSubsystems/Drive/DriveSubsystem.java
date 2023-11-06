@@ -11,6 +11,8 @@ import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -133,15 +135,13 @@ public class DriveSubsystem extends SubsystemBase {
         double y = controllerDrive;
         double x = controllerStrafe;
 
-        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
+        double botHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw((AngleUnit.RADIANS));
 
         // Rotate the movement direction counter to the bot's rotation
-        Robot.getInstance().getDriveSubsystem().strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        Robot.getInstance().getDriveSubsystem().drive = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+        strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        drive = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-        Robot.getInstance().getDriveSubsystem().strafe = Math.min( x * 1.1, 1);  // Counteract imperfect strafing
-
-
+        strafe = Math.min( strafe * 1.1, 1);  // Counteract imperfect strafing
     }
 
 
