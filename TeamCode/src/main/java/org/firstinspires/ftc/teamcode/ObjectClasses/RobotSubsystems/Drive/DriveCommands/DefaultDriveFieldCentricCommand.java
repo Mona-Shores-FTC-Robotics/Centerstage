@@ -55,7 +55,7 @@ public class DefaultDriveFieldCentricCommand extends CommandBase {
 
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
         driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), turnSupplier.getAsDouble());
-
+        driveSubsystem.fieldOrientedControl(driveSubsystem.drive, driveSubsystem.strafe);
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
 
         p.put("x", mecanumDrive.pose.position.x);

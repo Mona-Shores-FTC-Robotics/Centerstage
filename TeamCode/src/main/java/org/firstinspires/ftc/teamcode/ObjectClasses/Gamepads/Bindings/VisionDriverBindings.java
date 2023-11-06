@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveFieldCentricCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions.MakeBackUpFromRedBackdropAction;
@@ -23,10 +24,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 public class VisionDriverBindings {
     public static Command defaultDriveCommand;
-    public static Command defaultRRFieldCentricCommand;
-    public static Command defaultRRFieldCentricCommand2;
+    public static Command defaultFieldCentricCommand;
     public static Command defaultRRRobotCentricCommand;
-    public static Command defaultRRRobotCentricCommand2;
     public static Command driveWhileAt0Heading;
     public static Command backupFromBackdropCommand;
 
@@ -39,7 +38,7 @@ public class VisionDriverBindings {
         // LEFT STICK / RIGHT STICK - Default Driving           //
         //                                                      //
         //////////////////////////////////////////////////////////
-        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultRRFieldCentricCommand2);
+        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -104,7 +103,7 @@ public class VisionDriverBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed(new InstantCommand( ()-> {
                     Robot.getInstance().getActiveOpMode().telemetry.addLine("Mona driving");
-                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultDriveCommand);}));
+                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);}));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -113,8 +112,8 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.START)
                 .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("RR Field Centric Driving");
-                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultRRFieldCentricCommand);
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);
                     Robot.getInstance().getActiveOpMode().telemetry.addData("current command", CommandScheduler.getInstance().getDefaultCommand(Robot.getInstance().getDriveSubsystem()));
                 }));
     }
@@ -126,7 +125,14 @@ public class VisionDriverBindings {
                 GamepadHandling.getDriverGamepad()::getRightX
         );
 
-        defaultRRRobotCentricCommand2 = Robot.getInstance().getDriveSubsystem().driveRobotCentric(
+        defaultFieldCentricCommand = new DefaultDriveFieldCentricCommand(Robot.getInstance().getDriveSubsystem(),
+                GamepadHandling.getDriverGamepad()::getLeftY,
+                GamepadHandling.getDriverGamepad()::getLeftX,
+                GamepadHandling.getDriverGamepad()::getRightX
+        );
+
+
+        defaultRRRobotCentricCommand = Robot.getInstance().getDriveSubsystem().driveRobotCentric(
                 GamepadHandling.getDriverGamepad()::getLeftY,
                 GamepadHandling.getDriverGamepad()::getLeftX,
                 GamepadHandling.getDriverGamepad()::getRightX

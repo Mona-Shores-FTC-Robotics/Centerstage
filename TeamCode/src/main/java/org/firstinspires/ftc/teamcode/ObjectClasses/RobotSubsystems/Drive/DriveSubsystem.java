@@ -127,6 +127,19 @@ public class DriveSubsystem extends SubsystemBase {
         );
     }
 
+
+    public void fieldOrientedControl (double y, double x){
+
+        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
+
+        // Rotate the movement direction counter to the bot's rotation
+        Robot.getInstance().getDriveSubsystem().drive = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        Robot.getInstance().getDriveSubsystem().strafe = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        Robot.getInstance().getDriveSubsystem().strafe = Math.min( x * 1.1, 1);  // Counteract imperfect strafing
+    }
+
+
 //    This does not work.
 //    public Command driveFieldCentric(DoubleSupplier leftY, DoubleSupplier leftX, DoubleSupplier rightX) {
 //        Vector2d input = new Vector2d(
