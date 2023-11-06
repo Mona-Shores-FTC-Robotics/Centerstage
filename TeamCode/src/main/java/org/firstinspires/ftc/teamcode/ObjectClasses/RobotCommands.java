@@ -47,24 +47,6 @@ public abstract class RobotCommands {
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static MecanumDriveMona mecanumDrive;
 
-    public static void MakeRobotDriveBaseCommands() {
-        driveSubsystem = Robot.getInstance().getDriveSubsystem();
-        mecanumDrive = driveSubsystem.mecanumDrive;
-
-
-        blueBackdropBackup = MakeCancelableBackupFromBlueBackdropCommand();
-        redBackdropBackup = MakeCancelableBackupFromRedBackdropCommand();
-
-    }
-
-    public static void MakeRobotVisionCommands() {
-        MakeRobotDriveBaseCommands();
-    }
-
-    public static void MakeRobotIntakeCommands() {
-        intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
-    }
-
 
     public static void MakeRobotScoringArmCommands() {
 
@@ -103,11 +85,6 @@ public abstract class RobotCommands {
 //        scorePixel = MakeScorePixelCommand();
     }
 
-    public static void MakeRobotCenterStageCommands() {
-        MakeRobotDriveBaseCommands();
-
-    }
-
     private static SequentialCommandGroup MakeScorePixelCommand() {
         scorePixel = new SequentialCommandGroup(
                 new ParallelCommandGroup(
@@ -123,23 +100,5 @@ public abstract class RobotCommands {
                 liftHome
         );
         return scorePixel;
-    }
-
-    private static ParallelRaceGroup MakeCancelableBackupFromBlueBackdropCommand() {
-        MakeBackUpFromBlueBackdropAction makeBackUpFromBlueBackdropAction = new MakeBackUpFromBlueBackdropAction();
-        ParallelRaceGroup seqCommand = new ParallelRaceGroup(
-                new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromBlueBackdropAction.makeAction()),
-                new IsGamepadActiveCommand()
-        );
-        return seqCommand;
-    }
-
-    private static ParallelRaceGroup MakeCancelableBackupFromRedBackdropCommand() {
-        MakeBackUpFromRedBackdropAction makeBackUpFromRedBackdropAction = new MakeBackUpFromRedBackdropAction();
-        ParallelRaceGroup seqCommand = new ParallelRaceGroup(
-                new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromRedBackdropAction.makeAction()),
-                new IsGamepadActiveCommand()
-        );
-        return seqCommand;
     }
 }

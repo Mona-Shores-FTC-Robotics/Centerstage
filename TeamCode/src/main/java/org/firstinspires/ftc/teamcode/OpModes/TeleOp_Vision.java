@@ -80,9 +80,6 @@ public class TeleOp_Vision extends LinearOpMode
         while (opModeIsActive())
         {
             //Run the Scheduler
-
-            CommandScheduler hi = CommandScheduler.getInstance();
-
             CommandScheduler.getInstance().run();
             GamepadHandling.getDriverGamepad().readButtons();
 
@@ -94,17 +91,6 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Update robot pose
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
-
-            //drive backwards and rotate toward wing
-            //we could make this cleaner, but for now I like knowing this is based on Alliance Color - easy to forget if we bury it
-            if (GamepadHandling.getDriverGamepad().wasJustPressed(GamepadKeys.Button.Y))
-            {
-                if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
-                    RobotCommands.redBackdropBackup.schedule();
-                } else{
-                    RobotCommands.blueBackdropBackup.schedule();
-                }
-            }
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {

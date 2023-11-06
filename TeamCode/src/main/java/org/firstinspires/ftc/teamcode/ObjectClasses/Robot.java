@@ -120,15 +120,12 @@ public class Robot {
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
-                //Create Commands
-                RobotCommands.MakeRobotDriveBaseCommands();
                 break;
             }
             case ROBOT_VISION: {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 visionSubsystem.init();
-                RobotCommands.MakeRobotVisionCommands();
                 break;
             }
             case ROBOT_SCORING_ARM: {
@@ -140,7 +137,6 @@ public class Robot {
             }
             case ROBOT_INTAKE: {
                 intakeSubsystem.init();
-                RobotCommands.MakeRobotIntakeCommands();
                 break;
             }
             case ROBOT_CENTERSTAGE: {
@@ -151,7 +147,6 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-                RobotCommands.MakeRobotCenterStageCommands();
                 //Systems to be added:
                 //Servo - Drone launch release
 
