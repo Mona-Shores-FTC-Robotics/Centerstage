@@ -14,7 +14,9 @@ public class IsGamepadActiveCommand extends CommandBase {
 
     @Override
     public void execute(){
-        done = GamepadHandling.driverGamepadIsActive();
+        done = GamepadHandling.driverGamepadIsActive(   GamepadHandling.getDriverGamepad().getLeftY(),
+                                                        GamepadHandling.getDriverGamepad().getLeftX(),
+                                                        GamepadHandling.getDriverGamepad().getRightX());
     }
 
     @Override

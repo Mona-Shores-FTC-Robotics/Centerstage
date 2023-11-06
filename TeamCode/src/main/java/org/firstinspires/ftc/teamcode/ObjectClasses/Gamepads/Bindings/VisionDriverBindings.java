@@ -89,7 +89,6 @@ public class VisionDriverBindings {
         //  B BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
-
         gamepad.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(new InstantCommand( ()-> {
                     Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);}));
@@ -99,7 +98,10 @@ public class VisionDriverBindings {
         //  BACK/OPTIONS BUTTON                                 //
         //                                                      //
         //////////////////////////////////////////////////////////
-
+        gamepad.getGamepadButton(GamepadKeys.Button.BACK)
+                .whenPressed(new InstantCommand( ()-> {
+                    Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -108,9 +110,13 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.START)
                 .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);
-                    Robot.getInstance().getActiveOpMode().telemetry.addData("current command", CommandScheduler.getInstance().getDefaultCommand(Robot.getInstance().getDriveSubsystem()));
+                    if (!Robot.getInstance().getDriveSubsystem().fieldOrientedControl) {
+                        Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                        Robot.getInstance().getDriveSubsystem().fieldOrientedControl=true;
+                    } else {
+                        Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+                        Robot.getInstance().getDriveSubsystem().fieldOrientedControl=false;
+                    }
                 }));
     }
 

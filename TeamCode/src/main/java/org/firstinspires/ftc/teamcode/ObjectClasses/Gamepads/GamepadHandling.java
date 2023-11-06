@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import java.util.HashMap;
 
 public class GamepadHandling {
+    private static double DEAD_ZONE=.1;
 
     private static GamepadEx driverGamepad;
     private static GamepadEx operatorGamepad;
@@ -79,10 +80,10 @@ public class GamepadHandling {
         timeoutRumbleCounter=0;
     }
 
-    public static Boolean driverGamepadIsActive() {
-        if     (Math.abs(GamepadHandling.getDriverGamepad().getLeftY()) > .1 ||
-                Math.abs(GamepadHandling.getDriverGamepad().getLeftX()) > .1 ||
-                Math.abs(GamepadHandling.getDriverGamepad().getRightX()) > .1 ){
+    public static Boolean driverGamepadIsActive(double leftY, double leftX, double rightX) {
+        if     (Math.abs(leftY) > DEAD_ZONE ||
+                Math.abs(leftX) > DEAD_ZONE ||
+                Math.abs(rightX) > DEAD_ZONE ){
             return true;
         } else return false;
     }

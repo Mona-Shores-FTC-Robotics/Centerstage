@@ -36,10 +36,15 @@ public class DriveSubsystem extends SubsystemBase {
     public final MecanumDriveMona mecanumDrive;
     public VisionSubsystem visionSubsystem;
     public boolean drivingToAprilTag;
+    public boolean fieldOrientedControl;
 
     public double drive;
     public double strafe;
     public double turn;
+
+    public double leftYAdjusted;
+    public double leftXAdjusted;
+    public double rightXAdjusted;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
         mecanumDrive = new MecanumDriveMona();
@@ -49,57 +54,61 @@ public class DriveSubsystem extends SubsystemBase {
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
         drivingToAprilTag=false;
+        fieldOrientedControl=false;
         mecanumDrive.init();
     }
 
-    public void setDriveStrafeTurnValues(double controllerDrive, double controllerStrafe, double controllerTurn ){
+    public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
 
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (GamepadHandling.driverGamepadIsActive() || drivingToAprilTag) {
-
-            //Increase strafe dead zone to 30%
-            if (Math.abs(controllerStrafe) < .3) {controllerStrafe=0;}
+        if (GamepadHandling.driverGamepadIsActive(leftY, leftX, rightX) || drivingToAprilTag) {
 
             //apply speed factors
-            controllerDrive = controllerDrive * driveParameters.DRIVE_SPEED_FACTOR;
-            controllerStrafe = controllerStrafe * driveParameters.STRAFE_SPEED_FACTOR;
-            controllerTurn = controllerTurn * driveParameters.TURN_SPEED_FACTOR;
+            leftYAdjusted = leftY * driveParameters.DRIVE_SPEED_FACTOR;
+            leftXAdjusted = leftX * driveParameters.STRAFE_SPEED_FACTOR;
+            rightXAdjusted = rightX * driveParameters.TURN_SPEED_FACTOR;
+
+            //adjust stick values if field oriented
+            if (fieldOrientedControl){
+                fieldOrientedControl(leftYAdjusted, leftXAdjusted);
+            }
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
-            if (controllerDrive < driveParameters.APRIL_TAG_CANCEL_THRESHOLD) drivingToAprilTag = false;
+            // I'm not sure if this works for field oriented control
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD) drivingToAprilTag = false;
 
             //Align to the Backdrop AprilTags - CASE RED
             if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFound &&
-                    (controllerDrive > .1 || drivingToAprilTag) &&
+                    (leftYAdjusted > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 visionSubsystem.AutoDriveToBackdropRed();
-                controllerDrive = mecanumDrive.aprilTagDrive;
-                controllerStrafe = mecanumDrive.aprilTagStrafe;
-                controllerTurn = mecanumDrive.aprilTagTurn;
+                leftYAdjusted = mecanumDrive.aprilTagDrive;
+                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                rightXAdjusted = mecanumDrive.aprilTagTurn;
                 drivingToAprilTag = true;
             }
 
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
-                    (controllerDrive > .1 || drivingToAprilTag) &&
+                    (leftYAdjusted > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
                 visionSubsystem.AutoDriveToBackdropBlue();
-                controllerDrive = mecanumDrive.aprilTagDrive;
-                controllerStrafe = mecanumDrive.aprilTagStrafe;
-                controllerTurn = mecanumDrive.aprilTagTurn;
+                leftYAdjusted = mecanumDrive.aprilTagDrive;
+                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                rightXAdjusted = mecanumDrive.aprilTagTurn;
                 drivingToAprilTag = true;
             } else drivingToAprilTag = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
-            controllerDrive = 0;
-            controllerStrafe = 0;
-            controllerTurn = 0;
+            leftYAdjusted = 0;
+            leftXAdjusted = 0;
+            rightXAdjusted = 0;
         }
-        drive = controllerDrive;
-        strafe = controllerStrafe;
-        turn = controllerTurn;
+        drive = leftYAdjusted;
+        strafe = leftXAdjusted;
+        turn = rightXAdjusted;
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
@@ -130,18 +139,18 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
 
-    public void fieldOrientedControl (double controllerDrive, double controllerStrafe){
+    public void fieldOrientedControl (double leftY, double leftX){
 
-        double y = controllerDrive;
-        double x = controllerStrafe;
+        double y = leftY;
+        double x = leftX;
 
-        double botHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw((AngleUnit.RADIANS));
+        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
 
         // Rotate the movement direction counter to the bot's rotation
-        strafe = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        drive = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+        leftXAdjusted = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        leftYAdjusted = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-        strafe = Math.min( strafe * 1.1, 1);  // Counteract imperfect strafing
+        leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
 
 
