@@ -214,10 +214,10 @@ public final class MecanumDriveMona {
             }
 
 
-            //todo cleaned this up, it needs to be tested
-            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
-            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
-            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
+//            //todo cleaned this up, it needs to be tested
+//            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
+//            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
+//            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
 
             double dPercent = abs(current_drive_ramp) / (abs(current_drive_ramp) + abs(current_strafe_ramp) + abs(current_turn_ramp));
             double sPercent = abs(current_strafe_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
