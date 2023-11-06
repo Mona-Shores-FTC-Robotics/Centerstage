@@ -9,13 +9,13 @@ public class IndicatorLightSubsystem extends SubsystemBase {
     public static DigitalChannel red;
     public static DigitalChannel green;
     private DigitalChannel touch;
+    public LightStates currentState;
 
-    public enum lightStates {
+    public enum LightStates {
         OFF,
         RED,
         GREEN,
         AMBER,
-
     }
 
 
@@ -23,38 +23,17 @@ public class IndicatorLightSubsystem extends SubsystemBase {
         red = hMap.get(DigitalChannel.class, name);
         green = hMap.get(DigitalChannel.class, name);
         touch = hMap.get(DigitalChannel.class, name);
-
     }
-
 
     public void init() {
         red.setMode(DigitalChannel.Mode.OUTPUT);
         green.setMode(DigitalChannel.Mode.OUTPUT);
-
+        currentState = LightStates.OFF;
     }
 
-    public void IndicatorLightStates() {
-
-        switch (lightStatesNew) {
-            case OFF:
-                red.setState(true);
-                green.setState(true);
-                break;
-            case RED:
-                red.setState(true);
-                green.setState(false);
-                break;
-            case GREEN:
-                red.setState(false);
-                green.setState(true);
-                break;
-            case AMBER:
-                red.setState(false);
-                green.setState(false);
-                break;
-
+    public void periodic() {
+        if (touch.getState()){
+         new IndicatorLightChangeCommand(this);
         }
-
-
     }
 }

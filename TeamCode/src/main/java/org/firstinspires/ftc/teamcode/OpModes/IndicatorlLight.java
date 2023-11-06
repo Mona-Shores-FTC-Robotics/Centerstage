@@ -12,8 +12,6 @@ public class IndicatorlLight extends LinearOpMode {
     private  DigitalChannel red;
     private DigitalChannel green;
 
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         red = hardwareMap.get(DigitalChannel.class, "red");
