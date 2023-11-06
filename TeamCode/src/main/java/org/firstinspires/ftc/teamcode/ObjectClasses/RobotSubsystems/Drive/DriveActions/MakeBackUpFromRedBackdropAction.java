@@ -1,6 +1,8 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.HALF_TILE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TILE;
+
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
@@ -11,16 +13,14 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
 import java.util.Arrays;
 
-public class MakeMoveToPointAction {
+public class MakeBackUpFromRedBackdropAction {
     private Action t;
 
-    private double xTarget;
-    private double yTarget;
     private double currentHeading;
 
     private MecanumDriveMona drive;
@@ -28,12 +28,9 @@ public class MakeMoveToPointAction {
     public AccelConstraint overrideAccelConstraint;
     public TurnConstraints overrideTurnConstraint;
 
-    public Action moveToPoint(double x, double y) {
-        xTarget = x;
-        yTarget = y;
-        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
+    public Action makeAction() {
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
@@ -47,9 +44,9 @@ public class MakeMoveToPointAction {
                 Math.toRadians(5), -Math.toRadians(5), Math.toRadians(5));
 
         t = drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d( xTarget, yTarget), currentHeading)
+                .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
+                .turn(Math.toRadians(-90))
                 .build();
-
         return t;
     }
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActions;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.HALF_TILE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TILE;
@@ -18,9 +18,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Mecanu
 
 import java.util.Arrays;
 
-public class MakeBackUpFromRedBackdropAction {
+public class MakeBackUpFromBlueBackdropAction {
     private Action t;
-
     private double currentHeading;
 
     private MecanumDriveMona drive;
@@ -45,7 +44,7 @@ public class MakeBackUpFromRedBackdropAction {
 
         t = drive.actionBuilder(drive.pose)
                 .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
-                .turn(Math.toRadians(-90))
+                .turn(Math.toRadians(90))
                 .build();
         return t;
     }
