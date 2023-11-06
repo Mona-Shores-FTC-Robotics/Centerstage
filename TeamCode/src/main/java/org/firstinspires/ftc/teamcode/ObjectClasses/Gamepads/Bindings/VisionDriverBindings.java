@@ -38,7 +38,7 @@ public class VisionDriverBindings {
         // LEFT STICK / RIGHT STICK - Default Driving           //
         //                                                      //
         //////////////////////////////////////////////////////////
-        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);
+        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultDriveCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -100,10 +100,6 @@ public class VisionDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        gamepad.getGamepadButton(GamepadKeys.Button.BACK)
-                .whenPressed(new InstantCommand( ()-> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Mona driving");
-                    CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultFieldCentricCommand);}));
 
         //////////////////////////////////////////////////////////
         //                                                      //

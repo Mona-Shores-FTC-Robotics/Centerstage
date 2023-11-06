@@ -94,9 +94,7 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
-
                 telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-
                 Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
             }
 
@@ -104,7 +102,6 @@ public class TeleOp_Vision extends LinearOpMode
             if (gamepad1.right_trigger>.1) {
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
                 Robot.getInstance().getGyroSubsystem().telemetryGyro();
-
                 telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
                 telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
                 telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());

@@ -44,7 +44,7 @@ public class MakeBackUpFromBlueBackdropAction {
 
         t = drive.actionBuilder(drive.pose)
                 .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
-                .turn(Math.toRadians(90))
+                .turn(Math.toRadians(-90))
                 .build();
         return t;
     }
