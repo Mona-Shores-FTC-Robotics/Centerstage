@@ -47,38 +47,6 @@ import java.util.LinkedList;
 @Config
 public final class MecanumDriveMona {
 
-    public static class ParamsRRMona {
-        /** Set Roadrunner motor parameters for faster drive motors **/
-
-        // drive model parameters
-        public double inPerTick =0.0317919075144509; //60.5\1903
-        public double lateralInPerTick =0.0325115144947169; // 60\1845.5
-        public double trackWidthTicks =631.8289216104534;
-
-        // feedforward parameters (in tick units)
-        public double kS =0.9574546275336608;
-        public double kV =0.004264232249424524;
-        public double kA =0.00055;
-
-        // path profile parameters (in inches)
-        public double maxWheelVel =25;
-        public double minProfileAccel =-30;
-        public double maxProfileAccel =30;
-
-        // turn profile parameters (in radians)
-        public double maxAngVel =Math.PI; // shared with path
-        public double maxAngAccel =Math.PI;
-
-        // path controller gains
-        public double axialGain =12;
-        public double lateralGain =8;
-        public double headingGain =8; // shared with turn
-
-        public double axialVelGain =1.1;
-        public double lateralVelGain =1.1;
-        public double headingVelGain =1.1; // shared with turn
-    }
-
     public static class ParamsDriveTrainConstants {
         // DriveTrain physical constants
         public static double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
@@ -87,14 +55,14 @@ public final class MecanumDriveMona {
     }
 
     public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
-    public static ParamsRRMona MotorParametersRR = new ParamsRRMona();
+    public static DriveSubsystem.ParamsRRMona MotorParametersRR = new DriveSubsystem.ParamsRRMona();
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
 
     public double drive, strafe, turn;
     public double last_drive=0, last_strafe=0, last_turn=0;
     public double current_drive_ramp = 0, current_strafe_ramp=0, current_turn_ramp=0;
     public double aprilTagDrive, aprilTagStrafe, aprilTagTurn;
-    private double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
+    public double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
 
     public MecanumKinematics kinematics;
     public MotorFeedforward feedforward;
@@ -205,16 +173,9 @@ public final class MecanumDriveMona {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 
-            TelemetryPacket packet = new TelemetryPacket();
-
-//            //todo cleaned this up, it needs to be tested
             current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
             current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
             current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
-
-            packet.put("current_drive_ramp", current_drive_ramp);
-            packet.put("current_strafe_ramp", current_strafe_ramp);
-            packet.put("current_turn_ramp", current_turn_ramp);
 
             double dPercent = abs(current_drive_ramp) / (abs(current_drive_ramp) + abs(current_strafe_ramp) + abs(current_turn_ramp));
             double sPercent = abs(current_strafe_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
@@ -230,10 +191,6 @@ public final class MecanumDriveMona {
             leftBack.setVelocity(leftBackTargetSpeed);
             rightBack.setVelocity(rightBackTargetSpeed);
 
-            packet.put("leftFrontTargetSpeed", leftFrontTargetSpeed);
-            packet.put("leftFrontCurrentSpeed", leftFront.getVelocity());
-
-            FtcDashboard.getInstance().sendTelemetryPacket(packet);
             last_drive=drive;
             last_strafe=strafe;
             last_turn=turn;

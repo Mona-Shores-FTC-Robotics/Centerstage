@@ -44,28 +44,12 @@ public class DefaultDriveCommand extends CommandBase {
     @Override
     public void initialize() {
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        dash = FtcDashboard.getInstance();
-        c = new Canvas();
     }
 
     @Override
     public void execute() {
-        p = new TelemetryPacket();
-        p.fieldOverlay().getOperations().addAll(c.getOperations());
-
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
         driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), turnSupplier.getAsDouble());
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
-
-        p.put("x", mecanumDrive.pose.position.x);
-        p.put("y", mecanumDrive.pose.position.y);
-        p.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
-
-        Canvas c = p.fieldOverlay();
-        mecanumDrive.drawPoseHistory(c);
-
-        c.setStroke("#3F51B5");
-        mecanumDrive.drawRobot(c, mecanumDrive.pose);
-        dash.sendTelemetryPacket(p);
     }
 }

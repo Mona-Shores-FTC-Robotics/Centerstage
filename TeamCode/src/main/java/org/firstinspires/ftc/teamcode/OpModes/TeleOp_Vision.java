@@ -45,9 +45,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
-
-
-
     @Override public void runOpMode()
     {
         //Create the Robot

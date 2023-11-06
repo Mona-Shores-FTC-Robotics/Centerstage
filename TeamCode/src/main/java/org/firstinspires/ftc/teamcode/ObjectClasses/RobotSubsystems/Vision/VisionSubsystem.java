@@ -52,6 +52,9 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SPEED_GAIN = 0.06;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
         public double STRAFE_GAIN = -0.034;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double DRIVE_FEEDFORWARD=.05;
+        public double STRAFE_FEEDFORWARD=.1;
+        public double TURN_FEEDFORWARD=.05;
         public double TURN_GAIN = -0.034;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -59,9 +62,14 @@ public final class VisionSubsystem extends SubsystemBase {
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double BACKDROP_DRIVE_THRESHOLD=.13;
+        public double BACKDROP_STRAFE_THRESHOLD=.13;
+        public double BACKDROP_TURN_THRESHOLD=.13;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=25;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
+    private int backdropPoseCount=0;
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
     private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -370,9 +378,9 @@ public final class VisionSubsystem extends SubsystemBase {
                 double yawError = RED_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+                double drive = ClipDrive(rangeError);
+                double turn = ClipTurn(headingError);
+                double strafe = ClipStrafe(yawError);
 
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -386,11 +394,10 @@ public final class VisionSubsystem extends SubsystemBase {
                 double headingError = RED_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.bearing;
                 double yawError = RED_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.yaw;
 
-
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+                double drive = ClipDrive(rangeError);
+                double turn = ClipTurn(headingError);
+                double strafe = ClipStrafe(yawError);
 
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -412,9 +419,9 @@ public final class VisionSubsystem extends SubsystemBase {
                 double yawError = BLUE_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the rtunableVisionConstants.obot to move.
-                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+                double drive = ClipDrive(rangeError);
+                double turn = ClipTurn(headingError);
+                double strafe = ClipStrafe(yawError);
 
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -430,9 +437,9 @@ public final class VisionSubsystem extends SubsystemBase {
                 double yawError = BLUE_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.yaw;
 
                 // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-                double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-                double strafe = Range.clip(-yawError *  tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+                double drive = ClipDrive(rangeError);
+                double turn = ClipTurn(headingError);
+                double strafe = ClipStrafe(yawError);
 
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -459,9 +466,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -484,9 +491,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             // set the drive/turn strafe values for AutoDriving
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
@@ -510,9 +517,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             double yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -536,9 +543,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -558,9 +565,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -581,9 +588,9 @@ public final class VisionSubsystem extends SubsystemBase {
             double headingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
             double yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
-            double drive = Range.clip(rangeError * tunableVisionConstants.SPEED_GAIN, -tunableVisionConstants.MAX_AUTO_SPEED, tunableVisionConstants.MAX_AUTO_SPEED);
-            double turn = Range.clip(headingError * tunableVisionConstants.TURN_GAIN, -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
-            double strafe = Range.clip(-yawError * tunableVisionConstants.STRAFE_GAIN, -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+            double drive = ClipDrive(rangeError);
+            double turn = ClipTurn(headingError);
+            double strafe = ClipStrafe(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -593,6 +600,29 @@ public final class VisionSubsystem extends SubsystemBase {
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_RIGHT_TAG);
         }
         return false;
+    }
+
+    private double ClipDrive(double rangeError) {
+        double drive = Range.clip(
+                    (rangeError * tunableVisionConstants.SPEED_GAIN) + //GAIN multiplied by Error
+                        (Math.signum(-rangeError)*tunableVisionConstants.DRIVE_FEEDFORWARD), //add a feedforward in the correct direction
+                                            -tunableVisionConstants.MAX_AUTO_SPEED, // clip to this low value
+                                            tunableVisionConstants.MAX_AUTO_SPEED); // or this high value
+        return drive;
+    }
+    private double ClipStrafe(double yawError) {
+          double strafe = Range.clip(
+                  (-yawError * tunableVisionConstants.STRAFE_GAIN)
+                          + (Math.signum(-yawError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
+                  -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
+          return strafe;
+    }
+    private double ClipTurn(double headingError) {
+        double turn = Range.clip(
+                (headingError * tunableVisionConstants.TURN_GAIN)
+                        + + (Math.signum(-headingError)*tunableVisionConstants.TURN_FEEDFORWARD),
+                -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
+        return turn;
     }
 
 
@@ -619,10 +649,13 @@ public final class VisionSubsystem extends SubsystemBase {
         } else return deliverLocationBlue;
     }
 
+    //returns false once the pose reaches a steady state for a certain number of checks
     private boolean resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
 
         //We have found the target if this is true
-        if ((Math.abs(drive) < .12) && (Math.abs(strafe) < .12) && (Math.abs(turn) <.12)){
+        if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
+                (Math.abs(strafe)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
+                (Math.abs(turn)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
             VectorF tagVector = tag.detection.metadata.fieldPosition;
             double tagPosXOnField = tagVector.get(0);
             double tagPosYOnField = tagVector.get(1);
@@ -633,10 +666,16 @@ public final class VisionSubsystem extends SubsystemBase {
             Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = realPose;
             telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
-            return true;
+
+            backdropPoseCount++;
+            if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
+                backdropPoseCount=0;
+                return false;
+            } else return true;
         }
-        return false;
+        return true;
     }
 
 }
+
 

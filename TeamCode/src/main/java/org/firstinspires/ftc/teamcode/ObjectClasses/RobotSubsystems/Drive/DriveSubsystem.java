@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -14,6 +18,7 @@ import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -34,9 +39,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static class ParamsMona {
-        public double DRIVE_RAMP = .06; //ken ramp
-        public double STRAFE_RAMP = .05;
-        public double TURN_RAMP = .05;
+        public double DRIVE_RAMP = .2; //ken ramp
+        public double STRAFE_RAMP = .22;
+        public double TURN_RAMP = .4;
 
         public double RAMP_THRESHOLD = .04; // This is the threshold at which we just clamp to the target drive/strafe/turn value
 
@@ -47,6 +52,37 @@ public class DriveSubsystem extends SubsystemBase {
         public double F =8; // default = 0
     }
 
+    public static class ParamsRRMona {
+        /** Set Roadrunner motor parameters for faster drive motors **/
+
+        // drive model parameters
+        public double inPerTick =0.0317919075144509; //60.5\1903
+        public double lateralInPerTick =0.0325115144947169; // 60\1845.5
+        public double trackWidthTicks =631.8289216104534;
+
+        // feedforward parameters (in tick units)
+        public double kS =0.9574546275336608;
+        public double kV =0.004264232249424524;
+        public double kA =0.00055;
+
+        // path profile parameters (in inches)
+        public double maxWheelVel =25;
+        public double minProfileAccel =-30;
+        public double maxProfileAccel =30;
+
+        // turn profile parameters (in radians)
+        public double maxAngVel =Math.PI; // shared with path
+        public double maxAngAccel =Math.PI;
+
+        // path controller gains
+        public double axialGain =12;
+        public double lateralGain =8;
+        public double headingGain =8; // shared with turn
+
+        public double axialVelGain =1.1;
+        public double lateralVelGain =1.1;
+        public double headingVelGain =1.1; // shared with turn
+    }
 
     public static DriveParameters driveParameters= new DriveParameters();
 
@@ -62,6 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
     public double leftYAdjusted;
     public double leftXAdjusted;
     public double rightXAdjusted;
+    public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
         mecanumDrive = new MecanumDriveMona();
@@ -73,6 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
         drivingToAprilTag=false;
         fieldOrientedControl=false;
         mecanumDrive.init();
+        c = new Canvas();
     }
 
     public void periodic(){
@@ -80,6 +118,39 @@ public class DriveSubsystem extends SubsystemBase {
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
+        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
+        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
+
+        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRF = Math.round(100.0 * mecanumDrive.rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedLB = Math.round(100.0 * mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRB = Math.round(100.0 * mecanumDrive.rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+
+        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRF = Math.round(100.0 * mecanumDrive.rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedLB = Math.round(100.0 * mecanumDrive.leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRB = Math.round(100.0 * mecanumDrive.rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+
+        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftFront.getPower()) / 100.0);
+        packet.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightFront.getPower()) / 100.0);
+        packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
+        packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
+
+        packet.fieldOverlay().getOperations().addAll(c.getOperations());
+        packet.put("x", mecanumDrive.pose.position.x);
+        packet.put("y", mecanumDrive.pose.position.y);
+        packet.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
+
+        Canvas c = packet.fieldOverlay();
+        mecanumDrive.drawPoseHistory(c);
+
+        c.setStroke("#3F51B5");
+        mecanumDrive.drawRobot(c, mecanumDrive.pose);
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
@@ -106,23 +177,20 @@ public class DriveSubsystem extends SubsystemBase {
                     visionSubsystem.redBackdropAprilTagFound &&
                     (leftYAdjusted > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                visionSubsystem.AutoDriveToBackdropRed();
+                drivingToAprilTag = visionSubsystem.AutoDriveToBackdropRed();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
-                drivingToAprilTag = true;
             }
-
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
                     (leftYAdjusted > .1 || drivingToAprilTag) &&
                     !GamepadHandling.getOverrideAprilTagDriving()) {
-                visionSubsystem.AutoDriveToBackdropBlue();
+                drivingToAprilTag = visionSubsystem.AutoDriveToBackdropBlue();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
-                drivingToAprilTag = true;
             } else drivingToAprilTag = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
