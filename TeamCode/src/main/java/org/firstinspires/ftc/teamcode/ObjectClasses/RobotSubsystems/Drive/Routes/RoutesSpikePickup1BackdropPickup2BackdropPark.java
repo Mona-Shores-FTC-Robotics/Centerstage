@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
@@ -48,12 +49,19 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .lineToX(RED_BACKDROP_STAGING.position.x)
                 .build();
 
-        Action redBackstageBotTeamPropRightRoute2 = new AutoDriveToBackDrop();
-
-        Action redBackstageBotTeamPropRightRoute2a = mecanumDrive.actionBuilder(RED_BACKDROP_CENTER)
-                .build();
+        Action redBackstageBotTeamPropRightRoute2 = new SleepAction(1);
+//
+//        Action redBackstageBotTeamPropRightRoute2a = mecanumDrive.actionBuilder(RED_BACKDROP_CENTER)
+//                .build();
 
         Action redBackstageBotTeamPropRightRoute3 = mecanumDrive.actionBuilder(RED_BACKDROP_RIGHT)
+                .splineToConstantHeading(PoseToVector(RED_BACKDROP_STAGING), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(RED_BACKDROP_STAGING.position.x)
+                .build();
+
+
+        Action redBackstageBotTeamPropRightRoute4 = mecanumDrive.actionBuilder(RED_BACKDROP_RIGHT)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_STAGING), TANGENT_TOWARD_AUDIENCE)
                 .splineToLinearHeading(RED_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
                 .lineToX(RED_BACKDROP_STAGING.position.x)
@@ -67,10 +75,10 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
         redBackstageBotTeamPropRightRoute = new SequentialAction(
                 redBackstageBotTeamPropRightRoute1,
                 redBackstageBotTeamPropRightRoute2,
-                redBackstageBotTeamPropRightRoute2a,
+//                redBackstageBotTeamPropRightRoute2a,
                 redBackstageBotTeamPropRightRoute3,
                 redBackstageBotTeamPropRightRoute2,
-                redBackstageBotTeamPropRightRoute3,
+                redBackstageBotTeamPropRightRoute4,
                 redBackstageBotTeamPropRightRoute5
         );
 

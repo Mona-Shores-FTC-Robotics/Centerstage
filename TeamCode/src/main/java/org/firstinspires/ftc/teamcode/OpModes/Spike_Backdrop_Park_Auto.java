@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeBackdropPark.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
@@ -39,7 +40,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikeBackdropPark.BuildRoutes(Robot.getInstance().getDriveSubsystem().mecanumDrive);
+        RoutesSpikePickup1BackdropPickup2BackdropPark.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
