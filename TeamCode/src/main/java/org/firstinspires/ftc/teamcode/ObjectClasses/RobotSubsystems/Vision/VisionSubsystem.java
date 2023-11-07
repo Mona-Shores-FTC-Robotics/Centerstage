@@ -62,9 +62,9 @@ public final class VisionSubsystem extends SubsystemBase {
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.13;
-        public double BACKDROP_STRAFE_THRESHOLD=.13;
-        public double BACKDROP_TURN_THRESHOLD=.13;
+        public double BACKDROP_DRIVE_THRESHOLD=.05;
+        public double BACKDROP_STRAFE_THRESHOLD=.05;
+        public double BACKDROP_TURN_THRESHOLD=.05;
         public int BACKDROP_POSE_COUNT_THRESHOLD=25;
     }
     private int blueTagFrameCount;
