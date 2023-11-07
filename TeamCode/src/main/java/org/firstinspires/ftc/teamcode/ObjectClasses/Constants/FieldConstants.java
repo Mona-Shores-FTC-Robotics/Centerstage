@@ -30,6 +30,7 @@ public class FieldConstants {
     public static double FACE_TOWARD_BACKSTAGE = Math.toRadians(0);
     public static double FACE_45_DEGREES = Math.toRadians(45);
     public static double FACE_TOWARD_BLUE = Math.toRadians(90);
+    public static double FACE_115_DEGREES = Math.toRadians(115);
     public static double FACE_135_DEGREES = Math.toRadians(135);
     public static double FACE_TOWARD_AUDIENCE = Math.toRadians(180);
     public static double FACE_225_DEGREES = Math.toRadians(225);
@@ -45,9 +46,10 @@ public class FieldConstants {
     public static double TANGENT_TOWARD_RED = Math.toRadians(270);
     public static double TANGENT_315_DEGREES = Math.toRadians(315);
 
-    public static Pose2d BLUE_BACKDROP = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP = new Pose2d(2*TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
+
+    public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-10, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE+10, TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, TILE+HALF_TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
@@ -56,6 +58,7 @@ public class FieldConstants {
     public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -TILE-TILE+QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+
     public static Pose2d BLUE_AUDIENCE_START_POSE = new Pose2d(-HALF_TILE-TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_RED);
 
     public static Pose2d BLUE_BACKSTAGE_START_POSE = new Pose2d(HALF_TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_RED);
