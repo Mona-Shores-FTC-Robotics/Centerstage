@@ -68,6 +68,12 @@ public class Alightment_Test_Auto extends LinearOpMode {
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
+        while(!Robot.getInstance().getVisionSubsystem().getVisionPortal().getProcessorEnabled(
+                Robot.getInstance().getVisionSubsystem().getAprilTagProcessor()))
+        {
+            //wait for april tag processor to be enabled
+        };
+
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);

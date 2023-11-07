@@ -17,13 +17,14 @@ public class AutoDriveToBackDrop implements Action {
 
     public AutoDriveToBackDrop() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
+        running=true;
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
-        if (MatchConfig.finalAllianceColor== InitVisionProcessor.AllianceColor.RED) {
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
             running = Robot.getInstance().getVisionSubsystem().AutoDriveToBackdropRed();
         } else{
             running = Robot.getInstance().getVisionSubsystem().AutoDriveToBackdropBlue();
