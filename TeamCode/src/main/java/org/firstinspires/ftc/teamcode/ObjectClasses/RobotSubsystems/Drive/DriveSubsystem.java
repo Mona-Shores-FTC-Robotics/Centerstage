@@ -143,8 +143,6 @@ public class DriveSubsystem extends SubsystemBase {
         packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
         packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
 
-        int size = mecanumDrive.poseHistory.size();
-
 
         if (visionSubsystem.resetPoseReady){
             visionSubsystem.resetPoseReady=false;

@@ -103,6 +103,10 @@ public class TeleOp_Vision extends LinearOpMode
             telemetry.update();
         }
         CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        Robot.reset();
     }
 }
 

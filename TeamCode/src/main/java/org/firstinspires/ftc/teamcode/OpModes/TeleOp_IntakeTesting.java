@@ -88,5 +88,8 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
             telemetry.update();
         }
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
+        Robot.reset();
     }
 }

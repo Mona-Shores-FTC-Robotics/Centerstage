@@ -117,8 +117,6 @@ public final class MecanumDriveMona {
 
     public void init() {
 
-
-
     }
 
     private void SetRoadRunnerParameters() {

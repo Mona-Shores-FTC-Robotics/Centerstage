@@ -96,6 +96,10 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getShoulderSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getLiftSlideSubsystem());
+        Robot.reset();
     }
 }
 

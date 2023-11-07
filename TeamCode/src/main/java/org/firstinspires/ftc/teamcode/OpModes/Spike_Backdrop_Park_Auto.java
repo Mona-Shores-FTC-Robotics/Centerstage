@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -81,6 +82,11 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(selectedRoute);
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        Robot.reset();
     }
 
     private boolean CheckRedAudience() {

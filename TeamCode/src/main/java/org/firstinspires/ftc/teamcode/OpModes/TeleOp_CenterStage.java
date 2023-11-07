@@ -90,6 +90,13 @@ public class TeleOp_CenterStage extends LinearOpMode
             telemetry.update();
             sleep(10);
         }
+
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        Robot.reset();
+
     }
 
     private void EndGameRumble() {

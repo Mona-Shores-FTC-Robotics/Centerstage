@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -77,6 +78,12 @@ public class Alightment_Test_Auto extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        Robot.reset();
     }
+
 }
 
