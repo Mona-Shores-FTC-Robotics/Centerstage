@@ -75,14 +75,12 @@ public final class MecanumDriveMona {
     public Localizer localizer;
     public Pose2d pose;
 
-    private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+    public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
-    public MecanumDriveMona() {
-    }
-
-    public void init() {
-        HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
-        this.pose = new Pose2d(0, 0, 0);
+    public MecanumDriveMona(HardwareMap hardwareMap) {
+        if (this.pose ==null) {
+            this.pose = new Pose2d(0, 0, 0);
+        }
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -105,16 +103,22 @@ public final class MecanumDriveMona {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer();
-
         //set the PID values one time
         leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
+        localizer = new DriveLocalizer(this, hardwareMap);
+
         //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
         SetRoadRunnerParameters();
+    }
+
+    public void init() {
+
+
+
     }
 
     private void SetRoadRunnerParameters() {

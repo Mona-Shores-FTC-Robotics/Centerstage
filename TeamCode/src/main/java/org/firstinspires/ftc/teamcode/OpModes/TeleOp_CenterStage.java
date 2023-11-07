@@ -90,7 +90,6 @@ public class TeleOp_CenterStage extends LinearOpMode
             telemetry.update();
             sleep(10);
         }
-        Robot.getInstance().getVisionSubsystem().getVisionPortal().close();
     }
 
     private void EndGameRumble() {

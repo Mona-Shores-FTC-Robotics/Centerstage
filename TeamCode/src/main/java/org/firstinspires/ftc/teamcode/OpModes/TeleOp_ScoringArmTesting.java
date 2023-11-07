@@ -96,7 +96,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
-        robot.getVisionSubsystem().getVisionPortal().close();
     }
 }
 

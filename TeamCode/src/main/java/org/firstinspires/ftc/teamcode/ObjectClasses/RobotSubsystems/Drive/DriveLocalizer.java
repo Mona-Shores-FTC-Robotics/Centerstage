@@ -12,10 +12,13 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
+import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class DriveLocalizer implements Localizer {
     public final Encoder leftFront, leftRear, rightRear, rightFront;
@@ -23,12 +26,12 @@ public class DriveLocalizer implements Localizer {
     private int lastLeftFrontPos, lastLeftRearPos, lastRightRearPos, lastRightFrontPos;
     private Rotation2d lastHeading;
 
-    public DriveLocalizer() {
+    public DriveLocalizer(MecanumDriveMona mecanumDrive, HardwareMap hMap) {
 
-        RawEncoder LFEncoder = new RawEncoder(Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront);
-        RawEncoder LBEncoder = new RawEncoder(Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack);
-        RawEncoder RFEncoder = new RawEncoder(Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront);
-        RawEncoder RBEncoder = new RawEncoder(Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack);
+        RawEncoder LFEncoder = new RawEncoder(mecanumDrive.leftFront);
+        RawEncoder LBEncoder = new RawEncoder(mecanumDrive.leftBack);
+        RawEncoder RFEncoder = new RawEncoder(mecanumDrive.rightFront);
+        RawEncoder RBEncoder = new RawEncoder(mecanumDrive.rightBack);
 
         LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -44,7 +47,8 @@ public class DriveLocalizer implements Localizer {
         lastLeftRearPos = leftRear.getPositionAndVelocity().position;
         lastRightRearPos = rightRear.getPositionAndVelocity().position;
         lastRightFrontPos = rightFront.getPositionAndVelocity().position;
-        lastHeading = Rotation2d.exp(Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        lastHeading = Rotation2d.exp(hMap.get(IMU.class, "imu").getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
     }
 
     @Override

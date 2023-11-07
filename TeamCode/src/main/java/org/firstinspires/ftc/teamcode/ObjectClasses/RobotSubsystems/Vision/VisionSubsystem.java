@@ -43,9 +43,6 @@ public final class VisionSubsystem extends SubsystemBase {
         public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
         public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
-        //this is the tolerance before we rumble if vision is seeing things that are close
-        final double PERCENT_TOLERANCE = 2;
-
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
@@ -62,14 +59,16 @@ public final class VisionSubsystem extends SubsystemBase {
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.05;
-        public double BACKDROP_STRAFE_THRESHOLD=.05;
-        public double BACKDROP_TURN_THRESHOLD=.05;
+        public double BACKDROP_DRIVE_THRESHOLD=.15;
+        public double BACKDROP_STRAFE_THRESHOLD=.15;
+        public double BACKDROP_TURN_THRESHOLD=.15;
         public int BACKDROP_POSE_COUNT_THRESHOLD=25;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
+    public boolean resetPoseReady=false;
+    public Pose2d resetPose;
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
     private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -84,13 +83,13 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public void SwitchToAprilTagProcessor() {
-        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
-        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), true);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getInitVisionProcessor(), false);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), true);
     }
 
     public void SwitchToInitVisionProcessor() {
-        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), true);
-        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), false);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getInitVisionProcessor(), true);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), false);
     }
 
     public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
@@ -171,6 +170,7 @@ public final class VisionSubsystem extends SubsystemBase {
     public boolean redBackdropAprilTagFound = false;
 
     public VisionSubsystem(final HardwareMap hMap, final String name) {
+
         // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
@@ -196,8 +196,12 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public void init() {
+
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        initVisionProcessor= Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
+        aprilTagProcessor = Robot.getInstance().getVisionSubsystem().getAprilTagProcessor();
+        visionPortal = Robot.getInstance().getVisionSubsystem().getVisionPortal();
 
         // During Init the AprilTag processor is off
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
@@ -656,20 +660,21 @@ public final class VisionSubsystem extends SubsystemBase {
         if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
                 (Math.abs(strafe)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
                 (Math.abs(turn)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
-            VectorF tagVector = tag.detection.metadata.fieldPosition;
-            double tagPosXOnField = tagVector.get(0);
-            double tagPosYOnField = tagVector.get(1);
-            Vector2d tagVector2D = new Vector2d(tagPosXOnField, tagPosYOnField);
-            Vector2d distanceVector = new Vector2d(tag.detection.ftcPose.y,tag.detection.ftcPose.x);
-            Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
-            //TODO  need to change the facing here based on metadata to make this generic
-            Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = realPose;
-            telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
 
             backdropPoseCount++;
             if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
                 backdropPoseCount=0;
+                VectorF tagVector = tag.detection.metadata.fieldPosition;
+                double tagPosXOnField = tagVector.get(0);
+                double tagPosYOnField = tagVector.get(1);
+                Vector2d tagVector2D = new Vector2d(tagPosXOnField, tagPosYOnField);
+                Vector2d distanceVector = new Vector2d(tag.detection.ftcPose.y,tag.detection.ftcPose.x);
+                Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
+                //TODO  need to change the facing here based on metadata to make this generic
+                resetPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
+                resetPoseReady = true;
+                Robot.getInstance().getDriveSubsystem();
+                telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", resetPose.position.x, resetPose.position.y, resetPose.heading.log());
                 return false;
             } else return true;
         }

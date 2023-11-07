@@ -40,7 +40,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriv
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -86,9 +85,6 @@ public class TeleOp_Vision extends LinearOpMode
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
-            //Update robot pose
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
-
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
                 telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
@@ -107,7 +103,6 @@ public class TeleOp_Vision extends LinearOpMode
             telemetry.update();
         }
         CommandScheduler.getInstance().cancelAll();
-        Robot.getInstance().getVisionSubsystem().getVisionPortal().close();
     }
 }
 

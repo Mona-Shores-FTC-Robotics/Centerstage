@@ -35,8 +35,8 @@ public class Robot {
     private Robot(LinearOpMode opMode, RobotType rType) {
         activeOpMode = opMode;
         robotType = rType;
-        HardwareMap hardwareMap = opMode.hardwareMap;
-        CreateSubsystems(hardwareMap);
+        HardwareMap hMap = opMode.hardwareMap;
+        CreateSubsystems(hMap);
     }
 
     private void CreateSubsystems(HardwareMap hardwareMap) {
@@ -87,8 +87,9 @@ public class Robot {
 
     //Ensures only one robot object is ever created
     public static Robot createInstance(LinearOpMode opMode, RobotType robotType) {
-
-        robot = new Robot(opMode, robotType);
+        if (robot == null) {
+            robot = new Robot(opMode, robotType);
+        }
         return robot;
     }
 
