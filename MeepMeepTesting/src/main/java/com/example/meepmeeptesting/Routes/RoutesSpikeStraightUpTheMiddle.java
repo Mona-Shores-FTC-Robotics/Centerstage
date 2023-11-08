@@ -78,6 +78,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBotRight;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
+import static com.example.meepmeeptesting.Routes.CustomActions.AutoDriveToBackDrop;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -185,43 +186,31 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
 
-        Action blueBackstageBotTeamPropRightRoute1 = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, FACE_115_DEGREES)
-                .turnTo(FACE_TOWARD_BACKSTAGE)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, FACE_TOWARD_AUDIENCE)
-                .lineToX(BLUE_BACKDROP_STAGING.position.x)
+        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y-25)
+                .stopAndAdd(AutoDriveToBackDrop())
+                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y)
                 .build();
 
-        CustomActions blah7 = new CustomActions();
-        CustomActions blah8 = new CustomActions();
-        Action blueBackstageBotTeamPropRightRoute2 = blah7.alignToRightSideOfBackDropWithAprilTag();
 
-        Action blueBackstageBotTeamPropRightRoute2a = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
-                .build();
-
-        Action blueBackstageBotTeamPropRightRoute3 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_RIGHT)
-                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_AUDIENCE)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
-                .lineToX(BLUE_BACKDROP_CENTER.position.x)
-                .build();
-
-        Action  blueBackstageBotTeamPropRightRoute4 = blah8.alignToRightSideOfBackDropWithAprilTag();
-
-        Action  blueBackstageBotTeamPropRightRoute5 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)
-                .build();
-
-        blueBackstageBotTeamPropRightRoute = new SequentialAction(
-                blueBackstageBotTeamPropRightRoute1,
-                blueBackstageBotTeamPropRightRoute2,
-                //blueBackstageBotTeamPropRightRoute2a,
-                blueBackstageBotTeamPropRightRoute3,
-                //blueBackstageBotTeamPropRightRoute4,
-                blueBackstageBotTeamPropRightRoute3,
-                blueBackstageBotTeamPropRightRoute5
-        );
+//        Action blueBackstageBotTeamPropRightRoute3 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_RIGHT)
+//                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_AUDIENCE)
+//                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
+//                .lineToX(BLUE_BACKDROP_CENTER.position.x)
+//                .build();
+//
+//        Action  blueBackstageBotTeamPropRightRoute5 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
+//                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
+//                .turnTo(FACE_45_DEGREES)
+//                .build();
+//
+//        blueBackstageBotTeamPropRightRoute = new SequentialAction(
+//                blueBackstageBotTeamPropRightRoute1,
+//
+//                blueBackstageBotTeamPropRightRoute3,
+//                blueBackstageBotTeamPropRightRoute3,
+//                blueBackstageBotTeamPropRightRoute5
+//        );
         Action redBackstageBotTeamPropLeftRoute1 = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_115_DEGREES)
                 .turnTo(FACE_TOWARD_BACKSTAGE)

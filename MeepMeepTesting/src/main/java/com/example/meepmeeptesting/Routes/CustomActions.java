@@ -11,7 +11,7 @@ public class CustomActions {
         return sleep;
     }
 
-    Action alignToLeftSideOfBackDropWithAprilTag()
+    static Action alignToLeftSideOfBackDropWithAprilTag()
     {
         SleepAction sleep = new SleepAction(1);
         return sleep;
@@ -52,6 +52,11 @@ public class CustomActions {
 
     static Action pickupPixel()
     {
+        SleepAction sleep = new SleepAction(.1);
+        return sleep;
+    }
+
+    static Action AutoDriveToBackDrop(){
         SleepAction sleep = new SleepAction(.1);
         return sleep;
     }

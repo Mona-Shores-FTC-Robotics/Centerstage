@@ -1,25 +1,57 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.redBackstageBotTeamPropRightRoute;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.Arclength;
+import com.acmerobotics.roadrunner.MinVelConstraint;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PosePath;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
-@Autonomous(name = "Spike Only Auto")
-public class Spike_Only_Auto extends LinearOpMode {
-
+import java.util.Arrays;
+@Config
+@Autonomous(name = "Test Stop And Add")
+public class Test_Auto extends LinearOpMode {
+    static double forward_distance=25;
     private MecanumDriveMona roadRunnerDriveSubsystem;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
@@ -63,7 +95,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
 
         //Set the starting pose of the robot
-        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+//        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
@@ -79,7 +111,29 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         telemetry.clearAll();
 
-        Actions.runBlocking(selectedRoute);
+//        ProfileAccelConstraint accelConstraint = new ProfileAccelConstraint(-20,20);
+//        MinVelConstraint minVelConstraint = new MinVelConstraint(Arrays.asList(
+//                Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(20),
+//                new AngularVelConstraint(MotorParametersRR.maxAngVel)
+//                ));
+
+
+
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
+
+        Action testRoute = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
+                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y-forward_distance)
+                .stopAndAdd(new TelemetryAction())
+                .stopAndAdd(new AutoDriveToBackDrop())
+                .stopAndAdd(new TelemetryAction())
+                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y)
+                .stopAndAdd(new TelemetryAction())
+                .build();
+
+        Actions.runBlocking(testRoute);
+
+
+
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

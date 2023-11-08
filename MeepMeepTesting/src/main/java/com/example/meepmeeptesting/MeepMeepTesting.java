@@ -31,13 +31,13 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static teamPropLocation teamPropLocationFinal = teamPropLocation.CENTER;
-    public static routesToRun routesToRunSelection = routesToRun.SPIKE_PICKUP1_BACKDROP_PARK;
+    public static teamPropLocation teamPropLocationFinal = teamPropLocation.RIGHT;
+    public static routesToRun routesToRunSelection = routesToRun.SPIKE_STRAIGHT;
 
     /** Set which robots should show up **/
     public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
-    public static boolean SHOW_BLUE_BACKSTAGE_BOT = false;
-    public static boolean SHOW_RED_AUDIENCE_BOT = true;
+    public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
+    public static boolean SHOW_RED_AUDIENCE_BOT = false;
     public static boolean SHOW_RED_BACKSTAGE_BOT = false;
 
     public static DriveShim roadRunnerDrive;
@@ -47,8 +47,6 @@ public class MeepMeepTesting {
     public static void main(String[] args) {
 
         MeepMeep meepMeep = new MeepMeep(800);
-
-
 
         //This method makes 4 robots (2 red robots and 2 blue robots)
         MeepMeepRobots.createRobots(meepMeep);
