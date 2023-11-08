@@ -29,7 +29,7 @@ public class MakeBackUpFromBlueBackdropAction {
 
     public Action makeAction() {
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        currentHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw());
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(

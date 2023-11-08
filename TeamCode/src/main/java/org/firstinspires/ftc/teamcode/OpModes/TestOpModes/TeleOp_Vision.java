@@ -73,7 +73,8 @@ public class TeleOp_Vision extends LinearOpMode
         //Set the starting pose of the robot
         Robot.getInstance().getVisionSubsystem().setStartingPose(MatchConfig.finalAllianceColor, MatchConfig.finalSideOfField);
 
-
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //Start the TeleOp Timer
         ElapsedTime teleOpTimer = new ElapsedTime();
@@ -85,16 +86,14 @@ public class TeleOp_Vision extends LinearOpMode
             CommandScheduler.getInstance().run();
             GamepadHandling.getDriverGamepad().readButtons();
 
-            //Update Gyro values
-            Robot.getInstance().getGyroSubsystem().UpdateGyro();
-
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
                 telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
+//                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
+                Robot.getInstance().getGyroSubsystem().telemetryGyro();
             }
 
             //Add DriveTrain Telemetry

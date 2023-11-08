@@ -31,7 +31,7 @@ public class MakeMoveToPointAction {
     public Action moveToPoint(double x, double y) {
         xTarget = x;
         yTarget = y;
-        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        currentHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw());
 
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
