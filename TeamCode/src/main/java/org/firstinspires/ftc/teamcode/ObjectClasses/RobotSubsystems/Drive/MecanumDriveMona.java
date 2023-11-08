@@ -121,7 +121,7 @@ public final class MecanumDriveMona {
         SetRoadRunnerParameters();
     }
 
-    private void SetRoadRunnerParameters() {
+    public void SetRoadRunnerParameters() {
         kinematics = new MecanumKinematics(
                 MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
