@@ -144,6 +144,12 @@ public final class MecanumDriveMona {
 
 
     public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
+
+        //I believe this is the best spot to put this for tracking our pose
+        //We had this method call in the periodic() of the Drivesystem, but that means it can be called twice a loop if we run any RR actions (e.g.follow a trajectory)
+        //putting it here, should avoid that double call
+
+
         if (drive==0 && strafe ==0 && turn==0) {
             //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
             leftFront.setVelocity(0);
@@ -162,7 +168,7 @@ public final class MecanumDriveMona {
 
         } else
         {
-
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&

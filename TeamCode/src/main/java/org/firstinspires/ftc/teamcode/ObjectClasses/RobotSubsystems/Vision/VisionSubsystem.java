@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.*;
 
-
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -23,6 +22,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -323,6 +324,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 currentTag.setDetected();
                 currentTag.storeDetection(detection);
 
+                DeterminePoseFromAprilTag(currentTag);
+
                 double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
 
                 // Pick whichever value is lower
@@ -340,6 +343,75 @@ public final class VisionSubsystem extends SubsystemBase {
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
         redBackdropAprilTagFound = CheckRedBackdropAprilTags();
+    }
+
+    private Pose2d DeterminePoseFromAprilTag(AprilTagID tag) {
+
+        //get the field position of the AprilTag on the field and store it in a float vector (VectorF)
+        VectorF tagVector = tag.detection.metadata.fieldPosition;
+
+        //store the X value of the tag in tagPosXOnField access the individual values of the vector using .get(0)
+        double tagPosXOnField = tagVector.get(0);
+
+        //store the Y value of the tag - use .get(1) for this one
+        double tagPosYOnField = tagVector.get(1);
+
+        //the +90 rotates this tagheading to be facing the backdrop (it comes in at -90 for the backdrop)
+        double tagHeading = QuaternionToHeading(tag.detection.metadata.fieldOrientation)+90;
+
+        //Look at Fig. 2 at https://ftc-docs.firstinspires.org/en/latest/apriltag/understanding_apriltag_detection_values/understanding-apriltag-detection-values.html
+        //save tag.detection.ftPose.x into a distanceY variable;
+        //save tag.detection.ftcPose.y into a distanceX variable;
+        //This is confusing because the ftCpose X and Y are not the X and Y coordinates of the field, but of the camera image
+        //Ftcpose.x represents left and right on the camera image, which for the backdrop corresponds to the Y value.
+        //Ftcpose.y represents distance to the robot, which for the backdrop is our X value
+
+        double distanceY = tag.detection.ftcPose.x;
+        double distanceX = tag.detection.ftcPose.y;
+
+        //save the tag.detection.ftPose.yaw as the cameraYaw
+        double cameraYaw = tag.detection.ftcPose.yaw;
+
+        Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Math.toRadians(tagHeading-cameraYaw));
+
+        TelemetryPacket p = new TelemetryPacket();
+        p.put("ftcPoseX", distanceX);
+        p.put("ftcPoseX", distanceY);
+        p.put("ftcPoseYaw", cameraYaw);
+        p.put("Current Pose", mecanumDrive.pose);
+
+        telemetry.addLine();
+
+        telemetry.addData("Tag", tag.detection.metadata.name);
+        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
+        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
+        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
+
+
+//        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", aprilTagPose.position.x, aprilTagPose.position.y, tag.detection.ftcPose.bearing);
+        return newPose;
+
+    }
+
+
+    public double QuaternionToHeading (Quaternion quaternion) {
+
+        // Calculate yaw (heading) from quaternion
+        double t0 = 2.0 * (quaternion.w * quaternion.z + quaternion.x * quaternion.y);
+        double t1 = 1.0 - 2.0 * (quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+        double yawRadians = Math.atan2(t0, t1);
+
+        // Convert yaw angle from radians to degrees
+        double yawDegrees = Math.toDegrees(yawRadians);
+
+        // Ensure the yaw angle is within the range [-180, 180] degrees
+        if (yawDegrees > 180) {
+            yawDegrees -= 360;
+        } else if (yawDegrees < -180) {
+            yawDegrees += 360;
+        }
+
+        return yawDegrees;
     }
 
     private boolean CheckBlueBackdropAprilTags() {
@@ -664,16 +736,8 @@ public final class VisionSubsystem extends SubsystemBase {
             backdropPoseCount++;
             if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
                 backdropPoseCount=0;
-                VectorF tagVector = tag.detection.metadata.fieldPosition;
-                double tagPosXOnField = tagVector.get(0);
-                double tagPosYOnField = tagVector.get(1);
-                Vector2d tagVector2D = new Vector2d(tagPosXOnField, tagPosYOnField);
-                Vector2d distanceVector = new Vector2d(tag.detection.ftcPose.y,tag.detection.ftcPose.x);
-                Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
-                //TODO  need to change the facing here based on metadata to make this generic
-                resetPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
+                resetPose = DeterminePoseFromAprilTag(tag);
                 resetPoseReady = true;
-                Robot.getInstance().getDriveSubsystem();
                 telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", resetPose.position.x, resetPose.position.y, resetPose.heading.log());
                 return false;
             } else return true;

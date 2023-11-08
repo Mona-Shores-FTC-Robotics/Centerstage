@@ -35,7 +35,7 @@ public class AutoDriveToBackDrop implements Action {
         }
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.mecanumDrive.aprilTagDrive, driveSubsystem.mecanumDrive.aprilTagStrafe, driveSubsystem.mecanumDrive.aprilTagTurn);
 
-//        Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
         if (Robot.getInstance().getVisionSubsystem().resetPoseReady){
             Robot.getInstance().getVisionSubsystem().resetPoseReady=false;

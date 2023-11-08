@@ -186,12 +186,10 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
 
-        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y-25)
-                .stopAndAdd(AutoDriveToBackDrop())
-                .lineToY(BLUE_BACKSTAGE_START_POSE.position.y)
+        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE))
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKDROP_STAGING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
                 .build();
-
 
 //        Action blueBackstageBotTeamPropRightRoute3 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_RIGHT)
 //                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_AUDIENCE)

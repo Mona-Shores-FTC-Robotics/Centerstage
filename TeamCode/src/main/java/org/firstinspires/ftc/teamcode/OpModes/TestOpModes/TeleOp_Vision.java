@@ -40,6 +40,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriv
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
@@ -59,15 +60,20 @@ public class TeleOp_Vision extends LinearOpMode
         new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            //This is the alliance color that is saved between opMode; it defaults to Red
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-
+            VisionTelemetry.telemetryForInitProcessing();
+            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
 
         //Switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
+
+        //Set the starting pose of the robot
+        Robot.getInstance().getVisionSubsystem().setStartingPose(MatchConfig.finalAllianceColor, MatchConfig.finalSideOfField);
+
+
 
         //Start the TeleOp Timer
         ElapsedTime teleOpTimer = new ElapsedTime();
