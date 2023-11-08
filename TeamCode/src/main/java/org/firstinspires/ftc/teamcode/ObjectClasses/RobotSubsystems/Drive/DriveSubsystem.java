@@ -103,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        mecanumDrive = new MecanumDriveMona(hardwareMap);
+        mecanumDrive = new MecanumDriveMona();
     }
 
     public void init()

@@ -77,7 +77,13 @@ public final class MecanumDriveMona {
 
     public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
-    public MecanumDriveMona(HardwareMap hardwareMap) {
+    public MecanumDriveMona() {
+
+    }
+
+    public void init() {
+        HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
+
         if (this.pose ==null) {
             this.pose = new Pose2d(0, 0, 0);
         }
@@ -113,10 +119,6 @@ public final class MecanumDriveMona {
 
         //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
         SetRoadRunnerParameters();
-    }
-
-    public void init() {
-
     }
 
     private void SetRoadRunnerParameters() {

@@ -48,7 +48,7 @@ public class DriveLocalizer implements Localizer {
         lastRightRearPos = rightRear.getPositionAndVelocity().position;
         lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-        lastHeading = Rotation2d.exp(hMap.get(IMU.class, "imu").getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        lastHeading = Rotation2d.exp(Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
     }
 
     @Override

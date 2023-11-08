@@ -49,8 +49,8 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 .lineToX(RED_BACKDROP_STAGING.position.x)
                 .build();
 
-        Action redBackstageBotTeamPropRightRoute2 = new SleepAction(1);
-//
+        Action redBackstageBotTeamPropRightRoute2 = new AutoDriveToBackDrop();
+        Action redBackstageBotTeamPropRightRoute9 = new AutoDriveToBackDrop();
 //        Action redBackstageBotTeamPropRightRoute2a = mecanumDrive.actionBuilder(RED_BACKDROP_CENTER)
 //                .build();
 
@@ -77,7 +77,7 @@ public class RoutesSpikePickup1BackdropPickup2BackdropPark {
                 redBackstageBotTeamPropRightRoute2,
 //                redBackstageBotTeamPropRightRoute2a,
                 redBackstageBotTeamPropRightRoute3,
-                redBackstageBotTeamPropRightRoute2,
+                redBackstageBotTeamPropRightRoute9,
                 redBackstageBotTeamPropRightRoute4,
                 redBackstageBotTeamPropRightRoute5
         );
