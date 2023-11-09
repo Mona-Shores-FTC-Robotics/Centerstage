@@ -26,12 +26,12 @@ public class IntakeTestingDriverBindings {
                 .whenPressed(new ChangeIntakeStateCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_REVERSE))
                 .whenReleased(new ChangeIntakeStateCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
-        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new ChangeIntakeStateVelocityCommand(intakeSubsystem,
-                        IntakeSubsystem.IntakeStates.INTAKE_REVERSE,
-                        GamepadHandling.getDriverGamepad()::getRightY))
-                .whenReleased(new ChangeIntakeStateCommand(intakeSubsystem,
-                        IntakeSubsystem.IntakeStates.INTAKE_OFF));
+//        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+//                .whenPressed(new ChangeIntakeStateVelocityCommand(intakeSubsystem,
+//                        IntakeSubsystem.IntakeStates.INTAKE_REVERSE,
+//                        GamepadHandling.getDriverGamepad()::getRightY))
+//                .whenReleased(new ChangeIntakeStateCommand(intakeSubsystem,
+//                        IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
     }
 }

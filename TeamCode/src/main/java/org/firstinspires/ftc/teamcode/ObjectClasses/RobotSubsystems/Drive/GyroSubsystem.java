@@ -52,11 +52,10 @@ public class GyroSubsystem extends SubsystemBase {
         lastRelativeYawDegrees = currentAbsoluteYawDegrees;
         if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
             currentRelativeYawDegrees = 90;
-            currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
         } else {
             currentRelativeYawDegrees = -90;
-            currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
         }
+        currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
     }
 
     public void setRelativeYawTo0(){

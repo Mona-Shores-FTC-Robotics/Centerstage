@@ -90,8 +90,6 @@ public class Test_Auto extends LinearOpMode {
             sleep(10);
         }
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
@@ -124,7 +122,10 @@ public class Test_Auto extends LinearOpMode {
 //                new AngularVelConstraint(MotorParametersRR.maxAngVel)
 //                ));
 
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
+        Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
 
         Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
 

@@ -30,13 +30,11 @@ public class ChangeIntakeStateCommand extends CommandBase {
     }
 
     public void execute() {
-
         currentVelocity = intakeSubsystem.intake.getVelocity();
         telemetry.addData("Target Intake State", targetState);
         telemetry.addData("Target Intake Velocity", targetState.velocity);
         telemetry.addData("Current Intake State", intakeSubsystem.currentState);
         telemetry.addData("Current Intake Velocity", currentVelocity);
-
     }
 
 }
