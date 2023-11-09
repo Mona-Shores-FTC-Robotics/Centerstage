@@ -23,22 +23,6 @@ public class CustomActions {
         return sleep;
     }
 
-
-    Action AutoDriveToBackDrop(){
-        Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_STAGING)
-                .lineToX(BLUE_BACKDROP_CENTER.position.x)
-                .build();
-        return autoDriveToBackdrop;
-    }
-
-    Action AutoDriveFromBackDrop(){
-        Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
-                .setReversed(true)
-                .splineToLinearHeading(BLUE_BACKDROP_STAGING, TANGENT_TOWARD_AUDIENCE)
-                .build();
-        return autoDriveFromBackdrop;
-    }
-
     Action RotateShoulderToBackdrop(){
         SleepAction sleep = new SleepAction(.1);
         return sleep;
@@ -89,21 +73,37 @@ public class CustomActions {
         return sleep;
     };
 
+
+    Action AutoDriveToBackDrop(){
+        Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_STAGING)
+                .lineToX(BLUE_BACKDROP_CENTER.position.x)
+                .build();
+        return autoDriveToBackdrop;
+    }
+
+    Action AutoDriveFromBackDrop(){
+        Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
+                .setReversed(true)
+                .lineToX(BLUE_BACKDROP_STAGING.position.x)
+                .build();
+        return autoDriveFromBackdrop;
+    }
+
+
     public Action BackdropStagingToNeutralStaging(){
         Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_STAGING)
                 .setReversed(true)
-                .splineToLinearHeading(BLUE_NEUTRAL_STAGING, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(BLUE_NEUTRAL_STAGING.position.x)
                 .build();
         return backDropStagingToNeutralStaging;
     }
     public Action NeutralStagingToBackdropStaging() {
         Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
-                .splineToLinearHeading(BLUE_BACKDROP_STAGING, TANGENT_TOWARD_BACKSTAGE)
+                .lineToX(BLUE_BACKDROP_STAGING.position.x)
                 .build();
         return neutralStagingToBackdropStaging;
-
-
     }
+
     public Action PickupPixels(){
         SequentialAction pickupPixels = new SequentialAction(
                 new ParallelAction(
@@ -118,7 +118,7 @@ public class CustomActions {
 
     private Action AutoDriveFromNeutralStack() {
         Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_PIXEL_PICKUP)
-                .splineToLinearHeading(BLUE_NEUTRAL_STAGING, TANGENT_TOWARD_BACKSTAGE)
+                .lineToX(BLUE_NEUTRAL_STAGING.position.x)
                 .build();
         return autoDriveFromNeutralStack;
     }
@@ -126,7 +126,7 @@ public class CustomActions {
     public Action AutoDriveToNeutralStack() {
         Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
                 .setReversed(true)
-                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_PICKUP, TANGENT_TOWARD_AUDIENCE)
+                .lineToX(BLUE_NEUTRAL_PIXEL_PICKUP.position.x)
                 .build();
         return autoDriveToNeutralStack;
     }
@@ -164,4 +164,7 @@ public class CustomActions {
                  .build();
          return scoreAndPickup4Pixels;
      }
+
+
+
 }

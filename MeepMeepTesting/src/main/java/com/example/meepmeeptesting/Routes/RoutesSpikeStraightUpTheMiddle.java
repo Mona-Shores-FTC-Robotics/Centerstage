@@ -179,27 +179,10 @@ public class RoutesSpikeStraightUpTheMiddle {
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_STAGING, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new CustomActions().ScoreFromStagingAndPickup4Pixels())
+                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
+                .turnTo(FACE_45_DEGREES)
                 .build();
 
-
-//        Action blueBackstageBotTeamPropRightRoute3 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_RIGHT)
-//                .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_AUDIENCE)
-//                .splineToLinearHeading(BLUE_NEUTRAL_PIXEL_WING, TANGENT_TOWARD_AUDIENCE)
-//                .lineToX(BLUE_BACKDROP_CENTER.position.x)
-//                .build();
-//
-//        Action  blueBackstageBotTeamPropRightRoute5 = roadRunnerDrive.actionBuilder(BLUE_BACKDROP_CENTER)
-//                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-//                .turnTo(FACE_45_DEGREES)
-//                .build();
-//
-//        blueBackstageBotTeamPropRightRoute = new SequentialAction(
-//                blueBackstageBotTeamPropRightRoute1,
-//
-//                blueBackstageBotTeamPropRightRoute3,
-//                blueBackstageBotTeamPropRightRoute3,
-//                blueBackstageBotTeamPropRightRoute5
-//        );
         Action redBackstageBotTeamPropLeftRoute1 = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, FACE_115_DEGREES)
                 .turnTo(FACE_TOWARD_BACKSTAGE)
