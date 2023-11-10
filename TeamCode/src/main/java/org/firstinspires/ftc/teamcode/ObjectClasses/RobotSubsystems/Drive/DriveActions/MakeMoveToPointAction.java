@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
@@ -10,7 +9,6 @@ import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
@@ -31,7 +29,7 @@ public class MakeMoveToPointAction {
     public Action moveToPoint(double x, double y) {
         xTarget = x;
         yTarget = y;
-        currentHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw());
+        currentHeading = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
 
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 

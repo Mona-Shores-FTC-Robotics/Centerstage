@@ -109,7 +109,7 @@ public class VisionDriverBindings {
         //not sure if this should even be an option
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed(new InstantCommand(() -> {
-                    Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+                    Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
                 }));
 
         //////////////////////////////////////////////////////////

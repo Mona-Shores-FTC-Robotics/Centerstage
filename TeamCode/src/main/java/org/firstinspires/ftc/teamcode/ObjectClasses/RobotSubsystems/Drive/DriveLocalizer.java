@@ -13,12 +13,10 @@ import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
-import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 
 public class DriveLocalizer implements Localizer {
     public final Encoder leftFront, leftRear, rightRear, rightFront;
@@ -48,7 +46,10 @@ public class DriveLocalizer implements Localizer {
         lastRightRearPos = rightRear.getPositionAndVelocity().position;
         lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
-        lastHeading = Rotation2d.exp(Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw()));
+        double headingRadians = Robot.getInstance().getGyroSubsystem().imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+        lastHeading = Rotation2d.exp(headingRadians);
+        double lastHeadingDegrees = Math.toDegrees(headingRadians);
     }
 
     @Override
@@ -58,7 +59,9 @@ public class DriveLocalizer implements Localizer {
         PositionVelocityPair rightRearPosVel = rightRear.getPositionAndVelocity();
         PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-        Rotation2d heading = Rotation2d.exp(Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw()));
+        double headingRadians = Robot.getInstance().getGyroSubsystem().getCurrentRelativeYawRadians();
+        double headingDegrees = Math.toDegrees(headingRadians);
+        Rotation2d heading = Rotation2d.exp(Robot.getInstance().getGyroSubsystem().imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         double headingDelta = heading.minus(lastHeading);
 
         Twist2dDual<Time> twist = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.forward(new MecanumKinematics.WheelIncrements<>(

@@ -4,12 +4,12 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFive.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.example.meepmeeptesting.Routes.RoutesSpikeStraightUpTheMiddle;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -32,7 +32,7 @@ public class PushPropScoreFive extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Create and Initialize the robot
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize Gamepad and Robot - Order Important
         GamepadHandling.init();
@@ -42,7 +42,7 @@ public class PushPropScoreFive extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikeStraightUpTheMiddle.BuildRoutes();
+        PushPropScoreFiveRoute.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -69,7 +69,7 @@ public class PushPropScoreFive extends LinearOpMode {
         MatchConfig.finalAllianceColor = allianceColor;
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();

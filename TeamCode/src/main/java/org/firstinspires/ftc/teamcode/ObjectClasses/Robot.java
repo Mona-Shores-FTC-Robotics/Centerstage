@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -20,6 +21,7 @@ public class Robot {
 
     private static Robot robot = null;
     public RobotType robotType;
+    public OpModeType opModeType;
     public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
     public enum OpModeType {TELEOP, AUTO}
 
@@ -109,7 +111,8 @@ public class Robot {
 
 
     // Initialize teleop or autonomous, depending on which is used
-    public void init(OpModeType opModeType){
+    public void init(OpModeType oType){
+        opModeType = oType;
             if (opModeType == OpModeType.TELEOP) {
                 initTele();
             } else {

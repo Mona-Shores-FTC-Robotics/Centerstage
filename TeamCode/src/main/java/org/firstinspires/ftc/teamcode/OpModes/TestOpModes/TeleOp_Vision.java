@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -70,11 +72,10 @@ public class TeleOp_Vision extends LinearOpMode
         //Switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
-        //Set the starting pose of the robot
-        Robot.getInstance().getVisionSubsystem().setStartingPose(MatchConfig.finalAllianceColor, MatchConfig.finalSideOfField);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //Start the TeleOp Timer
         ElapsedTime teleOpTimer = new ElapsedTime();

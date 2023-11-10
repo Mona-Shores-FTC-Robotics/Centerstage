@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Mecanu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 
-public class PushPropScoreFive {
+public class PushPropScoreFiveRoute {
     //Variables to store routes for team prop center for all four start locations
     public static Action redAudienceBotTeamPropCenterRoute;
     public static Action redBackstageBotTeamPropCenterRoute;

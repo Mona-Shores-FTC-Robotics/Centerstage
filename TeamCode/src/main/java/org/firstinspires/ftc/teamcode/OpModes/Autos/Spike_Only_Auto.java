@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.OpModes.Disabled;
+package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -11,17 +11,18 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-@Disabled
+
 @Autonomous(name = "Spike Only Auto")
 public class Spike_Only_Auto extends LinearOpMode {
 
-    private MecanumDriveMona roadRunnerDriveSubsystem;
+    private MecanumDriveMona mecanumDrive;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private  InitVisionProcessor.AllianceColor allianceColor;
@@ -40,8 +41,9 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
-        roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        RoutesSpikeOnly.BuildRoutes(roadRunnerDriveSubsystem);
+        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        
+        SpikeOnlyRoute.BuildRoutes(mecanumDrive);
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -52,22 +54,21 @@ public class Spike_Only_Auto extends LinearOpMode {
             sleep(10);
         }
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
-
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
-        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();
-        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
-        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
+        //todo this has to be changed before competition
+        teamPropLoc = MatchConfig.finalTeamPropLocation;
+        allianceColor = MatchConfig.finalAllianceColor;
+        sideOfField = MatchConfig.finalSideOfField;
 
         //Set the starting pose of the robot
-        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor , sideOfField);
 
-        //this saves the alliance color in a spot that persists between opModes
-        MatchConfig.finalAllianceColor = allianceColor;
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+
 
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
@@ -78,7 +79,8 @@ public class Spike_Only_Auto extends LinearOpMode {
         CheckRedBackstage();
         CheckRedAudience();
 
-        telemetry.clearAll();
+        Robot.getInstance().getGyroSubsystem().telemetryGyro();
+        Robot.getInstance().getActiveOpMode().telemetry.update();
 
         Actions.runBlocking(selectedRoute);
         CommandScheduler.getInstance().cancelAll();
@@ -90,7 +92,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
     private boolean CheckRedAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDriveSubsystem.pose = RED_AUDIENCE_START_POSE;
+            mecanumDrive.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -105,7 +107,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
     private boolean CheckRedBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDriveSubsystem.pose = RED_BACKSTAGE_START_POSE;
+            mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -120,7 +122,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
     private boolean CheckBlueAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDriveSubsystem.pose = BLUE_AUDIENCE_START_POSE;
+            mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -135,7 +137,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
     private boolean CheckBlueBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDriveSubsystem.pose = BLUE_BACKSTAGE_START_POSE;
+            mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {

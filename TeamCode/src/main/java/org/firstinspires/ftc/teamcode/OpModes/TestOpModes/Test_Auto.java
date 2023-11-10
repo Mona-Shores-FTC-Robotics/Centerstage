@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autos;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
@@ -11,18 +11,18 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_NEUTRAL_PIXEL_WING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_BACKSTAGE;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.blueBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redBackstageBotTeamPropRightRoute;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
@@ -65,7 +65,7 @@ public class Test_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        RoutesSpikeOnly.BuildRoutes(roadRunnerDriveSubsystem);
+        SpikeOnlyRoute.BuildRoutes(roadRunnerDriveSubsystem);
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -108,12 +108,12 @@ public class Test_Auto extends LinearOpMode {
 //                new AngularVelConstraint(MotorParametersRR.maxAngVel)
 //                ));
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
-
-        Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
 
         Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
+
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+
 
         Action testRoute = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE))
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKDROP_STAGING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)

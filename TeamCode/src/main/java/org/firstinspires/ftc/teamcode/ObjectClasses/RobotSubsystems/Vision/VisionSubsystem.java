@@ -735,7 +735,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
             backdropPoseCount++;
             if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
-                Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
+                Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
                 backdropPoseCount=0;
                 resetPose = DeterminePoseFromAprilTag(tag);
                 resetPoseReady = true;

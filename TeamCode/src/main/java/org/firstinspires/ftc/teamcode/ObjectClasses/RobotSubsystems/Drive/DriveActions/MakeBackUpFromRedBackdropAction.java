@@ -5,18 +5,12 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.MinVelConstraint;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
-
-import java.util.Arrays;
 
 public class MakeBackUpFromRedBackdropAction {
     private Action t;
@@ -30,7 +24,7 @@ public class MakeBackUpFromRedBackdropAction {
 
     public Action makeAction() {
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        currentHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYaw());
+        currentHeading = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
 
 //        overrideVelConstraint =
 //                new MinVelConstraint(Arrays.asList(

@@ -65,7 +65,7 @@ public class SpikePickup1BackdropPark_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;

@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.Action;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
-public class RoutesSpikeOnly {
+public class SpikeOnlyRoute {
 
     //Variables to store routes for team prop center for all four start locations
     public static Action redAudienceBotTeamPropCenterRoute;

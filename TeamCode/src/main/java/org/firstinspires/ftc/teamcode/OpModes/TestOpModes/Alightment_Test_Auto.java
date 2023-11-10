@@ -50,7 +50,7 @@ public class Alightment_Test_Auto extends LinearOpMode {
         }
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
