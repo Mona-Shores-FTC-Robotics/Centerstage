@@ -49,21 +49,21 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.07;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.06;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
         public double DRIVE_FEEDFORWARD=.08;
-        public double STRAFE_FEEDFORWARD=.01;
-        public double TURN_FEEDFORWARD=.06;
-        public double TURN_GAIN = -0.09;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_FEEDFORWARD=.02;
+        public double TURN_FEEDFORWARD=.045;
+        public double TURN_GAIN = -0.05;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.15;
-        public double BACKDROP_STRAFE_THRESHOLD=.15;
-        public double BACKDROP_TURN_THRESHOLD=.15;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=25;
+        public double BACKDROP_DRIVE_THRESHOLD=.2;
+        public double BACKDROP_STRAFE_THRESHOLD=.2;
+        public double BACKDROP_TURN_THRESHOLD=.2;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
