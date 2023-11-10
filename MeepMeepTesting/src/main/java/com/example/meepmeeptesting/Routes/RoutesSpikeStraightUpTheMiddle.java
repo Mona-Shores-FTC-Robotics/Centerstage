@@ -54,7 +54,6 @@ public class RoutesSpikeStraightUpTheMiddle {
     private static Action blueBackstageBotTeamPropRightRoute;
     private static Action blueAudienceBotTeamPropRightRoute;
 
-
     public static void BuildRoutes() {
 
         /** BLUE BACKSTAGE RIGHT **/
@@ -129,51 +128,6 @@ public class RoutesSpikeStraightUpTheMiddle {
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(redAudienceLeftPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(redAudienceLeftPoses))
                 .build();
-
-    }
-
-
-    /**
-     * METHODS TO SET SPIKE PIXEL ONLY ROUTES FOR ALL TEAM PROP LOCATIONS
-     **/
-
-    public static void setTeamPropCenterRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
-    }
-
-    public static void setTeamPropLeftRoutes() {
-        blueBackstageBot.runAction(RoutesSpikeStraightUpTheMiddle.blueBackstageBotTeamPropLeftRoute);
-        redBackstageBot.runAction(RoutesSpikeStraightUpTheMiddle.redBackstageBotTeamPropLeftRoute);
-        redAudienceBot.runAction(RoutesSpikeStraightUpTheMiddle.redAudienceBotTeamPropLeftRoute);
-        blueAudienceBot.runAction(RoutesSpikeStraightUpTheMiddle.blueAudienceBotTeamPropLeftRoute);
-    }
-
-    public static void setTeamPropRightRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
-    }
-
-    public static void setTeamPropAllRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
-        blueBackstageBotLeft.runAction(blueBackstageBotTeamPropLeftRoute);
-        blueBackstageBotRight.runAction(blueBackstageBotTeamPropRightRoute);
-
-        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
-        blueAudienceBotLeft.runAction(blueAudienceBotTeamPropLeftRoute);
-        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightRoute);
-
-        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
-        redBackstageBotLeft.runAction(redBackstageBotTeamPropLeftRoute);
-        redBackstageBotRight.runAction(redBackstageBotTeamPropRightRoute);
-
-        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
-        redAudienceBotLeft.runAction(redAudienceBotTeamPropLeftRoute);
-        redAudienceBotRight.runAction(redAudienceBotTeamPropRightRoute);
     }
 
     public static class RouteBuilder {

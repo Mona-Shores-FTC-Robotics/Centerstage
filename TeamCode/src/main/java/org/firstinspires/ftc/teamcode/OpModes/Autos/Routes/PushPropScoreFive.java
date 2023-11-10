@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes;
+package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
@@ -27,24 +27,24 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Mecanu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 
-public class RoutesSpikeStraightUpTheMiddle {
+public class PushPropScoreFive {
     //Variables to store routes for team prop center for all four start locations
-    private static Action redAudienceBotTeamPropCenterRoute;
-    private static Action redBackstageBotTeamPropCenterRoute;
-    private static Action blueBackstageBotTeamPropCenterRoute;
-    private static Action blueAudienceBotTeamPropCenterRoute;
+    public static Action redAudienceBotTeamPropCenterRoute;
+    public static Action redBackstageBotTeamPropCenterRoute;
+    public static Action blueBackstageBotTeamPropCenterRoute;
+    public static Action blueAudienceBotTeamPropCenterRoute;
 
     //Variables to store routes for team prop left for all four start locations
-    private static Action redBackstageBotTeamPropLeftRoute;
-    private static Action blueAudienceBotTeamPropLeftRoute;
-    private static Action redAudienceBotTeamPropLeftRoute;
-    private static Action blueBackstageBotTeamPropLeftRoute;
+    public static Action redBackstageBotTeamPropLeftRoute;
+    public static Action blueAudienceBotTeamPropLeftRoute;
+    public static Action redAudienceBotTeamPropLeftRoute;
+    public static Action blueBackstageBotTeamPropLeftRoute;
 
     //Variables to store routes for team prop right for all four start locations
-    private static Action redBackstageBotTeamPropRightRoute;
-    private static Action redAudienceBotTeamPropRightRoute;
-    private static Action blueBackstageBotTeamPropRightRoute;
-    private static Action blueAudienceBotTeamPropRightRoute;
+    public static Action redBackstageBotTeamPropRightRoute;
+    public static Action redAudienceBotTeamPropRightRoute;
+    public static Action blueBackstageBotTeamPropRightRoute;
+    public static Action blueAudienceBotTeamPropRightRoute;
 
 
     public static void BuildRoutes() {

@@ -4,19 +4,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.blueBackstageBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.redBackstageBotTeamPropRightRoute;
-
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikePickup1BackdropPark.*;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -25,14 +13,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikePickup1BackdropPark;
 
-
-@Autonomous(name = "Up The Middle Auto")
-public class UpTheMiddleAuto extends LinearOpMode {
+@Autonomous(name = "Spike Pickup 1 Backdrop Park Auto")
+public class SpikePickup1BackdropPark_Auto extends LinearOpMode {
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private InitVisionProcessor.AllianceColor allianceColor;
@@ -53,7 +41,7 @@ public class UpTheMiddleAuto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikePickup1BackdropPickup2BackdropPark.BuildRoutes();
+        RoutesSpikePickup1BackdropPark.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -66,9 +54,6 @@ public class UpTheMiddleAuto extends LinearOpMode {
             sleep(10);
         }
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
-
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
@@ -78,6 +63,9 @@ public class UpTheMiddleAuto extends LinearOpMode {
         sideOfField = MatchConfig.finalSideOfField;
 
         Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;

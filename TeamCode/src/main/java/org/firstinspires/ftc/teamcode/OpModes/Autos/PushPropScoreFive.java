@@ -2,94 +2,74 @@ package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.FACE_TOWARD_BACKSTAGE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.PoseToVector;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKDROP_STAGING;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_SPIKE_L;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_NEUTRAL_PIXEL_WING;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_BACKSTAGE;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.blueBackstageBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redAudienceBotTeamPropRightRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropCenterRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropLeftRoute;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly.redBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFive.*;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.example.meepmeeptesting.Routes.RoutesSpikeStraightUpTheMiddle;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeOnly;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Config
-@Autonomous(name = "Test Stop And Add")
-public class Test_Auto extends LinearOpMode {
-    static double forward_distance=35;
-    private MecanumDriveMona roadRunnerDriveSubsystem;
+
+@Autonomous(name = "PushPropScoreFive")
+public class PushPropScoreFive extends LinearOpMode {
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
-    private  InitVisionProcessor.AllianceColor allianceColor;
+    private InitVisionProcessor.AllianceColor allianceColor;
     private InitVisionProcessor.SideOfField sideOfField;
 
     private Action selectedRoute;
 
     @Override
     public void runOpMode() {
-        /** Create and Initialize the robot **/
+        // Create and Initialize the robot
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
-        /** Initialize Gamepad and Robot - Order Important **/
+        // Initialize Gamepad and Robot - Order Important
         GamepadHandling.init();
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
+        // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
-        roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        RoutesSpikeOnly.BuildRoutes(roadRunnerDriveSubsystem);
+        //Build all the routes so we can select one quickly later
+        RoutesSpikeStraightUpTheMiddle.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
+
+            // Allow driver to override/lock the vision
             GamepadHandling.getDriverGamepad().readButtons();
             GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
 
-
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
-        teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();
-        allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
-        sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
+        teamPropLoc = MatchConfig.finalTeamPropLocation;
+        allianceColor = MatchConfig.finalAllianceColor;
+        sideOfField = MatchConfig.finalSideOfField;
 
-        //Set the starting pose of the robot
-//        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
+
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
 
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
@@ -102,32 +82,7 @@ public class Test_Auto extends LinearOpMode {
 
         telemetry.clearAll();
 
-//        ProfileAccelConstraint accelConstraint = new ProfileAccelConstraint(-20,20);
-//        MinVelConstraint minVelConstraint = new MinVelConstraint(Arrays.asList(
-//                Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(20),
-//                new AngularVelConstraint(MotorParametersRR.maxAngVel)
-//                ));
-
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
-
-        Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
-
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
-
-        Action testRoute = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE))
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKDROP_STAGING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
-                .stopAndAdd(new AutoDriveToBackDrop())
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
-                .setReversed(true)
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_NEUTRAL_PIXEL_WING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
-                .build();
-
-
-        //how should roadrunner handle changes in telemetry?
-
-        Actions.runBlocking(testRoute);
+        Actions.runBlocking(selectedRoute);
 
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
@@ -138,7 +93,7 @@ public class Test_Auto extends LinearOpMode {
 
     private boolean CheckRedAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDriveSubsystem.pose = RED_AUDIENCE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -153,7 +108,7 @@ public class Test_Auto extends LinearOpMode {
 
     private boolean CheckRedBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDriveSubsystem.pose = RED_BACKSTAGE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = redBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -168,7 +123,7 @@ public class Test_Auto extends LinearOpMode {
 
     private boolean CheckBlueAudience() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
-            roadRunnerDriveSubsystem.pose = BLUE_AUDIENCE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
@@ -183,7 +138,7 @@ public class Test_Auto extends LinearOpMode {
 
     private boolean CheckBlueBackstage() {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
-            roadRunnerDriveSubsystem.pose = BLUE_BACKSTAGE_START_POSE;
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
                 selectedRoute = blueBackstageBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {

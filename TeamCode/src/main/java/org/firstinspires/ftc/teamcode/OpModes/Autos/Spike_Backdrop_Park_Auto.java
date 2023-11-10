@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -11,13 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeBackdropPark;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-import org.opencv.core.Mat;
-
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikePickup1BackdropPark;
 
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
@@ -41,7 +39,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikePickup1BackdropPickup2BackdropPark.BuildRoutes();
+        RoutesSpikeBackdropPark.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -63,9 +61,9 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         sideOfField = MatchConfig.finalSideOfField;
 
         Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+
         //Reset Gyro
         Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
-
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
