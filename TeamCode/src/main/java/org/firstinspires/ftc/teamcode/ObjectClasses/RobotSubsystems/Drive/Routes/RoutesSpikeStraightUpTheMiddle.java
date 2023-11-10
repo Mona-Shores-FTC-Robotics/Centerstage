@@ -6,12 +6,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Route
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.PoseToVector;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_BACKSTAGE;
-
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.closeClaw;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.liftHome;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.liftLow;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.rotateShoulderToBackdrop;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.rotateShoulderToIntake;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
@@ -21,9 +15,14 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.example.meepmeeptesting.Routes.RobotCommands;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
@@ -201,16 +200,16 @@ public class RoutesSpikeStraightUpTheMiddle {
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-                            liftLow,
-                            rotateShoulderToBackdrop),
+                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
                     new SleepAction(.2),
-                    closeClaw,
+                    new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
                     new SleepAction(.2),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
-                            closeClaw,
-                            rotateShoulderToIntake),
-                    liftHome
+                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
+                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME)
             );
             return scorePixel;
         }
