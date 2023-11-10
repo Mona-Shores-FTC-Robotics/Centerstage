@@ -269,5 +269,53 @@ public class RoutesSpikeStraightUpTheMiddle {
 
 
     }
+
+
+
+    /**
+     * METHODS TO SET SIMPLE ROUTES FOR ALL TEAM PROP LOCATIONS
+     **/
+
+    public static void setTeamPropCenterRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
+    }
+
+    public static void setTeamPropLeftRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropLeftRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropLeftRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropLeftRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropLeftRoute);
+    }
+
+    public static void setTeamPropRightRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
+        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
+        redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
+        redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
+    }
+
+
+    public static void setTeamPropAllRoutes() {
+        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
+        blueBackstageBotLeft.runAction(blueBackstageBotTeamPropLeftRoute);
+        blueBackstageBotRight.runAction(blueBackstageBotTeamPropRightRoute);
+
+        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
+        blueAudienceBotLeft.runAction(blueAudienceBotTeamPropLeftRoute);
+        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightRoute);
+
+        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
+        redBackstageBotLeft.runAction(redBackstageBotTeamPropLeftRoute);
+        redBackstageBotRight.runAction(redBackstageBotTeamPropRightRoute);
+
+        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
+        redAudienceBotLeft.runAction(redAudienceBotTeamPropLeftRoute);
+        redAudienceBotRight.runAction(redAudienceBotTeamPropRightRoute);
+    }
+
+
 }
 

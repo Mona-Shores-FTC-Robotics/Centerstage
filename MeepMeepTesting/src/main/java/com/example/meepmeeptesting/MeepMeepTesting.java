@@ -2,7 +2,6 @@ package com.example.meepmeeptesting;
 import com.example.meepmeeptesting.Routes.RoutesSpikeBackdropPark;
 import com.example.meepmeeptesting.Routes.RoutesSpikeOnly;
 import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPark;
-import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPickup2BackdropPark;
 import com.example.meepmeeptesting.Routes.RoutesSpikeStraightUpTheMiddle;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
@@ -26,9 +25,9 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static TeamPropLocation teamPropLocation = TeamPropLocation.RIGHT;
+    public static TeamPropLocation teamPropLocation = TeamPropLocation.ALL;
 
-    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_BACKDROP_PARK;
+    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_PICKUP1_BACKDROP_PARK;
 
     /** Set which robots should show up **/
     public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
@@ -85,14 +84,6 @@ public class MeepMeepTesting {
             if (teamPropLocation == TeamPropLocation.RIGHT) RoutesSpikeOnly.setTeamPropRightRoutes();
             if (teamPropLocation == TeamPropLocation.ALL) RoutesSpikeOnly.setTeamPropAllRoutes();
 
-        } else if (routesToRunSelection == RoutesToRun.SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK) {
-
-            RoutesSpikePickup1BackdropPickup2BackdropPark.BuildRoutes();
-
-            if (teamPropLocation == TeamPropLocation.LEFT) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropLeftRoutes();
-            if (teamPropLocation == TeamPropLocation.CENTER) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropCenterRoutes();
-            if (teamPropLocation == TeamPropLocation.RIGHT) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropRightRoutes();
-            if (teamPropLocation == TeamPropLocation.ALL) RoutesSpikePickup1BackdropPickup2BackdropPark.setTeamPropAllRoutes();
         }
 
         else if (routesToRunSelection == RoutesToRun.SPIKE_STRAIGHT) {
