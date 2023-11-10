@@ -9,7 +9,9 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKDROP_STAGING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_SPIKE_L;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_NEUTRAL_PIXEL_WING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_BACKSTAGE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropCenterRoute;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes.RoutesSpikeOnly.blueAudienceBotTeamPropLeftRoute;
@@ -130,9 +132,12 @@ public class Test_Auto extends LinearOpMode {
         Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
 
         Action testRoute = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE))
-                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKDROP_STAGING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKDROP_STAGING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new AutoDriveToBackDrop())
+                .setReversed(true)
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(PoseToVector(RED_NEUTRAL_PIXEL_WING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
                 .build();
 
 

@@ -77,7 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
         // path controller gains
         public double axialGain =12;
         public double lateralGain =10;
-        public double headingGain =10; // shared with turn
+        public double headingGain =8; // shared with turn
 
         public double axialVelGain =1.1;
         public double lateralVelGain =1.1;

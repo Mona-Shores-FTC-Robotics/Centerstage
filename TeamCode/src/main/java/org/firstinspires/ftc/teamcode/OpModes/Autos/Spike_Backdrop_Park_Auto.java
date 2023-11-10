@@ -56,6 +56,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
         //Reset Gyro
         Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
 
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
