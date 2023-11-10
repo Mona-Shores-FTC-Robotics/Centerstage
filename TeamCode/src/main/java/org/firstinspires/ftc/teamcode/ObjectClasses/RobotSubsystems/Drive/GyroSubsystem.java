@@ -49,23 +49,18 @@ public class GyroSubsystem extends SubsystemBase {
     }
 
     public void resetRelativeYaw() {
-        lastRelativeYawDegrees = currentAbsoluteYawDegrees;
-        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
-            currentRelativeYawDegrees = 90;
-        } else {
-            currentRelativeYawDegrees = -90;
-        }
+        currentRelativeYawDegrees= Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log();
         currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
     }
 
     public void setRelativeYawTo0(){
-        lastRelativeYawDegrees = currentAbsoluteYawDegrees;
         currentRelativeYawDegrees = 0;
         currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
     }
 
+
     public double getCurrentRelativeYaw(){
-        double deltaAngle = currentAbsoluteYawDegrees - lastRelativeYawDegrees;
+        double deltaAngle = currentAbsoluteYawDegrees - currentRelativeYawDegrees;
 
         if (deltaAngle>180){
             deltaAngle-=360;
@@ -75,8 +70,6 @@ public class GyroSubsystem extends SubsystemBase {
         }
         currentRelativeYawDegrees+= deltaAngle;
         currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
-
-        lastRelativeYawDegrees = currentAbsoluteYawDegrees;
         telemetryGyro();
         return currentRelativeYawDegrees;
     }
