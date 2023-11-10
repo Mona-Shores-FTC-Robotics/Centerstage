@@ -131,14 +131,8 @@ public class RoutesSpikeStraightUpTheMiddle {
      * METHODS TO SET SPIKE PIXEL ONLY ROUTES FOR ALL TEAM PROP LOCATIONS
      **/
 
-
-
     public static class RouteBuilder {
-
-
         MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-
-
         Action AutoDriveToBackDrop(Pose2d scorePose, PosesForRoute posesForRoute) {
             Action autoDriveToBackdrop = mecanumDrive.actionBuilder(posesForRoute.backdropStagingPose)
                     .splineToLinearHeading(scorePose, TANGENT_TOWARD_BACKSTAGE)
