@@ -210,11 +210,11 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action PickupPixels(PosesForRoute posesForRoute) {
             SequentialAction pickupPixels = new SequentialAction(
                     new ParallelAction(
-                            new CustomActions().TurnIntakeOn(),
+                            new RobotCommands().TurnIntakeOn(),
                             new RouteBuilder().AutoDriveToNeutralStack(posesForRoute)),
                     new SleepAction(.1),
                     new ParallelAction(
-                            new CustomActions().TurnIntakeOff(),
+                            new RobotCommands().TurnIntakeOff(),
                             new RouteBuilder().AutoDriveFromNeutralStack(posesForRoute)));
             return pickupPixels;
         }
@@ -238,16 +238,16 @@ public class RoutesSpikeStraightUpTheMiddle {
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-                            new CustomActions().LiftLow(),
-                            new CustomActions().RotateShoulderToBackdrop()),
+                            new RobotCommands().LiftLow(),
+                            new RobotCommands().RotateShoulderToBackdrop()),
                     new SleepAction(.2),
-                    new CustomActions().OpenClaw(),
+                    new RobotCommands().OpenClaw(),
                     new SleepAction(.2),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
-                            new CustomActions().CloseClaw(),
-                            new CustomActions().RotateShoulderToIntake()),
-                    new CustomActions().LiftHome()
+                            new RobotCommands().CloseClaw(),
+                            new RobotCommands().RotateShoulderToIntake()),
+                    new RobotCommands().LiftHome()
             );
             return scorePixel;
         }
