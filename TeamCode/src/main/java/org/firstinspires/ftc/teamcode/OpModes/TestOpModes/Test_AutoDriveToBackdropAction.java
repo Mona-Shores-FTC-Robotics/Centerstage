@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Match
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Autonomous(name = "Alignment Test Auto")
-public class Alightment_Test_Auto extends LinearOpMode {
+@Autonomous(name = "TEST - Just AutoDriveToBackdrop")
+public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
     private MecanumDriveMona roadRunnerDriveSubsystem;
 

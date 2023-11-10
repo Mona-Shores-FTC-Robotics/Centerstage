@@ -36,15 +36,15 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @Config
-@Autonomous(name = "Test Stop And Add")
-public class Test_Auto extends LinearOpMode {
-    static double forward_distance=35;
+@Autonomous(name = "TEST - Forward + StopAndAdd(AutoDriveAction) + Backward")
+public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
@@ -76,7 +76,6 @@ public class Test_Auto extends LinearOpMode {
             sleep(10);
         }
 
-
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
@@ -84,9 +83,6 @@ public class Test_Auto extends LinearOpMode {
         teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();
         allianceColor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
         sideOfField = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
-
-        //Set the starting pose of the robot
-//        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
@@ -108,7 +104,7 @@ public class Test_Auto extends LinearOpMode {
 //                new AngularVelConstraint(MotorParametersRR.maxAngVel)
 //                ));
 
-
+        Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
 
         //Reset Gyro

@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.Time;
@@ -26,6 +27,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 @Config
 public class DriveSubsystem extends SubsystemBase {
@@ -226,6 +228,17 @@ public class DriveSubsystem extends SubsystemBase {
 
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
+
+
+    public Pose2d getCurrentRobotPose()
+    {
+        return mecanumDrive.pose;
+    }
+
+    public Supplier<Pose2d> poseSupplier() {
+        return this::getCurrentRobotPose; // Method reference to getPose
+    }
+
 }
 
 
