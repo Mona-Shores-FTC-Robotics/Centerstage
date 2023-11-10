@@ -1,4 +1,4 @@
-package com.example.meepmeeptesting.Routes;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Routes;
 
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
@@ -19,6 +19,8 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
 import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.*;
+import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.BLUE;
+import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.RED;
 import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.AUDIENCE;
 import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.BACKSTAGE;
 import static com.example.meepmeeptesting.MeepMeepTesting.TeamPropLocation.CENTER;
@@ -34,8 +36,6 @@ import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
 public class RoutesSpikeStraightUpTheMiddle {
-    private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
-
     //Variables to store routes for team prop center for all four start locations
     private static Action redAudienceBotTeamPropCenterRoute;
     private static Action redBackstageBotTeamPropCenterRoute;
@@ -241,7 +241,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                             new CustomActions().LiftLow(),
                             new CustomActions().RotateShoulderToBackdrop()),
                     new SleepAction(.2),
-                    new CustomActions().OpenClaw(),
+                    new CustomActions().CloseClaw(),
                     new SleepAction(.2),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
