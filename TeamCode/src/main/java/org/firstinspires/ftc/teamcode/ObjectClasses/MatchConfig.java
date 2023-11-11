@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
@@ -13,4 +14,6 @@ public class MatchConfig {
     public static double endOfAutonomousRelativeYawDegrees;
     public static double endOfAutonomousAbsoluteYawDegrees;
     public static boolean autoHasRun=false;
+
+    public static ElapsedTime teleOpTimer;
 }

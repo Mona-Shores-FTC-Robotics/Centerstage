@@ -47,7 +47,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void init() {
         intake.setDirection(DcMotor.Direction.FORWARD);
-        intake.setPower(intakeParameters.INTAKE_OFF_POWER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         currentState = IntakeStates.INTAKE_OFF;
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
