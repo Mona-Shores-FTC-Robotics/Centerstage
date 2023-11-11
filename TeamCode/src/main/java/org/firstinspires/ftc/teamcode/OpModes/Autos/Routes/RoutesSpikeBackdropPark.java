@@ -125,7 +125,7 @@ public class RoutesSpikeBackdropPark {
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_135_DEGREES)
                 .setReversed(true)
-                .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_R), TANGENT_TOWARD_BLUE)
+                .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_BLUE) //WAS Redaudiencespike Right and tangent toward blue
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
