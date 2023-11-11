@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.example.meepmeeptesting.MeepMeepTesting;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class PosesForRoute {
     public Pose2d startingPose;
@@ -23,6 +24,9 @@ public class PosesForRoute {
     public double parkOrientation;
     public Pose2d spikePose;
 
+    public VisionSubsystem.DeliverLocation firstDeliverLocation;
+    public VisionSubsystem.DeliverLocation additionalDeliverLocation;
+
     PosesForRoute(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField, InitVisionProcessor.TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
         SetStartingPose(allianceColor, sideOfField);
@@ -34,6 +38,7 @@ public class PosesForRoute {
             switch (teamPropLocation) {
                 case LEFT: {
                     firstPixelScorePose = BLUE_BACKDROP_LEFT;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.LEFT;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_L;
@@ -41,6 +46,7 @@ public class PosesForRoute {
                 }
                 case RIGHT: {
                     firstPixelScorePose = BLUE_BACKDROP_RIGHT;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.RIGHT;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_R;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_R;
@@ -49,6 +55,7 @@ public class PosesForRoute {
                 case CENTER:
                 default: {
                     firstPixelScorePose = BLUE_BACKDROP_CENTER;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_C;
@@ -59,6 +66,7 @@ public class PosesForRoute {
             switch (teamPropLocation) {
                 case LEFT: {
                     firstPixelScorePose = RED_BACKDROP_LEFT;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.LEFT;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_L;
                     } else spikePose = RED_BACKSTAGE_SPIKE_L;
@@ -66,6 +74,7 @@ public class PosesForRoute {
                 }
                 case RIGHT: {
                     firstPixelScorePose = RED_BACKDROP_RIGHT;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.RIGHT;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_R;
                     } else spikePose = RED_BACKSTAGE_SPIKE_R;
@@ -74,6 +83,7 @@ public class PosesForRoute {
                 case CENTER:
                 default: {
                     firstPixelScorePose = RED_BACKDROP_CENTER;
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
                     if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else spikePose = RED_BACKSTAGE_SPIKE_C;
@@ -89,6 +99,7 @@ public class PosesForRoute {
             neutralStagingPose = BLUE_NEUTRAL_STAGING;
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = BLUE_BACKDROP_CENTER;
+            additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
             parkPose = BLUE_BACKSTAGE_PARK_LANE_C;
             parkOrientation = FACE_45_DEGREES;
 
@@ -97,6 +108,7 @@ public class PosesForRoute {
             neutralStagingPose = RED_NEUTRAL_STAGING;
             neutralPickupPose = RED_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = RED_BACKDROP_CENTER;
+            additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
             parkPose = RED_BACKSTAGE_PARK_LANE_D;
             parkOrientation = FACE_315_DEGREES;
         }

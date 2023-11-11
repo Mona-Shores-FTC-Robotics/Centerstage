@@ -42,7 +42,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Config
 @Autonomous(name = "TEST - Forward + StopAndAdd(AutoDriveAction) + Backward")
 public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;
