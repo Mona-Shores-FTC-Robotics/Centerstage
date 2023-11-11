@@ -149,7 +149,6 @@ public final class MecanumDriveMona {
         //We had this method call in the periodic() of the Drivesystem, but that means it can be called twice a loop if we run any RR actions (e.g.follow a trajectory)
         //putting it here, should avoid that double call
 
-
         if (drive==0 && strafe ==0 && turn==0) {
             //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
             leftFront.setVelocity(0);
@@ -272,43 +271,7 @@ public final class MecanumDriveMona {
         );
     }
 
-    public void telemetryDriveTrain() {
 
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("");
-
-        Robot.getInstance().getActiveOpMode().telemetry.addData("Drive: ", drive);
-        Robot.getInstance().getActiveOpMode().telemetry.addData("Strafe: ", strafe);
-        Robot.getInstance().getActiveOpMode().telemetry.addData("Turn: ", turn);
-
-        double targetSpeedLF = Math.round(100.0 * leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedRF = Math.round(100.0 * rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedLB = Math.round(100.0 * leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedRB = Math.round(100.0 * rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-
-        double actualSpeedLF = Math.round(100.0 * leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedRF = Math.round(100.0 * rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedLB = Math.round(100.0 * leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedRB = Math.round(100.0 * rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * leftFront.getPower()) / 100.0);
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * rightFront.getPower()) / 100.0);
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * leftBack.getPower()) / 100.0);
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * rightBack.getPower()) / 100.0);
-
-        //todo make sure this doesn't mess up the field overlay in the dashboard (e.g., because this packet doesn't send that data)
-        TelemetryPacket p = new TelemetryPacket();
-
-        p.put("actualSpeedLF", actualSpeedLF);
-        p.put("actualSpeedRF", actualSpeedRF);
-        p.put("actualSpeedLB", actualSpeedLB);
-        p.put("actualSpeedRB", actualSpeedRB);
-        p.put("targetSpeedLF", targetSpeedLF);
-        p.put("targetSpeedRF", targetSpeedRF);
-        p.put("targetSpeedLB", targetSpeedLB);
-        p.put("targetSpeedRB", targetSpeedRB);
-
-        FtcDashboard.getInstance().sendTelemetryPacket(p);
-    }
 
     public void setAllPower(double p) {setMotorPower(p,p,p,p);}
 

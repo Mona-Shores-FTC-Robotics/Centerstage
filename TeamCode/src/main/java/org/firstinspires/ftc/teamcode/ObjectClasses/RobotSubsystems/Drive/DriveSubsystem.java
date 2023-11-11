@@ -7,33 +7,20 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.DualNum;
-import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.PoseVelocity2dDual;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.Time;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.RunCommand;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 @Config
 public class DriveSubsystem extends SubsystemBase {
 
     public static class DriveParameters {
+        /** Set these drive parameters for faster TeleOp driving**/
         public double DRIVE_SPEED_FACTOR=.8;
         public double STRAFE_SPEED_FACTOR=.8;
         public double TURN_SPEED_FACTOR=.4;
@@ -42,6 +29,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static class ParamsMona {
+        /** Set Mona motor parameters for faster TeleOp driving**/
         public double DRIVE_RAMP = .2; //ken ramp
         public double STRAFE_RAMP = .22;
         public double TURN_RAMP = .4;
@@ -56,7 +44,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static class ParamsRRMona {
-        /** Set Roadrunner motor parameters for faster drive motors **/
+        /** Set Roadrunner motor parameters for faster roadrunner trajectories **/
 
         // drive model parameters
         public double inPerTick =0.0317919075144509; //60.5\1903
@@ -77,6 +65,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double maxAngVel =Math.PI; // shared with path
         public double maxAngAccel =Math.PI;
 
+        //These are being used in the run part of the trajectory and turn action so they should be live updating.
         // path controller gains
         public double axialGain =12;
         public double lateralGain =10;
@@ -115,40 +104,18 @@ public class DriveSubsystem extends SubsystemBase {
         drivingToAprilTag=false;
         fieldOrientedControl=false;
         mecanumDrive.init();
-
     }
 
     public void periodic(){
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
-        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedRF = Math.round(100.0 * mecanumDrive.rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedLB = Math.round(100.0 * mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double targetSpeedRB = Math.round(100.0 * mecanumDrive.rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-
-        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedRF = Math.round(100.0 * mecanumDrive.rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedLB = Math.round(100.0 * mecanumDrive.leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedRB = Math.round(100.0 * mecanumDrive.rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-
-
-        TelemetryPacket packet = new TelemetryPacket();
-        c = packet.fieldOverlay();
-
-        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
-        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
-        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
-        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftFront.getPower()) / 100.0);
-        packet.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightFront.getPower()) / 100.0);
-        packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
-        packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
-
-
-        packet.put("LF Speed", actualSpeedLF);
-        packet.put("LF Target", targetSpeedLF);
+        //If the vision subsystem has a pose ready for us (because we are at the backdrop)
+        // AND the driver set the resetHeading flag (this is the BACK button right now)
+        //      then:
+        //          1) reset the gyro (to 0)
+        //          2) change the relativeYaw to 0 (offset 0 from gyro)
+        //          3) update the robot pose
+        //              i) set the X/Y coordinates based on the april tag
+        //              ii)set the heading to 0
 
         if (visionSubsystem.resetPoseReady){
             if (Robot.getInstance().getVisionSubsystem().resetHeading) {
@@ -157,20 +124,55 @@ public class DriveSubsystem extends SubsystemBase {
                 visionSubsystem.resetPoseReady = false;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.pose =
                         new Pose2d (visionSubsystem.resetPose.position.x,
-                                    visionSubsystem.resetPose.position.y,
-                                    0);
+                                visionSubsystem.resetPose.position.y,
+                                0);
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
-            } else {
+            }
+
+            //Else the vision subsystem has a pose ready for us (because we are at the backdrop), but we don't want to reset the gyro
+            //      THEN:
+            //          Update the robot pose with the reset Pose
+            //              i) sets the X/Y coordinates based on the april tag
+            //              ii)sets the heading to the currentRelativeYaw
+
+            else {
                 visionSubsystem.resetPoseReady = false;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = visionSubsystem.resetPose;
                 Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
             }
         }
 
+        //Prepare and send a telemetry packet with drive information
+        DashboardTelemetryDriveTrain();
+
+        //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
+        mecanumDrive.SetRoadRunnerParameters();
+
+        //update the PIDFCoefficients every loop so that changes we make in the dashboard take effect
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
+    }
+
+    private void DashboardTelemetryDriveTrain() {
+        //****************** DriveSubsystem TELEMETRY PACKET *************************//
+        TelemetryPacket packet = new TelemetryPacket();
+        c = packet.fieldOverlay();
+
+        //Lets just look at the Left Front wheel speed to get an idea of speed of the robot
+        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
+
+        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
+        packet.put("LF Speed", actualSpeedLF);
+        packet.put("LF Target", targetSpeedLF);
+        packet.put("LF Power", powerLF);
+
         packet.put("x", mecanumDrive.pose.position.x);
         packet.put("y", mecanumDrive.pose.position.y);
         packet.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
-
 
         packet.fieldOverlay().getOperations().addAll(c.getOperations());
         mecanumDrive.drawPoseHistory(c);
@@ -179,8 +181,16 @@ public class DriveSubsystem extends SubsystemBase {
         mecanumDrive.drawRobot(c, mecanumDrive.pose);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
-        mecanumDrive.SetRoadRunnerParameters();
     }
+
+    public void DriverStationTelemetry() {
+        double targetSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) +
+                "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower()) / 100.0);
+    }
+
 
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
 
@@ -243,17 +253,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
-
-
-    public Pose2d getCurrentRobotPose()
-    {
-        return mecanumDrive.pose;
-    }
-
-    public Supplier<Pose2d> poseSupplier() {
-        return this::getCurrentRobotPose; // Method reference to getPose
-    }
-
 }
 
 

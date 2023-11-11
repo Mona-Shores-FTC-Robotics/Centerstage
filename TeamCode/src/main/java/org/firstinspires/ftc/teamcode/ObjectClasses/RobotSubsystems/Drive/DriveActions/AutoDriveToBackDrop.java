@@ -37,7 +37,6 @@ public class AutoDriveToBackDrop implements Action {
         if (Robot.getInstance().getVisionSubsystem().resetPoseReady){
             Robot.getInstance().getVisionSubsystem().resetPoseReady=false;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = Robot.getInstance().getVisionSubsystem().resetPose;
-//            Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
         }
 
         Canvas c = telemetryPacket.fieldOverlay();

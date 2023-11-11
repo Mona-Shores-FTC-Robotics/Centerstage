@@ -29,8 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
-
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -79,6 +77,9 @@ public class TeleOp_Vision extends LinearOpMode
 
         while (opModeIsActive())
         {
+            //just print this every loop because we want to know
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+
             //Run the Scheduler
             CommandScheduler.getInstance().run();
             GamepadHandling.getDriverGamepad().readButtons();
@@ -88,18 +89,14 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Add AprilTag Telemetry
             if (gamepad1.left_trigger>.1) {
-                telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-//                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
-                Robot.getInstance().getGyroSubsystem().telemetryGyro();
+
+               Robot.getInstance().getVisionSubsystem().DriverStationAprilTagTelemetry();
             }
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
-                Robot.getInstance().getGyroSubsystem().telemetryGyro();
-                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
-                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
-                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
+                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
+                Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
             }
 
             telemetry.update();

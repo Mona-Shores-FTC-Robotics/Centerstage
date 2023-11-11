@@ -56,7 +56,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
-        //todo this has to be changed before competition
+        //These should be set properly based on vision/override - team prop location cannot be overridden
         teamPropLoc = MatchConfig.finalTeamPropLocation;
         allianceColor = MatchConfig.finalAllianceColor;
         sideOfField = MatchConfig.finalSideOfField;
@@ -77,7 +77,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         CheckRedBackstage();
         CheckRedAudience();
 
-        Robot.getInstance().getGyroSubsystem().telemetryGyro();
+        Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
         Robot.getInstance().getActiveOpMode().telemetry.update();
 
         Actions.runBlocking(selectedRoute);

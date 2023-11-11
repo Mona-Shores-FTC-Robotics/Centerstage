@@ -55,8 +55,7 @@ public class TurnPIDController {
         double output = feedforward * Math.signum(error) + .9 * Math.tanh(
                 (error * Kp) + (accumulatedError * Ki) + (slope * Kd));
 
-        Robot.getInstance().getActiveOpMode().telemetry.addData("error", error);
-        Robot.getInstance().getActiveOpMode().telemetry.update();
+        Robot.getInstance().getActiveOpMode().telemetry.addData("Turn PID error", error);
 
         return -output;
     }

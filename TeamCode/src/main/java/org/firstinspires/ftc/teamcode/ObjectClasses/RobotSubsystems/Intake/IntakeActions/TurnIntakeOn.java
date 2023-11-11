@@ -17,6 +17,7 @@ public class TurnIntakeOn implements Action {
     }
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        telemetryPacket.addLine("Intake On Action");
         Robot.getInstance().getIntakeSubsystem().intake.setDirection(DcMotor.Direction.FORWARD);
         Robot.getInstance().getIntakeSubsystem().intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         Robot.getInstance().getIntakeSubsystem().currentState = IntakeSubsystem.IntakeStates.INTAKE_ON;

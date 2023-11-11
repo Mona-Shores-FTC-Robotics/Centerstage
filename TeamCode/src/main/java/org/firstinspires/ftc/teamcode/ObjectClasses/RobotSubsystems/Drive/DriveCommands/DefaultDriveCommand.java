@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
-
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 import java.util.function.DoubleSupplier;
@@ -25,8 +20,6 @@ public class DefaultDriveCommand extends CommandBase {
 
     /**
      * Creates a new DefaultDrive.
-     *
-     * @param subsystem The drive subsystem this command will run on.
      */
     public DefaultDriveCommand(DriveSubsystem subsystem,
                                 DoubleSupplier driveInput, DoubleSupplier strafeInput, DoubleSupplier turnInput) {

@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 
 public class RotateShoulderCommand extends CommandBase {
@@ -14,8 +13,7 @@ public class RotateShoulderCommand extends CommandBase {
     //declare target state & position
     private ShoulderSubsystem.ShoulderStates targetState;
     private double targetPosition;
-
-    Telemetry telemetry;
+    TelemetryPacket telemetryPacket;
 
     public RotateShoulderCommand(ShoulderSubsystem subsystem, ShoulderSubsystem.ShoulderStates inputState) {
             shoulderSubsystem = subsystem;
@@ -30,17 +28,16 @@ public class RotateShoulderCommand extends CommandBase {
     public void initialize() {
         shoulderSubsystem.shoulder.setPosition(targetState.position);
         //create a new telemetry packet for this command
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
+        telemetryPacket = new TelemetryPacket();
     }
 
     public void execute() {
         shoulderSubsystem.currentPosition = shoulderSubsystem.shoulder.getPosition();
-
-        telemetry.addData("Current Shoulder State", shoulderSubsystem.currentState);
-        telemetry.addData("Current Position", shoulderSubsystem.currentPosition);
-        telemetry.addData("Target Shoulder State", targetState);
-        telemetry.addData("Target Position", targetPosition);
-
+        telemetryPacket.put("Current Shoulder State", shoulderSubsystem.currentState);
+        telemetryPacket.put("Current Position", shoulderSubsystem.currentPosition);
+        telemetryPacket.put("Target Shoulder State", targetState);
+        telemetryPacket.put("Target Position", targetPosition);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
     @Override
@@ -51,12 +48,5 @@ public class RotateShoulderCommand extends CommandBase {
                 shoulderSubsystem.currentState = targetState;
                 return true;
             } else return false;
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        if (interrupted){
-            //what should we do if interrupted?
-        }
     }
 }

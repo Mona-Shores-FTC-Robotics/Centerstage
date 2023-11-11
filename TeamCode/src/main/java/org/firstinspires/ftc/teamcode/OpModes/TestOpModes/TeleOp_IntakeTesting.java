@@ -64,11 +64,8 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            //todo does this print the final side/color from auto?
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-
             TelemetryMona.intakeTestingButtons();
-
             telemetry.update();
             sleep(10);
         }

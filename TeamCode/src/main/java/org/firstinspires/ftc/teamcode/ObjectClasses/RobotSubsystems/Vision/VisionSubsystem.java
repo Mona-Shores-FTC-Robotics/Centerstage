@@ -273,7 +273,7 @@ public final class VisionSubsystem extends SubsystemBase {
     /**
      * Display info (using telemetry) for a recognized AprilTag.
      */
-    public void telemetryAprilTag() {
+    public void DriverStationAprilTagTelemetry() {
         List<AprilTagDetection> myAprilTagDetections;
         AprilTagDetection myAprilTagDetection;
 
@@ -388,10 +388,7 @@ public final class VisionSubsystem extends SubsystemBase {
         telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
         telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
 
-
-//        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", aprilTagPose.position.x, aprilTagPose.position.y, tag.detection.ftcPose.bearing);
         return newPose;
-
     }
 
 
@@ -444,89 +441,6 @@ public final class VisionSubsystem extends SubsystemBase {
             return true;
         } return false;
     }
-
-    public void DriveToRedAudienceWallTag() {
-        if (Robot.getInstance().getActiveOpMode().gamepad1.left_bumper && (RED_AUDIENCE_WALL_LARGE_TAG.isDetected || RED_AUDIENCE_WALL_SMALL_TAG.isDetected)) {
-            //if we can see the small april tag use that for navigation
-            if (RED_AUDIENCE_WALL_SMALL_TAG.isDetected && RED_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.range < 35) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-                double headingError = RED_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.bearing;
-                double yawError = RED_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.yaw;
-
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = ClipDrive(rangeError);
-                double turn = ClipTurn(headingError);
-                double strafe = ClipStrafe(yawError);
-
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-                telemetry.addData("Auto to Small Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            } else if (RED_AUDIENCE_WALL_LARGE_TAG.isDetected) // use the large tag until we can see the small tag
-            {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (RED_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-                double headingError = RED_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.bearing;
-                double yawError = RED_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.yaw;
-
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = ClipDrive(rangeError);
-                double turn = ClipTurn(headingError);
-                double strafe = ClipStrafe(yawError);
-
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-                telemetry.addData("Auto to Large Red", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-        }
-    }
-
-    public void DriveToBlueAudienceWallTag() {
-        if (Robot.getInstance().getActiveOpMode().gamepad1.right_bumper && (BLUE_AUDIENCE_WALL_LARGE_TAG.isDetected || BLUE_AUDIENCE_WALL_SMALL_TAG.isDetected)) {
-
-            //if we can see the small april tag use that for navigation
-            if (BLUE_AUDIENCE_WALL_SMALL_TAG.isDetected && BLUE_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.range < 35) {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-                double headingError = BLUE_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.bearing;
-                double yawError = BLUE_AUDIENCE_WALL_SMALL_TAG.detection.ftcPose.yaw;
-
-                // Use the speed and turn "gains" to calculate how we want the rtunableVisionConstants.obot to move.
-                double drive = ClipDrive(rangeError);
-                double turn = ClipTurn(headingError);
-                double strafe = ClipStrafe(yawError);
-
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-                telemetry.addData("Auto to Small Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-
-            } else if (BLUE_AUDIENCE_WALL_LARGE_TAG.isDetected)// use the large tag until we can see the small tag
-            {
-                // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-                double rangeError = (BLUE_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-                double headingError = BLUE_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.bearing;
-                double yawError = BLUE_AUDIENCE_WALL_LARGE_TAG.detection.ftcPose.yaw;
-
-                // Use the speed and turn "gains" to calculate how we want the robot to move.
-                double drive = ClipDrive(rangeError);
-                double turn = ClipTurn(headingError);
-                double strafe = ClipStrafe(yawError);
-
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-                telemetry.addData("Auto to Large Blue", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            }
-        }
-    }
-
 
     //  If right tag is detected AND one of the following three things is true, then drive to the right tag:
     //  1) the delivery location is right; or

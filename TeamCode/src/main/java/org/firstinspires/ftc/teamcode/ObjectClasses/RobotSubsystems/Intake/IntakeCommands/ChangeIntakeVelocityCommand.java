@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -15,8 +17,6 @@ public class ChangeIntakeVelocityCommand extends CommandBase {
     private IntakeSubsystem.IntakeStates targetState;
     private double currentVelocity;
 
-    Telemetry telemetry;
-
     public ChangeIntakeVelocityCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
         intakeSubsystem = subsystem;
         targetState = inputState;
@@ -25,16 +25,21 @@ public class ChangeIntakeVelocityCommand extends CommandBase {
     @Override
     public void initialize() {
         intakeSubsystem.intake.setVelocity(targetState.velocity);
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        telemetry.clearAll();
     }
 
     public void execute() {
+        TelemetryPacket telemetryPacket = new TelemetryPacket();
         currentVelocity = intakeSubsystem.intake.getVelocity();
-        telemetry.addData("Target Intake State", targetState);
-        telemetry.addData("Target Intake Velocity", targetState.velocity);
-        telemetry.addData("Current Intake State", intakeSubsystem.currentState);
-        telemetry.addData("Current Intake Velocity", currentVelocity);
+        telemetryPacket.put("Target Intake State", targetState);
+        telemetryPacket.put("Target Intake Velocity", targetState.velocity);
+        telemetryPacket.put("Current Intake State", intakeSubsystem.currentState);
+        telemetryPacket.put("Current Intake Velocity", currentVelocity);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
+    //this could perhaps end only after reaching the target velocity, but we would need to figure that out
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
 }

@@ -62,10 +62,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            //todo does this print the final side/color from auto?
-//            telemetry.addData("Alliance Color", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getAllianceColorFinal());
-//            telemetry.addData("Side of the Field", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getSideOfFieldFinal());
-
             TelemetryMona.scoringArmTestingButtons();
             telemetry.update();
             sleep(10);

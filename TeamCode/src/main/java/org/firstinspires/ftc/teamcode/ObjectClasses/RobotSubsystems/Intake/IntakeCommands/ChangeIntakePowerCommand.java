@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands;
 
-import com.arcrobotics.ftclib.command.CommandBase;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.arcrobotics.ftclib.command.CommandBase;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 public class ChangeIntakePowerCommand extends CommandBase {
@@ -15,8 +16,6 @@ public class ChangeIntakePowerCommand extends CommandBase {
     private IntakeSubsystem.IntakeStates targetState;
     private double currentVelocity;
 
-    Telemetry telemetry;
-
     public ChangeIntakePowerCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
         intakeSubsystem = subsystem;
         targetState = inputState;
@@ -25,16 +24,23 @@ public class ChangeIntakePowerCommand extends CommandBase {
     @Override
     public void initialize() {
         intakeSubsystem.intake.setPower(targetState.power);
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        telemetry.clearAll();
     }
 
     public void execute() {
+        TelemetryPacket telemetryPacket = new TelemetryPacket();
         currentVelocity = intakeSubsystem.intake.getVelocity();
-        telemetry.addData("Target Intake State", targetState);
-        telemetry.addData("Target Intake Velocity", targetState.velocity);
-        telemetry.addData("Current Intake State", intakeSubsystem.currentState);
-        telemetry.addData("Current Intake Velocity", currentVelocity);
+        telemetryPacket.put("Target Intake State", targetState);
+        telemetryPacket.put("Target Intake Velocity", targetState.velocity);
+        telemetryPacket.put("Current Intake State", intakeSubsystem.currentState);
+        telemetryPacket.put("Current Intake Velocity", currentVelocity);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
+
+    //this only needs to run once to change teh state of the intake motor so it can just return true
+    @Override
+    public boolean isFinished() {
+        return true;
+    }
+
 
 }

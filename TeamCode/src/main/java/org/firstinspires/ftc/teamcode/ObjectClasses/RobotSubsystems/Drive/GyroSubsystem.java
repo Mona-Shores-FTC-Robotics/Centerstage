@@ -43,6 +43,7 @@ public class GyroSubsystem extends SubsystemBase {
         currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
         currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
         updateCurrentRelativeYaw();
+        DriverStationTelemetry();
     }
 
     //This method is helpful to synchronize our Gyro and robot pose
@@ -84,7 +85,6 @@ public class GyroSubsystem extends SubsystemBase {
         }
             currentRelativeYawDegrees = relativeYaw;
             currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
-        telemetryGyro();
     }
 
     public double getCurrentRelativeYawRadians(){
@@ -95,8 +95,7 @@ public class GyroSubsystem extends SubsystemBase {
         return currentRelativeYawRadians;
     }
 
-
-    public void telemetryGyro() {
+    public void DriverStationTelemetry() {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Abs (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 6, 0));
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Rel (Degrees)" + JavaUtil.formatNumber(currentRelativeYawDegrees, 6, 0));

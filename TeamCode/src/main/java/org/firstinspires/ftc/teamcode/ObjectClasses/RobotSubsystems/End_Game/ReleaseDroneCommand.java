@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,8 +18,6 @@ public class ReleaseDroneCommand extends CommandBase {
     private DroneSubsystem.DroneDeployState targetState;
     private double targetPosition;
 
-    Telemetry telemetry;
-
     public ReleaseDroneCommand(DroneSubsystem subsystem, DroneSubsystem.DroneDeployState inputState) {
         droneSubsystem = subsystem;
         targetState = inputState;
@@ -30,16 +30,16 @@ public class ReleaseDroneCommand extends CommandBase {
     @Override
     public void initialize() {
         droneSubsystem.drone.setPosition(targetState.position);
-        //create a new telemetry packet for this command
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
     }
 
     public void execute() {
+        TelemetryPacket telemetryPacket = new TelemetryPacket();
         droneSubsystem.currentPosition = droneSubsystem.drone.getPosition();
-        telemetry.addData("Current Drone State", droneSubsystem.currentState);
-        telemetry.addData("Current Position", droneSubsystem.currentPosition);
-        telemetry.addData("Target Drone State", targetState);
-        telemetry.addData("Target Position", targetPosition);
+        telemetryPacket.put("Current Drone State", droneSubsystem.currentState);
+        telemetryPacket.put("Current Position", droneSubsystem.currentPosition);
+        telemetryPacket.put("Target Drone State", targetState);
+        telemetryPacket.put("Target Position", targetPosition);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
     @Override

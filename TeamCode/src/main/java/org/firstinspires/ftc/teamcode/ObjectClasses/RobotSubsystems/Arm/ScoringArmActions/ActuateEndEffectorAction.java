@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Scoring
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.command.CommandBase;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 
@@ -17,8 +15,6 @@ public class ActuateEndEffectorAction implements Action {
     private double targetPosition;
     private boolean hasNotInit = true;
     private boolean finished = false;
-
-    Telemetry telemetry;
 
     public ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates inputState) {
         //save the input state, s, as the target state
@@ -31,9 +27,6 @@ public class ActuateEndEffectorAction implements Action {
         hasNotInit=false;
         //set the Servo position to the target - we only have to set the servo position one time here in this constructor
         Robot.getInstance().getEndEffectorSubsystem().endEffector.setPosition(targetPosition);
-
-        //create a new telemetry packet for this command
-        telemetry = Robot.getInstance().getActiveOpMode().telemetry;
     }
 
 
@@ -49,11 +42,13 @@ public class ActuateEndEffectorAction implements Action {
         //STEP 2
         // add telemetry for targetState, currentState, targetPosition, and currentPosition
         // each line should look like this: telemetryPacket.put("[label]", [variable]);
-        telemetry.clearAll();
-        telemetry.addData("Current EndEffector State", Robot.getInstance().getEndEffectorSubsystem().currentState);
-        telemetry.addData("Current EndEffector Position", Robot.getInstance().getEndEffectorSubsystem().currentPosition);
-        telemetry.addData("Target EndEffector State: ", targetState);
-        telemetry.addData("Target EndEffector Position", targetPosition);
+
+        telemetryPacket.put("Current EndEffector State", Robot.getInstance().getEndEffectorSubsystem().currentState);
+        telemetryPacket.put("Current EndEffector Position", Robot.getInstance().getEndEffectorSubsystem().currentPosition);
+        telemetryPacket.put("Target EndEffector State: ", targetState);
+        telemetryPacket.put("Target EndEffector Position", targetPosition);
+
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
 
         if (isFinished()) {
             return false;

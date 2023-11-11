@@ -24,7 +24,6 @@ public class RoadRunnerActionToCommand {
 
         @Override
         public void initialize(){
-            p = new TelemetryPacket();
             c = new Canvas();
             dash = FtcDashboard.getInstance();
             action.preview(c);

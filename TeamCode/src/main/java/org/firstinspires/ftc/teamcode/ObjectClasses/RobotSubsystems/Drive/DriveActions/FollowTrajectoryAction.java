@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
 
@@ -47,6 +49,9 @@ public final class FollowTrajectoryAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket p) {
+        //todo just put this here to see if this gives us live updating of RR parameters while driving trajectories
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.SetRoadRunnerParameters();
+
         double t;
         if (beginTs < 0) {
             beginTs = Actions.now();
@@ -75,7 +80,9 @@ public final class FollowTrajectoryAction implements Action {
                 .compute(txWorldTarget, Robot.getInstance().getDriveSubsystem().mecanumDrive.pose, robotVelRobot);
 
         MecanumKinematics.WheelVelocities<Time> wheelVels = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.inverse(command);
+
         double voltage = Robot.getInstance().getDriveSubsystem().mecanumDrive.voltageSensor.getVoltage();
+
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.leftFront) / voltage);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.leftBack) / voltage);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.rightBack) / voltage);
@@ -91,6 +98,12 @@ public final class FollowTrajectoryAction implements Action {
         p.put("xError", error.position.x);
         p.put("yError", error.position.y);
         p.put("headingError (deg)", Math.toDegrees(error.heading.log()));
+
+        double actualSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
+        p.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
+        p.put("LF Speed", actualSpeedLF);
+        p.put("LF Power", powerLF);
 
         // only draw when active; only one drive action should be active at a time
         Canvas c = p.fieldOverlay();

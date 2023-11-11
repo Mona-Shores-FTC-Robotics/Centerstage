@@ -18,6 +18,7 @@ public class TurnIntakeOff implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        telemetryPacket.addLine("Intake Off Action");
         Robot.getInstance().getIntakeSubsystem().currentState = IntakeSubsystem.IntakeStates.INTAKE_OFF;
         Robot.getInstance().getIntakeSubsystem().intake.setPower(intakeParameters.INTAKE_OFF_POWER);
         Robot.getInstance().getIntakeSubsystem().intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

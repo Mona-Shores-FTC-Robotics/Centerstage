@@ -9,11 +9,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
-
-import java.util.HashMap;
 
 public class GamepadHandling {
     private static double DEAD_ZONE=.1;
@@ -24,19 +21,12 @@ public class GamepadHandling {
     private static boolean overrideAprilTagDriving = false;
     public static boolean LockedInitSettingsFlag = false;
     public static boolean ManualOverrideInitSettingsFlag = false;
-    private static HashMap<String, Integer> buttonMap = new HashMap<String, Integer>();
-
-    private static DriveSubsystem mecanumDriveSubsystem;
-    private static Telemetry telemetry;
 
     private static Gamepad.RumbleEffect endGameRumbleEffect;
     private static Gamepad.RumbleEffect problemRumbleEffect;
     private static Gamepad.LedEffect problemLedEffect;
 
     private static int timeoutRumbleCounter;
-
-    public static ButtonReader driverAreader;
-    public static ButtonReader driverBreader;
 
     public GamepadHandling() {
 
@@ -115,7 +105,8 @@ public class GamepadHandling {
             {
                 MatchConfig.finalAllianceColor = initVisionProcessor.allianceColorOverride;
                 MatchConfig.finalSideOfField = initVisionProcessor.sideOfFieldOverride;
-                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocationOverride;
+                //Always use the vision for the team prop location since we can't override it to fix it at competition
+                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
             } else {
                 MatchConfig.finalAllianceColor = initVisionProcessor.allianceColor;
                 MatchConfig.finalSideOfField = initVisionProcessor.sideOfField;
