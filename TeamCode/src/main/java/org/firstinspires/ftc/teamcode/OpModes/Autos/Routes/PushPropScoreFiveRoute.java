@@ -23,9 +23,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class PushPropScoreFiveRoute {
     //Variables to store routes for team prop center for all four start locations
@@ -57,7 +59,7 @@ public class PushPropScoreFiveRoute {
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(blueBackstageRightPoses))
                 .build();
 
-        /** RED BACKSTAGE LEFT **/
+        /** RED BACKSTAGE RIGHT **/
         PosesForRoute redBackstageRightPoses = new PosesForRoute(RED, BACKSTAGE, RIGHT);
         redBackstageBotTeamPropRightRoute = mecanumDrive.actionBuilder(redBackstageRightPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(redBackstageRightPoses))
@@ -190,20 +192,21 @@ public class PushPropScoreFiveRoute {
             return autoDriveToNeutralStack;
         }
 
-        public Action ScorePixelAction(Pose2d scorePose, PosesForRoute posesForRoute) {
+        public Action ScorePixelAction(Pose2d scorePose, VisionSubsystem.DeliverLocation deliverLocation, PosesForRoute posesForRoute) {
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
-                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
-                    new SleepAction(.2),
+                            new AutoDriveToBackDrop(deliverLocation),
+//                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
+//                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
+//                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
                     new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
-                    new SleepAction(.2),
                     new ParallelAction(
-                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
-                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
-                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME)
+                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute)
+//                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+//                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+                    )
+//                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME
+                    )
             );
             return scorePixel;
         }
@@ -240,15 +243,15 @@ public class PushPropScoreFiveRoute {
         public Action PushPropScoreFive(PosesForRoute posesForRoute) {
             Action pushPropScoreFive = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRoute))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.firstPixelScorePose, posesForRoute))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.firstPixelScorePose, posesForRoute.firstDeliverLocation, posesForRoute))
                     .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRoute))
                     .stopAndAdd(new RouteBuilder().PickupPixels(posesForRoute))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRoute))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute.additionalDeliverLocation, posesForRoute))
                     .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRoute))
                     .stopAndAdd(new RouteBuilder().PickupPixels(posesForRoute))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRoute))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute.additionalDeliverLocation, posesForRoute))
                     .stopAndAdd(new RouteBuilder().Park(posesForRoute))
                     .build();
             return pushPropScoreFive;
@@ -259,11 +262,11 @@ public class PushPropScoreFiveRoute {
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRoute))
                     .stopAndAdd(new RouteBuilder().PickupPixels(posesForRoute))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRoute))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute.firstDeliverLocation, posesForRoute))
                     .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRoute))
                     .stopAndAdd(new RouteBuilder().PickupPixels(posesForRoute))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRoute))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.additionalPixelScorePose, posesForRoute.additionalDeliverLocation, posesForRoute))
                     .stopAndAdd(new RouteBuilder().Park(posesForRoute))
                     .build();
             return pushPropScoreFive;

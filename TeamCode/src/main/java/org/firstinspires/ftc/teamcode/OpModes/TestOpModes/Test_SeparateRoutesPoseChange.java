@@ -41,7 +41,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute;
 
-@Config
 @Autonomous(name = "TEST - forward+AutoDriveAction, then make backward route in real time)")
 public class Test_SeparateRoutesPoseChange extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;

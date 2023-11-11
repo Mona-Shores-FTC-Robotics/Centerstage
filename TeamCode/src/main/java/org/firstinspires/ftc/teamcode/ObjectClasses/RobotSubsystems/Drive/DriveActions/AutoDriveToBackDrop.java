@@ -10,19 +10,31 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class AutoDriveToBackDrop implements Action {
 
     private DriveSubsystem driveSubsystem;
     private boolean running;
+    private VisionSubsystem.DeliverLocation deliverLocation;
     private int count=0;
     public AutoDriveToBackDrop() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         running=true;
     }
 
+    public AutoDriveToBackDrop(VisionSubsystem.DeliverLocation delLoc) {
+        driveSubsystem = Robot.getInstance().getDriveSubsystem();
+        deliverLocation=delLoc;
+        running=true;
+    }
+
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        if (deliverLocation!=null)
+        {
+            Robot.getInstance().getVisionSubsystem().setDeliverLocation(deliverLocation);
+        }
         Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
         if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
@@ -55,7 +67,7 @@ public class AutoDriveToBackDrop implements Action {
 
         if (!running) count++;
         //while the action is running return true
-       if (count>10) {
+       if (count>4) {
            count=0;
            return false;}
         else return true;
