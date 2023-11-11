@@ -20,14 +20,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public static IntakeParameters intakeParameters = new IntakeParameters();
 
     public enum IntakeStates {
-        INTAKE_ON (30),
-        INTAKE_REVERSE (-150),
-        INTAKE_OFF (0);
+        INTAKE_ON (30, .8),
+        INTAKE_REVERSE (-150,-.8),
+        INTAKE_OFF (0, 0);
 
         public double velocity;
+        public double power;
 
-        IntakeStates(double vel) {
-            this.velocity = vel;
+        IntakeStates(double vel, double pow) {
+            this.velocity = vel; this.power = pow;
         }
         void SetStateVelocity(double vel){
             this.velocity = vel;

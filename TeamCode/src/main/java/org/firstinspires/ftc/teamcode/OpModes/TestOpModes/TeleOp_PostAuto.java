@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
 
+import android.service.autofill.FieldClassification;
+
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -75,6 +77,7 @@ public class TeleOp_PostAuto extends LinearOpMode
         //Reset Gyro
         if (MatchConfig.autoHasRun=true)
         {
+            MatchConfig.autoHasRun=false;
             //This method uses the values saved at the end of the auto to transition to teleop
             Robot.getInstance().getGyroSubsystem().postAutoGyroReset();
         }
@@ -82,7 +85,8 @@ public class TeleOp_PostAuto extends LinearOpMode
         else {
             //this will reset the gyro and set the relative yaw to the heading of the robot, which unless we set a start heading will be 0
             Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
-            Robot.getInstance().getVisionSubsystem().resetPoseReady
+            //this will make the gyro reset the offset and pose the next time we get to the april tags.
+            Robot.getInstance().getVisionSubsystem().resetHeading=true;
         }
 
         //Start the TeleOp Timer
