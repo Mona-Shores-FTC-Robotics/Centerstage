@@ -122,8 +122,6 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_225_DEGREES)
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_L), TANGENT_TOWARD_RED)
-                .afterTime(1, CustomActions.dropPixelOnBackdrop())
-                .afterDisp(1, CustomActions.extendSlide())
                 .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
@@ -136,9 +134,6 @@ public class RoutesSpikeBackdropPark {
 
         blueAudienceBotTeamPropRightSequentialAction = new SequentialAction(
                 blueAudienceBotTeamPropRightRouteA,
-                CustomActions.alignToRightSideOfBackDropWithAprilTag(),
-                CustomActions.dropPixelOnBackdrop(),
-                CustomActions.retractSlide(),
                 blueAudienceBotTeamPropRightRouteB
         );
 

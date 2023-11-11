@@ -21,10 +21,6 @@ public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier strafeSupplier;
     private final DoubleSupplier turnSupplier;
 
-    private FtcDashboard dash;
-    private Canvas c;
-    private TelemetryPacket p;
-
     private MecanumDriveMona mecanumDrive;
 
     /**
@@ -43,7 +39,7 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+
     }
 
     @Override

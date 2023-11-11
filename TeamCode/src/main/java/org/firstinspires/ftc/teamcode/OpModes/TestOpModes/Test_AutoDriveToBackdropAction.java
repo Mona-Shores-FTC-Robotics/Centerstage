@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -9,12 +10,12 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Autonomous(name = "Alignment Test Auto")
-public class Alightment_Test_Auto extends LinearOpMode {
+@Autonomous(name = "TEST - Just AutoDriveToBackdrop")
+public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
     private MecanumDriveMona roadRunnerDriveSubsystem;
 
@@ -49,7 +50,7 @@ public class Alightment_Test_Auto extends LinearOpMode {
         }
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().resetAbsoluteYaw();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing();
@@ -68,9 +69,21 @@ public class Alightment_Test_Auto extends LinearOpMode {
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
+        while(!Robot.getInstance().getVisionSubsystem().getVisionPortal().getProcessorEnabled(
+                Robot.getInstance().getVisionSubsystem().getAprilTagProcessor()))
+        {
+            //wait for april tag processor to be enabled
+        };
+
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        Robot.reset();
     }
+
 }
 

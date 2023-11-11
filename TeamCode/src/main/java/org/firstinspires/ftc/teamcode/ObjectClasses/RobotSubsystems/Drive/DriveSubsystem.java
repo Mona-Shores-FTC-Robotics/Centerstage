@@ -9,8 +9,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
@@ -26,6 +28,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 @Config
 public class DriveSubsystem extends SubsystemBase {
@@ -66,9 +69,9 @@ public class DriveSubsystem extends SubsystemBase {
         public double kA =0.00055;
 
         // path profile parameters (in inches)
-        public double maxWheelVel =25;
-        public double minProfileAccel =-30;
-        public double maxProfileAccel =30;
+        public double maxWheelVel =40;
+        public double minProfileAccel =-45;
+        public double maxProfileAccel =45;
 
         // turn profile parameters (in radians)
         public double maxAngVel =Math.PI; // shared with path
@@ -77,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
         // path controller gains
         public double axialGain =12;
         public double lateralGain =10;
-        public double headingGain =10; // shared with turn
+        public double headingGain =8; // shared with turn
 
         public double axialVelGain =1.1;
         public double lateralVelGain =1.1;
@@ -86,7 +89,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     public static DriveParameters driveParameters= new DriveParameters();
 
-    public final MecanumDriveMona mecanumDrive;
+    public MecanumDriveMona mecanumDrive;
+
     public VisionSubsystem visionSubsystem;
     public boolean drivingToAprilTag;
     public boolean fieldOrientedControl;
@@ -98,6 +102,7 @@ public class DriveSubsystem extends SubsystemBase {
     public double leftYAdjusted;
     public double leftXAdjusted;
     public double rightXAdjusted;
+
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
@@ -110,7 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
         drivingToAprilTag=false;
         fieldOrientedControl=false;
         mecanumDrive.init();
-        c = new Canvas();
+
     }
 
     public void periodic(){
@@ -118,12 +123,6 @@ public class DriveSubsystem extends SubsystemBase {
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-
-        TelemetryPacket packet = new TelemetryPacket();
-
-        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
-        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
-        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
 
         double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
         double targetSpeedRF = Math.round(100.0 * mecanumDrive.rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
@@ -135,22 +134,52 @@ public class DriveSubsystem extends SubsystemBase {
         double actualSpeedLB = Math.round(100.0 * mecanumDrive.leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
         double actualSpeedRB = Math.round(100.0 * mecanumDrive.rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
 
+
+        TelemetryPacket packet = new TelemetryPacket();
+        c = packet.fieldOverlay();
+
+        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
+        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
+        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
         packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftFront.getPower()) / 100.0);
         packet.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightFront.getPower()) / 100.0);
         packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
         packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
 
-        packet.fieldOverlay().getOperations().addAll(c.getOperations());
+
+        packet.put("LF Speed", actualSpeedLF);
+        packet.put("LF Target", targetSpeedLF);
+
+        if (visionSubsystem.resetPoseReady){
+            if (Robot.getInstance().getVisionSubsystem().resetHeading) {
+                Robot.getInstance().getVisionSubsystem().resetHeading=false;
+                Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
+                visionSubsystem.resetPoseReady = false;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose =
+                        new Pose2d (visionSubsystem.resetPose.position.x,
+                                    visionSubsystem.resetPose.position.y,
+                                    0);
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
+            } else {
+                visionSubsystem.resetPoseReady = false;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = visionSubsystem.resetPose;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
+            }
+        }
+
         packet.put("x", mecanumDrive.pose.position.x);
         packet.put("y", mecanumDrive.pose.position.y);
         packet.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
 
-        Canvas c = packet.fieldOverlay();
+
+        packet.fieldOverlay().getOperations().addAll(c.getOperations());
         mecanumDrive.drawPoseHistory(c);
 
         c.setStroke("#3F51B5");
         mecanumDrive.drawRobot(c, mecanumDrive.pose);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
+
+        mecanumDrive.SetRoadRunnerParameters();
     }
 
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
@@ -206,7 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void fieldOrientedControl (double leftY, double leftX){
         double y = leftY;
         double x = leftX;
-        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
+        double botHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees-90);
 
         // Rotate the movement direction counter to the bot's rotation
         leftXAdjusted = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -214,6 +243,17 @@ public class DriveSubsystem extends SubsystemBase {
 
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
+
+
+    public Pose2d getCurrentRobotPose()
+    {
+        return mecanumDrive.pose;
+    }
+
+    public Supplier<Pose2d> poseSupplier() {
+        return this::getCurrentRobotPose; // Method reference to getPose
+    }
+
 }
 
 

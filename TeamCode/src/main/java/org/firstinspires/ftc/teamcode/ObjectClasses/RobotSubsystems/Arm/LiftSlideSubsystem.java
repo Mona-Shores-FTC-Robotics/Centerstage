@@ -33,8 +33,8 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public static int HIGH_HEIGHT_TICKS=2400;
     }
 
-    public static final int MAX_TARGET_TICKS = 2500;
-    public static final int MIN_TARGET_TICKS = 0;
+    public final int MAX_TARGET_TICKS = 2500;
+    public final int MIN_TARGET_TICKS = 0;
 
     public enum LiftStates {
         HIGH, MID, LOW, HOME, MANUAL;

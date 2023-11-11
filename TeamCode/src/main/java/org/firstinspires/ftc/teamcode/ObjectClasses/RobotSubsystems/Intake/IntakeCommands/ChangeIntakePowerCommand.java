@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
-public class ChangeIntakeStateCommand extends CommandBase {
+public class ChangeIntakePowerCommand extends CommandBase {
 
     // The subsystem the command runs on
     private final IntakeSubsystem intakeSubsystem;
@@ -17,26 +17,24 @@ public class ChangeIntakeStateCommand extends CommandBase {
 
     Telemetry telemetry;
 
-    public ChangeIntakeStateCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
+    public ChangeIntakePowerCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
         intakeSubsystem = subsystem;
         targetState = inputState;
         addRequirements(intakeSubsystem);
     }
     @Override
     public void initialize() {
-        intakeSubsystem.intake.setVelocity(targetState.velocity);
+        intakeSubsystem.intake.setPower(targetState.power);
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         telemetry.clearAll();
     }
 
     public void execute() {
-
         currentVelocity = intakeSubsystem.intake.getVelocity();
         telemetry.addData("Target Intake State", targetState);
         telemetry.addData("Target Intake Velocity", targetState.velocity);
         telemetry.addData("Current Intake State", intakeSubsystem.currentState);
         telemetry.addData("Current Intake Velocity", currentVelocity);
-
     }
 
 }

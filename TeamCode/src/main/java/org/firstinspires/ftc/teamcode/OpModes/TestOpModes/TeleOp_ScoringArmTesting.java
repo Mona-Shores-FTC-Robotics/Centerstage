@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultLiftSlideCommand;
 
@@ -96,7 +96,10 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
-        robot.getVisionSubsystem().getVisionPortal().close();
+        CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getShoulderSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getLiftSlideSubsystem());
+        Robot.reset();
     }
 }
 

@@ -31,11 +31,10 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.FollowTrajectoryAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 
@@ -75,14 +74,18 @@ public final class MecanumDriveMona {
     public Localizer localizer;
     public Pose2d pose;
 
-    private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+    public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
     public MecanumDriveMona() {
+
     }
 
     public void init() {
         HardwareMap hardwareMap = Robot.getInstance().getActiveOpMode().hardwareMap;
-        this.pose = new Pose2d(0, 0, 0);
+
+        if (this.pose ==null) {
+            this.pose = new Pose2d(0, 0, 0);
+        }
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
 
@@ -105,19 +108,19 @@ public final class MecanumDriveMona {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new DriveLocalizer();
-
         //set the PID values one time
         leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
+        localizer = new DriveLocalizer(this, hardwareMap);
+
         //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
         SetRoadRunnerParameters();
     }
 
-    private void SetRoadRunnerParameters() {
+    public void SetRoadRunnerParameters() {
         kinematics = new MecanumKinematics(
                 MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
@@ -134,12 +137,19 @@ public final class MecanumDriveMona {
 
         defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
+
         FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
         FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
     }
 
 
     public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
+
+        //I believe this is the best spot to put this for tracking our pose
+        //We had this method call in the periodic() of the Drivesystem, but that means it can be called twice a loop if we run any RR actions (e.g.follow a trajectory)
+        //putting it here, should avoid that double call
+
+
         if (drive==0 && strafe ==0 && turn==0) {
             //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
             leftFront.setVelocity(0);
@@ -158,7 +168,7 @@ public final class MecanumDriveMona {
 
         } else
         {
-
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&

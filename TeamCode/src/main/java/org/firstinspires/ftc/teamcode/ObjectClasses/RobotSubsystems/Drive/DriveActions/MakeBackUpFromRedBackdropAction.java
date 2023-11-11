@@ -1,6 +1,12 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_PIXEL_WING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.HALF_TILE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.PoseToVector;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_NEUTRAL_PIXEL_WING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_SPIKE_L_LINE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_TRUSS;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TILE;
 
 import com.acmerobotics.roadrunner.AccelConstraint;
@@ -12,7 +18,6 @@ import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
@@ -30,22 +35,24 @@ public class MakeBackUpFromRedBackdropAction {
 
     public Action makeAction() {
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        currentHeading = Robot.getInstance().getGyroSubsystem().getIMU().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        currentHeading = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
-                        drive.kinematics.new WheelVelConstraint(5),
-                        new AngularVelConstraint(5)
+                        drive.kinematics.new WheelVelConstraint(100),
+                        new AngularVelConstraint(100)
                 ));
 
-        overrideAccelConstraint = new ProfileAccelConstraint(-10, 10);
+        overrideAccelConstraint = new ProfileAccelConstraint(-150, 150);
 
-        overrideTurnConstraint = new TurnConstraints(
-                Math.toRadians(5), -Math.toRadians(5), Math.toRadians(5));
+//        overrideTurnConstraint = new TurnConstraints(
+//                Math.toRadians(5), -Math.toRadians(5), Math.toRadians(5));
 
         t = drive.actionBuilder(drive.pose)
-                .strafeTo(new Vector2d( drive.pose.position.x-TILE*3-HALF_TILE, drive.pose.position.y))
-                .turn(Math.toRadians(-90))
+                .setReversed(true)
+                .splineToConstantHeading(PoseToVector(RED_TRUSS), TANGENT_TOWARD_AUDIENCE)
+                .splineToConstantHeading(PoseToVector(RED_SPIKE_L_LINE), TANGENT_TOWARD_AUDIENCE)
+                .turn(Math.toRadians(-83))
                 .build();
         return t;
     }

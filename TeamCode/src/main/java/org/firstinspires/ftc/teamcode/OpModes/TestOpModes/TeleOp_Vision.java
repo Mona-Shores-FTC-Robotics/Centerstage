@@ -27,97 +27,88 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageOperatorBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@TeleOp(name="TeleOp_CenterStage")
-public class TeleOp_CenterStage extends LinearOpMode
+@TeleOp(name="TeleOp_Vision")
+public class TeleOp_Vision extends LinearOpMode
 {
-    private ElapsedTime teleOpTimer;
-
-    @Override
-    public void runOpMode()
+    @Override public void runOpMode()
     {
-        /* Create the robot **/
-        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
+        //Create the Robot
+        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
-        /* Initialize Gamepad and Robot - Order Important **/
+        //Initialize the Game-pads
         GamepadHandling.init();
+
+        //Initialize the Robot
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
-        new CenterstageDriverBindings(GamepadHandling.getDriverGamepad());
-        new CenterstageOperatorBindings(GamepadHandling.getOperatorGamepad());
-
-        telemetry.clearAll();
+        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            // Add Vision Init Processor Telemetry
-            //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-
+            VisionTelemetry.telemetryForInitProcessing();
+            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
 
+        //Switch the vision processing to AprilTags
+        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
+
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+
         //Start the TeleOp Timer
-        teleOpTimer = new ElapsedTime();
+        ElapsedTime teleOpTimer = new ElapsedTime();
         teleOpTimer.reset();
 
         while (opModeIsActive())
         {
             //Run the Scheduler
             CommandScheduler.getInstance().run();
-
-            //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
-            EndGameRumble();
-            ActivateEndGameButtons();
+            //Look for AprilTags
+            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
+
+            //Add AprilTag Telemetry
+            if (gamepad1.left_trigger>.1) {
+                telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+//                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
+                Robot.getInstance().getGyroSubsystem().telemetryGyro();
+            }
+
+            //Add DriveTrain Telemetry
+            if (gamepad1.right_trigger>.1) {
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
+                Robot.getInstance().getGyroSubsystem().telemetryGyro();
+                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
+                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
+                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
+            }
 
             telemetry.update();
-            sleep(10);
         }
-
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
         Robot.reset();
-
     }
-
-    private void EndGameRumble() {
-        if ( teleOpTimer.seconds()>END_GAME_TIME-5){
-            //Rumble the controllers
-            //Flash lights on controller?
-            //Flash lights on robot?
-        }
-    }
-
-    void ActivateEndGameButtons(){
-        if ( teleOpTimer.seconds()>END_GAME_TIME){
-            //check buttons for Wench and drone
-            //Right Trigger shows some telemetry about the buttons
-            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
-                //schedule the Wench release command here
-            }
-            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
-                //schedule the Drone release command here
-            }
-        }
-    }
-
 }
+

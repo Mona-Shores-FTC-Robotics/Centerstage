@@ -12,21 +12,23 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class IntakeSubsystem extends SubsystemBase {
 
     public static class IntakeParameters {
-        public double STARTING_INTAKE_POWER = 0;
+        public double INTAKE_OFF_POWER = 0;
         public double INTAKE_REVERSE_VELOCITY = -30;
         public double INTAKE_ON_VELOCITY = 30;
+        public double INTAKE_ON_POWER = .8;
     }
     public static IntakeParameters intakeParameters = new IntakeParameters();
 
     public enum IntakeStates {
-        INTAKE_ON (30),
-        INTAKE_REVERSE (-150),
-        INTAKE_OFF (0);
+        INTAKE_ON (30, .8),
+        INTAKE_REVERSE (-150,-.8),
+        INTAKE_OFF (0, 0);
 
         public double velocity;
+        public double power;
 
-        IntakeStates(double vel) {
-            this.velocity = vel;
+        IntakeStates(double vel, double pow) {
+            this.velocity = vel; this.power = pow;
         }
         void SetStateVelocity(double vel){
             this.velocity = vel;
@@ -45,11 +47,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void init() {
         intake.setDirection(DcMotor.Direction.FORWARD);
-        intake.setPower(intakeParameters.STARTING_INTAKE_POWER);
+        intake.setPower(intakeParameters.INTAKE_OFF_POWER);
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         currentState = IntakeStates.INTAKE_OFF;
         intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        power = intakeParameters.STARTING_INTAKE_POWER;
+        power = intakeParameters.INTAKE_OFF_POWER;
         intake.setPower(0);
         intake.setVelocity(0);
     }

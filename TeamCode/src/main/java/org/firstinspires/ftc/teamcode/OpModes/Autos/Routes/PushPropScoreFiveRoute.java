@@ -1,145 +1,147 @@
-package com.example.meepmeeptesting.Routes;
+package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
-import static com.example.meepmeeptesting.Constants.PoseToVector;
-import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_AUDIENCE;
-import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_BACKSTAGE;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBot;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotLeft;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotRight;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueBackstageBot;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueBackstageBotLeft;
-import static com.example.meepmeeptesting.MeepMeepRobots.blueBackstageBotRight;
-import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBot;
-import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBotLeft;
-import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBotRight;
-import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
-import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
-import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
-import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.*;
-import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.AUDIENCE;
-import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.BACKSTAGE;
-import static com.example.meepmeeptesting.MeepMeepTesting.TeamPropLocation.CENTER;
-import static com.example.meepmeeptesting.MeepMeepTesting.TeamPropLocation.LEFT;
-import static com.example.meepmeeptesting.MeepMeepTesting.TeamPropLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.PoseToVector;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_BACKSTAGE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.example.meepmeeptesting.MeepMeepTesting;
-import com.noahbres.meepmeep.roadrunner.DriveShim;
 
-public class RoutesSpikeStraightUpTheMiddle {
-    private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 
+public class PushPropScoreFiveRoute {
     //Variables to store routes for team prop center for all four start locations
-    private static Action redAudienceBotTeamPropCenterRoute;
-    private static Action redBackstageBotTeamPropCenterRoute;
-    private static Action blueBackstageBotTeamPropCenterRoute;
-    private static Action blueAudienceBotTeamPropCenterRoute;
+    public static Action redAudienceBotTeamPropCenterRoute;
+    public static Action redBackstageBotTeamPropCenterRoute;
+    public static Action blueBackstageBotTeamPropCenterRoute;
+    public static Action blueAudienceBotTeamPropCenterRoute;
 
     //Variables to store routes for team prop left for all four start locations
-    private static Action redBackstageBotTeamPropLeftRoute;
-    private static Action blueAudienceBotTeamPropLeftRoute;
-    private static Action redAudienceBotTeamPropLeftRoute;
-    private static Action blueBackstageBotTeamPropLeftRoute;
+    public static Action redBackstageBotTeamPropLeftRoute;
+    public static Action blueAudienceBotTeamPropLeftRoute;
+    public static Action redAudienceBotTeamPropLeftRoute;
+    public static Action blueBackstageBotTeamPropLeftRoute;
 
     //Variables to store routes for team prop right for all four start locations
-    private static Action redBackstageBotTeamPropRightRoute;
-    private static Action redAudienceBotTeamPropRightRoute;
-    private static Action blueBackstageBotTeamPropRightRoute;
-    private static Action blueAudienceBotTeamPropRightRoute;
+    public static Action redBackstageBotTeamPropRightRoute;
+    public static Action redAudienceBotTeamPropRightRoute;
+    public static Action blueBackstageBotTeamPropRightRoute;
+    public static Action blueAudienceBotTeamPropRightRoute;
+
 
     public static void BuildRoutes() {
 
+        MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+
         /** BLUE BACKSTAGE RIGHT **/
         PosesForRoute blueBackstageRightPoses = new PosesForRoute(BLUE, BACKSTAGE, RIGHT);
-        blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(blueBackstageRightPoses.startingPose)
+        blueBackstageBotTeamPropRightRoute = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder (blueBackstageRightPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(blueBackstageRightPoses))
                 .build();
 
         /** RED BACKSTAGE LEFT **/
         PosesForRoute redBackstageRightPoses = new PosesForRoute(RED, BACKSTAGE, RIGHT);
-        redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(redBackstageRightPoses.startingPose)
+        redBackstageBotTeamPropRightRoute = mecanumDrive.actionBuilder(redBackstageRightPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(redBackstageRightPoses))
                 .build();
 
         /** BLUE AUDIENCE RIGHT **/
         PosesForRoute blueAudienceRightPoses = new PosesForRoute(BLUE, AUDIENCE, RIGHT);
-        blueAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(blueAudienceRightPoses.startingPose)
+        blueAudienceBotTeamPropRightRoute = mecanumDrive.actionBuilder(blueAudienceRightPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(blueAudienceRightPoses))
                 .build();
 
         /** RED AUDIENCE RIGHT **/
         PosesForRoute redAudienceRightPoses = new PosesForRoute(RED, AUDIENCE, RIGHT);
-        redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(redAudienceRightPoses.startingPose)
+        redAudienceBotTeamPropRightRoute = mecanumDrive.actionBuilder(redAudienceRightPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(redAudienceRightPoses))
                 .build();
 
         /** BLUE BACKSTAGE CENTER **/
         PosesForRoute blueBackstageCenterPoses = new PosesForRoute(BLUE, BACKSTAGE, CENTER);
-        blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(blueBackstageCenterPoses.startingPose)
+        blueBackstageBotTeamPropCenterRoute = mecanumDrive.actionBuilder(blueBackstageCenterPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(blueBackstageCenterPoses))
                 .build();
 
         /** RED BACKSTAGE CENTER **/
         PosesForRoute redBackstageCenterPoses = new PosesForRoute(RED, BACKSTAGE, CENTER);
-        redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(redBackstageCenterPoses.startingPose)
+        redBackstageBotTeamPropCenterRoute = mecanumDrive.actionBuilder(redBackstageCenterPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(redBackstageCenterPoses))
                 .build();
 
         /** BLUE AUDIENCE CENTER **/
         PosesForRoute blueAudienceCenterPoses = new PosesForRoute(BLUE, AUDIENCE, CENTER);
-        blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(blueAudienceCenterPoses.startingPose)
+        blueAudienceBotTeamPropCenterRoute = mecanumDrive.actionBuilder(blueAudienceCenterPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(blueAudienceCenterPoses))
                 .build();
 
         /** RED AUDIENCE CENTER **/
         PosesForRoute redAudienceCenterPoses = new PosesForRoute(RED, AUDIENCE, CENTER);
-        redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(redAudienceCenterPoses.startingPose)
+        redAudienceBotTeamPropCenterRoute = mecanumDrive.actionBuilder(redAudienceCenterPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(redAudienceCenterPoses))
                 .build();
 
         /** BLUE BACKSTAGE LEFT **/
         PosesForRoute blueBackstageLeftPoses = new PosesForRoute(BLUE, BACKSTAGE, LEFT);
-        blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(blueBackstageLeftPoses.startingPose)
+        blueBackstageBotTeamPropLeftRoute = mecanumDrive.actionBuilder(blueBackstageLeftPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(blueBackstageLeftPoses))
                 .build();
 
         /** RED BACKSTAGE LEFT **/
         PosesForRoute redBackstageLeftPoses = new PosesForRoute(RED, BACKSTAGE, LEFT);
-        redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(redBackstageLeftPoses.startingPose)
+        redBackstageBotTeamPropLeftRoute = mecanumDrive.actionBuilder(redBackstageLeftPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreFive(redBackstageLeftPoses))
                 .build();
 
 
         /** BLUE AUDIENCE LEFT **/
         PosesForRoute blueAudienceLeftPoses = new PosesForRoute(BLUE, AUDIENCE, LEFT);
-        blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(blueAudienceLeftPoses.startingPose)
+        blueAudienceBotTeamPropLeftRoute = mecanumDrive.actionBuilder(blueAudienceLeftPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(blueAudienceLeftPoses))
                 .build();
 
         /** RED AUDIENCE LEFT **/
         PosesForRoute redAudienceLeftPoses = new PosesForRoute(RED, AUDIENCE, LEFT);
-        redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(redAudienceLeftPoses.startingPose)
+        redAudienceBotTeamPropLeftRoute = mecanumDrive.actionBuilder(redAudienceLeftPoses.startingPose)
                 .stopAndAdd(new RouteBuilder().PushPropScoreSix(redAudienceLeftPoses))
                 .build();
+
     }
 
+
+    /**
+     * METHODS TO SET SPIKE PIXEL ONLY ROUTES FOR ALL TEAM PROP LOCATIONS
+     **/
+
     public static class RouteBuilder {
+        MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         Action AutoDriveToBackDrop(Pose2d scorePose, PosesForRoute posesForRoute) {
-            Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(posesForRoute.backdropStagingPose)
+            Action autoDriveToBackdrop = mecanumDrive.actionBuilder(posesForRoute.backdropStagingPose)
                     .splineToLinearHeading(scorePose, TANGENT_TOWARD_BACKSTAGE)
                     .build();
             return autoDriveToBackdrop;
         }
 
         Action AutoDriveFromBackDrop(Pose2d scorePose, PosesForRoute posesForRoute) {
-            Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(scorePose)
+            Action autoDriveFromBackdrop = mecanumDrive.actionBuilder(scorePose)
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRoute.backdropStagingPose), TANGENT_TOWARD_AUDIENCE)
                     .build();
@@ -147,7 +149,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action BackdropStagingToNeutralStaging(PosesForRoute posesForRoute) {
-            Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(posesForRoute.backdropStagingPose)
+            Action backDropStagingToNeutralStaging = mecanumDrive.actionBuilder(posesForRoute.backdropStagingPose)
                     .setReversed(true)
                     .lineToX(posesForRoute.neutralStagingPose.position.x)
                     .build();
@@ -155,7 +157,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action NeutralStagingToBackdropStaging(PosesForRoute posesForRoute) {
-            Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRoute.neutralStagingPose)
+            Action neutralStagingToBackdropStaging = mecanumDrive.actionBuilder(posesForRoute.neutralStagingPose)
                     .lineToX(posesForRoute.backdropStagingPose.position.x)
                     .build();
             return neutralStagingToBackdropStaging;
@@ -164,24 +166,24 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action PickupPixels(PosesForRoute posesForRoute) {
             SequentialAction pickupPixels = new SequentialAction(
                     new ParallelAction(
-                            new RobotCommands().TurnIntakeOn(),
+                            new TurnIntakeOn(),
                             new RouteBuilder().AutoDriveToNeutralStack(posesForRoute)),
                     new SleepAction(.1),
                     new ParallelAction(
-                            new RobotCommands().TurnIntakeOff(),
+                            new TurnIntakeOff(),
                             new RouteBuilder().AutoDriveFromNeutralStack(posesForRoute)));
             return pickupPixels;
         }
 
         private Action AutoDriveFromNeutralStack(PosesForRoute posesForRoute) {
-            Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRoute.neutralPickupPose)
+            Action autoDriveFromNeutralStack = mecanumDrive.actionBuilder(posesForRoute.neutralPickupPose)
                     .lineToX(posesForRoute.neutralStagingPose.position.x)
                     .build();
             return autoDriveFromNeutralStack;
         }
 
         public Action AutoDriveToNeutralStack(PosesForRoute posesForRoute) {
-            Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(posesForRoute.neutralStagingPose)
+            Action autoDriveToNeutralStack = mecanumDrive.actionBuilder(posesForRoute.neutralStagingPose)
                     .setReversed(true)
                     .lineToX(posesForRoute.neutralPickupPose.position.x)
                     .build();
@@ -192,16 +194,16 @@ public class RoutesSpikeStraightUpTheMiddle {
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-                            new RobotCommands().LiftLow(),
-                            new RobotCommands().RotateShoulderToBackdrop()),
+                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
                     new SleepAction(.2),
-                    new RobotCommands().OpenClaw(),
+                    new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
                     new SleepAction(.2),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
-                            new RobotCommands().CloseClaw(),
-                            new RobotCommands().RotateShoulderToIntake()),
-                    new RobotCommands().LiftHome()
+                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
+                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME)
             );
             return scorePixel;
         }
@@ -209,7 +211,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
 
         private Action PushTeamPropAndBackdropStage(PosesForRoute posesForRoute) {
-            Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRoute.startingPose)
+            Action pushTeamPropAndStage = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .splineToLinearHeading(posesForRoute.spikePose, posesForRoute.spikePose.heading.log())
                     .setReversed(true)
                     .splineToLinearHeading(posesForRoute.backdropStagingPose, posesForRoute.backdropStagingPose.heading.log())
@@ -218,7 +220,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRoute posesForRoute) {
-            Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRoute.startingPose)
+            Action pushTeamPropAndStage = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .splineToLinearHeading(posesForRoute.spikePose, posesForRoute.spikePose.heading.log())
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRoute.neutralStagingPose), posesForRoute.neutralPickupPose.heading.log())
@@ -228,7 +230,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action Park(PosesForRoute posesForRoute) {
-            Action park = roadRunnerDrive.actionBuilder(posesForRoute.backdropStagingPose)
+            Action park = mecanumDrive.actionBuilder(posesForRoute.backdropStagingPose)
                     .strafeTo(PoseToVector(posesForRoute.parkPose))
                     .turnTo(posesForRoute.parkOrientation)
                     .build();
@@ -236,7 +238,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action PushPropScoreFive(PosesForRoute posesForRoute) {
-            Action pushPropScoreFive = roadRunnerDrive.actionBuilder(posesForRoute.startingPose)
+            Action pushPropScoreFive = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRoute))
                     .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRoute.firstPixelScorePose, posesForRoute))
                     .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRoute))
@@ -253,7 +255,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action PushPropScoreSix(PosesForRoute posesForRoute) {
-            Action pushPropScoreFive = roadRunnerDrive.actionBuilder(posesForRoute.startingPose)
+            Action pushPropScoreFive = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRoute))
                     .stopAndAdd(new RouteBuilder().PickupPixels(posesForRoute))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRoute))
@@ -269,53 +271,5 @@ public class RoutesSpikeStraightUpTheMiddle {
 
 
     }
-
-
-
-    /**
-     * METHODS TO SET SIMPLE ROUTES FOR ALL TEAM PROP LOCATIONS
-     **/
-
-    public static void setTeamPropCenterRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
-    }
-
-    public static void setTeamPropLeftRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropLeftRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropLeftRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropLeftRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropLeftRoute);
-    }
-
-    public static void setTeamPropRightRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropRightRoute);
-        blueAudienceBot.runAction(blueAudienceBotTeamPropRightRoute);
-        redBackstageBot.runAction(redBackstageBotTeamPropRightRoute);
-        redAudienceBot.runAction(redAudienceBotTeamPropRightRoute);
-    }
-
-
-    public static void setTeamPropAllRoutes() {
-        blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
-        blueBackstageBotLeft.runAction(blueBackstageBotTeamPropLeftRoute);
-        blueBackstageBotRight.runAction(blueBackstageBotTeamPropRightRoute);
-
-        blueAudienceBot.runAction(blueAudienceBotTeamPropCenterRoute);
-        blueAudienceBotLeft.runAction(blueAudienceBotTeamPropLeftRoute);
-        blueAudienceBotRight.runAction(blueAudienceBotTeamPropRightRoute);
-
-        redBackstageBot.runAction(redBackstageBotTeamPropCenterRoute);
-        redBackstageBotLeft.runAction(redBackstageBotTeamPropLeftRoute);
-        redBackstageBotRight.runAction(redBackstageBotTeamPropRightRoute);
-
-        redAudienceBot.runAction(redAudienceBotTeamPropCenterRoute);
-        redAudienceBotLeft.runAction(redAudienceBotTeamPropLeftRoute);
-        redAudienceBotRight.runAction(redAudienceBotTeamPropRightRoute);
-    }
-
-
 }
 

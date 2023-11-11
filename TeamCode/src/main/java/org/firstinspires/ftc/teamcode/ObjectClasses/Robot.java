@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffec
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -19,6 +21,7 @@ public class Robot {
 
     private static Robot robot = null;
     public RobotType robotType;
+    public OpModeType opModeType;
     public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
     public enum OpModeType {TELEOP, AUTO}
 
@@ -31,12 +34,14 @@ public class Robot {
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
 
+    private static boolean hasInit = false;
+
     /* Constructor */
     private Robot(LinearOpMode opMode, RobotType rType) {
         activeOpMode = opMode;
         robotType = rType;
-        HardwareMap hardwareMap = opMode.hardwareMap;
-        CreateSubsystems(hardwareMap);
+        HardwareMap hMap = opMode.hardwareMap;
+        CreateSubsystems(hMap);
     }
 
     private void CreateSubsystems(HardwareMap hardwareMap) {
@@ -87,7 +92,6 @@ public class Robot {
 
     //Ensures only one robot object is ever created
     public static Robot createInstance(LinearOpMode opMode, RobotType robotType) {
-
         robot = new Robot(opMode, robotType);
         return robot;
     }
@@ -107,13 +111,15 @@ public class Robot {
 
 
     // Initialize teleop or autonomous, depending on which is used
-    public void init(OpModeType opModeType){
-        if (opModeType == OpModeType.TELEOP) {
-            initTele();
-        } else {
-            initAuto();
+    public void init(OpModeType oType){
+        opModeType = oType;
+            if (opModeType == OpModeType.TELEOP) {
+                initTele();
+            } else {
+                initAuto();
+            }
         }
-    }
+
 
     private void initTele() {
         switch (robotType) {

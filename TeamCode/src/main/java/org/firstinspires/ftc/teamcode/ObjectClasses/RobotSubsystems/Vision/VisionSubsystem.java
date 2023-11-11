@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.*;
 
-
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -23,6 +22,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainCon
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
+import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -43,33 +44,33 @@ public final class VisionSubsystem extends SubsystemBase {
         public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
         public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
-        //this is the tolerance before we rumble if vision is seeing things that are close
-        final double PERCENT_TOLERANCE = 2;
-
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-        public double SPEED_GAIN = 0.06;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.034;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double DRIVE_FEEDFORWARD=.05;
-        public double STRAFE_FEEDFORWARD=.1;
-        public double TURN_FEEDFORWARD=.05;
-        public double TURN_GAIN = -0.034;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.03;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double DRIVE_FEEDFORWARD=.08;
+        public double STRAFE_FEEDFORWARD=.02;
+        public double TURN_FEEDFORWARD=.03;
+        public double TURN_GAIN = -0.03;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.05;
-        public double BACKDROP_STRAFE_THRESHOLD=.05;
-        public double BACKDROP_TURN_THRESHOLD=.05;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=25;
+        public double BACKDROP_DRIVE_THRESHOLD=.2;
+        public double BACKDROP_STRAFE_THRESHOLD=.2;
+        public double BACKDROP_TURN_THRESHOLD=.2;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=1;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
+    public boolean resetPoseReady=false;
+    public boolean resetHeading=false;
+    public Pose2d resetPose;
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
     private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -84,13 +85,13 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public void SwitchToAprilTagProcessor() {
-        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), false);
-        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), true);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getInitVisionProcessor(), false);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), true);
     }
 
     public void SwitchToInitVisionProcessor() {
-        visionPortal.setProcessorEnabled(this.getInitVisionProcessor(), true);
-        visionPortal.setProcessorEnabled(this.getAprilTagProcessor(), false);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getInitVisionProcessor(), true);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), false);
     }
 
     public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
@@ -171,6 +172,7 @@ public final class VisionSubsystem extends SubsystemBase {
     public boolean redBackdropAprilTagFound = false;
 
     public VisionSubsystem(final HardwareMap hMap, final String name) {
+
         // Create the vision processing during Init Period so we can find out Alliance Color, Side of Field, and Team Prop Location
         initVisionProcessor = new InitVisionProcessor();
 
@@ -196,8 +198,12 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public void init() {
+
         telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        initVisionProcessor= Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
+        aprilTagProcessor = Robot.getInstance().getVisionSubsystem().getAprilTagProcessor();
+        visionPortal = Robot.getInstance().getVisionSubsystem().getVisionPortal();
 
         // During Init the AprilTag processor is off
         visionPortal.setProcessorEnabled(initVisionProcessor, true);
@@ -319,6 +325,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 currentTag.setDetected();
                 currentTag.storeDetection(detection);
 
+                DeterminePoseFromAprilTag(currentTag);
+
                 double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
 
                 // Pick whichever value is lower
@@ -336,6 +344,75 @@ public final class VisionSubsystem extends SubsystemBase {
 
         blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
         redBackdropAprilTagFound = CheckRedBackdropAprilTags();
+    }
+
+    private Pose2d DeterminePoseFromAprilTag(AprilTagID tag) {
+
+        //get the field position of the AprilTag on the field and store it in a float vector (VectorF)
+        VectorF tagVector = tag.detection.metadata.fieldPosition;
+
+        //store the X value of the tag in tagPosXOnField access the individual values of the vector using .get(0)
+        double tagPosXOnField = tagVector.get(0);
+
+        //store the Y value of the tag - use .get(1) for this one
+        double tagPosYOnField = tagVector.get(1);
+
+        //the +90 rotates this tagheading to be facing the backdrop (it comes in at -90 for the backdrop)
+        double tagHeading = QuaternionToHeading(tag.detection.metadata.fieldOrientation)+90;
+
+        //Look at Fig. 2 at https://ftc-docs.firstinspires.org/en/latest/apriltag/understanding_apriltag_detection_values/understanding-apriltag-detection-values.html
+        //save tag.detection.ftPose.x into a distanceY variable;
+        //save tag.detection.ftcPose.y into a distanceX variable;
+        //This is confusing because the ftCpose X and Y are not the X and Y coordinates of the field, but of the camera image
+        //Ftcpose.x represents left and right on the camera image, which for the backdrop corresponds to the Y value.
+        //Ftcpose.y represents distance to the robot, which for the backdrop is our X value
+
+        double distanceY = tag.detection.ftcPose.x;
+        double distanceX = tag.detection.ftcPose.y;
+
+        //save the tag.detection.ftPose.yaw as the cameraYaw
+        double cameraYaw = tag.detection.ftcPose.yaw;
+
+        Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians);
+
+        TelemetryPacket p = new TelemetryPacket();
+        p.put("ftcPoseX", distanceX);
+        p.put("ftcPoseX", distanceY);
+        p.put("ftcPoseYaw", cameraYaw);
+        p.put("Current Pose", mecanumDrive.pose);
+
+        telemetry.addLine();
+
+        telemetry.addData("Tag", tag.detection.metadata.name);
+        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
+        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
+        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
+
+
+//        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", aprilTagPose.position.x, aprilTagPose.position.y, tag.detection.ftcPose.bearing);
+        return newPose;
+
+    }
+
+
+    public double QuaternionToHeading (Quaternion quaternion) {
+
+        // Calculate yaw (heading) from quaternion
+        double t0 = 2.0 * (quaternion.w * quaternion.z + quaternion.x * quaternion.y);
+        double t1 = 1.0 - 2.0 * (quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+        double yawRadians = Math.atan2(t0, t1);
+
+        // Convert yaw angle from radians to degrees
+        double yawDegrees = Math.toDegrees(yawRadians);
+
+        // Ensure the yaw angle is within the range [-180, 180] degrees
+        if (yawDegrees > 180) {
+            yawDegrees -= 360;
+        } else if (yawDegrees < -180) {
+            yawDegrees += 360;
+        }
+
+        return yawDegrees;
     }
 
     private boolean CheckBlueBackdropAprilTags() {
@@ -656,20 +733,13 @@ public final class VisionSubsystem extends SubsystemBase {
         if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
                 (Math.abs(strafe)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
                 (Math.abs(turn)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
-            VectorF tagVector = tag.detection.metadata.fieldPosition;
-            double tagPosXOnField = tagVector.get(0);
-            double tagPosYOnField = tagVector.get(1);
-            Vector2d tagVector2D = new Vector2d(tagPosXOnField, tagPosYOnField);
-            Vector2d distanceVector = new Vector2d(tag.detection.ftcPose.y,tag.detection.ftcPose.x);
-            Vector2d result = new Vector2d(tagVector2D.x-distanceVector.x, tagVector2D.y-distanceVector.y);
-            //TODO  need to change the facing here based on metadata to make this generic
-            Pose2d realPose = new Pose2d(result.x, result.y, FACE_TOWARD_BACKSTAGE);
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = realPose;
-            telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", realPose.position.x, realPose.position.y, realPose.heading.real);
 
             backdropPoseCount++;
             if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
                 backdropPoseCount=0;
+                resetPose = DeterminePoseFromAprilTag(tag);
+                resetPoseReady = true;
+                telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", resetPose.position.x, resetPose.position.y, resetPose.heading.log());
                 return false;
             } else return true;
         }

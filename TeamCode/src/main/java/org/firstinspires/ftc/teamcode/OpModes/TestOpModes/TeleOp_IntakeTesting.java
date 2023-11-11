@@ -27,87 +27,69 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.IntakeTestingDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
-@TeleOp(name="TeleOp_Vision")
-public class TeleOp_Vision extends LinearOpMode
+@TeleOp(name="TeleOp_IntakeTesting")
+public class TeleOp_IntakeTesting extends LinearOpMode
 {
+    public Robot robot;
+
     @Override public void runOpMode()
     {
-        //Create the Robot
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        /* Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
-        //Initialize the Game-pads
+        /* Initialize Gamepad and Robot - Order Important **/
         GamepadHandling.init();
+        robot.init(Robot.OpModeType.TELEOP);
 
-        //Initialize the Robot
-        Robot.getInstance().init(Robot.OpModeType.TELEOP);
+        /* Setup Telemetry for Driver Station and FTCDashboard **/
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         /* Setup Button Bindings **/
-        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
+        new IntakeTestingDriverBindings(GamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            //This is the alliance color that is saved between opMode; it defaults to Red
+            // Add Vision Init Processor Telemetry
+            //todo does this print the final side/color from auto?
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+
+            TelemetryMona.intakeTestingButtons();
 
             telemetry.update();
             sleep(10);
         }
 
-        //Switch the vision processing to AprilTags
-        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
-
-        //Start the TeleOp Timer
-        ElapsedTime teleOpTimer = new ElapsedTime();
-        teleOpTimer.reset();
-
         while (opModeIsActive())
         {
             //Run the Scheduler
             CommandScheduler.getInstance().run();
+
+            //Read all buttons
             GamepadHandling.getDriverGamepad().readButtons();
 
-            //Update Gyro values
-            Robot.getInstance().getGyroSubsystem().UpdateGyro();
-
-            //Look for AprilTags
-            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
-
-            //Update robot pose
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
-
-            //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-                telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-                Robot.getInstance().getVisionSubsystem().telemetryAprilTag();
-            }
-
-            //Add DriveTrain Telemetry
-            if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.telemetryDriveTrain();
-                Robot.getInstance().getGyroSubsystem().telemetryGyro();
-                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
-                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
-                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
+            //Right Trigger shows some telemetry about the buttons
+            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
+                TelemetryMona.intakeTestingButtons();
             }
 
             telemetry.update();
         }
         CommandScheduler.getInstance().cancelAll();
-        Robot.getInstance().getVisionSubsystem().getVisionPortal().close();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
+        Robot.reset();
     }
 }
-

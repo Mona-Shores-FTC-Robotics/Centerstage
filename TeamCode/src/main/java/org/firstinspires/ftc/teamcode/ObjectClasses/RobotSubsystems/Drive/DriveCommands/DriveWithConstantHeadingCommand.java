@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
@@ -49,7 +46,7 @@ public class DriveWithConstantHeadingCommand extends CommandBase {
 
     @Override
     public void execute() {
-        currentAngle = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees;
+        currentAngle = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
         driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), pid.update(currentAngle));
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);

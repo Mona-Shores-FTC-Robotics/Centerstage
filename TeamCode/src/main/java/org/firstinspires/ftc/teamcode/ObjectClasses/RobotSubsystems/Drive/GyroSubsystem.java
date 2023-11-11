@@ -2,18 +2,18 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 public class GyroSubsystem extends SubsystemBase {
 
-    private IMU imu;
+    public IMU imu;
 
     private final RevHubOrientationOnRobot hubOrientation =
             new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.RIGHT, // direction of control hub logo on robot
@@ -21,8 +21,13 @@ public class GyroSubsystem extends SubsystemBase {
 
     public double currentAbsoluteYawDegrees;
     public double currentAbsoluteYawRadians;
-    private double currentRelativeYaw;
-    private double lastRelativeYaw;
+
+    public double currentRelativeYawDegrees;
+    public double currentRelativeYawRadians;
+
+    private double lastRelativeYawDegrees;
+
+    public double offsetFromAbsoluteYawDegrees;
 
     public GyroSubsystem(final HardwareMap hMap, final String name) {
         imu = hMap.get(IMU.class, name);
@@ -33,43 +38,84 @@ public class GyroSubsystem extends SubsystemBase {
         imu.resetYaw();
     }
 
-    public void UpdateGyro() {
+    public void periodic() {
         YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
         currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
         currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+        updateCurrentRelativeYaw();
     }
 
-    public void resetAbsoluteYaw() {
+    //This method is helpful to synchronize our Gyro and robot pose
+    //By resetting the gyro we know that it is 0.
+    //Then, we set the relativeYaw to the current pose, which should always be correct
+        //At the start of the match, the pose has been preset to one of our four starting locations
+        //When we are at the backdrop, our pose is reset to 0, so if we also synchronize it should make sure the gyro and pose are synchronized
+
+    public void synchronizeGyroAndPose() {
         imu.resetYaw();
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+        currentRelativeYawRadians = Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log();
+        currentRelativeYawDegrees = Math.toDegrees(currentRelativeYawRadians);
+        offsetFromAbsoluteYawDegrees = currentAbsoluteYawDegrees+currentRelativeYawDegrees;
     }
 
-    public void resetRelativeYaw(){
-        lastRelativeYaw = currentAbsoluteYawDegrees;
-        currentRelativeYaw = 0;
+    public void setRelativeYawTo0() {
+        imu.resetYaw();
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+        currentRelativeYawRadians = 0;
+        currentRelativeYawDegrees = Math.toDegrees(currentRelativeYawRadians);
+        offsetFromAbsoluteYawDegrees = currentAbsoluteYawDegrees+currentRelativeYawDegrees;
     }
 
-    public double getCurrentRelativeYaw()
-    {
-        double deltaAngle = currentAbsoluteYawDegrees - lastRelativeYaw;
+    public void updateCurrentRelativeYaw(){
+        //They gyro is only updating currentAbsoluteYawDegrees in the periodic()
+        // subtracting the current absolute yaw from the current relative will tell me the change in angle
+        double relativeYaw = currentAbsoluteYawDegrees + offsetFromAbsoluteYawDegrees;
 
-        if (deltaAngle>180){
-            deltaAngle-=360;
-        } else if(deltaAngle <=-180)
+        if (relativeYaw>180){
+            relativeYaw-=360;
+        } else if(relativeYaw <=-180)
         {
-            deltaAngle +=360;
+            relativeYaw +=360;
         }
-        currentRelativeYaw+= deltaAngle;
-        lastRelativeYaw = currentAbsoluteYawDegrees;
+            currentRelativeYawDegrees = relativeYaw;
+            currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
         telemetryGyro();
-        return currentRelativeYaw;
     }
+
+    public double getCurrentRelativeYawRadians(){
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+        updateCurrentRelativeYaw();
+        return currentRelativeYawRadians;
+    }
+
 
     public void telemetryGyro() {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 4, 0));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Abs (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 6, 0));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Rel (Degrees)" + JavaUtil.formatNumber(currentRelativeYawDegrees, 6, 0));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Offset (Degrees)" + JavaUtil.formatNumber(offsetFromAbsoluteYawDegrees, 6, 0));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Pose (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log(), 4, 0));
     }
 
-    public IMU getIMU() {
-        return imu;
+    public void postAutoGyroReset() {
+        //reset gyro
+        imu.resetYaw();
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+
+        //Calculate new offset
+        offsetFromAbsoluteYawDegrees = MatchConfig.endOfAutonomousAbsoluteYawDegrees;
+
+        // Adjust relative yaw
+        currentRelativeYawDegrees = MatchConfig.endOfAutonomousRelativeYawDegrees - offsetFromAbsoluteYawDegrees;
+        currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
     }
 }
