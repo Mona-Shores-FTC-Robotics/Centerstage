@@ -61,6 +61,16 @@ public class GyroSubsystem extends SubsystemBase {
         offsetFromAbsoluteYawDegrees = currentAbsoluteYawDegrees+currentRelativeYawDegrees;
     }
 
+    public void setRelativeYawTo0() {
+        imu.resetYaw();
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+        currentRelativeYawRadians = 0;
+        currentRelativeYawDegrees = Math.toDegrees(currentRelativeYawRadians);
+        offsetFromAbsoluteYawDegrees = currentAbsoluteYawDegrees+currentRelativeYawDegrees;
+    }
+
     public void updateCurrentRelativeYaw(){
         //They gyro is only updating currentAbsoluteYawDegrees in the periodic()
         // subtracting the current absolute yaw from the current relative will tell me the change in angle

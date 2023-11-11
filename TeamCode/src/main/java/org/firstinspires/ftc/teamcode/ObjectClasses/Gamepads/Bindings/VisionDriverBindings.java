@@ -103,8 +103,9 @@ public class VisionDriverBindings {
         //not sure if this should even be an option
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed(new InstantCommand(() -> {
-                    Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
-                }));
+                                Robot.getInstance().getVisionSubsystem().resetHeading=true;
+                            }));
+
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -153,6 +154,7 @@ public class VisionDriverBindings {
                new ParallelRaceGroup(
                             new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromRedBackdropAction.makeAction()),
                             new IsGamepadActiveCommand()
+
                     ).schedule();
             } else {
                 MakeBackUpFromBlueBackdropAction makeBackUpFromBlueBackdropAction = new MakeBackUpFromBlueBackdropAction();

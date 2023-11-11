@@ -70,8 +70,6 @@ public class TeleOp_Vision extends LinearOpMode
         //Switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_BACKSTAGE_START_POSE;
-
         //Reset Gyro
         Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
