@@ -13,10 +13,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikePickup1BackdropPark;
 
 @Autonomous(name = "Spike Pickup 1 Backdrop Park Auto")

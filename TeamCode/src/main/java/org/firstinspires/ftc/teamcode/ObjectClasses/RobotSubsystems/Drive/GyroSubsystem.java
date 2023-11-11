@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 public class GyroSubsystem extends SubsystemBase {
@@ -26,7 +27,7 @@ public class GyroSubsystem extends SubsystemBase {
 
     private double lastRelativeYawDegrees;
 
-    private double offsetFromAbsoluteYawDegrees;
+    public double offsetFromAbsoluteYawDegrees;
 
     public GyroSubsystem(final HardwareMap hMap, final String name) {
         imu = hMap.get(IMU.class, name);
@@ -71,10 +72,8 @@ public class GyroSubsystem extends SubsystemBase {
         {
             relativeYaw +=360;
         }
-
             currentRelativeYawDegrees = relativeYaw;
             currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
-
         telemetryGyro();
     }
 
@@ -95,4 +94,18 @@ public class GyroSubsystem extends SubsystemBase {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Pose (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log(), 4, 0));
     }
 
+    public void postAutoGyroReset() {
+        //reset gyro
+        imu.resetYaw();
+        YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
+        currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
+        currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
+
+        //Calculate new offset
+        offsetFromAbsoluteYawDegrees = MatchConfig.endOfAutonomousAbsoluteYawDegrees;
+
+        // Adjust relative yaw
+        currentRelativeYawDegrees = MatchConfig.endOfAutonomousRelativeYawDegrees - offsetFromAbsoluteYawDegrees;
+        currentRelativeYawRadians = Math.toRadians(currentRelativeYawDegrees);
+    }
 }
