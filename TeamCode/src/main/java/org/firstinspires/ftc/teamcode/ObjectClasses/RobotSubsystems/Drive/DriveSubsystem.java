@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.Command;
@@ -123,33 +124,47 @@ public class DriveSubsystem extends SubsystemBase {
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
-//        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-//        double targetSpeedRF = Math.round(100.0 * mecanumDrive.rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-//        double targetSpeedLB = Math.round(100.0 * mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-//        double targetSpeedRB = Math.round(100.0 * mecanumDrive.rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-//
-//        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-//        double actualSpeedRF = Math.round(100.0 * mecanumDrive.rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-//        double actualSpeedLB = Math.round(100.0 * mecanumDrive.leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-//        double actualSpeedRB = Math.round(100.0 * mecanumDrive.rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRF = Math.round(100.0 * mecanumDrive.rightFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedLB = Math.round(100.0 * mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+        double targetSpeedRB = Math.round(100.0 * mecanumDrive.rightBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
+
+        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRF = Math.round(100.0 * mecanumDrive.rightFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedLB = Math.round(100.0 * mecanumDrive.leftBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+        double actualSpeedRB = Math.round(100.0 * mecanumDrive.rightBack.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
 
 
         TelemetryPacket packet = new TelemetryPacket();
         c = packet.fieldOverlay();
 
-//        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
-//        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
-//        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
-//        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftFront.getPower()) / 100.0);
-//        packet.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightFront.getPower()) / 100.0);
-//        packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
-//        packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
+        packet.put("current_drive_ramp", mecanumDrive.current_drive_ramp);
+        packet.put("current_strafe_ramp", mecanumDrive.current_strafe_ramp);
+        packet.put("current_turn_ramp", mecanumDrive.current_turn_ramp);
+        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftFront.getPower()) / 100.0);
+        packet.addLine("RF" + " Speed: " + JavaUtil.formatNumber(actualSpeedRF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRF, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightFront.getPower()) / 100.0);
+        packet.addLine("LB" + " Speed: " + JavaUtil.formatNumber(actualSpeedLB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.leftBack.getPower()) / 100.0);
+        packet.addLine("RB" + " Speed: " + JavaUtil.formatNumber(actualSpeedRB, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedRB, 4, 1) + " " + "Power: " + Math.round(100.0 * mecanumDrive.rightBack.getPower()) / 100.0);
 
+
+        packet.put("LF Speed", actualSpeedLF);
+        packet.put("LF Target", targetSpeedLF);
 
         if (visionSubsystem.resetPoseReady){
-            visionSubsystem.resetPoseReady=false;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = visionSubsystem.resetPose;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
+            if (Robot.getInstance().getVisionSubsystem().resetHeading) {
+                Robot.getInstance().getVisionSubsystem().resetHeading=false;
+                Robot.getInstance().getGyroSubsystem().setRelativeYawTo0();
+                visionSubsystem.resetPoseReady = false;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose =
+                        new Pose2d (visionSubsystem.resetPose.position.x,
+                                    visionSubsystem.resetPose.position.y,
+                                    0);
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
+            } else {
+                visionSubsystem.resetPoseReady = false;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = visionSubsystem.resetPose;
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.poseHistory.clear();
+            }
         }
 
         packet.put("x", mecanumDrive.pose.position.x);
@@ -220,7 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void fieldOrientedControl (double leftY, double leftX){
         double y = leftY;
         double x = leftX;
-        double botHeading = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawRadians;
+        double botHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees-90);
 
         // Rotate the movement direction counter to the bot's rotation
         leftXAdjusted = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);

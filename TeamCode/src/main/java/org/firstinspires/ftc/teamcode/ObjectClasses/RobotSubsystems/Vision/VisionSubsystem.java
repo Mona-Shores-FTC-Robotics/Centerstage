@@ -49,11 +49,11 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.06;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.03;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
         public double DRIVE_FEEDFORWARD=.08;
         public double STRAFE_FEEDFORWARD=.02;
-        public double TURN_FEEDFORWARD=.045;
-        public double TURN_GAIN = -0.05;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double TURN_FEEDFORWARD=.03;
+        public double TURN_GAIN = -0.03;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -63,12 +63,13 @@ public final class VisionSubsystem extends SubsystemBase {
         public double BACKDROP_DRIVE_THRESHOLD=.2;
         public double BACKDROP_STRAFE_THRESHOLD=.2;
         public double BACKDROP_TURN_THRESHOLD=.2;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=5;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=1;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
     public boolean resetPoseReady=false;
+    public boolean resetHeading=false;
     public Pose2d resetPose;
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
@@ -372,7 +373,7 @@ public final class VisionSubsystem extends SubsystemBase {
         //save the tag.detection.ftPose.yaw as the cameraYaw
         double cameraYaw = tag.detection.ftcPose.yaw;
 
-        Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Math.toRadians(tagHeading-cameraYaw));
+        Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians);
 
         TelemetryPacket p = new TelemetryPacket();
         p.put("ftcPoseX", distanceX);
@@ -735,7 +736,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
             backdropPoseCount++;
             if (backdropPoseCount> tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
-                Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
                 backdropPoseCount=0;
                 resetPose = DeterminePoseFromAprilTag(tag);
                 resetPoseReady = true;
