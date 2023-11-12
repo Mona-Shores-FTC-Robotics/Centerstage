@@ -53,11 +53,14 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        //Initialize the Game-pads
+        GamepadHandling gamepadHandling = new GamepadHandling(this);
+
         /** Create and Initialize the robot **/
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.createInstance(this);
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
@@ -67,15 +70,15 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getInstance().getDriverGamepad().readButtons();
-            GamepadHandling.getInstance().lockColorAndSide();
+            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            gamepadHandling.getDriverGamepad().readButtons();
+            gamepadHandling.lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing();
+        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
         telemetry.update();
 
         teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();
@@ -122,7 +125,6 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
                 .build();
 
         Actions.runBlocking(testRouteB);
-        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

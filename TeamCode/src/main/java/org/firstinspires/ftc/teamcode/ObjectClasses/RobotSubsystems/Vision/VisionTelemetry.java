@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 public class VisionTelemetry {
 
-    public static void telemetryForInitProcessing() {
+    public static void telemetryForInitProcessing(GamepadHandling gamepadHandling) {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
         InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
@@ -29,14 +29,15 @@ public class VisionTelemetry {
         telemetry.addData("Stage Door Right Percent", JavaUtil.formatNumber(Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
 
         //Set the gamepads to Green if there is a problem and the driver hasn't overridden
-        if ( Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorDeterminationProblem && GamepadHandling.ManualOverrideInitSettingsFlag==false) {
-            GamepadHandling.problemInInitLed();
+        if ( Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorDeterminationProblem &&
+                Robot.getInstance().getVisionSubsystem().manualOverrideInitSettingsFlag==false) {
+            gamepadHandling.problemInInitLed();
         } else {
             //show the color of the Alliance on the drivergamepad
             if (allianceColor == InitVisionProcessor.AllianceColor.RED) {
-                GamepadHandling.setRed();
+                gamepadHandling.setRed();
             } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
-                GamepadHandling.setBlue();
+                gamepadHandling.setBlue();
             }
         }
     }

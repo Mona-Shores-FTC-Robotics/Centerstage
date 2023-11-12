@@ -80,6 +80,8 @@ public final class VisionSubsystem extends SubsystemBase {
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
 
+    public boolean manualOverrideInitSettingsFlag = false;
+
     public void periodic()
     {
 

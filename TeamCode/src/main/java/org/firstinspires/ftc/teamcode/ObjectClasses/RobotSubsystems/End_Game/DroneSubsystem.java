@@ -40,9 +40,11 @@ public class DroneSubsystem extends SubsystemBase {
     public Servo drone;
     public DroneSubsystem.DroneDeployState currentState;
     public double currentPosition;
+    private GamepadHandling gamepadHandling;
 
-    public DroneSubsystem(final HardwareMap hMap, final String name) {
+    public DroneSubsystem(final HardwareMap hMap, final String name, GamepadHandling gpadHandling) {
         drone = hMap.servo.get("drone");
+        gamepadHandling=gpadHandling;
     }
 
     public void init() {
@@ -58,7 +60,7 @@ public class DroneSubsystem extends SubsystemBase {
         //
         if (MatchConfig.teleOpTimer.seconds() > droneParameters.END_GAME_TIME)
         {
-            GamepadHandling.getInstance().getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                     .whenPressed(new ReleaseDroneCommand(this, DroneDeployState.FLY));
         }
 

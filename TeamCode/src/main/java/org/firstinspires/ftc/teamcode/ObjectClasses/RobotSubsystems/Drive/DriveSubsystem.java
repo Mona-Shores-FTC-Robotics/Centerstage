@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
@@ -26,6 +25,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double TURN_SPEED_FACTOR=.4;
         public double APRIL_TAG_CANCEL_THRESHOLD = -.1;
         public double safetyDriveSpeedFactor = .7;
+        public double DEAD_ZONE = .1;
     }
 
     public static class ParamsMona {
@@ -79,6 +79,8 @@ public class DriveSubsystem extends SubsystemBase {
     public static DriveParameters driveParameters= new DriveParameters();
 
     public MecanumDriveMona mecanumDrive;
+
+    private boolean overrideAprilTagDriving = false;
 
     public VisionSubsystem visionSubsystem;
     public boolean drivingToAprilTag;
@@ -191,11 +193,19 @@ public class DriveSubsystem extends SubsystemBase {
                 "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower()) / 100.0);
     }
 
+    public Boolean driverGamepadIsActive(double leftY, double leftX, double rightX) {
+        if     (Math.abs(leftY) > driveParameters.DEAD_ZONE ||
+                Math.abs(leftX) > driveParameters.DEAD_ZONE ||
+                Math.abs(rightX) > driveParameters.DEAD_ZONE ){
+            return true;
+        } else return false;
+    }
 
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
 
+        boolean gamepadActive = driverGamepadIsActive(leftY, leftX, rightX);
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (GamepadHandling.driverGamepadIsActive(leftY, leftX, rightX) || drivingToAprilTag) {
+        if (gamepadActive || drivingToAprilTag) {
 
             //apply speed factors
             leftYAdjusted = leftY * driveParameters.DRIVE_SPEED_FACTOR;
@@ -215,7 +225,7 @@ public class DriveSubsystem extends SubsystemBase {
             if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFound &&
                     (leftYAdjusted > .1 || drivingToAprilTag) &&
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
+                    !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropRed();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
@@ -225,7 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
                     (leftYAdjusted > .1 || drivingToAprilTag) &&
-                    !GamepadHandling.getOverrideAprilTagDriving()) {
+                    !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropBlue();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
@@ -253,6 +263,12 @@ public class DriveSubsystem extends SubsystemBase {
 
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
+
+
+    public boolean getOverrideAprilTagDriving() {
+        return overrideAprilTagDriving;
+    }
+
 }
 
 

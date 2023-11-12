@@ -85,10 +85,12 @@ public class ClimberSubsystem extends SubsystemBase {
         return currentTicks;
     }
 
+    private GamepadHandling gamepadHandling;
 
-    public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName) {
+    public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName, GamepadHandling gpadhandling) {
         climberArm = hMap.servo.get(climberArmName);
         winchMotor = hMap.get(DcMotorEx.class, winchMotorName);
+        gamepadHandling=gpadhandling;
     }
 
     public void init() {
@@ -119,7 +121,7 @@ public class ClimberSubsystem extends SubsystemBase {
         if (MatchConfig.teleOpTimer.seconds() > climberParameters.END_GAME_TIME)
         {
 
-            GamepadHandling.getInstance().getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                     .whenPressed(new ReadyClimberArmCommand(this, ClimberArmStates.READY))
                     .whenReleased(new PullWinchInCommand(this, WinchMotorStates.WOUND));
         }

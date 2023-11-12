@@ -48,17 +48,19 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
+        //Initialize the Game-pads
+        GamepadHandling gamepadHandling = new GamepadHandling(this);
+
         /* Create and Initialize the robot **/
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.createInstance(this);
         robot.init(Robot.OpModeType.TELEOP);
 
         telemetry.clearAll();
 
         /* Setup Button Bindings **/
-        new ScoringArmTestingDriverBindings(GamepadHandling.getInstance().getDriverGamepad());
+        new ScoringArmTestingDriverBindings(gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -80,7 +82,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             CommandScheduler.getInstance().run();
 
             //Read all buttons
-            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            gamepadHandling.getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
             if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
@@ -92,7 +94,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
-        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getEndEffectorSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getShoulderSubsystem());

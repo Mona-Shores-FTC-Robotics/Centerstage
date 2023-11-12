@@ -23,9 +23,10 @@ public class IsGamepadActiveCommand extends CommandBase {
     @Override
     public void execute(){
         Robot.getInstance().getDriveSubsystem().periodic();
-        done = GamepadHandling.driverGamepadIsActive(   gamepad.getLeftY(),
-                                                        gamepad.getLeftX(),
-                                                        gamepad.getRightX());
+        done = Robot.getInstance().getDriveSubsystem().driverGamepadIsActive(
+                gamepad.getLeftY(),
+                gamepad.getLeftX(),
+                gamepad.getRightX());
     }
 
     @Override

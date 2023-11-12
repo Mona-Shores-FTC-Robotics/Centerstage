@@ -28,8 +28,6 @@ public class VisionDriverBindings {
 
     public VisionDriverBindings(GamepadEx gamepad) {
 
-
-
         //Make the commands to use for the bindings
         MakeCommands(gamepad);
 

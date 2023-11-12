@@ -48,18 +48,20 @@ public class TeleOp_IntakeTesting extends LinearOpMode
     public Robot robot;
     @Override public void runOpMode()
     {
+        //Initialize the Game-pads
+        GamepadHandling gamepadHandling = new GamepadHandling(this);
+
         /* Create and Initialize the robot **/
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.createInstance(this);
         robot.init(Robot.OpModeType.TELEOP);
 
         /* Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         /* Setup Button Bindings **/
-        new IntakeTestingDriverBindings(   GamepadHandling.getInstance().getDriverGamepad());
+        new IntakeTestingDriverBindings(   gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -75,7 +77,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             CommandScheduler.getInstance().run();
 
             //Read all buttons
-            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            gamepadHandling.getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
             if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
@@ -84,7 +86,6 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
             telemetry.update();
         }
-        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
         Robot.reset();
