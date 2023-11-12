@@ -27,8 +27,6 @@ public class VisionDriverBindings {
     public static Command defaultDriveCommand;
     public static Command backupFromBackdropCommand;
     public static Command driveAwayFromBackdropWithConstantHeading;
-    public static Command test1Static;
-    public Command test1NonStatic;
 
     public VisionDriverBindings(GamepadEx gamepad) {
 
@@ -68,10 +66,8 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
         // move to just outside the correct color wing?
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(test1NonStatic);
+                .whenPressed(backupFromBackdropCommand);
 
-        gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(test1Static);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -137,18 +133,6 @@ public class VisionDriverBindings {
                 gamepad::getLeftX,
                 gamepad::getRightX
         );
-
-        test1Static = new InstantCommand(()->{
-            TelemetryPacket p = new TelemetryPacket();
-            p.addLine("I am vision Driver Bindings 1 Static");
-            FtcDashboard.getInstance().sendTelemetryPacket(p);
-        });
-
-        test1NonStatic = new InstantCommand(()->{
-            TelemetryPacket p = new TelemetryPacket();
-            p.addLine("I am vision Driver Bindings 1 NonStatic");
-            FtcDashboard.getInstance().sendTelemetryPacket(p);
-        });
 
 
         Command driveWhileAt90Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),

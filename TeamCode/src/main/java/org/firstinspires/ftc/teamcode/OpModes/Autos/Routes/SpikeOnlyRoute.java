@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
+import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_RED;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 
 import com.acmerobotics.roadrunner.Action;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
 public class SpikeOnlyRoute {
@@ -41,6 +45,9 @@ public class SpikeOnlyRoute {
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDriveSubsystem.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_TOWARD_BLUE)
+                .stopAndAdd(new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED))
+                .setReversed(true)
+                .splineToLinearHeading(RED_AUDIENCE_START_POSE,TANGENT_TOWARD_RED)
                 .build();
 
         blueBackstageBotTeamPropRightRoute = roadRunnerDriveSubsystem.actionBuilder(BLUE_BACKSTAGE_START_POSE)

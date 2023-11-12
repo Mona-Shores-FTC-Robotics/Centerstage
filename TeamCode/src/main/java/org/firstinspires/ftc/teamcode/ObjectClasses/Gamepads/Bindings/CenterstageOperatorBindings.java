@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -33,6 +34,7 @@ public class CenterstageOperatorBindings {
 
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
+        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         //////////////////////////////////////////////////////////
         //                                                      //
         // LEFT STICK / RIGHT STICK                             //
@@ -47,7 +49,11 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //end game?
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .toggleWhenPressed(
+                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN),
+                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
+
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -65,8 +71,16 @@ public class CenterstageOperatorBindings {
 
        // INTAKE ON while held down, off when not
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON))
-                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
+                .whenPressed(
+                        new SequentialCommandGroup(
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON),
+                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.OPEN)
+                        ))
+                .whenReleased(
+                        new SequentialCommandGroup(
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF),
+                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.CLOSED)
+                        ));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -77,10 +91,10 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new SequentialCommandGroup(
                         new InstantCommand(() -> {
-                            Robot.getInstance().getVisionSubsystem().setDeliverHeight(VisionSubsystem.DeliverHeight.HIGH);}),
+                            Robot.getInstance().getVisionSubsystem().setDeliverHeight(VisionSubsystem.DeliverHeight.MID);}),
                         readyToScorePixel
-                ), false)
-                .whenReleased(releasePixels);
+                ), false);
+
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -88,7 +102,11 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //set lift height to mid
+        // INTAKE ON while held down, off when not
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_REVERSE))
+                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
+
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -96,8 +114,10 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //Set lift height to low?
-
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(
+                        releasePixels
+                , false);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -135,15 +155,12 @@ public class CenterstageOperatorBindings {
                 new SequentialCommandGroup(
                         new ActuateEndEffectorCommand(endEffectorSubsystem,
                                 EndEffectorSubsystem.EndEffectorStates.CLOSED),
-                        new ParallelCommandGroup(
-                                new MoveLiftSlideCommand(liftSlideSubsystem,
-                                        LiftSlideSubsystem.LiftStates.MID),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(100),
-                                        new RotateShoulderCommand(shoulderSubsystem,
-                                                ShoulderSubsystem.ShoulderStates.BACKDROP)
-                                )
-                        )
+                        new MoveLiftSlideCommand(liftSlideSubsystem,
+                                LiftSlideSubsystem.LiftStates.SAFE),
+                        new RotateShoulderCommand(shoulderSubsystem,
+                                ShoulderSubsystem.ShoulderStates.BACKDROP),
+                        new MoveLiftSlideCommand(liftSlideSubsystem,
+                                LiftSlideSubsystem.LiftStates.MID)
                 );
 
         releasePixels =
@@ -151,9 +168,13 @@ public class CenterstageOperatorBindings {
                         new ActuateEndEffectorCommand(endEffectorSubsystem,
                                 EndEffectorSubsystem.EndEffectorStates.OPEN),
                         new WaitCommand(325),
+                        new MoveToPointCommand(Robot.getInstance().getDriveSubsystem(),
+                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x-2,
+                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y
+                        ),
                         new ParallelCommandGroup(
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
-                                        LiftSlideSubsystem.LiftStates.SAFE ),
+                                        LiftSlideSubsystem.LiftStates.SAFE),
                                 new ActuateEndEffectorCommand(endEffectorSubsystem,
                                         EndEffectorSubsystem.EndEffectorStates.CLOSED),
                                 new RotateShoulderCommand(shoulderSubsystem,
@@ -163,10 +184,7 @@ public class CenterstageOperatorBindings {
                                 ShoulderSubsystem.ShoulderStates.INTAKE),
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
                                         LiftSlideSubsystem.LiftStates.HOME)
-                        ),
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.OPEN)
+                        )
                 );
     }
-
 }

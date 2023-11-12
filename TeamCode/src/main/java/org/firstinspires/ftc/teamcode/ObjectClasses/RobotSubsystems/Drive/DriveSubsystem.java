@@ -145,7 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         //Prepare and send a telemetry packet with drive information
-        DashboardTelemetryDriveTrain();
+        //DashboardTelemetryDriveTrain();
 
         //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
         mecanumDrive.SetRoadRunnerParameters();

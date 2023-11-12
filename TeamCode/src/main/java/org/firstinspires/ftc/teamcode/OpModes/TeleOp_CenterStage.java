@@ -41,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.Centerstag
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @TeleOp(name="TeleOp_CenterStage")
 public class TeleOp_CenterStage extends LinearOpMode
@@ -52,7 +53,6 @@ public class TeleOp_CenterStage extends LinearOpMode
     {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-        Robot.getInstance().reset();
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
@@ -70,13 +70,21 @@ public class TeleOp_CenterStage extends LinearOpMode
         telemetry.clearAll();
 
         while (opModeInInit()) {
-            // Add Vision Init Processor Telemetry
-            //todo does this print the final side/color from auto?
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+
+
+            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            gamepadHandling.getDriverGamepad().readButtons();
+            gamepadHandling.lockColorAndSide();
 
             telemetry.update();
             sleep(10);
         }
+
+        //Switch the vision processing to AprilTags
+        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
+
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //Start the TeleOp Timer
         teleOpTimer = new ElapsedTime();
@@ -84,11 +92,28 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         while (opModeIsActive())
         {
+            //just print this every loop because we want to know
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+
             //Run the Scheduler
             CommandScheduler.getInstance().run();
 
             //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
+
+            //Look for AprilTags
+            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
+
+            //Add AprilTag Telemetry
+            if (gamepad1.left_trigger>.1) {
+                Robot.getInstance().getVisionSubsystem().DriverStationAprilTagTelemetry();
+            }
+
+            //Add DriveTrain Telemetry
+            if (gamepad1.right_trigger>.1) {
+                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
+                Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
+            }
 
             EndGameRumble();
             ActivateEndGameButtons();
@@ -110,12 +135,12 @@ public class TeleOp_CenterStage extends LinearOpMode
         if ( teleOpTimer.seconds()>END_GAME_TIME){
             //check buttons for Wench and drone
             //Right Trigger shows some telemetry about the buttons
-            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
-                //schedule the Wench release command here
-            }
-            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
-                //schedule the Drone release command here
-            }
+//            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
+//                //schedule the Wench release command here
+//            }
+//            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
+//                //schedule the Drone release command here
+//            }
         }
     }
 

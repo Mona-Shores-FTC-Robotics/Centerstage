@@ -49,7 +49,6 @@ public class TeleOp_PostAuto extends LinearOpMode
     {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-        Robot.getInstance().reset();
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);

@@ -77,8 +77,9 @@ public class ScoringArmTestingDriverBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.MID));
 
-        gamepad.getGamepadButton(GamepadKeys.Button.B)
-                .toggleWhenPressed(readyToScorePixel, releasePixels, false);
+//        gamepad.getGamepadButton(GamepadKeys.Button.B)
+//                .toggleWhenPressed(readyToScorePixel, releasePixels, false);
+
 
         gamepad.getGamepadButton(GamepadKeys.Button.A)
                 .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
@@ -135,15 +136,12 @@ public class ScoringArmTestingDriverBindings {
                 new SequentialCommandGroup(
                         new ActuateEndEffectorCommand(endEffectorSubsystem,
                                 EndEffectorSubsystem.EndEffectorStates.CLOSED),
-                    new ParallelCommandGroup(
-                            new MoveLiftSlideCommand(liftSlideSubsystem,
-                                    LiftSlideSubsystem.LiftStates.MID),
-                            new SequentialCommandGroup(
-                                    new WaitCommand(100),
-                                    new RotateShoulderCommand(shoulderSubsystem,
-                                            ShoulderSubsystem.ShoulderStates.BACKDROP)
-                            )
-                    )
+                        new MoveLiftSlideCommand(liftSlideSubsystem,
+                                LiftSlideSubsystem.LiftStates.SAFE),
+                        new RotateShoulderCommand(shoulderSubsystem,
+                                ShoulderSubsystem.ShoulderStates.BACKDROP),
+                        new MoveLiftSlideCommand(liftSlideSubsystem,
+                                LiftSlideSubsystem.LiftStates.MID)
                 );
 
         releasePixels =
@@ -153,20 +151,19 @@ public class ScoringArmTestingDriverBindings {
                         new WaitCommand(325),
                         new ParallelCommandGroup(
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
-                                        LiftSlideSubsystem.LiftStates.SAFE ),
+                                        LiftSlideSubsystem.LiftStates.SAFE),
                                 new ActuateEndEffectorCommand(endEffectorSubsystem,
                                         EndEffectorSubsystem.EndEffectorStates.CLOSED),
                                 new RotateShoulderCommand(shoulderSubsystem,
-                                    ShoulderSubsystem.ShoulderStates.HALFWAY)
+                                        ShoulderSubsystem.ShoulderStates.HALFWAY)
                         ),
                         new ParallelCommandGroup(new RotateShoulderCommand(shoulderSubsystem,
                                 ShoulderSubsystem.ShoulderStates.INTAKE),
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
                                         LiftSlideSubsystem.LiftStates.HOME)
-                        ),
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.OPEN)
+                        )
                 );
+    }
 
 //        moveAndReadyToScorePixel =
 //                new SequentialCommandGroup(closeClaw,
@@ -193,4 +190,3 @@ public class ScoringArmTestingDriverBindings {
 //                        openClaw
 //                );
     }
-}

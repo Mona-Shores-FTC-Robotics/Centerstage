@@ -32,13 +32,13 @@ public class Spike_Only_Auto extends LinearOpMode {
     public void runOpMode() {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-        Robot.getInstance().reset();
+
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
         /** Create and Initialize the robot **/
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /** Initialize Gamepad and Robot - Order Important **/
         Robot.getInstance().init(Robot.OpModeType.AUTO);

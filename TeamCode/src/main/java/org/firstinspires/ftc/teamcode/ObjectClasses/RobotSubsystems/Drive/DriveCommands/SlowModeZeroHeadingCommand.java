@@ -18,6 +18,9 @@ public class SlowModeZeroHeadingCommand extends CommandBase {
     public static double D_TERM;
     public static double F_TERM;
 
+    public static double SLOW_DRIVE_FACTOR = .6;
+    public static double SLOW_STRAFE_FACTOR = .6;
+
     private final DriveSubsystem driveSubsystem;
 
     private final DoubleSupplier driveSupplier;
@@ -27,8 +30,6 @@ public class SlowModeZeroHeadingCommand extends CommandBase {
     private TurnPIDController pid;
     private double currentAngle;
 
-    private static double SLOW_DRIVE_FACTOR = .4;
-    private static double SLOW_STRAFE_FACTOR = .4;
 
     private double previousDriveFactor;
     private double previousStrafeFactor;

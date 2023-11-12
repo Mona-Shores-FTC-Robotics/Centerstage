@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -11,16 +12,19 @@ import java.util.function.DoubleSupplier;
 /**
  * A command to drive the robot with joystick input *
  */
+@Config
 public class SlowModeCommand extends CommandBase {
+
+    public static double SLOW_DRIVE_FACTOR = .6;
+    public static double SLOW_TURN_FACTOR = .6;
+    public static double SLOW_STRAFE_FACTOR = .6;
+
 
     private final DriveSubsystem driveSubsystem;
     private final DoubleSupplier driveSupplier;
     private final DoubleSupplier strafeSupplier;
     private final DoubleSupplier turnSupplier;
 
-    private static double SLOW_DRIVE_FACTOR = .4;
-    private static double SLOW_TURN_FACTOR = .4;
-    private static double SLOW_STRAFE_FACTOR = .4;
 
     private double previousDriveFactor;
     private double previousStrafeFactor;

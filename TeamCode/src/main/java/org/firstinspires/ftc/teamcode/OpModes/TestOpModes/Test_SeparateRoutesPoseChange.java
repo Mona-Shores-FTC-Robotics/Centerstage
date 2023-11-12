@@ -55,7 +55,6 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
     public void runOpMode() {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-        Robot.getInstance().reset();
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);

@@ -16,9 +16,9 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
     @Config
     public static class LiftSlideParameters {
-        public static int LIFT_HEIGHT_TICK_THRESHOLD = 30;
+        public static int LIFT_HEIGHT_TICK_THRESHOLD = 60;
         public static double EXTENSION_LIFT_POWER = .6;
-        public static double RETRACTION_LIFT_POWER = .25;
+        public static double RETRACTION_LIFT_POWER = .3;
         public static double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
         public static double POS_P=5;
         public static double SCALE_FACTOR_FOR_MANUAL_LIFT=150;
@@ -27,18 +27,19 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
     @Config
     public static class LiftSlideHeights{
-        public static int HOME_HEIGHT_TICKS=5;
-        public static int SAFE_HEIGHT_TICKS=400;
+        public static int ZERO_HEIGHT_TICKS=0;
+        public static int HOME_HEIGHT_TICKS=25;
+        public static int SAFE_HEIGHT_TICKS=150;
         public static int LOW_HEIGHT_TICKS=1200;
-        public static int MID_HEIGHT_TICKS=1500;
-        public static int HIGH_HEIGHT_TICKS=1500;
+        public static int MID_HEIGHT_TICKS=2000;
+        public static int HIGH_HEIGHT_TICKS=2000;
     }
 
     public final int MAX_TARGET_TICKS = 2500;
     public final int MIN_TARGET_TICKS = 0;
 
     public enum LiftStates {
-        HIGH, MID, LOW, SAFE, HOME, MANUAL;
+        HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
         public int ticks;
 
         static {
@@ -46,6 +47,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
             MID.ticks = MID_HEIGHT_TICKS;
             LOW.ticks = LOW_HEIGHT_TICKS;
             HOME.ticks = HOME_HEIGHT_TICKS;
+            ZERO.ticks = ZERO_HEIGHT_TICKS;
             SAFE.ticks = SAFE_HEIGHT_TICKS;
         }
 
@@ -100,8 +102,8 @@ public class LiftSlideSubsystem extends SubsystemBase {
         power = EXTENSION_LIFT_POWER;
         liftSlide.setPower(power);
 
-        currentState = LiftStates.HOME;
-        currentTicks = LiftStates.HOME.ticks;
+        currentState = LiftStates.ZERO;
+        currentTicks = LiftStates.ZERO.ticks;
         liftSlide.setTargetPosition(currentTicks);
         liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
