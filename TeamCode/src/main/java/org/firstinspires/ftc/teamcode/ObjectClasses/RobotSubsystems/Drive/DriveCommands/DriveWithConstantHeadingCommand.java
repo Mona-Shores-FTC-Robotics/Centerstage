@@ -46,7 +46,7 @@ public class DriveWithConstantHeadingCommand extends CommandBase {
 
     @Override
     public void execute() {
-        currentAngle = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
+        currentAngle = Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees;
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
         driveSubsystem.setDriveStrafeTurnValues(driveSupplier.getAsDouble(), strafeSupplier.getAsDouble(), pid.update(currentAngle));
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);

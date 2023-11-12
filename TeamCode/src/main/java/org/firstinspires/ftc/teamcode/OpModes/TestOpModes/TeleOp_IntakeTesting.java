@@ -47,6 +47,10 @@ public class TeleOp_IntakeTesting extends LinearOpMode
     public Robot robot;
     @Override public void runOpMode()
     {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -80,8 +84,5 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
             telemetry.update();
         }
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
-        Robot.reset();
     }
 }

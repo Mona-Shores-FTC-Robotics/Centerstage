@@ -22,7 +22,7 @@ public class DriveSubsystem extends SubsystemBase {
         /** Set these drive parameters for faster TeleOp driving**/
         public double DRIVE_SPEED_FACTOR=.8;
         public double STRAFE_SPEED_FACTOR=.8;
-        public double TURN_SPEED_FACTOR=.4;
+        public double TURN_SPEED_FACTOR=.7;
         public double APRIL_TAG_CANCEL_THRESHOLD = -.1;
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .1;
@@ -267,6 +267,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public boolean getOverrideAprilTagDriving() {
         return overrideAprilTagDriving;
+    }
+    public void setOverrideAprilTagDriving(boolean b) {
+        overrideAprilTagDriving=b;
     }
 
 }

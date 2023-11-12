@@ -74,7 +74,6 @@ public class GyroSubsystem extends SubsystemBase {
 
     public void updateCurrentRelativeYaw(){
         //They gyro is only updating currentAbsoluteYawDegrees in the periodic()
-        // subtracting the current absolute yaw from the current relative will tell me the change in angle
         double relativeYaw = currentAbsoluteYawDegrees + offsetFromAbsoluteYawDegrees;
 
         if (relativeYaw>180){

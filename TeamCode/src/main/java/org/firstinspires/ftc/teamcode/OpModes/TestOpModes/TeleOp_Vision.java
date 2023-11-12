@@ -47,6 +47,10 @@ public class TeleOp_Vision extends LinearOpMode
 
     @Override public void runOpMode()
     {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -99,18 +103,8 @@ public class TeleOp_Vision extends LinearOpMode
                 Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
                 Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
             }
-
             telemetry.update();
         }
-
-        CommandScheduler.getInstance().cancelAll();
-
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-
-        CommandScheduler.getInstance().reset();
-        Robot.reset();
     }
 }
 

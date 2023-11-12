@@ -41,7 +41,8 @@ public class CenterstageDriverBindings {
         // RIGHT BUMPER                                         //
         //                                                      //
         //////////////////////////////////////////////////////////
-
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenPressed(slowModeCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -49,13 +50,12 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-
         //////////////////////////////////////////////////////////
         //                                                      //
         //  Y BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
-        // move to just outside the correct color wing?
+        // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(backupFromBackdropCommand);
 
@@ -95,12 +95,14 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //not sure if this should even be an option
+        //This button sets a flag so the next time we are at the backdrop it does a full gyro reset
+        //The concept here is if we disconnect, this gives us a way to reset our gyro to a known field position
+        //Otherwise, we normally only reset our x/y pose based on the apriltag reading and the heading based on the gyro
+        // because the gyro is much more accurate than the april tag based heading
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed(new InstantCommand(() -> {
                     Robot.getInstance().getVisionSubsystem().resetHeading=true;
                 }));
-
 
         //////////////////////////////////////////////////////////
         //                                                      //

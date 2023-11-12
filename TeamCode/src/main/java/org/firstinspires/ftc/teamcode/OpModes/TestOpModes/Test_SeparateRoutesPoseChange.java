@@ -53,6 +53,9 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
@@ -125,11 +128,6 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
                 .build();
 
         Actions.runBlocking(testRouteB);
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-        Robot.reset();
     }
 
     private boolean CheckRedAudience() {

@@ -30,6 +30,10 @@ public class Spike_Only_Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -83,11 +87,6 @@ public class Spike_Only_Auto extends LinearOpMode {
         Robot.getInstance().getActiveOpMode().telemetry.update();
 
         Actions.runBlocking(selectedRoute);
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-        Robot.reset();
     }
 
     private boolean CheckRedAudience() {

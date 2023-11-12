@@ -54,6 +54,10 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
 
     @Override
     public void runOpMode() {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -121,15 +125,9 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_NEUTRAL_PIXEL_WING), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_AUDIENCE)
                 .build();
 
-
         //how should roadrunner handle changes in telemetry?
-
         Actions.runBlocking(testRoute);
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-        Robot.reset();
+
     }
 
     private boolean CheckRedAudience() {

@@ -47,6 +47,9 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
     @Override public void runOpMode()
     {
+        //Reset the CommandScheduler
+        CommandScheduler.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 

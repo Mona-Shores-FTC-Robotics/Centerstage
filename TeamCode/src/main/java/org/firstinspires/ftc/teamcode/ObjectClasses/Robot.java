@@ -94,7 +94,7 @@ public class Robot {
         return robot;
     }
 
-    public static void reset() {
+    public synchronized void reset() {
         robot = null;
     }
 

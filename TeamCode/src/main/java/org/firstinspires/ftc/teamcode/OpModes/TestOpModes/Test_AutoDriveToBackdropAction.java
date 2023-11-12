@@ -31,6 +31,10 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        //Reset the Singleton CommandScheduler and Robot
+        CommandScheduler.getInstance().reset();
+        Robot.getInstance().reset();
+
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -84,11 +88,6 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);
-        CommandScheduler.getInstance().cancelAll();
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
-        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-        Robot.reset();
     }
 
 }
