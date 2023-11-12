@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.OpModes.TestOpModes.TeleOp_Vision;
 
 public class GamepadHandling {
     private static double DEAD_ZONE=.1;
@@ -31,9 +33,9 @@ public class GamepadHandling {
 
     private static GamepadHandling gamepadHandling;
 
-    public GamepadHandling() {
-        driverGamepad = new GamepadEx(Robot.getInstance().getActiveOpMode().gamepad1);
-        operatorGamepad = new GamepadEx(Robot.getInstance().getActiveOpMode().gamepad2);
+    private GamepadHandling(LinearOpMode opMode) {
+        driverGamepad = new GamepadEx(opMode.gamepad1);
+        operatorGamepad = new GamepadEx(opMode.gamepad2);
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,.2,.4,LED_DURATION_CONTINUOUS );
         Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
         CreateRumbleEffects();
@@ -41,9 +43,6 @@ public class GamepadHandling {
     }
 
     public static GamepadHandling getInstance() {
-        if (gamepadHandling==null){
-            gamepadHandling = new GamepadHandling();
-        }
         return gamepadHandling;
     }
 
@@ -83,8 +82,20 @@ public class GamepadHandling {
         } else return false;
     }
 
-    public static void destroyGamepadHandling() {
+    public void destroyGamepadHandling() {
+        driverGamepad =  null;
+        operatorGamepad = null;
         gamepadHandling=null;
+    }
+
+    public static GamepadHandling createInstance(LinearOpMode opMode) {
+        if (gamepadHandling != null){
+            gamepadHandling.driverGamepad = null;
+            gamepadHandling.operatorGamepad = null;
+            gamepadHandling = null;
+        }
+        gamepadHandling = new GamepadHandling(opMode);
+        return gamepadHandling;
     }
 
     public GamepadEx getDriverGamepad() {

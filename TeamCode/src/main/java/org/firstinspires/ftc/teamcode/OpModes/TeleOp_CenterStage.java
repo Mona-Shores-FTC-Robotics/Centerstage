@@ -54,7 +54,7 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
@@ -90,7 +90,7 @@ public class TeleOp_CenterStage extends LinearOpMode
             telemetry.update();
             sleep(10);
         }
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

@@ -52,7 +52,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
         robot.init(Robot.OpModeType.TELEOP);
 
         /* Setup Telemetry for Driver Station and FTCDashboard **/
@@ -84,7 +84,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
             telemetry.update();
         }
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
         Robot.reset();

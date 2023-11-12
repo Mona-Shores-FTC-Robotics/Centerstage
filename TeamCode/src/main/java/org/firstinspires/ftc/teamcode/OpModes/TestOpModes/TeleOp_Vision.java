@@ -51,7 +51,7 @@ public class TeleOp_Vision extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         //Initialize the Game-pads
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
 
         //Initialize the Robot
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
@@ -103,12 +103,11 @@ public class TeleOp_Vision extends LinearOpMode
 
             telemetry.update();
         }
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
-        GamepadHandling.destroyGamepadHandling();
         Robot.reset();
     }
 }

@@ -35,7 +35,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
@@ -82,7 +82,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

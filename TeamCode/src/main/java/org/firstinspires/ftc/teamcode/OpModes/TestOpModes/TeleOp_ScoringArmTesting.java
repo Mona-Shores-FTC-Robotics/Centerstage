@@ -52,7 +52,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
         robot.init(Robot.OpModeType.TELEOP);
 
         telemetry.clearAll();
@@ -92,7 +92,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getEndEffectorSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getShoulderSubsystem());

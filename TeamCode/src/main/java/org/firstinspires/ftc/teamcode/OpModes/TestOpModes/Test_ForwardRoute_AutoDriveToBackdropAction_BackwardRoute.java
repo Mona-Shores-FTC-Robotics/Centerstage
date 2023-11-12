@@ -49,7 +49,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private  InitVisionProcessor.AllianceColor allianceColor;
     private InitVisionProcessor.SideOfField sideOfField;
-    GamepadHandling gamepadHandling = new GamepadHandling();
+
     private Action selectedRoute;
 
     @Override
@@ -58,7 +58,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.getInstance();
+        GamepadHandling.createInstance(this);
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
@@ -69,8 +69,8 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
-            gamepadHandling.getDriverGamepad().readButtons();
-            gamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
@@ -123,7 +123,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
         //how should roadrunner handle changes in telemetry?
 
         Actions.runBlocking(testRoute);
-        GamepadHandling.destroyGamepadHandling();
+        GamepadHandling.getInstance().destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
