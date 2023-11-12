@@ -18,22 +18,26 @@ public class AutoDriveToBackDrop implements Action {
     private boolean running;
     private VisionSubsystem.DeliverLocation deliverLocation;
     private int count=0;
+    private double distanceToTag;
     public AutoDriveToBackDrop() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         running=true;
     }
 
-    public AutoDriveToBackDrop(VisionSubsystem.DeliverLocation delLoc) {
+    public AutoDriveToBackDrop(VisionSubsystem.DeliverLocation delLoc, double dist) {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
+        distanceToTag =dist;
         deliverLocation=delLoc;
         running=true;
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
         if (deliverLocation!=null)
         {
             Robot.getInstance().getVisionSubsystem().setDeliverLocation(deliverLocation);
+            Robot.getInstance().getVisionSubsystem().tunableVisionConstants.DESIRED_DISTANCE=distanceToTag;
         }
         Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 

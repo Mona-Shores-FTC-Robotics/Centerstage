@@ -58,7 +58,7 @@ public class DroneSubsystem extends SubsystemBase {
         //
         if (MatchConfig.teleOpTimer.seconds() > droneParameters.END_GAME_TIME)
         {
-            GamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+            GamepadHandling.getInstance().getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                     .whenPressed(new ReleaseDroneCommand(this, DroneDeployState.FLY));
         }
 

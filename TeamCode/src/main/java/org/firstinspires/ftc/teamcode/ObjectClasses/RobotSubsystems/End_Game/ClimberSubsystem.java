@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 public class ClimberSubsystem extends SubsystemBase {
 
@@ -117,7 +118,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
         if (MatchConfig.teleOpTimer.seconds() > climberParameters.END_GAME_TIME)
         {
-            GamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+
+            GamepadHandling.getInstance().getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                     .whenPressed(new ReadyClimberArmCommand(this, ClimberArmStates.READY))
                     .whenReleased(new PullWinchInCommand(this, WinchMotorStates.WOUND));
         }

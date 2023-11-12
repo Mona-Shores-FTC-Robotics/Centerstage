@@ -35,7 +35,7 @@ public class PushPropScoreFive extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize Gamepad and Robot - Order Important
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
@@ -49,8 +49,8 @@ public class PushPropScoreFive extends LinearOpMode {
             VisionTelemetry.telemetryForInitProcessing();
 
             // Allow driver to override/lock the vision
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }

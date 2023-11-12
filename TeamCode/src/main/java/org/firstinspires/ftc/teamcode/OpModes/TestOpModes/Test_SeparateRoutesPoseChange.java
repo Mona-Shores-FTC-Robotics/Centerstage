@@ -57,7 +57,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
@@ -68,8 +68,8 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
@@ -122,7 +122,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
                 .build();
 
         Actions.runBlocking(testRouteB);
-
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

@@ -51,18 +51,18 @@ public class TeleOp_PostAuto extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         //Initialize the Game-pads
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
 
         //Initialize the Robot
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
-        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
+        new VisionDriverBindings(   GamepadHandling.getInstance().getDriverGamepad());
 
         while (opModeInInit()) {
             VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
@@ -95,7 +95,7 @@ public class TeleOp_PostAuto extends LinearOpMode
         {
             //Run the Scheduler
             CommandScheduler.getInstance().run();
-            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
 
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
@@ -111,13 +111,14 @@ public class TeleOp_PostAuto extends LinearOpMode
             if (gamepad1.right_trigger>.1) {
                 Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
                 Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
-                telemetry.addData("leftstick y", GamepadHandling.getDriverGamepad().getLeftY());
-                telemetry.addData("leftstick x", GamepadHandling.getDriverGamepad().getLeftX() );
-                telemetry.addData("rightstick x", GamepadHandling.getDriverGamepad().getRightX());
+                telemetry.addData("leftstick y",    GamepadHandling.getInstance().getDriverGamepad().getLeftY());
+                telemetry.addData("leftstick x",    GamepadHandling.getInstance().getDriverGamepad().getLeftX() );
+                telemetry.addData("rightstick x",    GamepadHandling.getInstance().getDriverGamepad().getRightX());
             }
 
             telemetry.update();
         }
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

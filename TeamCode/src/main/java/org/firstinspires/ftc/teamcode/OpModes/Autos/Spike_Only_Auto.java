@@ -34,7 +34,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
@@ -46,8 +46,8 @@ public class Spike_Only_Auto extends LinearOpMode {
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }

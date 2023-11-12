@@ -15,6 +15,9 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
@@ -48,6 +51,8 @@ public class PushPropScoreFiveRoute {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
+    public static Action moveAndReadyToScorePixel;
+    public static Action releasePixelsAndMove;
 
     public static void BuildRoutes() {
 
@@ -195,17 +200,17 @@ public class PushPropScoreFiveRoute {
         public Action ScorePixelAction(Pose2d scorePose, VisionSubsystem.DeliverLocation deliverLocation, PosesForRoute posesForRoute) {
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
-                            new AutoDriveToBackDrop(deliverLocation),
-//                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-//                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
-//                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
+                            new AutoDriveToBackDrop(deliverLocation, Robot.getInstance().getVisionSubsystem().tunableVisionConstants.DISTANCE_FOR_SCORING),
+                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
+                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
                     new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
                     new ParallelAction(
-                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute)
-//                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
-//                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
-                    )
-//                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME
+                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
+                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+                    ),
+                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME
                     )
             );
             return scorePixel;
@@ -216,6 +221,7 @@ public class PushPropScoreFiveRoute {
         private Action PushTeamPropAndBackdropStage(PosesForRoute posesForRoute) {
             Action pushTeamPropAndStage = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .splineToLinearHeading(posesForRoute.spikePose, posesForRoute.spikePose.heading.log())
+                    .stopAndAdd(new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED))
                     .setReversed(true)
                     .splineToLinearHeading(posesForRoute.backdropStagingPose, posesForRoute.backdropStagingPose.heading.log())
                     .build();

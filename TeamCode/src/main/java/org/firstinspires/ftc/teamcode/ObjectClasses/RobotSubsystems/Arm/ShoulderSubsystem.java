@@ -9,17 +9,21 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class ShoulderSubsystem extends SubsystemBase {
 
     public static class ShoulderParameters {
-        public ShoulderStates SHOULDER_STARTING_STATE = ShoulderStates.INTAKE;
         public double SHOULDER_VALUE_THRESHOLD = .03;
-        public double INTAKE_VALUE = 0;
-        public double BACKDROP_VALUE = 1;
+        public double INTAKE_VALUE = .55;
+        public double STARTING_POSITION = .7;
+        public double BACKDROP_VALUE = .2;
+        public double HALFWAY = .4;
     }
 
     public static ShoulderParameters shoulderParameters = new ShoulderParameters();
 
     public enum ShoulderStates {
-        INTAKE (0),
-        BACKDROP (1);
+        INTAKE (.55),
+        HALFWAY(.4),
+        BACKDROP (.2),
+        STARTING_POSITION (.7);
+
         public double position;
         ShoulderStates(double p) {
             this.position = p;
@@ -40,16 +44,16 @@ public class ShoulderSubsystem extends SubsystemBase {
     public void init() {
         ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);
         ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
-
-        currentState = shoulderParameters.SHOULDER_STARTING_STATE;
+        currentState= ShoulderStates.STARTING_POSITION;
         currentPosition = currentState.position;
-//        shoulder.setPosition(currentPosition);
+        shoulder.setPosition(currentPosition);
     }
 
     public void periodic(){
         ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
         ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);
-
+        ShoulderStates.HALFWAY.SetState(shoulderParameters.HALFWAY);
+        ShoulderStates.STARTING_POSITION.SetState(shoulderParameters.STARTING_POSITION);
     }
 
 }

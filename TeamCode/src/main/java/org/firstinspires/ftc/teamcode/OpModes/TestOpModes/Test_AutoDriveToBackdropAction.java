@@ -12,10 +12,14 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @Autonomous(name = "TEST - Just AutoDriveToBackdrop")
 public class Test_AutoDriveToBackdropAction extends LinearOpMode {
+
+    public static int DISTANCE_TO_TAG=10;
+    private static VisionSubsystem.DeliverLocation DELIVER_LOCATION= VisionSubsystem.DeliverLocation.LEFT;
 
     private MecanumDriveMona roadRunnerDriveSubsystem;
 
@@ -31,20 +35,20 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         Robot.getInstance().init(Robot.OpModeType.AUTO);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
-        Action testAutoAlignAction = new AutoDriveToBackDrop();
+        Action testAutoAlignAction = new AutoDriveToBackDrop(DELIVER_LOCATION, DISTANCE_TO_TAG);
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
@@ -78,6 +82,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         telemetry.clearAll();
 
         Actions.runBlocking(testAutoAlignAction);
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());

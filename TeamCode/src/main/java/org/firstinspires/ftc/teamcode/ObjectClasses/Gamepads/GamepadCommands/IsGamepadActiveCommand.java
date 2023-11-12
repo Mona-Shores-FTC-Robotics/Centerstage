@@ -1,12 +1,19 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 public class IsGamepadActiveCommand extends CommandBase {
 
     boolean done;
+    GamepadEx gamepad;
+    public IsGamepadActiveCommand(GamepadEx pad)
+    {
+        gamepad=pad;
+    }
 
     @Override
     public void initialize() {
@@ -16,9 +23,9 @@ public class IsGamepadActiveCommand extends CommandBase {
     @Override
     public void execute(){
         Robot.getInstance().getDriveSubsystem().periodic();
-        done = GamepadHandling.driverGamepadIsActive(   GamepadHandling.getDriverGamepad().getLeftY(),
-                                                        GamepadHandling.getDriverGamepad().getLeftX(),
-                                                        GamepadHandling.getDriverGamepad().getRightX());
+        done = GamepadHandling.driverGamepadIsActive(   gamepad.getLeftY(),
+                                                        gamepad.getLeftX(),
+                                                        gamepad.getRightX());
     }
 
     @Override

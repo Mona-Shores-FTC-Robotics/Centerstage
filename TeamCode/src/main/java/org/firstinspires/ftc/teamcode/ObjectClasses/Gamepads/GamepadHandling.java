@@ -10,13 +10,14 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 public class GamepadHandling {
     private static double DEAD_ZONE=.1;
 
-    private static GamepadEx driverGamepad;
-    private static GamepadEx operatorGamepad;
+    private GamepadEx driverGamepad;
+    private GamepadEx operatorGamepad;
 
     private static boolean overrideAprilTagDriving = false;
     public static boolean LockedInitSettingsFlag = false;
@@ -28,17 +29,22 @@ public class GamepadHandling {
 
     private static int timeoutRumbleCounter;
 
+    private static GamepadHandling gamepadHandling;
+
     public GamepadHandling() {
-
-    }
-
-    public static void init() {
         driverGamepad = new GamepadEx(Robot.getInstance().getActiveOpMode().gamepad1);
         operatorGamepad = new GamepadEx(Robot.getInstance().getActiveOpMode().gamepad2);
         Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,.2,.4,LED_DURATION_CONTINUOUS );
         Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
         CreateRumbleEffects();
         CreateLEDEffects();
+    }
+
+    public static GamepadHandling getInstance() {
+        if (gamepadHandling==null){
+            gamepadHandling = new GamepadHandling();
+        }
+        return gamepadHandling;
     }
 
     private static void CreateLEDEffects() {
@@ -77,18 +83,23 @@ public class GamepadHandling {
         } else return false;
     }
 
-    public static GamepadEx getDriverGamepad() {
+    public static void destroyGamepadHandling() {
+        gamepadHandling=null;
+    }
+
+    public GamepadEx getDriverGamepad() {
         return driverGamepad;
     }
-    public static GamepadEx getOperatorGamepad() {
+    public GamepadEx getOperatorGamepad() {
         return operatorGamepad;
     }
+
 
     public static boolean getOverrideAprilTagDriving() {
         return overrideAprilTagDriving;
     }
 
-    public static void lockColorAndSide() {
+    public void lockColorAndSide() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
         InitVisionProcessor initVisionProcessor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
         telemetry.addLine("");

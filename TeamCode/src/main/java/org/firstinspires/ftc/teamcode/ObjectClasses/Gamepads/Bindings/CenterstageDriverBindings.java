@@ -1,19 +1,40 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.RED;
+
 import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromRedBackdropAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class CenterstageDriverBindings {
+    public static Command defaultDriveCommand;
+    public static Command backupFromBackdropCommand;
+    public static Command driveAwayFromBackdropWithConstantHeading;
 
     public CenterstageDriverBindings(GamepadEx gamepad) {
+        //Make the commands to use for the bindings
+        MakeCommands(gamepad);
 
         //////////////////////////////////////////////////////////
         //                                                      //
         // LEFT STICK / RIGHT STICK - Default Driving           //
         //                                                      //
         //////////////////////////////////////////////////////////
-
-        //Default driving
+        CommandScheduler.getInstance().setDefaultCommand(Robot.getInstance().getDriveSubsystem(), defaultDriveCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -21,7 +42,6 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //Drive at locked heading?
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -29,61 +49,97 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //?
-
-        //////////////////////////////////////////////////////////
-        //                                                      //
-        //  X BUTTON                                            //
-        //                                                      //
-        //////////////////////////////////////////////////////////
-
-        // useful path 1?
 
         //////////////////////////////////////////////////////////
         //                                                      //
         //  Y BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
+        // move to just outside the correct color wing?
+        gamepad.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(backupFromBackdropCommand);
 
-        // useful path 2?
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  X BUTTON                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+        gamepad.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.LEFT);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
         //  A BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
-
-        //slow mode while held?
+        gamepad.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.CENTER);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
         //  B BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
+        gamepad.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  LEFT TRIGGER                                        //
+        //  BACK/OPTIONS BUTTON                                 //
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////////////
-        //                                                      //
-        //  RIGHT TRIGGER                                       //
-        //                                                      //
-        //////////////////////////////////////////////////////////
+        //not sure if this should even be an option
+        gamepad.getGamepadButton(GamepadKeys.Button.BACK)
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().resetHeading=true;
+                }));
 
-        //////////////////////////////////////////////////////////
-        //                                                      //
-        //  OPTIONS BUTTON                                      //
-        //                                                      //
-        //////////////////////////////////////////////////////////
 
         //////////////////////////////////////////////////////////
         //                                                      //
         //  START BUTTON                                        //
         //                                                      //
         //////////////////////////////////////////////////////////
-        }
-
+        gamepad.getGamepadButton(GamepadKeys.Button.START)
+                .toggleWhenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+                }), new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
+                }));
     }
+
+    private void MakeCommands(GamepadEx gamepad) {
+        defaultDriveCommand = new DefaultDriveCommand(Robot.getInstance().getDriveSubsystem(),
+                gamepad::getLeftY,
+                gamepad::getLeftX,
+                gamepad::getRightX
+        );
+
+        backupFromBackdropCommand = new InstantCommand(()->{
+            if (MatchConfig.finalAllianceColor == RED) {
+                MakeBackUpFromRedBackdropAction makeBackUpFromRedBackdropAction = new MakeBackUpFromRedBackdropAction();
+                new ParallelRaceGroup(
+                        new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromRedBackdropAction.makeAction()),
+                        new IsGamepadActiveCommand(gamepad)
+
+                ).schedule();
+            } else {
+                MakeBackUpFromBlueBackdropAction makeBackUpFromBlueBackdropAction = new MakeBackUpFromBlueBackdropAction();
+                new ParallelRaceGroup(
+                        new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromBlueBackdropAction.makeAction()),
+                        new IsGamepadActiveCommand(gamepad)
+                ).schedule();
+            }
+        });
+    }
+}
+

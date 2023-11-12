@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -43,24 +44,25 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
+
     @Override public void runOpMode()
     {
         //Create the Robot
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         //Initialize the Game-pads
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
 
         //Initialize the Robot
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
         /* Setup Button Bindings **/
-        new VisionDriverBindings(GamepadHandling.getDriverGamepad());
+        new VisionDriverBindings(   GamepadHandling.getInstance().getDriverGamepad());
 
         while (opModeInInit()) {
             VisionTelemetry.telemetryForInitProcessing();
-            GamepadHandling.getDriverGamepad().readButtons();
-            GamepadHandling.lockColorAndSide();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().lockColorAndSide();
             telemetry.update();
             sleep(10);
         }
@@ -82,7 +84,7 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Run the Scheduler
             CommandScheduler.getInstance().run();
-            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
 
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
@@ -101,10 +103,12 @@ public class TeleOp_Vision extends LinearOpMode
 
             telemetry.update();
         }
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getGyroSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getVisionSubsystem());
+        GamepadHandling.destroyGamepadHandling();
         Robot.reset();
     }
 }

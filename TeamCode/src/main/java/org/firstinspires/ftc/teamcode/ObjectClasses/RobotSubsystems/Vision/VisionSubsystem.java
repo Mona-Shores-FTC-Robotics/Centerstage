@@ -42,6 +42,7 @@ public final class VisionSubsystem extends SubsystemBase {
     public static class TunableVisionConstants {
         // Adjust these numbers to suit your robot.
         public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
+        public double DISTANCE_FOR_SCORING = 5;
         public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
 
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is

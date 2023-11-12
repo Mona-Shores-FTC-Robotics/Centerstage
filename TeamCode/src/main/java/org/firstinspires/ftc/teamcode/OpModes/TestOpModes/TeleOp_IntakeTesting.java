@@ -46,21 +46,20 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 public class TeleOp_IntakeTesting extends LinearOpMode
 {
     public Robot robot;
-
     @Override public void runOpMode()
     {
         /* Create and Initialize the robot **/
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_INTAKE);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         robot.init(Robot.OpModeType.TELEOP);
 
         /* Setup Telemetry for Driver Station and FTCDashboard **/
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         /* Setup Button Bindings **/
-        new IntakeTestingDriverBindings(GamepadHandling.getDriverGamepad());
+        new IntakeTestingDriverBindings(   GamepadHandling.getInstance().getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -76,7 +75,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             CommandScheduler.getInstance().run();
 
             //Read all buttons
-            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
             if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
@@ -85,6 +84,7 @@ public class TeleOp_IntakeTesting extends LinearOpMode
 
             telemetry.update();
         }
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getIntakeSubsystem());
         Robot.reset();

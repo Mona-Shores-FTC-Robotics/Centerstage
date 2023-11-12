@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
@@ -26,8 +27,11 @@ public class VisionDriverBindings {
     public static Command driveAwayFromBackdropWithConstantHeading;
 
     public VisionDriverBindings(GamepadEx gamepad) {
+
+
+
         //Make the commands to use for the bindings
-        MakeCommands();
+        MakeCommands(gamepad);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -122,23 +126,23 @@ public class VisionDriverBindings {
                 }));
     }
 
-    private void MakeCommands() {
+    private void MakeCommands(GamepadEx gamepad) {
         defaultDriveCommand = new DefaultDriveCommand(Robot.getInstance().getDriveSubsystem(),
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
-                GamepadHandling.getDriverGamepad()::getRightX
+                gamepad::getLeftY,
+                gamepad::getLeftX,
+                gamepad::getRightX
         );
 
 
 
         Command driveWhileAt90Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
+                gamepad::getLeftY,
+                gamepad::getLeftX,
                 Math.toDegrees(Math.toRadians(0)));
 
         Command driveWhileAt270Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
-                GamepadHandling.getDriverGamepad()::getLeftY,
-                GamepadHandling.getDriverGamepad()::getLeftX,
+                gamepad::getLeftY,
+                gamepad::getLeftX,
                 Math.toDegrees(Math.toRadians(0)));
 
         if (MatchConfig.finalAllianceColor==RED){
@@ -153,14 +157,14 @@ public class VisionDriverBindings {
                MakeBackUpFromRedBackdropAction makeBackUpFromRedBackdropAction = new MakeBackUpFromRedBackdropAction();
                new ParallelRaceGroup(
                             new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromRedBackdropAction.makeAction()),
-                            new IsGamepadActiveCommand()
+                            new IsGamepadActiveCommand(gamepad)
 
                     ).schedule();
             } else {
                 MakeBackUpFromBlueBackdropAction makeBackUpFromBlueBackdropAction = new MakeBackUpFromBlueBackdropAction();
                 new ParallelRaceGroup(
                         new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), makeBackUpFromBlueBackdropAction.makeAction()),
-                        new IsGamepadActiveCommand()
+                        new IsGamepadActiveCommand(gamepad)
                 ).schedule();
             }
         });

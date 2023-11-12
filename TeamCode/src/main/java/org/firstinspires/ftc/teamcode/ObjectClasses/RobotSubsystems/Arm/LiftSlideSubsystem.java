@@ -28,16 +28,17 @@ public class LiftSlideSubsystem extends SubsystemBase {
     @Config
     public static class LiftSlideHeights{
         public static int HOME_HEIGHT_TICKS=5;
-        public static int LOW_HEIGHT_TICKS=800;
-        public static int MID_HEIGHT_TICKS=1700;
-        public static int HIGH_HEIGHT_TICKS=2400;
+        public static int SAFE_HEIGHT_TICKS=400;
+        public static int LOW_HEIGHT_TICKS=1200;
+        public static int MID_HEIGHT_TICKS=2450;
+        public static int HIGH_HEIGHT_TICKS=2450;
     }
 
     public final int MAX_TARGET_TICKS = 2500;
     public final int MIN_TARGET_TICKS = 0;
 
     public enum LiftStates {
-        HIGH, MID, LOW, HOME, MANUAL;
+        HIGH, MID, LOW, SAFE, HOME, MANUAL;
         public int ticks;
 
         static {
@@ -45,6 +46,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
             MID.ticks = MID_HEIGHT_TICKS;
             LOW.ticks = LOW_HEIGHT_TICKS;
             HOME.ticks = HOME_HEIGHT_TICKS;
+            SAFE.ticks = SAFE_HEIGHT_TICKS;
         }
 
         public void setLiftHeightTicks(int t){
@@ -109,6 +111,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
         liftSlide.setPositionPIDFCoefficients(POS_P);
 
         LiftStates.HOME.setLiftHeightTicks(HOME_HEIGHT_TICKS);
+        LiftStates.SAFE.setLiftHeightTicks(SAFE_HEIGHT_TICKS);
         LiftStates.LOW.setLiftHeightTicks(LOW_HEIGHT_TICKS);
         LiftStates.MID.setLiftHeightTicks(MID_HEIGHT_TICKS);
         LiftStates.HIGH.setLiftHeightTicks(HIGH_HEIGHT_TICKS);

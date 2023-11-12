@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotCommands.defaultLiftSlideCommand;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -44,6 +43,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 @TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
 {
+
     public Robot robot;
 
     @Override public void runOpMode()
@@ -52,13 +52,13 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        GamepadHandling.init();
+        GamepadHandling.getInstance();
         robot.init(Robot.OpModeType.TELEOP);
 
         telemetry.clearAll();
 
         /* Setup Button Bindings **/
-        new ScoringArmTestingDriverBindings(GamepadHandling.getDriverGamepad());
+        new ScoringArmTestingDriverBindings(GamepadHandling.getInstance().getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -71,8 +71,8 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         ElapsedTime teleOpTimer = new ElapsedTime();
         teleOpTimer.reset();
 
-        //Set the default lift command
-        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
+        //Set the default lift command -no default command needed
+//        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
         while (opModeIsActive())
         {
@@ -80,7 +80,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             CommandScheduler.getInstance().run();
 
             //Read all buttons
-            GamepadHandling.getDriverGamepad().readButtons();
+            GamepadHandling.getInstance().getDriverGamepad().readButtons();
 
             //Right Trigger shows some telemetry about the buttons
             if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
@@ -92,9 +92,13 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             sleep(10);
             telemetry.update();
         }
+        GamepadHandling.destroyGamepadHandling();
         CommandScheduler.getInstance().cancelAll();
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getEndEffectorSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getShoulderSubsystem());
         CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getLiftSlideSubsystem());
+        CommandScheduler.getInstance().unregisterSubsystem(Robot.getInstance().getDriveSubsystem());
+
         Robot.reset();
     }
 }
