@@ -40,7 +40,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArm
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
 @TeleOp(name="TeleOp_IntakeTesting")
 public class TeleOp_IntakeTesting extends LinearOpMode
@@ -66,7 +65,6 @@ public class TeleOp_IntakeTesting extends LinearOpMode
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-            TelemetryMona.intakeTestingButtons();
             telemetry.update();
             sleep(10);
         }
@@ -79,10 +77,6 @@ public class TeleOp_IntakeTesting extends LinearOpMode
             //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
 
-            //Right Trigger shows some telemetry about the buttons
-            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
-                TelemetryMona.intakeTestingButtons();
-            }
 
             telemetry.update();
         }

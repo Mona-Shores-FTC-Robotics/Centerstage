@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Utility.TelemetryMona;
 
 @TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
@@ -64,7 +63,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            TelemetryMona.scoringArmTestingButtons();
             telemetry.update();
             sleep(10);
         }
@@ -84,10 +82,6 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
             //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
 
-            //Right Trigger shows some telemetry about the buttons
-            if (ScoringArmTestingDriverBindings.rightTrigger.isDown()) {
-                TelemetryMona.scoringArmTestingButtons();
-            }
 
             telemetry.addData("Ticks", Robot.getInstance().getLiftSlideSubsystem().liftSlide.getCurrentPosition());
 
