@@ -38,11 +38,11 @@ public class SlowModeZeroHeadingCommand extends CommandBase {
      * Creates a new SlowMode Command that holds the robot heading at zero (toward the backdrop)
      */
     public SlowModeZeroHeadingCommand(DriveSubsystem subsystem,
-                                      DoubleSupplier driveInput, DoubleSupplier strafeInput, double relativeHheadingDegrees) {
+                                      DoubleSupplier driveInput, DoubleSupplier strafeInput, double relativeHeadingDegrees) {
         driveSubsystem = subsystem;
         driveSupplier = driveInput;
         strafeSupplier = strafeInput;
-        lockedHeadingDegrees = relativeHheadingDegrees;
+        lockedHeadingDegrees = relativeHeadingDegrees;
         addRequirements(driveSubsystem);
     }
 

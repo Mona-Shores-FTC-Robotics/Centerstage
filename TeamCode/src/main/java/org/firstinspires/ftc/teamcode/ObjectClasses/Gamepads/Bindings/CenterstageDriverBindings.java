@@ -8,22 +8,22 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromRedBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeZeroHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class CenterstageDriverBindings {
-    public static Command defaultDriveCommand;
-    public static Command backupFromBackdropCommand;
-    public static Command driveAwayFromBackdropWithConstantHeading;
+    public Command defaultDriveCommand;
+    public Command slowModeCommand;
+    public Command backupFromBackdropCommand;
+    public Command slowModeZeroHeadingCommand;
 
     public CenterstageDriverBindings(GamepadEx gamepad) {
         //Make the commands to use for the bindings
@@ -42,13 +42,16 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(slowModeCommand);
+                .whenHeld(slowModeCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
         // LEFT BUMPER                                          //
         //                                                      //
         //////////////////////////////////////////////////////////
+
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenHeld(slowModeZeroHeadingCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -124,6 +127,18 @@ public class CenterstageDriverBindings {
                 gamepad::getLeftY,
                 gamepad::getLeftX,
                 gamepad::getRightX
+        );
+
+        slowModeCommand = new SlowModeCommand(Robot.getInstance().getDriveSubsystem(),
+                gamepad::getLeftY,
+                gamepad::getLeftX,
+                gamepad::getRightX
+        );
+
+        slowModeZeroHeadingCommand = new SlowModeZeroHeadingCommand(Robot.getInstance().getDriveSubsystem(),
+                gamepad::getLeftY,
+                gamepad::getLeftX,
+                0
         );
 
         backupFromBackdropCommand = new InstantCommand(()->{

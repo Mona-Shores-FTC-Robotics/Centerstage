@@ -12,25 +12,23 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromRedBackdropAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
-public class VisionDriverBindings {
+public class VisionDriverBindings2 {
     public static Command defaultDriveCommand;
     public static Command backupFromBackdropCommand;
+    public static Command test2Static;
+    public Command test2NonStatic;
     public static Command driveAwayFromBackdropWithConstantHeading;
-    public static Command test1Static;
-    public Command test1NonStatic;
 
-    public VisionDriverBindings(GamepadEx gamepad) {
+    public VisionDriverBindings2(GamepadEx gamepad) {
 
         //Make the commands to use for the bindings
         MakeCommands(gamepad);
@@ -68,10 +66,10 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
         // move to just outside the correct color wing?
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(test1NonStatic);
+                .whenPressed(test2NonStatic);
 
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(test1Static);
+                .whenPressed(test2Static);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -138,18 +136,17 @@ public class VisionDriverBindings {
                 gamepad::getRightX
         );
 
-        test1Static = new InstantCommand(()->{
+        test2Static = new InstantCommand(()->{
             TelemetryPacket p = new TelemetryPacket();
-            p.addLine("I am vision Driver Bindings 1 Static");
+            p.addLine("I am vision Driver Bindings 2 Static");
+            FtcDashboard.getInstance().sendTelemetryPacket(p);
+                    });
+
+        test2NonStatic = new InstantCommand(()->{
+            TelemetryPacket p = new TelemetryPacket();
+            p.addLine("I am vision Driver Bindings 2 NonStatic");
             FtcDashboard.getInstance().sendTelemetryPacket(p);
         });
-
-        test1NonStatic = new InstantCommand(()->{
-            TelemetryPacket p = new TelemetryPacket();
-            p.addLine("I am vision Driver Bindings 1 NonStatic");
-            FtcDashboard.getInstance().sendTelemetryPacket(p);
-        });
-
 
         Command driveWhileAt90Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
                 gamepad::getLeftY,
