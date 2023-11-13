@@ -18,8 +18,8 @@ public class SlowModeZeroHeadingCommand extends CommandBase {
     public static double D_TERM;
     public static double F_TERM;
 
-    public static double SLOW_DRIVE_FACTOR = .6;
-    public static double SLOW_STRAFE_FACTOR = .6;
+    public static double SLOW_DRIVE_FACTOR = .4;
+    public static double SLOW_STRAFE_FACTOR = .67;
 
     private final DriveSubsystem driveSubsystem;
 
@@ -83,6 +83,7 @@ public class SlowModeZeroHeadingCommand extends CommandBase {
         Robot.getInstance().getDriveSubsystem().driveParameters.DRIVE_SPEED_FACTOR = previousDriveFactor;
         Robot.getInstance().getDriveSubsystem().driveParameters.STRAFE_SPEED_FACTOR = previousStrafeFactor;
         Robot.getInstance().getDriveSubsystem().driveParameters.TURN_SPEED_FACTOR = previousTurnFactor;
+        Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false);
     }
 
 }

@@ -20,9 +20,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     public static class DriveParameters {
         /** Set these drive parameters for faster TeleOp driving**/
-        public double DRIVE_SPEED_FACTOR=.8;
-        public double STRAFE_SPEED_FACTOR=.8;
-        public double TURN_SPEED_FACTOR=.7;
+        public double DRIVE_SPEED_FACTOR=.9;
+        public double STRAFE_SPEED_FACTOR=.9;
+        public double TURN_SPEED_FACTOR=.8;
         public double APRIL_TAG_CANCEL_THRESHOLD = -.1;
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .1;
@@ -145,10 +145,11 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         //Prepare and send a telemetry packet with drive information
-        //DashboardTelemetryDriveTrain();
+        DashboardTelemetryDriveTrain();
 
         //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
         mecanumDrive.SetRoadRunnerParameters();
+
 
         //update the PIDFCoefficients every loop so that changes we make in the dashboard take effect
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);

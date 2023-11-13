@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 @Autonomous(name = "TEST - Just AutoDriveToBackdrop")
 public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
-    public static int DISTANCE_TO_TAG=10;
+    public static int DISTANCE_TO_TAG=18;
     private static VisionSubsystem.DeliverLocation DELIVER_LOCATION= VisionSubsystem.DeliverLocation.LEFT;
 
     private MecanumDriveMona roadRunnerDriveSubsystem;
@@ -38,7 +38,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
         /** Create and Initialize the robot **/
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /** Initialize Gamepad and Robot - Order Important **/
         Robot.getInstance().init(Robot.OpModeType.AUTO);

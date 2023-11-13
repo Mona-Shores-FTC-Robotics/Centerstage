@@ -90,7 +90,10 @@ public class RoutesSpikeBackdropPark {
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(new Pose2d(  RED_BACKDROP_CENTER.position.x+3,
+                        RED_BACKDROP_CENTER.position.y,
+                        FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
+                .lineToX(RED_BACKDROP_CENTER.position.x-5.5)
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
                 .build();
 

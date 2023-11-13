@@ -16,7 +16,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointRelativeCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -25,7 +27,7 @@ public class CenterstageOperatorBindings {
 
     public static TriggerReader rightTrigger;
     public static TriggerReader leftTrigger;
-    public static SequentialCommandGroup readyToScorePixel;
+    public static ParallelCommandGroup readyToScorePixel;
     public static SequentialCommandGroup releasePixels;
 
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
@@ -152,6 +154,9 @@ public class CenterstageOperatorBindings {
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
         readyToScorePixel =
+
+                new ParallelCommandGroup(
+                        new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
                 new SequentialCommandGroup(
                         new ActuateEndEffectorCommand(endEffectorSubsystem,
                                 EndEffectorSubsystem.EndEffectorStates.CLOSED),
@@ -161,17 +166,14 @@ public class CenterstageOperatorBindings {
                                 ShoulderSubsystem.ShoulderStates.BACKDROP),
                         new MoveLiftSlideCommand(liftSlideSubsystem,
                                 LiftSlideSubsystem.LiftStates.MID)
-                );
+                ));
 
         releasePixels =
                 new SequentialCommandGroup(
                         new ActuateEndEffectorCommand(endEffectorSubsystem,
                                 EndEffectorSubsystem.EndEffectorStates.OPEN),
                         new WaitCommand(325),
-                        new MoveToPointCommand(Robot.getInstance().getDriveSubsystem(),
-                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x-2,
-                                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y
-                        ),
+                        new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(),-5),
                         new ParallelCommandGroup(
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
                                         LiftSlideSubsystem.LiftStates.SAFE),

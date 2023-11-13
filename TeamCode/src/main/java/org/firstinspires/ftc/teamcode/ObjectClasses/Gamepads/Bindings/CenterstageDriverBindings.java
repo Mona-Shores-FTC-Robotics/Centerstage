@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveC
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromRedBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointRelativeCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeCommand;
@@ -41,17 +43,17 @@ public class CenterstageDriverBindings {
         // RIGHT BUMPER                                         //
         //                                                      //
         //////////////////////////////////////////////////////////
-//        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-//                .whenHeld(slowModeCommand);
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(slowModeCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
         // LEFT BUMPER                                          //
         //                                                      //
         //////////////////////////////////////////////////////////
-//
-//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-//                .whenHeld(slowModeZeroHeadingCommand);
+
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenHeld(slowModeZeroHeadingCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //

@@ -50,11 +50,11 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.03;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.04;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
         public double DRIVE_FEEDFORWARD=.08;
-        public double STRAFE_FEEDFORWARD=.02;
-        public double TURN_FEEDFORWARD=.03;
-        public double TURN_GAIN = -0.03;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_FEEDFORWARD=.04;
+        public double TURN_FEEDFORWARD=.04;
+        public double TURN_GAIN = -0.04;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)

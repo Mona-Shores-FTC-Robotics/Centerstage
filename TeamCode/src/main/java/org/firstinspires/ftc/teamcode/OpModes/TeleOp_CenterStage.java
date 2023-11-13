@@ -104,22 +104,10 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
-            //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-                Robot.getInstance().getVisionSubsystem().DriverStationAprilTagTelemetry();
-            }
-
-            //Add DriveTrain Telemetry
-            if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
-                Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
-            }
-
-            EndGameRumble();
-            ActivateEndGameButtons();
+//            EndGameRumble();
+//            ActivateEndGameButtons();
 
             telemetry.update();
-            sleep(10);
         }
     }
 

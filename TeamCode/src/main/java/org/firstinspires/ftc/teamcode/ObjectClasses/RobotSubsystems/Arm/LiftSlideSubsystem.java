@@ -16,7 +16,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
     @Config
     public static class LiftSlideParameters {
-        public static int LIFT_HEIGHT_TICK_THRESHOLD = 60;
+        public static int LIFT_HEIGHT_TICK_THRESHOLD = 110;
         public static double EXTENSION_LIFT_POWER = .6;
         public static double RETRACTION_LIFT_POWER = .3;
         public static double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
@@ -31,8 +31,8 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public static int HOME_HEIGHT_TICKS=25;
         public static int SAFE_HEIGHT_TICKS=150;
         public static int LOW_HEIGHT_TICKS=1200;
-        public static int MID_HEIGHT_TICKS=2000;
-        public static int HIGH_HEIGHT_TICKS=2000;
+        public static int MID_HEIGHT_TICKS=2200;
+        public static int HIGH_HEIGHT_TICKS=2200;
     }
 
     public final int MAX_TARGET_TICKS = 2500;

@@ -13,8 +13,6 @@ public class ActuateEndEffectorAction implements Action {
     //declare target state & position
     private EndEffectorSubsystem.EndEffectorStates targetState;
     private double targetPosition;
-    private boolean hasNotInit = true;
-    private boolean finished = false;
 
     public ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates inputState) {
         //save the input state, s, as the target state
@@ -23,51 +21,14 @@ public class ActuateEndEffectorAction implements Action {
         targetPosition = targetState.position;
     }
 
-    public void init() {
-        hasNotInit=false;
-        //set the Servo position to the target - we only have to set the servo position one time here in this constructor
-        Robot.getInstance().getEndEffectorSubsystem().endEffector.setPosition(targetPosition);
-    }
-
-
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        if (hasNotInit) init();
-
-        //STEP 1
-        //get the current position of the servo and save it in the current position variable in the subsystem
-        Robot.getInstance().getEndEffectorSubsystem().currentPosition =
-                Robot.getInstance().getEndEffectorSubsystem().endEffector.getPosition();
-
-        //STEP 2
-        // add telemetry for targetState, currentState, targetPosition, and currentPosition
-        // each line should look like this: telemetryPacket.put("[label]", [variable]);
-
+        Robot.getInstance().getEndEffectorSubsystem().endEffector.setPosition(targetPosition);
         telemetryPacket.put("Current EndEffector State", Robot.getInstance().getEndEffectorSubsystem().currentState);
-        telemetryPacket.put("Current EndEffector Position", Robot.getInstance().getEndEffectorSubsystem().currentPosition);
         telemetryPacket.put("Target EndEffector State: ", targetState);
-        telemetryPacket.put("Target EndEffector Position", targetPosition);
-
+        Robot.getInstance().getEndEffectorSubsystem().currentState = targetState;
         FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
-
-        if (isFinished()) {
-            return false;
-        } else return true;
-    }
-
-    public boolean isFinished() {
-        //STEP 3
-        //check if the current position is close enough to say we are done [how would you do this?]
-        // hint 1: absolute value
-        // hint 2: END_EFFECTOR_POSITION_THRESHOLD is already declared at the top of this class for you to use
-        finished = Math.abs( Robot.getInstance().getEndEffectorSubsystem().currentPosition-targetPosition) < EndEffectorSubsystem.END_EFFECTOR_POSITION_THRESHOLD;
-        //STEP 4
-        //if true, then save the target state as the current state since we are now at the target and return true so the Action completes
-        //if false, then return false so this action keeps getting called every loop
-        if (finished){
-            Robot.getInstance().getEndEffectorSubsystem().currentState = targetState;
-            return true;
-        } else return false;
+        return false;
     }
 }
 

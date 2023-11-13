@@ -35,7 +35,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
         // Create and Initialize the robot
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize Gamepad and Robot - Order Important
         Robot.getInstance().init(Robot.OpModeType.AUTO);

@@ -2,21 +2,28 @@ package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
+import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeMoveToPointAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
+import java.util.Arrays;
+
 public class RoutesSpikeBackdropPark {
+
+    public static double VELOCITY_OVERRIDE = 15;
+    public static double ACCELERATION_OVERRIDE = 15;
+    public static double TURN_OVERRIDE=30;
 
     //Variables to store routes for team prop center for all four start locations
     public static Action redAudienceBotTeamPropCenterRoute;
@@ -36,13 +43,28 @@ public class RoutesSpikeBackdropPark {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
+    public static Action readyToScorePixel;
+    public static Action releasePixels;
 
-    Action moveAndReadyToScorePixel;
-    Action releasePixelsAndMove;
+    public static VelConstraint overrideVelConstraint;
+    public static AccelConstraint overrideAccelConstraint;
+    public static TurnConstraints overrideTurnConstraint;
 
     public static void BuildRoutes() {
 
         Action dropPurple = new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED);
+
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(VELOCITY_OVERRIDE),
+                        new AngularVelConstraint(VELOCITY_OVERRIDE)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-ACCELERATION_OVERRIDE, ACCELERATION_OVERRIDE);
+
+        overrideTurnConstraint = new TurnConstraints(
+                Math.toRadians(30), -Math.toRadians(TURN_OVERRIDE), Math.toRadians(TURN_OVERRIDE));
+
 
         MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         /** BLUE BACKSTAGE LEFT / RED BACKSTAGE RIGHT **/
@@ -88,13 +110,23 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
-                                .build();
+                .build();
 
+
+        MakeSpikeBackdropParkActions makeSpikeBackdropParkActions = new MakeSpikeBackdropParkActions();
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
-                .splineToLinearHeading(RED_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
+                .splineToLinearHeading(new Pose2d(  RED_BACKDROP_CENTER.position.x+3,
+                                                    RED_BACKDROP_CENTER.position.y,
+                                                    FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
+                .stopAndAdd(makeSpikeBackdropParkActions.MakeReadyToScorePixelAction())
+                .waitSeconds(.9)
+                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .waitSeconds(.5)
+                .lineToX(RED_BACKDROP_CENTER.position.x-5.5)
+                .stopAndAdd(makeSpikeBackdropParkActions.MakeRetractArmAction())
                 .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
                 .build();
 
@@ -183,5 +215,4 @@ public class RoutesSpikeBackdropPark {
                 .turnTo(FACE_315_DEGREES)
                 .build();
     }
-
 }

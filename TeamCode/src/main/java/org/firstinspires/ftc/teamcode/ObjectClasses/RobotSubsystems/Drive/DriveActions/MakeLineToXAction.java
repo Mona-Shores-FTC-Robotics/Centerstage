@@ -9,32 +9,34 @@ import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
 import java.util.Arrays;
 
-public class MakeMoveToPointAction {
+public class MakeLineToXAction {
     private Action t;
 
     private double xTarget;
-    private double yTarget;
-    private double currentHeading;
 
     private MecanumDriveMona drive;
     public VelConstraint overrideVelConstraint;
     public AccelConstraint overrideAccelConstraint;
-    public TurnConstraints overrideTurnConstraint;
 
-    public Action moveToPoint(double x, double y) {
+
+    public Action lineToX(double x) {
         xTarget = x;
-        yTarget = y;
-        currentHeading = Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians;
-
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(10),
+                        new AngularVelConstraint(10)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-20, 20);
 
         t = drive.actionBuilder(drive.pose)
-                .splineTo(new Vector2d( xTarget, yTarget), currentHeading)
+                .lineToX(xTarget, overrideVelConstraint, overrideAccelConstraint)
                 .build();
 
         return t;
