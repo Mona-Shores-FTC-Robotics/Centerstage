@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
-import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
-import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_RED;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 
 import com.acmerobotics.roadrunner.Action;
