@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,6 +9,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffec
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -28,6 +31,9 @@ public class Robot {
     private static EndEffectorSubsystem endEffectorSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
+    private static DroneSubsystem droneSubsystem;
+
+    private static ClimberSubsystem climberSubsystem;
 
     private static boolean hasInit = false;
 
@@ -59,6 +65,8 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
+                climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
                 break;
             }
 
@@ -75,6 +83,7 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                //droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
 
                 //airplane launcher
                 //winch
@@ -136,6 +145,8 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
+                droneSubsystem.init();
+                climberSubsystem.init();
                 break;
             }
             case ROBOT_INTAKE: {
@@ -150,6 +161,7 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
+                //droneSubsystem.init();
                 //Systems to be added:
                 //Servo - Drone launch release
 
@@ -180,6 +192,7 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
+                //droneSubsystem.init();
 
                 //airplane launcher
                 //winch
@@ -198,6 +211,9 @@ public class Robot {
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
+    public DroneSubsystem getDroneSubsystem(){return droneSubsystem;}
+
+    public ClimberSubsystem getClimberSubsystem(){return climberSubsystem;};
 }
 
 

@@ -21,6 +21,10 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReadyClimberArmCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 public class ScoringArmTestingDriverBindings {
@@ -54,6 +58,7 @@ public class ScoringArmTestingDriverBindings {
     private static IntakeSubsystem intakeSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static MecanumDriveMona mecanumDrive;
+    public static DroneSubsystem droneSubsystem;
 
     public static TriggerReader rightTrigger;
     public ScoringArmTestingDriverBindings(GamepadEx gamepad) {
@@ -83,6 +88,19 @@ public class ScoringArmTestingDriverBindings {
 
         gamepad.getGamepadButton(GamepadKeys.Button.A)
                 .whenPressed(new MoveLiftSlideCommand(Robot.getInstance().getLiftSlideSubsystem(), LiftSlideSubsystem.LiftStates.HOME));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.HOLD));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY));
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED));
+
 
     }
 

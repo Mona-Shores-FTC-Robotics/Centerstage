@@ -18,8 +18,8 @@ public class ClimberSubsystem extends SubsystemBase {
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.WOUND;
 
         public double CLIMBER_ARM_THRESHOLD = .03;
-        public double STOWED_VALUE = 0;
-        public double READY_VALUE = 1;
+        public double STOWED_VALUE = .5;
+        public double READY_VALUE = .8;
         public double END_GAME_TIME = 120;
 
         public static int WINCH_TICK_THRESHOLD = 30;
@@ -36,8 +36,8 @@ public class ClimberSubsystem extends SubsystemBase {
     public static ClimberParameters climberParameters = new ClimberParameters();
 
     public enum ClimberArmStates {
-        STOWED (0),
-        READY (1);
+        STOWED (.5),
+        READY (.8);
         public double position;
         ClimberArmStates(double p) {
             this.position = p;
@@ -87,10 +87,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private GamepadHandling gamepadHandling;
 
-    public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName, GamepadHandling gpadhandling) {
+    public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName) {
         climberArm = hMap.servo.get(climberArmName);
         winchMotor = hMap.get(DcMotorEx.class, winchMotorName);
-        gamepadHandling=gpadhandling;
+
     }
 
     public void init() {
@@ -118,13 +118,13 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public void periodic(){
 
-        if (MatchConfig.teleOpTimer.seconds() > climberParameters.END_GAME_TIME)
-        {
-
-            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                    .whenPressed(new ReadyClimberArmCommand(this, ClimberArmStates.READY))
-                    .whenReleased(new PullWinchInCommand(this, WinchMotorStates.WOUND));
-        }
+//        if (MatchConfig.teleOpTimer.seconds() > climberParameters.END_GAME_TIME)
+//        {
+//
+//            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+//                    .whenPressed(new ReadyClimberArmCommand(this, ClimberArmStates.READY))
+//                    .whenReleased(new PullWinchInCommand(this, WinchMotorStates.WOUND));
+//        }
 
         ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
         ClimberArmStates.STOWED.SetState(climberParameters.STOWED_VALUE);
