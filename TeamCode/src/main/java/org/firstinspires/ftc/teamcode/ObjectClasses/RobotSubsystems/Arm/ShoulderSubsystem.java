@@ -61,12 +61,12 @@ public class ShoulderSubsystem extends SubsystemBase {
         ShoulderStates.HALFWAY.SetState(shoulderParameters.HALFWAY);
         ShoulderStates.STARTING_POSITION.SetState(shoulderParameters.STARTING_POSITION);
 
-//        telemetryPacket = new TelemetryPacket();
-//        telemetryPacket.put("Current Shoulder State", currentState);
-//
-//        if (targetState!=currentState) {
-//            telemetryPacket.put("Target Shoulder State", targetState);
-//        }
+        telemetryPacket = new TelemetryPacket();
+        telemetryPacket.put("Current Shoulder State", currentState);
+
+        if (targetState!=currentState) {
+            telemetryPacket.put("Target Shoulder State", targetState);
+        }
 //        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 

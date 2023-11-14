@@ -64,11 +64,14 @@ public final class VisionSubsystem extends SubsystemBase {
         public double BACKDROP_DRIVE_THRESHOLD=.2;
         public double BACKDROP_STRAFE_THRESHOLD=.2;
         public double BACKDROP_TURN_THRESHOLD=.2;
+
+        public double GYRO_SWITCH_THRESHOLD=.9;
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
+    public boolean switchToGyroTurnValue=false;
     public boolean resetPoseReady=false;
     public boolean resetHeading=false;
     public Pose2d resetPose;
@@ -543,9 +546,12 @@ public final class VisionSubsystem extends SubsystemBase {
             double turn = ClipTurn(headingError);
             double strafe = ClipStrafe(yawError);
 
+
+
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+
 
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
@@ -568,6 +574,8 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+
+
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
@@ -647,6 +655,12 @@ public final class VisionSubsystem extends SubsystemBase {
 
     //returns false once the pose reaches a steady state for a certain number of checks
     private boolean resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
+
+        if    ( (Math.abs(drive)    < tunableVisionConstants.GYRO_SWITCH_THRESHOLD) &&
+                (Math.abs(strafe)   < tunableVisionConstants.GYRO_SWITCH_THRESHOLD))
+        {
+            switchToGyroTurnValue=true;
+        }
 
         //We have found the target if this is true
         if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&

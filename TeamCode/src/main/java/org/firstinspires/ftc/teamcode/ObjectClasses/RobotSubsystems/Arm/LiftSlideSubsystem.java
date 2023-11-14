@@ -131,6 +131,6 @@ public class LiftSlideSubsystem extends SubsystemBase {
         }
 
         //send the packet to the dashboard
-        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
+//        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 }

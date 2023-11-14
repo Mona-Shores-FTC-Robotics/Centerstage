@@ -17,7 +17,7 @@ public class TurnToAction implements Action{
     public static double P_TERM = .016;
     public static double I_TERM;
     public static double D_TERM;
-    public static double F_TERM = .016;
+    public static double F_TERM = .15;
     public static int COUNT_THRESHOLD = 3;
     public static double ERROR_THRESHOLD = .5;
 

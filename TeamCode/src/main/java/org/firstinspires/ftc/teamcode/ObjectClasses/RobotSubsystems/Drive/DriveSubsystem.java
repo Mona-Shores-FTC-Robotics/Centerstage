@@ -230,6 +230,12 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
+                TelemetryPacket telemetryPacket = new TelemetryPacket();
+                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
+                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
+                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
+                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
+
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
@@ -240,6 +246,11 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
+                TelemetryPacket telemetryPacket = new TelemetryPacket();
+                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
+                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
+                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
+                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
             } else drivingToAprilTag = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving

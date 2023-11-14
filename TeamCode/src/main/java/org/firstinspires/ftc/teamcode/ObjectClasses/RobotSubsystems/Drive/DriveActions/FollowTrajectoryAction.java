@@ -90,20 +90,20 @@ public final class FollowTrajectoryAction implements Action {
 
         FlightRecorder.write("TARGET_POSE", new PoseMessage(txWorldTarget.value()));
 
-        p.put("x", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x);
-        p.put("y", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y);
-        p.put("heading (deg)", Math.toDegrees(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log()));
+//        p.put("x", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x);
+//        p.put("y", Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y);
+//        p.put("heading (deg)", Math.toDegrees(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log()));
 
         Pose2d error = txWorldTarget.value().minusExp(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose);
-        p.put("xError", error.position.x);
-        p.put("yError", error.position.y);
-        p.put("headingError (deg)", Math.toDegrees(error.heading.log()));
+//        p.put("xError", error.position.x);
+//        p.put("yError", error.position.y);
+//        p.put("headingError (deg)", Math.toDegrees(error.heading.log()));
 
         double actualSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
         double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
-        p.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
-        p.put("LF Speed", actualSpeedLF);
-        p.put("LF Power", powerLF);
+//        p.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
+//        p.put("LF Speed", actualSpeedLF);
+//        p.put("LF Power", powerLF);
 
         // only draw when active; only one drive action should be active at a time
         Canvas c = p.fieldOverlay();
