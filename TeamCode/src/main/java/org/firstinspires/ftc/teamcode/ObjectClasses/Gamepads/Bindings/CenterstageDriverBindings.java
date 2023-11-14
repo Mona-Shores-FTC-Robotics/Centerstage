@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.RED;
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
@@ -19,6 +21,10 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveC
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeZeroHeadingCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReadyClimberArmCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
 public class CenterstageDriverBindings {
@@ -40,20 +46,29 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // RIGHT BUMPER                                         //
+        // RIGHT BUMPER - Slow Mode Zero Heading                //
         //                                                      //
         //////////////////////////////////////////////////////////
+
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(slowModeCommand);
+                .whenHeld(slowModeZeroHeadingCommand);
+
+//        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+//                .whenHeld(slowModeCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // LEFT BUMPER                                          //
+        // LEFT BUMPER     - TOGGLE CLIMBING ARM AT ENDGAME     //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenHeld(slowModeZeroHeadingCommand);
+                .toggleWhenPressed(
+                        new InstantCommand(()->{
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY);
+                            }}),
+                        new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED));
 
         //////////////////////////////////////////////////////////
         //                                                      //

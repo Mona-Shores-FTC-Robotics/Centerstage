@@ -71,7 +71,6 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         while (opModeInInit()) {
 
-
             VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
