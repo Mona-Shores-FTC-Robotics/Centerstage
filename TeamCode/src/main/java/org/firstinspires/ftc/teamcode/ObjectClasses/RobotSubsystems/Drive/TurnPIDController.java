@@ -19,6 +19,8 @@ public class TurnPIDController {
     private double Kd = 0;
     private double feedforward;
 
+    public double error;
+
     public TurnPIDController(double target, double p, double i, double d, double f) {
         targetAngle = target;
         Kp = p;
@@ -29,7 +31,7 @@ public class TurnPIDController {
 
     public double update(double currentAngle) {
         //P Term
-        double error = targetAngle - currentAngle;
+        error = targetAngle - currentAngle;
         //The java modulo operator can return negative values, so this will make the error between -360 to 360
         error %= 360;
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
@@ -58,9 +60,6 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
             sleep(10);
         }
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
-
         //Display the initVision telemetry a final time
         VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
         telemetry.update();
@@ -70,7 +69,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         sideOfField = MatchConfig.finalSideOfField;
 
         //Set the starting pose of the robot
-        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
+//        Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;
@@ -86,7 +85,11 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
         telemetry.clearAll();
 
+        //Reset Gyro
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
         Actions.runBlocking(testAutoAlignAction);
+//        Actions.runBlocking(new TurnToAction(0));
+
     }
 
 }
