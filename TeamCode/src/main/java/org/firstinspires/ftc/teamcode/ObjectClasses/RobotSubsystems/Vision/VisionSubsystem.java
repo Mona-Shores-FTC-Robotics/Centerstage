@@ -51,8 +51,8 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SPEED_GAIN = 0.15;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
         public double STRAFE_GAIN = -0.11;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double DRIVE_FEEDFORWARD=.15;
-        public double STRAFE_FEEDFORWARD=.35;
+        public double DRIVE_FEEDFORWARD=.015; //this seesm to be the amount to move forard needed
+        public double STRAFE_FEEDFORWARD=.35; //tihs is about right for strafe feedfoward
         public double TURN_FEEDFORWARD=.04;
         public double TURN_GAIN = -0.035;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
