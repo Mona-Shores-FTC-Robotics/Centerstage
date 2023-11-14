@@ -16,7 +16,7 @@ public class DroneSubsystem extends SubsystemBase {
 
         public double DRONE_VALUE_THRESHOLD = .03;
 
-        public double HOLD_VALUE = 0;
+        public double HOLD_VALUE = .5;
 
         public double FLY_VALUE = 1;
         public double END_GAME_TIME = 120;
@@ -26,7 +26,7 @@ public class DroneSubsystem extends SubsystemBase {
     public static  DroneParameters droneParameters = new DroneParameters();
 
     public enum DroneDeployState {
-        HOLD (0),
+        HOLD (.5),
         FLY (1);
         public double position;
         DroneDeployState(double p) {
@@ -42,9 +42,9 @@ public class DroneSubsystem extends SubsystemBase {
     public double currentPosition;
     private GamepadHandling gamepadHandling;
 
-    public DroneSubsystem(final HardwareMap hMap, final String name, GamepadHandling gpadHandling) {
+    public DroneSubsystem(final HardwareMap hMap, final String name) {
         drone = hMap.servo.get("drone");
-        gamepadHandling=gpadHandling;
+
     }
 
     public void init() {
@@ -58,11 +58,11 @@ public class DroneSubsystem extends SubsystemBase {
     public void periodic(){
 
         //
-        if (MatchConfig.teleOpTimer.seconds() > droneParameters.END_GAME_TIME)
-        {
-            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                    .whenPressed(new ReleaseDroneCommand(this, DroneDeployState.FLY));
-        }
+//        if (MatchConfig.teleOpTimer.seconds() > droneParameters.END_GAME_TIME)
+//        {
+//            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+//                    .whenPressed(new ReleaseDroneCommand(this, DroneDeployState.FLY));
+//        }
 
         DroneDeployState.HOLD.SetState(droneParameters.HOLD_VALUE);
         DroneDeployState.FLY.SetState(droneParameters.FLY_VALUE);

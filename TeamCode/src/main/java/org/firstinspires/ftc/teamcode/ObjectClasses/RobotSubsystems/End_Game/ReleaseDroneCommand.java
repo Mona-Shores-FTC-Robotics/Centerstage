@@ -34,17 +34,14 @@ public class ReleaseDroneCommand extends CommandBase {
 
     public void execute() {
         TelemetryPacket telemetryPacket = new TelemetryPacket();
-        droneSubsystem.currentPosition = droneSubsystem.drone.getPosition();
         telemetryPacket.put("Current Drone State", droneSubsystem.currentState);
-        telemetryPacket.put("Current Position", droneSubsystem.currentPosition);
         telemetryPacket.put("Target Drone State", targetState);
-        telemetryPacket.put("Target Position", targetPosition);
         FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
     @Override
     public boolean isFinished() {
-        boolean done = Math.abs( droneSubsystem.currentPosition-targetPosition) < DroneSubsystem.droneParameters.DRONE_VALUE_THRESHOLD;
+        boolean done =true;
         if (done)
         {
             droneSubsystem.currentState = targetState;
