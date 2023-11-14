@@ -24,44 +24,25 @@ public class AutoDriveToBackDrop implements Action {
     private boolean running;
     private VisionSubsystem.DeliverLocation deliverLocation;
     private int count=0;
-    private double distanceToTag;
 
-    private double currentAngle;
-    double gyroTurnValue;
-    double turnValue;
-    TurnPIDController pid;
-
-    boolean hasNotInit=true;
     public AutoDriveToBackDrop() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         running=true;
     }
 
-    public AutoDriveToBackDrop(VisionSubsystem.DeliverLocation delLoc, double dist) {
+    public AutoDriveToBackDrop(VisionSubsystem.DeliverLocation delLoc) {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
-        distanceToTag =dist;
         deliverLocation=delLoc;
         running=true;
-
-        pid = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
-    }
-
-    public void init(){
-        Robot.getInstance().getVisionSubsystem().switchToGyroTurnValue=false;
-        hasNotInit=true;
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        if (hasNotInit) init();
-
-        currentAngle = Math.toDegrees(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYawRadians());
-        gyroTurnValue=pid.update(currentAngle);
         if (deliverLocation!=null)
         {
             Robot.getInstance().getVisionSubsystem().setDeliverLocation(deliverLocation);
-            Robot.getInstance().getVisionSubsystem().tunableVisionConstants.DESIRED_DISTANCE=distanceToTag;
         }
+
         Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
         if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
@@ -69,14 +50,8 @@ public class AutoDriveToBackDrop implements Action {
         } else{
             running = Robot.getInstance().getVisionSubsystem().AutoDriveToBackdropBlue();
         }
-//
-//        if    (Robot.getInstance().getVisionSubsystem().switchToGyroTurnValue){
-//            turnValue = gyroTurnValue;
-//        } else
-//
-            turnValue = driveSubsystem.mecanumDrive.aprilTagTurn;
 
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.mecanumDrive.aprilTagDrive, driveSubsystem.mecanumDrive.aprilTagStrafe, turnValue);
+        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.mecanumDrive.aprilTagDrive, driveSubsystem.mecanumDrive.aprilTagStrafe, driveSubsystem.mecanumDrive.aprilTagTurn);
 
         Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
 
