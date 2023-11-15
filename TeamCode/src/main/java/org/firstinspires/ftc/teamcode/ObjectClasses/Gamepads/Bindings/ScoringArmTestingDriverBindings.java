@@ -102,6 +102,7 @@ public class ScoringArmTestingDriverBindings {
                 .whenPressed(new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED));
 
 
+
     }
 
     private void makeSequenceCommands() {
