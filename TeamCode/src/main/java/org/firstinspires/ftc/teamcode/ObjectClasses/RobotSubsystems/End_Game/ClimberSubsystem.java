@@ -96,9 +96,9 @@ public class ClimberSubsystem extends SubsystemBase {
         WinchMotorStates.ROBOT_UP.SetState(climberParameters.ROBOT_UP_POWER);
 
         //Add the Winch Motor State to our loop telemetry packet
-        MatchConfig.telemetryPacket.put("Current Winch Motor State", currentWinchMotorState);
+        MatchConfig.telemetryPacket.put("End Game Winch State", currentWinchMotorState);
 
         //Add the Climber Arm State to our loop telemetry packet
-        MatchConfig.telemetryPacket.put("Current Climber Arm State", currentClimberArmState);
+        MatchConfig.telemetryPacket.put("Climber Arm State", currentClimberArmState);
     }
 }

@@ -43,7 +43,6 @@ public class GyroSubsystem extends SubsystemBase {
         currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
         currentAbsoluteYawRadians = angle.getYaw(AngleUnit.RADIANS);
         updateCurrentRelativeYaw();
-        DriverStationTelemetry();
     }
 
     //This method is helpful to synchronize our Gyro and robot pose

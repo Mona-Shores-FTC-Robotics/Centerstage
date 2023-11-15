@@ -20,39 +20,44 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
     @Config
     public static class LiftSlideParameters {
-        public static int LIFT_HEIGHT_TICK_THRESHOLD = 110;
-        public static double EXTENSION_LIFT_POWER = .6;
-        public static double RETRACTION_LIFT_POWER = .3;
-        public static double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
-        public static double POS_P=5;
-        public static double SCALE_FACTOR_FOR_MANUAL_LIFT=150;
-        public static double LIFT_DEAD_ZONE;
+        public int LIFT_HEIGHT_TICK_THRESHOLD = 45;
+        public double TIMEOUT_TIME_SECONDS = 2;
+        public double EXTENSION_LIFT_POWER = .6;
+        public double RETRACTION_LIFT_POWER = .3;
+        public double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
+        public double POS_P=5;
+        public double SCALE_FACTOR_FOR_MANUAL_LIFT=150;
+        public double LIFT_DEAD_ZONE_FOR_MANUAL_LIFT;
     }
 
     @Config
     public static class LiftSlideHeights{
-        public static int ZERO_HEIGHT_TICKS=0;
-        public static int HOME_HEIGHT_TICKS=25;
-        public static int SAFE_HEIGHT_TICKS=150;
-        public static int LOW_HEIGHT_TICKS=1200;
-        public static int MID_HEIGHT_TICKS=2200;
-        public static int HIGH_HEIGHT_TICKS=2200;
+        public int ZERO_HEIGHT_TICKS=0;
+        public int HOME_HEIGHT_TICKS=25;
+        public int SAFE_HEIGHT_TICKS=125;
+        public int LOW_HEIGHT_TICKS=1200;
+        public int MID_HEIGHT_TICKS=1800;
+        public int HIGH_HEIGHT_TICKS=1800;
     }
 
-    public final int MAX_TARGET_TICKS = 2500;
+    public final int MAX_TARGET_TICKS = 1800;
     public final int MIN_TARGET_TICKS = 0;
+
+
+    public static LiftSlideSubsystem.LiftSlideParameters liftSlideParameters = new LiftSlideParameters();
+    public static LiftSlideSubsystem.LiftSlideHeights liftSlideHeights = new LiftSlideHeights();
 
     public enum LiftStates {
         HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
         public int ticks;
 
         static {
-            HIGH.ticks = HIGH_HEIGHT_TICKS;
-            MID.ticks = MID_HEIGHT_TICKS;
-            LOW.ticks = LOW_HEIGHT_TICKS;
-            HOME.ticks = HOME_HEIGHT_TICKS;
-            ZERO.ticks = ZERO_HEIGHT_TICKS;
-            SAFE.ticks = SAFE_HEIGHT_TICKS;
+            HIGH.ticks = liftSlideHeights.HIGH_HEIGHT_TICKS;
+            MID.ticks = liftSlideHeights.MID_HEIGHT_TICKS;;
+            LOW.ticks = liftSlideHeights.LOW_HEIGHT_TICKS;;
+            HOME.ticks = liftSlideHeights.HOME_HEIGHT_TICKS;;
+            ZERO.ticks = liftSlideHeights.ZERO_HEIGHT_TICKS;;
+            SAFE.ticks = liftSlideHeights.SAFE_HEIGHT_TICKS;;
         }
         public void setLiftHeightTicks(int t){
             this.ticks = t;
@@ -79,7 +84,6 @@ public class LiftSlideSubsystem extends SubsystemBase {
     }
 
     private double power;
-    private TelemetryPacket telemetryPacket;
 
     public LiftSlideSubsystem(final HardwareMap hMap, final String name) {
         liftSlide = hMap.get(DcMotorEx.class, name);
@@ -90,37 +94,36 @@ public class LiftSlideSubsystem extends SubsystemBase {
         liftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         liftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        liftSlide.setVelocityPIDFCoefficients(VEL_P, VEL_I, VEL_D, VEL_F);
-        liftSlide.setPositionPIDFCoefficients(POS_P);
+        liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P, liftSlideParameters.VEL_I, liftSlideParameters.VEL_D, liftSlideParameters.VEL_F);
+        liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P);
         liftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        power = EXTENSION_LIFT_POWER;
+        power = liftSlideParameters.EXTENSION_LIFT_POWER;
         liftSlide.setPower(power);
 
         currentState = LiftStates.ZERO;
-        currentTicks = LiftStates.ZERO.ticks;
-        liftSlide.setTargetPosition(currentTicks);
+        liftSlide.setTargetPosition(currentState.ticks);
         liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void periodic(){
-        liftSlide.setVelocityPIDFCoefficients(VEL_P, VEL_I, VEL_D, VEL_F);
-        liftSlide.setPositionPIDFCoefficients(POS_P);
+        liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P, liftSlideParameters.VEL_I, liftSlideParameters.VEL_D, liftSlideParameters.VEL_F);
+        liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P);
 
-        LiftStates.HOME.setLiftHeightTicks(HOME_HEIGHT_TICKS);
-        LiftStates.SAFE.setLiftHeightTicks(SAFE_HEIGHT_TICKS);
-        LiftStates.LOW.setLiftHeightTicks(LOW_HEIGHT_TICKS);
-        LiftStates.MID.setLiftHeightTicks(MID_HEIGHT_TICKS);
-        LiftStates.HIGH.setLiftHeightTicks(HIGH_HEIGHT_TICKS);
+        LiftStates.HOME.setLiftHeightTicks(liftSlideHeights.HOME_HEIGHT_TICKS);
+        LiftStates.SAFE.setLiftHeightTicks(liftSlideHeights.SAFE_HEIGHT_TICKS);
+        LiftStates.LOW.setLiftHeightTicks(liftSlideHeights.LOW_HEIGHT_TICKS);
+        LiftStates.MID.setLiftHeightTicks(liftSlideHeights.MID_HEIGHT_TICKS);
+        LiftStates.HIGH.setLiftHeightTicks(liftSlideHeights.HIGH_HEIGHT_TICKS);
 
         //this is the one call per loop to get the currentPosition from the lift motor
         currentTicks = liftSlide.getCurrentPosition();
 
-        MatchConfig.telemetryPacket.put("Current LiftSlide State", currentState);
-        MatchConfig.telemetryPacket.put("Current Ticks", currentTicks);
+        MatchConfig.telemetryPacket.put("LiftSlide State", currentState);
+        MatchConfig.telemetryPacket.put("LiftSlide Ticks", currentTicks);
 
         if (targetState!=currentState) {
-            MatchConfig.telemetryPacket.put("Target LiftSlide State", targetState);
-            MatchConfig.telemetryPacket.put("Target Ticks", targetTicks);
+            MatchConfig.telemetryPacket.put("LiftSlide Target State", targetState);
+            MatchConfig.telemetryPacket.put("LiftSlide Target Ticks", targetTicks);
         }
     }
 }

@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.EXTENSION_LIFT_POWER;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.RETRACTION_LIFT_POWER;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -69,12 +65,12 @@ public class MoveLiftSlideActionFinishImmediate implements Action {
 
         //if the target ticks are higher than the current ticks, then use EXTENSION_POWER
         if (targetTicks > currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(EXTENSION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //if the target ticks are lower than the current ticks, then use RETRACTION_POWER
         if (targetTicks < currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(RETRACTION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.RETRACTION_LIFT_POWER);
         }
 
         //Set the target position using the targetTicks

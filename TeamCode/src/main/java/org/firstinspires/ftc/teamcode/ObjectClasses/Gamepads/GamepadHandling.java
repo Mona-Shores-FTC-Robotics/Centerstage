@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 public class GamepadHandling {
-    private double DEAD_ZONE=.1;
+    private double DEAD_ZONE = .1;
 
     private GamepadEx driverGamepad;
     private GamepadEx operatorGamepad;
@@ -33,10 +33,10 @@ public class GamepadHandling {
         operatorGamepad = new GamepadEx(opMode.gamepad2);
 
         //Set Driver Gamepad to Blue
-        opMode.gamepad1.setLedColor(0,0,1,LED_DURATION_CONTINUOUS );
+        opMode.gamepad1.setLedColor(0, 0, 1, LED_DURATION_CONTINUOUS);
 
         //Set Operator Gamepad to White
-        opMode.gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
+        opMode.gamepad2.setLedColor(1, 1, 1, LED_DURATION_CONTINUOUS);
 
         CreateRumbleEffects();
         CreateLEDEffects();
@@ -67,13 +67,14 @@ public class GamepadHandling {
                 .build();
 
         //set the rumble counter to 0
-        timeoutRumbleCounter=0;
+        timeoutRumbleCounter = 0;
     }
 
 
     public GamepadEx getDriverGamepad() {
         return driverGamepad;
     }
+
     public GamepadEx getOperatorGamepad() {
         return operatorGamepad;
     }
@@ -84,21 +85,18 @@ public class GamepadHandling {
         InitVisionProcessor initVisionProcessor = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor();
         telemetry.addLine("");
 
-        if (LockedInitSettingsFlag)
-        {
+        if (LockedInitSettingsFlag) {
             telemetry.addLine("Alliance Color and Side of Field Locked - Team Prop Location cannot be locked");
-            telemetry.addLine( MatchConfig.finalAllianceColor + " "
+            telemetry.addLine(MatchConfig.finalAllianceColor + " "
                     + MatchConfig.finalSideOfField + " "
                     + MatchConfig.finalTeamPropLocation);
 
             telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
-            if (driverGamepad.wasJustPressed(GamepadKeys.Button.B))
-            {
+            if (driverGamepad.wasJustPressed(GamepadKeys.Button.B)) {
                 LockedInitSettingsFlag = false;
             }
         } else {
-            if (ManualOverrideInitSettingsFlag)
-            {
+            if (ManualOverrideInitSettingsFlag) {
                 MatchConfig.finalAllianceColor = initVisionProcessor.allianceColorOverride;
                 MatchConfig.finalSideOfField = initVisionProcessor.sideOfFieldOverride;
 
@@ -110,12 +108,11 @@ public class GamepadHandling {
             MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
 
             telemetry.addLine("Lock Alliance Color and Side of Field with B");
-            telemetry.addLine( MatchConfig.finalAllianceColor + " "
-                                + MatchConfig.finalSideOfField + " "
-                                + MatchConfig.finalTeamPropLocation);
+            telemetry.addLine(MatchConfig.finalAllianceColor + " "
+                    + MatchConfig.finalSideOfField + " "
+                    + MatchConfig.finalTeamPropLocation);
 
-            if (driverGamepad.wasJustPressed(GamepadKeys.Button.B))
-            {
+            if (driverGamepad.wasJustPressed(GamepadKeys.Button.B)) {
                 LockedInitSettingsFlag = true;
             }
 
@@ -156,10 +153,14 @@ public class GamepadHandling {
 
     public void endGameRumble() {
         //Rumble 3 seconds before end game begins
-        if (MatchConfig.teleOpTimer.seconds() > (FieldConstants.END_GAME_TIME - 3)) {
-            Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
-            Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
+        if (MatchConfig.teleOpTimer.seconds() > FieldConstants.END_GAME_TIME - 3) {
+            if (MatchConfig.teleOpTimer.seconds() < FieldConstants.END_GAME_TIME) {
+                Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
+                Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
+            } else {
+                Robot.getInstance().getActiveOpMode().gamepad1.stopRumble();
+                Robot.getInstance().getActiveOpMode().gamepad2.stopRumble();
+            }
         }
     }
 }
-

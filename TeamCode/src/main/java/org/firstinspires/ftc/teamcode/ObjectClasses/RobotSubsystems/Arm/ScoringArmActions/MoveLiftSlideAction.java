@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.EXTENSION_LIFT_POWER;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.RETRACTION_LIFT_POWER;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -69,12 +65,12 @@ public class MoveLiftSlideAction implements Action {
 
         //if the target ticks are higher than the current ticks, then use EXTENSION_POWER
         if (targetTicks > currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(EXTENSION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //if the target ticks are lower than the current ticks, then use RETRACTION_POWER
         if (targetTicks < currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(RETRACTION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.RETRACTION_LIFT_POWER);
         }
 
         //Set the target position using the targetTicks
@@ -105,7 +101,7 @@ public class MoveLiftSlideAction implements Action {
         // Compare the currentTicks to the targetTicks to a threshold (LIFT_HEIGHT_TICK_THRESHOLD) and save as the boolean
         // For example, say our target is 2000 ticks and we are at 1997 - we would want that to count as being close enough
         finished = Math.abs(Robot.getInstance().getLiftSlideSubsystem().getCurrentTicks() -
-                Robot.getInstance().getLiftSlideSubsystem().getTargetTicks()) <  LIFT_HEIGHT_TICK_THRESHOLD;
+                Robot.getInstance().getLiftSlideSubsystem().getTargetTicks()) <  LiftSlideSubsystem.liftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
 
         //write an if statement to change the currentState to the targetState and return true if the finished boolean is true
         if (finished){

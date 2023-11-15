@@ -26,7 +26,6 @@ import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_STAGING;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_D;
-import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
@@ -37,7 +36,7 @@ import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_STAGING;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.example.meepmeeptesting.MeepMeepTesting;
 
-public class PosesForRoute {
+public class PosesForRouteStraight {
     public Pose2d startingPose;
     public Pose2d backdropStagingPose;
     public Pose2d firstPixelScorePose;
@@ -48,7 +47,7 @@ public class PosesForRoute {
     public double parkOrientation;
     public Pose2d spikePose;
 
-    PosesForRoute(MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField, MeepMeepTesting.TeamPropLocation teamPropLocation){
+    PosesForRouteStraight(MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField, MeepMeepTesting.TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
         SetStartingPose(allianceColor, sideOfField);
         SetAlliancePoses(allianceColor);

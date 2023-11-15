@@ -37,7 +37,7 @@ public class ReleaseDroneCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         //change the current state to the target state
-        MatchConfig.telemetryPacket.addLine("Drone servo move COMPLETE From " + droneSubsystem.currentState + " to " + targetState);
+        MatchConfig.telemetryPacket.addLine("Drone move COMPLETE From " + droneSubsystem.currentState + " to " + targetState);
         droneSubsystem.setCurrentState(targetState);
     }
 

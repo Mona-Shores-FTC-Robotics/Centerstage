@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 public class ShoulderSubsystem extends SubsystemBase {
 
     public static class ShoulderParameters {
-        public double INTAKE_VALUE = .55;
+        public double INTAKE_VALUE = .6;
         public double STARTING_POSITION = .7;
         public double BACKDROP_VALUE = .2;
         public double HALFWAY = .4;
@@ -56,7 +56,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         ShoulderStates.STARTING_POSITION.SetState(shoulderParameters.STARTING_POSITION);
 
         //Add the Shoulder State to our loop telemetry packet
-        MatchConfig.telemetryPacket.put("Current Shoulder State", currentState);
+        MatchConfig.telemetryPacket.put("Shoulder State", currentState);
     }
 
     public void setCurrentState(ShoulderStates state) {

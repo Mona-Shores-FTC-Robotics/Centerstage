@@ -229,11 +229,12 @@ public class CenterstageOperatorBindings {
                                 new RotateShoulderCommand(shoulderSubsystem,
                                         ShoulderSubsystem.ShoulderStates.HALFWAY)
                         ),
-                        new ParallelCommandGroup(new RotateShoulderCommand(shoulderSubsystem,
+                        new WaitCommand(250),
+                        new RotateShoulderCommand(shoulderSubsystem,
                                 ShoulderSubsystem.ShoulderStates.INTAKE),
-                                new MoveLiftSlideCommand(liftSlideSubsystem,
-                                        LiftSlideSubsystem.LiftStates.HOME)
-                        )
+                        new WaitCommand(250),
+                        new MoveLiftSlideCommand(liftSlideSubsystem,
+                                LiftSlideSubsystem.LiftStates.HOME)
                 );
     }
 }

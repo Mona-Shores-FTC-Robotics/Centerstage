@@ -29,7 +29,11 @@ public class RotateShoulderCommand extends CommandBase {
 
     public void execute() {
     }
-
+    @Override
+    public boolean isFinished() {
+        //always return true because the command simply sets the servo and we have no way of telling when the servo has finished moving
+        return true;
+    }
     @Override
     public void end(boolean interrupted) {
         MatchConfig.telemetryPacket.addLine("Shoulder Move COMPLETE From " + shoulderSubsystem.currentState + " to " + targetState);

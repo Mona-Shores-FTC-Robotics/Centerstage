@@ -35,20 +35,20 @@ public class DefaultLiftSlideCommand extends CommandBase {
 
     public void execute() {
         //if liftSupplier is positive and above deadzone, then use Extension power
-        if (liftSupplier.getAsDouble() > LIFT_DEAD_ZONE) {
+        if (liftSupplier.getAsDouble() > LiftSlideSubsystem.liftSlideParameters.LIFT_DEAD_ZONE_FOR_MANUAL_LIFT) {
             liftSlideSubsystem.setCurrentState(LiftSlideSubsystem.LiftStates.MANUAL);
-            liftSlideSubsystem.liftSlide.setPower(EXTENSION_LIFT_POWER);
+            liftSlideSubsystem.liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //if liftSupplier is negative and lower than deadzone, then use Retraction power
-        else if (liftSupplier.getAsDouble() < -LIFT_DEAD_ZONE) {
+        else if (liftSupplier.getAsDouble() < -LiftSlideSubsystem.liftSlideParameters.LIFT_DEAD_ZONE_FOR_MANUAL_LIFT) {
             liftSlideSubsystem.setCurrentState(LiftSlideSubsystem.LiftStates.MANUAL);
-            liftSlideSubsystem.liftSlide.setPower(RETRACTION_LIFT_POWER);
+            liftSlideSubsystem.liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.RETRACTION_LIFT_POWER);
         }
 
         //if we are in the dead zone we should keep the extension lift power to maintain our position
         else {
-            liftSlideSubsystem.liftSlide.setPower(EXTENSION_LIFT_POWER);
+            liftSlideSubsystem.liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //Use the liftSupplier to calculate the new target based on the liftSupplier
@@ -69,7 +69,7 @@ public class DefaultLiftSlideCommand extends CommandBase {
 
     private int calculateNewTargetTicks(DoubleSupplier liftSupplier) {
         // Update the targetTicks based on the liftSupplier's value
-        int deltaTicks = (int) Math.round(liftSupplier.getAsDouble()*SCALE_FACTOR_FOR_MANUAL_LIFT);
+        int deltaTicks = (int) Math.round(liftSupplier.getAsDouble()*LiftSlideSubsystem.liftSlideParameters.SCALE_FACTOR_FOR_MANUAL_LIFT);
 
         int newTargetTicks = liftSlideSubsystem.getCurrentTicks() + deltaTicks;
 

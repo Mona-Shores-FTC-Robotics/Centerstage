@@ -295,21 +295,21 @@ public final class VisionSubsystem extends SubsystemBase {
                 telemetry.addLine("");
                 if (myAprilTagDetection.metadata != null) {
                     telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") " + myAprilTagDetection.metadata.name);
-                    telemetry.addLine("XYZ " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.x, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.y, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.z, 6, 1) + "  (inch)");
-                    telemetry.addLine("PRY " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.yaw, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.pitch, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.roll, 6, 1) + "  (deg)");
-                    telemetry.addLine("RBE " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.range, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.bearing, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.elevation, 6, 1) + "  (inch, deg, deg)");
+//                    telemetry.addLine("XYZ " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.x, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.y, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.z, 6, 1) + "  (inch)");
+//                    telemetry.addLine("PRY " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.yaw, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.pitch, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.roll, 6, 1) + "  (deg)");
+//                    telemetry.addLine("RBE " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.range, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.bearing, 6, 1) + " " + JavaUtil.formatNumber(myAprilTagDetection.ftcPose.elevation, 6, 1) + "  (inch, deg, deg)");
 
                 } else {
-                    telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") Unknown");
-                    telemetry.addLine("Center " + JavaUtil.formatNumber(myAprilTagDetection.center.x, 6, 0) + "" + JavaUtil.formatNumber(myAprilTagDetection.center.y, 6, 0) + " (pixels)");
+//                    telemetry.addLine("==== (ID " + myAprilTagDetection.id + ") Unknown");
+//                    telemetry.addLine("Center " + JavaUtil.formatNumber(myAprilTagDetection.center.x, 6, 0) + "" + JavaUtil.formatNumber(myAprilTagDetection.center.y, 6, 0) + " (pixels)");
                 }
             }
         }
-        telemetry.addLine("");
-        telemetry.addLine("key:");
-        telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
+//        telemetry.addLine("");
+//        telemetry.addLine("key:");
+//        telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
+//        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+//        telemetry.addLine("RBE = Range, Bearing & Elevation");
     }
 
     public VisionPortal getVisionPortal() {
@@ -383,8 +383,9 @@ public final class VisionSubsystem extends SubsystemBase {
 
         telemetry.addLine();
         telemetry.addData("Tag", tag.detection.metadata.name);
-        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
-        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
+//        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
+//        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
+
         telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
 
         return newPose;

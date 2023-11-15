@@ -43,7 +43,7 @@ public final class GripperSubsystem extends SubsystemBase {
         GripperStates.OPEN.SetState(OPEN_POSITION);
 
         //Add the Gripper State to our loop telemetry packet
-        MatchConfig.telemetryPacket.put("Current Gripper State", currentState);
+        MatchConfig.telemetryPacket.put("Gripper State", currentState);
     }
 
 }

@@ -17,6 +17,7 @@ public class MatchConfig {
     public static boolean autoHasRun=false;
 
     public static ElapsedTime teleOpTimer;
+    public static ElapsedTime loopTimer;
 
     public static TelemetryPacket telemetryPacket;
 

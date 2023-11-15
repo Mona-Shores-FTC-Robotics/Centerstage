@@ -50,7 +50,7 @@ public class DroneSubsystem extends SubsystemBase {
         DroneDeployState.FLY.SetState(droneParameters.FLY_VALUE);
 
         //Add the Drone State to our loop telemetry packet
-        MatchConfig.telemetryPacket.put("Current Drone State", currentState);
+        MatchConfig.telemetryPacket.put("Drone State", currentState);
     }
 
 

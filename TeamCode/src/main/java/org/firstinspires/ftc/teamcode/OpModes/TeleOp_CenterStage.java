@@ -93,12 +93,16 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.teleOpTimer = new ElapsedTime();
         MatchConfig.teleOpTimer.reset();
 
-        ElapsedTime loopTimer = new ElapsedTime();
+        MatchConfig.loopTimer = new ElapsedTime();
+        MatchConfig.loopTimer.reset();
+
         MatchConfig.telemetryPacket = new TelemetryPacket();
         while (opModeIsActive())
         {
+            LoopDriverStationTelemetry();
+
             //Reset the timer for the loop timer
-            loopTimer.reset();
+            MatchConfig.loopTimer.reset();
 
             //Run the Scheduler
             CommandScheduler.getInstance().run();
@@ -112,14 +116,26 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Activate End Game Rumble at 87 seconds into TeleOp
             gamepadHandling.endGameRumble();
 
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-            telemetry.addLine("TeleOp Time " + JavaUtil.formatNumber(MatchConfig.teleOpTimer.seconds(), 4, 1) + " / 120 seconds");
-            telemetry.addData("Loop Time ", JavaUtil.formatNumber(loopTimer.milliseconds(), 4, 1));
             telemetry.update();
-
-            FtcDashboard.getInstance().sendTelemetryPacket(new TelemetryPacket());
+            FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
             MatchConfig.telemetryPacket = new TelemetryPacket();
         }
     }
 
+    private void LoopDriverStationTelemetry() {
+        //Print our color,
+        telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+        telemetry.addLine("TeleOp Time " + JavaUtil.formatNumber(MatchConfig.teleOpTimer.seconds(), 4, 1) + " / 120 seconds");
+        telemetry.addData("Loop Time ", JavaUtil.formatNumber(MatchConfig.loopTimer.milliseconds(), 4, 1));
+
+        Robot.getInstance().getActiveOpMode().telemetry.addLine();
+        telemetry.addData("Current Pose", "X %5.2f, Y %5.2f, heading %5.2f ",
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x,
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y,
+                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log());
+
+        Robot.getInstance().getActiveOpMode().telemetry.addLine();
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Absolute (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 5, 2));
+        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Relative (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees, 5, 2));
+    }
 }

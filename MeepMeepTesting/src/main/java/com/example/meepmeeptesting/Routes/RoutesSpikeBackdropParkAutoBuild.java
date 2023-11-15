@@ -18,7 +18,8 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBotRight;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
-import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.*;
+import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.BLUE;
+import static com.example.meepmeeptesting.MeepMeepTesting.AllianceColor.RED;
 import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.AUDIENCE;
 import static com.example.meepmeeptesting.MeepMeepTesting.SideOfField.BACKSTAGE;
 import static com.example.meepmeeptesting.MeepMeepTesting.TeamPropLocation.CENTER;
@@ -33,7 +34,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
-public class RoutesSpikeStraightUpTheMiddle {
+public class RoutesSpikeBackdropParkAutoBuild {
     private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
 
     //Variables to store routes for team prop center for all four start locations
