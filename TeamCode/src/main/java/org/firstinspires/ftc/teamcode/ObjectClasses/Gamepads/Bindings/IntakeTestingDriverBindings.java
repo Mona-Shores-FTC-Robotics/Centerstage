@@ -26,8 +26,8 @@ public class IntakeTestingDriverBindings {
                 .whenReleased(new ChangeIntakeVelocityCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
         gamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON))
-                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
+                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON, IntakeSubsystem.IntakeStates.INTAKE_SLOWER))
+                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF, IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
     }
 }

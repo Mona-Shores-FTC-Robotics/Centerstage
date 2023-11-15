@@ -14,16 +14,19 @@ public class ChangeIntakePowerCommand extends CommandBase {
 
     //declare target state
     private IntakeSubsystem.IntakeStates targetState;
+    private IntakeSubsystem.IntakeStates targetState2;
     private double currentVelocity;
 
-    public ChangeIntakePowerCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState) {
+    public ChangeIntakePowerCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState, IntakeSubsystem.IntakeStates inputState2) {
         intakeSubsystem = subsystem;
         targetState = inputState;
+        targetState2 = inputState2;
         addRequirements(intakeSubsystem);
     }
     @Override
     public void initialize() {
         intakeSubsystem.intake.setPower(targetState.power);
+        intakeSubsystem.intake2.setPower(targetState2.power);
     }
 
     public void execute() {

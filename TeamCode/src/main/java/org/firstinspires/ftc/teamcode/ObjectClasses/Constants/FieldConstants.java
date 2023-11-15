@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 public class FieldConstants {
 
-    public static double END_GAME_TIME=10;
+    public static double END_GAME_TIME=90;
 
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;

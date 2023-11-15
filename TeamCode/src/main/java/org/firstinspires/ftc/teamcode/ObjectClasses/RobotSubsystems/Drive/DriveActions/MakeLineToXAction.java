@@ -36,7 +36,6 @@ public class MakeLineToXAction {
         overrideAccelConstraint = new ProfileAccelConstraint(-20, 20);
 
         t = drive.actionBuilder(drive.pose)
-                .turnTo(0)
                 .lineToX(xTarget, overrideVelConstraint, overrideAccelConstraint)
                 .build();
 

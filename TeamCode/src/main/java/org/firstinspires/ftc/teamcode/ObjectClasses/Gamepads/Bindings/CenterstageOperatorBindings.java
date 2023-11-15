@@ -124,11 +124,12 @@ public class CenterstageOperatorBindings {
                 .whenPressed(
                         new SequentialCommandGroup(
                                 new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.OPEN),
-                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON)
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON, IntakeSubsystem.IntakeStates.INTAKE_SLOWER)
                         ))
                 .whenReleased(
                         new SequentialCommandGroup(
-                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF),
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF, IntakeSubsystem.IntakeStates.INTAKE_OFF),
+                                new WaitCommand(300),
                                 new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.CLOSED)
                         ));
 
@@ -140,8 +141,8 @@ public class CenterstageOperatorBindings {
 
         // INTAKE ON while held down, off when not
         operatorGamepad.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_REVERSE))
-                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
+                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_REVERSE, IntakeSubsystem.IntakeStates.INTAKE_REVERSE))
+                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF, IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
         //////////////////////////////////////////////////////////
         //                                                      //

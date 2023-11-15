@@ -71,7 +71,7 @@ public class Robot {
             }
 
             case ROBOT_INTAKE: {
-                intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
+                intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake", "intake2");
                 break;
             }
 
@@ -79,7 +79,7 @@ public class Robot {
                 mecanumDriveSubsystem = new DriveSubsystem(hardwareMap);
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
-                intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake");
+                intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake", "intake2");
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");

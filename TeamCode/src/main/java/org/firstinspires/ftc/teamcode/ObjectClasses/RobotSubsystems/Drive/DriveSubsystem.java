@@ -224,7 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
             //Align to the Backdrop AprilTags - CASE RED
             if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFound &&
-                    (leftYAdjusted > .1 || drivingToAprilTag) &&
+                    (leftYAdjusted > .2 || drivingToAprilTag) &&
                     !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropRed();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
@@ -240,7 +240,7 @@ public class DriveSubsystem extends SubsystemBase {
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFound &&
-                    (leftYAdjusted > .1 || drivingToAprilTag) &&
+                    (leftYAdjusted > .2 || drivingToAprilTag) &&
                     !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropBlue();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
