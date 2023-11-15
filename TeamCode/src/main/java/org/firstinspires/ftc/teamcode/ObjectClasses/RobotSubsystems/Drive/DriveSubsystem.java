@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
@@ -266,7 +267,14 @@ public class DriveSubsystem extends SubsystemBase {
     public void fieldOrientedControl (double leftY, double leftX){
         double y = leftY;
         double x = leftX;
-        double botHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees-90);
+        double botHeading;
+
+        //This should make it so field centric driving works for both alliance colors
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
+            botHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees - 90);
+        } else {
+            botHeading = Math.toRadians(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees + 90);
+        }
 
         // Rotate the movement direction counter to the bot's rotation
         leftXAdjusted = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);

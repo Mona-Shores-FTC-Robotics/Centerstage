@@ -29,20 +29,18 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
-
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageOperatorBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-import org.opencv.core.Mat;
 
 @TeleOp(name="TeleOp_CenterStage")
 public class TeleOp_CenterStage extends LinearOpMode
@@ -51,19 +49,19 @@ public class TeleOp_CenterStage extends LinearOpMode
     @Override
     public void runOpMode()
     {
-        //Reset the Singleton CommandScheduler and Robot
+        //Reset the Singleton CommandScheduler
         CommandScheduler.getInstance().reset();
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
-        /* Create the robot **/
+        // Create the robot
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
-        /* Initialize Gamepad and Robot - Order Important **/
+        // Initialize the robot
         Robot.getInstance().init(Robot.OpModeType.TELEOP);
 
-        /* Setup Button Bindings **/
+        // Setup Button Bindings
         new CenterstageDriverBindings(gamepadHandling.getDriverGamepad());
         new CenterstageOperatorBindings(gamepadHandling.getOperatorGamepad());
 
@@ -82,17 +80,23 @@ public class TeleOp_CenterStage extends LinearOpMode
         //Switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        //Reset Gyro and pose to be 0 at whatever heading the robot is at
+        //todo what happens if we don't have this in
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
+
+        //Set the flag so we reset the gyro/pose heading to zero the next time we go to the backdrop
+        Robot.getInstance().getVisionSubsystem().resetHeading=true;
 
         //Start the TeleOp Timer
-         MatchConfig.teleOpTimer = new ElapsedTime();
+        MatchConfig.teleOpTimer = new ElapsedTime();
         MatchConfig.teleOpTimer.reset();
+
+        ElapsedTime loopTimer = new ElapsedTime();
 
         while (opModeIsActive())
         {
-            //just print this every loop because we want to know
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+            //Reset the timer for the loop timer
+            loopTimer.reset();
 
             //Run the Scheduler
             CommandScheduler.getInstance().run();
@@ -103,10 +107,11 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
-//            EndGameRumble();
-//            ActivateEndGameButtons();
+            gamepadHandling.endGameRumble();
 
-            telemetry.addData("time",MatchConfig.teleOpTimer.seconds());
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+            telemetry.addLine("TeleOp Time " + JavaUtil.formatNumber(MatchConfig.teleOpTimer.seconds(), 4, 1) + " / 120 seconds");
+            telemetry.addData("Loop Time ", JavaUtil.formatNumber(loopTimer.milliseconds(), 4, 1));
             telemetry.update();
         }
     }

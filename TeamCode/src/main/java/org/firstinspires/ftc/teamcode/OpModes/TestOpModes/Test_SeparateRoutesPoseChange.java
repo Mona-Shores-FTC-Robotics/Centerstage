@@ -23,7 +23,6 @@ import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redBackstageBotTeamPropLeftRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.redBackstageBotTeamPropRightRoute;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -111,7 +110,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
         Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE);
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
 
         Action testRouteA = Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(new Pose2d(PoseToVector(RED_BACKSTAGE_SPIKE_L), FACE_TOWARD_BACKSTAGE))

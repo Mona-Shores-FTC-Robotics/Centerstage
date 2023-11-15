@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
@@ -33,8 +34,13 @@ public class GamepadHandling {
     public GamepadHandling(LinearOpMode opMode) {
         driverGamepad = new GamepadEx(opMode.gamepad1);
         operatorGamepad = new GamepadEx(opMode.gamepad2);
-        opMode.gamepad1.setLedColor(0,.2,.4,LED_DURATION_CONTINUOUS );
+
+        //Set Driver Gamepad to Blue
+        opMode.gamepad1.setLedColor(0,0,1,LED_DURATION_CONTINUOUS );
+
+        //Set Operator Gamepad to White
         opMode.gamepad2.setLedColor(1,1,1,LED_DURATION_CONTINUOUS );
+
         CreateRumbleEffects();
         CreateLEDEffects();
     }
@@ -83,6 +89,11 @@ public class GamepadHandling {
 
         if (LockedInitSettingsFlag)
         {
+            telemetry.addLine("Alliance Color and Side of Field Locked - Team Prop Location cannot be locked");
+            telemetry.addLine( MatchConfig.finalAllianceColor + " "
+                    + MatchConfig.finalSideOfField + " "
+                    + MatchConfig.finalTeamPropLocation);
+
             telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
             if (driverGamepad.wasJustPressed(GamepadKeys.Button.B))
             {
@@ -93,15 +104,15 @@ public class GamepadHandling {
             {
                 MatchConfig.finalAllianceColor = initVisionProcessor.allianceColorOverride;
                 MatchConfig.finalSideOfField = initVisionProcessor.sideOfFieldOverride;
-                //Always use the vision for the team prop location since we can't override it to fix it at competition
-                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
+
             } else {
                 MatchConfig.finalAllianceColor = initVisionProcessor.allianceColor;
                 MatchConfig.finalSideOfField = initVisionProcessor.sideOfField;
-                MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
             }
+            //Always use the vision for the team prop location since we can't override it to fix it at competition
+            MatchConfig.finalTeamPropLocation = initVisionProcessor.teamPropLocation;
 
-            telemetry.addLine("Lock with B");
+            telemetry.addLine("Lock Alliance Color and Side of Field with B");
             telemetry.addLine( MatchConfig.finalAllianceColor + " "
                                 + MatchConfig.finalSideOfField + " "
                                 + MatchConfig.finalTeamPropLocation);
@@ -117,7 +128,7 @@ public class GamepadHandling {
                     ManualOverrideInitSettingsFlag = true;
                 }
             } else if (ManualOverrideInitSettingsFlag) {
-                telemetry.addLine("Color/Side - d-pad, Prop - bumpers");
+                telemetry.addLine("Color (DPAD-UP/DOWN) - Side Of Field (DPAD-LEFT/RIGHT");
                 if (driverGamepad.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                     initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
                 } else if (driverGamepad.wasJustPressed(GamepadKeys.Button.DPAD_UP)) {
@@ -138,28 +149,6 @@ public class GamepadHandling {
                     }
                 }
 
-                if (driverGamepad.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)) {
-                    if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.LEFT)
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.CENTER;
-                    else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.CENTER)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.RIGHT;
-                    } else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.RIGHT)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.LEFT;
-                    }
-                } else if (driverGamepad.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)) {
-                    if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.LEFT)
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.RIGHT;
-                    else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.CENTER)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.LEFT;
-                    } else if (initVisionProcessor.teamPropLocationOverride == InitVisionProcessor.TeamPropLocation.RIGHT)
-                    {
-                        initVisionProcessor.teamPropLocationOverride = InitVisionProcessor.TeamPropLocation.CENTER;
-                    }
-                }
-
                 telemetry.addLine("Override Off with A");
                 if (driverGamepad.wasJustPressed(GamepadKeys.Button.A)) {
                     ManualOverrideInitSettingsFlag = false;
@@ -168,40 +157,12 @@ public class GamepadHandling {
         }
     }
 
-
     public void endGameRumble() {
-        Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
-        Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
-    }
-
-    public void setRed() {
-        //set driver gamepad to red
-        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS );
-        //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(1, 0, 0,  LED_DURATION_CONTINUOUS);
-    }
-
-
-    public void setBlue() {
-        //set driver gamepad to blue
-        Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
-        //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0, 0, 1,  LED_DURATION_CONTINUOUS);
-    }
-
-    public void problemInInitRumble() {
-
-        //only do the rumble 5 times so we don't burn out the rumble motors
-        if  (!Robot.getInstance().getActiveOpMode().gamepad1.isRumbling() && timeoutRumbleCounter < 5) {
-            timeoutRumbleCounter+=1;
-            Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(problemRumbleEffect);
-            //Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(problemRumbleEffect);
+        //Rumble 3 seconds before end game begins
+        if (MatchConfig.teleOpTimer.seconds() > (FieldConstants.END_GAME_TIME - 3)) {
+            Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
+            Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
         }
     }
-
-    public  void problemInInitLed() {
-            Robot.getInstance().getActiveOpMode().gamepad1.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
-            //Robot.getInstance().getActiveOpMode().gamepad2.setLedColor(0,1,0, LED_DURATION_CONTINUOUS);
-        }
-
-
 }
 

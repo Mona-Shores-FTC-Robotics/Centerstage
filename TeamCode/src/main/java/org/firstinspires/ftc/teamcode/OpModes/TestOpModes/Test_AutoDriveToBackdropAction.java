@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -10,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
@@ -84,7 +82,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         telemetry.clearAll();
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
         Actions.runBlocking( new AutoDriveToBackDrop(DELIVER_LOCATION));
 
 //        Actions.runBlocking(new TurnToAction(0));

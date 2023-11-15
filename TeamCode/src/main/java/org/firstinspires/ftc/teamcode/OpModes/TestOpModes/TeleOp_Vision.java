@@ -73,7 +73,7 @@ public class TeleOp_Vision extends LinearOpMode
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
         //Start the TeleOp Timer
         MatchConfig.teleOpTimer = new ElapsedTime();

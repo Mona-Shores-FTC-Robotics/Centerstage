@@ -85,7 +85,7 @@ public class TeleOp_PostAuto extends LinearOpMode
         //assume the user is facing the backdrop
         else {
             //this will reset the gyro and set the relative yaw to the heading of the robot, which unless we set a start heading will be 0
-            Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+            Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
             //this will make the gyro reset the offset and pose the next time we get to the april tags.
             Robot.getInstance().getVisionSubsystem().resetHeading=true;
         }

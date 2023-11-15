@@ -30,7 +30,6 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
 
-
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -65,10 +64,14 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         allianceColor = MatchConfig.finalAllianceColor;
         sideOfField = MatchConfig.finalSideOfField;
 
+        //Set the starting pose based on the Alliance Color and Side of the Field
         Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor, sideOfField);
 
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        //Reset Gyro to Zero and set the offset to the current heading of the Robot pose
+        //For example:
+        //  if we are Backstage Red, the relativeYaw is set to 90 and the gyro is set to 0 and the offset is set to 90
+        //  if we are Audience Blue, the relativeYaw is set to -90 and the gyro is set to 0 and the offset is set to -90
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
         //this saves the alliance color in a spot that persists between opModes
         MatchConfig.finalAllianceColor = allianceColor;

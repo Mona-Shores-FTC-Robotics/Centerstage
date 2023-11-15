@@ -71,7 +71,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().setStartingPose(allianceColor , sideOfField);
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
 
         //After Init switch the vision processing to AprilTags

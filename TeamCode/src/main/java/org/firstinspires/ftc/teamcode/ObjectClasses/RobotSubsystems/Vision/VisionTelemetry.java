@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
@@ -10,12 +11,10 @@ public class VisionTelemetry {
 
     public static void telemetryForInitProcessing(GamepadHandling gamepadHandling) {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
-        InitVisionProcessor.AllianceColor allianceColor =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor;
-        InitVisionProcessor.SideOfField sideOfField =  Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().sideOfField;
 
-        telemetry.addData("Alliance Color", allianceColor);
-        telemetry.addData("Side of the Field", sideOfField);
-        telemetry.addData("Team Prop Location", Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation());
+        telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+        telemetry.addData("Side of the Field", MatchConfig.finalSideOfField);
+        telemetry.addData("Team Prop Location",  MatchConfig.finalTeamPropLocation);
         telemetry.addLine("");
         telemetry.addData("Left Square Blue/Red Percent", JavaUtil.formatNumber(Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getLeftPercent(), 4, 1));
         telemetry.addData("Middle Square Blue/Red Percent", JavaUtil.formatNumber(Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getCenterPercent(), 4, 1));
@@ -28,18 +27,6 @@ public class VisionTelemetry {
         telemetry.addData("Stage Door Left Percent", JavaUtil.formatNumber(Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().percentLeftStageDoorZone, 4, 1));
         telemetry.addData("Stage Door Right Percent", JavaUtil.formatNumber(Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().percentRightStageDoorZone, 4, 1));
 
-        //Set the gamepads to Green if there is a problem and the driver hasn't overridden
-        if ( Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColorDeterminationProblem &&
-                Robot.getInstance().getVisionSubsystem().manualOverrideInitSettingsFlag==false) {
-            gamepadHandling.problemInInitLed();
-        } else {
-            //show the color of the Alliance on the drivergamepad
-            if (allianceColor == InitVisionProcessor.AllianceColor.RED) {
-                gamepadHandling.setRed();
-            } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
-                gamepadHandling.setBlue();
-            }
-        }
     }
 
 }

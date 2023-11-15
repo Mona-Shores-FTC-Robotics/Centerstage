@@ -61,7 +61,6 @@ public class InitVisionProcessor implements VisionProcessor {
     public Scalar lowerStageDoor = new Scalar(0, 127.5, 134.6);
     public Scalar upperStageDoor = new Scalar(86.4, 255, 255);
 
-
     /** Our Default Values **/
     public AllianceColor allianceColor = AllianceColor.RED;
     public SideOfField sideOfField = SideOfField.BACKSTAGE;

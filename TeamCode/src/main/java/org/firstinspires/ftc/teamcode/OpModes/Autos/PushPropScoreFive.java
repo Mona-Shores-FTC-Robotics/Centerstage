@@ -75,7 +75,7 @@ public class PushPropScoreFive extends LinearOpMode {
         MatchConfig.finalAllianceColor = allianceColor;
 
         //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
+        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
         //After Init switch the vision processing to AprilTags
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();

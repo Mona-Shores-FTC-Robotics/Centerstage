@@ -125,7 +125,7 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  START BUTTON                                        //
+        //  START BUTTON  - FIELD ORIENTED CONTROL              //
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.START)

@@ -52,7 +52,7 @@ public class GyroSubsystem extends SubsystemBase {
         //At the start of the match, the pose has been preset to one of our four starting locations
         //When we are at the backdrop, our pose is reset to 0, so if we also synchronize it should make sure the gyro and pose are synchronized
 
-    public void synchronizeGyroAndPose() {
+    public void synchronizeGyroAndPoseHeading() {
         imu.resetYaw();
         YawPitchRollAngles angle = imu.getRobotYawPitchRollAngles();
         currentAbsoluteYawDegrees = angle.getYaw(AngleUnit.DEGREES);
