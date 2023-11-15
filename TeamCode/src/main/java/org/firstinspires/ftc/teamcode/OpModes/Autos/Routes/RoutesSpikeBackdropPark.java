@@ -12,7 +12,7 @@ import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
@@ -48,7 +48,7 @@ public class RoutesSpikeBackdropPark {
 
     public static void BuildRoutes() {
 
-        Action dropPurple = new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED);
+        Action dropPurple = new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED);
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
@@ -73,7 +73,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -88,7 +88,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -103,7 +103,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_BACKDROP_RIGHT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -117,7 +117,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -132,7 +132,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -146,7 +146,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_BACKDROP_CENTER, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -165,7 +165,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -184,7 +184,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -204,7 +204,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -223,7 +223,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -244,7 +244,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
@@ -264,7 +264,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction())
                 .waitSeconds(.9)
-                .stopAndAdd( new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN))
+                .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
                 .waitSeconds(.5)
                 .lineToX(TILE*2-5.5)
                 .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())

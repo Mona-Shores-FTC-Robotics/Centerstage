@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideHeights.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.*;
 
+import android.service.autofill.FieldClassification;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -11,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 
 public class LiftSlideSubsystem extends SubsystemBase {
 
@@ -50,18 +54,9 @@ public class LiftSlideSubsystem extends SubsystemBase {
             ZERO.ticks = ZERO_HEIGHT_TICKS;
             SAFE.ticks = SAFE_HEIGHT_TICKS;
         }
-
         public void setLiftHeightTicks(int t){
             this.ticks = t;
         }
-
-        //From ChatGPT
-        //C=π×d
-        //diameter of spool is 1,
-        //C=3.14159inch circumference
-        //Gobilda 5203 motor outputs 8192 ticks for one full revolution of motor shaft
-        // So ~2608 ticks per inch.
-        //this did not work at all - why not?
     }
 
     public DcMotorEx liftSlide;
@@ -86,13 +81,12 @@ public class LiftSlideSubsystem extends SubsystemBase {
     private double power;
     private TelemetryPacket telemetryPacket;
 
-    /** Constructor **/
     public LiftSlideSubsystem(final HardwareMap hMap, final String name) {
         liftSlide = hMap.get(DcMotorEx.class, name);
     }
 
     public void init (){
-        //THIS Direction works better because the string doesn't coil up in the other direction on the spool
+        //This Direction works better because the string doesn't coil up in the other direction on the spool
         liftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         liftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -121,16 +115,12 @@ public class LiftSlideSubsystem extends SubsystemBase {
         //this is the one call per loop to get the currentPosition from the lift motor
         currentTicks = liftSlide.getCurrentPosition();
 
-        telemetryPacket = new TelemetryPacket();
-        telemetryPacket.put("Current LiftSlide State", currentState);
-        telemetryPacket.put("Current Ticks", currentTicks);
+        MatchConfig.telemetryPacket.put("Current LiftSlide State", currentState);
+        MatchConfig.telemetryPacket.put("Current Ticks", currentTicks);
 
         if (targetState!=currentState) {
-            telemetryPacket.put("Target LiftSlide State", targetState);
-            telemetryPacket.put("Target Ticks", targetTicks);
+            MatchConfig.telemetryPacket.put("Target LiftSlide State", targetState);
+            MatchConfig.telemetryPacket.put("Target Ticks", targetTicks);
         }
-
-        //send the packet to the dashboard
-//        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 }

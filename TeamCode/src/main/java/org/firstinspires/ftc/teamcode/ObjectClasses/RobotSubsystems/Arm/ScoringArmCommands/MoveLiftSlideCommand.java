@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 
 public class MoveLiftSlideCommand extends CommandBase {
@@ -113,25 +114,22 @@ public class MoveLiftSlideCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        TelemetryPacket p = new TelemetryPacket();
         //write an if statement that tells the user the command didn't finish normally but instead timed out
         if (!timeout && !interrupted)
         {
             //Report the command finished
-            p.addLine("LiftSlide Move COMPLETE From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " in " + String.format("%.2f", timeoutTimer.seconds()) + " seconds");
+            MatchConfig.telemetryPacket.addLine("LiftSlide Move COMPLETE From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " in " + String.format("%.2f", timeoutTimer.seconds()) + " seconds");
             //change the current state to the target state
             liftSlideSubsystem.setCurrentState(liftSlideSubsystem.getTargetState());
         }
         if (timeout){
             //Put the target state in the packet
-            p.addLine("LiftSlide Move TIMEOUT");
-            p.put("Timeout Timer", timeoutTimer.seconds());
+            MatchConfig.telemetryPacket.addLine("LiftSlide Move TIMEOUT");
+            MatchConfig.telemetryPacket.put("Timeout Timer", timeoutTimer.seconds());
         }
         if (interrupted){
             //Put the target state in the packet
-            p.addLine("LiftSlide Move INTERRUPTED From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " at " + timeoutTimer.seconds() + " seconds");
+            MatchConfig.telemetryPacket.addLine("LiftSlide Move INTERRUPTED From " + liftSlideSubsystem.getCurrentState() + " to " + liftSlideSubsystem.getTargetState() + " at " + timeoutTimer.seconds() + " seconds");
         }
-
-        FtcDashboard.getInstance().sendTelemetryPacket(p);
     }
 }

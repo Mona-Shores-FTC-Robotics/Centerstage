@@ -11,13 +11,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 public class DroneSubsystem extends SubsystemBase {
 
     public static class DroneParameters {
-
         public DroneDeployState DRONE_DEPLOY_STARTING_STATE = DroneDeployState.HOLD;
-
         public double HOLD_VALUE = .5;
-
         public double FLY_VALUE = 1;
-
     }
 
     public static  DroneParameters droneParameters = new DroneParameters();
@@ -36,34 +32,25 @@ public class DroneSubsystem extends SubsystemBase {
 
     public Servo drone;
     public DroneSubsystem.DroneDeployState currentState;
-    public double currentPosition;
-    private GamepadHandling gamepadHandling;
+
+    public void setCurrentState(DroneDeployState state) {
+        currentState = state;
+    }
 
     public DroneSubsystem(final HardwareMap hMap, final String name) {
         drone = hMap.servo.get("drone");
-
     }
 
     public void init() {
-        DroneDeployState.HOLD.SetState(droneParameters.HOLD_VALUE);
-        DroneDeployState.FLY.SetState(droneParameters.FLY_VALUE);
-
         currentState = droneParameters.DRONE_DEPLOY_STARTING_STATE;
-        currentPosition = currentState.position;
     }
 
     public void periodic(){
-
-        //
-//        if (MatchConfig.teleOpTimer.seconds() > droneParameters.END_GAME_TIME)
-//        {
-//            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-//                    .whenPressed(new ReleaseDroneCommand(this, DroneDeployState.FLY));
-//        }
-
         DroneDeployState.HOLD.SetState(droneParameters.HOLD_VALUE);
         DroneDeployState.FLY.SetState(droneParameters.FLY_VALUE);
 
+        //Add the Drone State to our loop telemetry packet
+        MatchConfig.telemetryPacket.put("Current Drone State", currentState);
     }
 
 

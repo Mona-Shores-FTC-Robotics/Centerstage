@@ -6,10 +6,9 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
@@ -26,7 +25,7 @@ public class MakeSpikeBackdropParkActions {
 
     public Action MakeReadyToScorePixelAction() {
         return new SequentialAction(
-                        new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
                         new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE),
                         new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                         new SleepAction(.5),
@@ -41,7 +40,7 @@ public class MakeSpikeBackdropParkActions {
         return new SequentialAction(
                 new ParallelAction(
                         new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE),
-                        new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
                         new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
                 ),
                 new SleepAction(.5),

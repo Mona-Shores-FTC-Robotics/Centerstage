@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -16,4 +17,7 @@ public class MatchConfig {
     public static boolean autoHasRun=false;
 
     public static ElapsedTime teleOpTimer;
+
+    public static TelemetryPacket telemetryPacket;
+
 }

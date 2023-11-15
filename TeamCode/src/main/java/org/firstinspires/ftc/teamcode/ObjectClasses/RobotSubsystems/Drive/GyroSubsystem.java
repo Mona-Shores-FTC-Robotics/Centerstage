@@ -98,7 +98,6 @@ public class GyroSubsystem extends SubsystemBase {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("");
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Abs (Degrees)" + JavaUtil.formatNumber(currentAbsoluteYawDegrees, 6, 0));
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Rel (Degrees)" + JavaUtil.formatNumber(currentRelativeYawDegrees, 6, 0));
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Offset (Degrees)" + JavaUtil.formatNumber(offsetFromAbsoluteYawDegrees, 6, 0));
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Pose (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log(), 4, 0));
     }
 

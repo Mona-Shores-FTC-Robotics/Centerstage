@@ -12,9 +12,9 @@ import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateEndEffectorCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
@@ -39,7 +39,7 @@ public class CenterstageOperatorBindings {
 
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
-        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
 
         //////////////////////////////////////////////////////////
@@ -123,14 +123,14 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(
                         new SequentialCommandGroup(
-                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.OPEN),
-                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON, IntakeSubsystem.IntakeStates.INTAKE_SLOWER)
+                                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.OPEN),
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON, IntakeSubsystem.IntakeStates.INTAKE_SLOW)
                         ))
                 .whenReleased(
                         new SequentialCommandGroup(
                                 new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF, IntakeSubsystem.IntakeStates.INTAKE_OFF),
                                 new WaitCommand(300),
-                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.CLOSED)
+                                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.CLOSED)
                         ));
 
         //////////////////////////////////////////////////////////
@@ -196,7 +196,7 @@ public class CenterstageOperatorBindings {
 
     private void MakeCombinationCommands() {
 
-        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
@@ -205,8 +205,8 @@ public class CenterstageOperatorBindings {
                 new ParallelCommandGroup(
                         new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
                 new SequentialCommandGroup(
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                        new ActuateGripperCommand(gripperSubsystem,
+                                GripperSubsystem.GripperStates.CLOSED),
                         new MoveLiftSlideCommand(liftSlideSubsystem,
                                 LiftSlideSubsystem.LiftStates.SAFE),
                         new RotateShoulderCommand(shoulderSubsystem,
@@ -217,15 +217,15 @@ public class CenterstageOperatorBindings {
 
         releasePixels =
                 new SequentialCommandGroup(
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.OPEN),
+                        new ActuateGripperCommand(gripperSubsystem,
+                                GripperSubsystem.GripperStates.OPEN),
                         new WaitCommand(325),
                         new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(),-5),
                         new ParallelCommandGroup(
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
                                         LiftSlideSubsystem.LiftStates.SAFE),
-                                new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                        EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                                new ActuateGripperCommand(gripperSubsystem,
+                                        GripperSubsystem.GripperStates.CLOSED),
                                 new RotateShoulderCommand(shoulderSubsystem,
                                         ShoulderSubsystem.ShoulderStates.HALFWAY)
                         ),

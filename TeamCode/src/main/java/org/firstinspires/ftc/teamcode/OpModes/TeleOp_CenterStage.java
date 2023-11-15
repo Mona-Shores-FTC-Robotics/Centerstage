@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -92,7 +94,7 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.teleOpTimer.reset();
 
         ElapsedTime loopTimer = new ElapsedTime();
-
+        MatchConfig.telemetryPacket = new TelemetryPacket();
         while (opModeIsActive())
         {
             //Reset the timer for the loop timer
@@ -107,12 +109,16 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
+            //Activate End Game Rumble at 87 seconds into TeleOp
             gamepadHandling.endGameRumble();
 
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
             telemetry.addLine("TeleOp Time " + JavaUtil.formatNumber(MatchConfig.teleOpTimer.seconds(), 4, 1) + " / 120 seconds");
             telemetry.addData("Loop Time ", JavaUtil.formatNumber(loopTimer.milliseconds(), 4, 1));
             telemetry.update();
+
+            FtcDashboard.getInstance().sendTelemetryPacket(new TelemetryPacket());
+            MatchConfig.telemetryPacket = new TelemetryPacket();
         }
     }
 

@@ -381,16 +381,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
         Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians);
 
-        TelemetryPacket p = new TelemetryPacket();
-        p.put("ftcPoseX", distanceX);
-        p.put("ftcPoseX", distanceY);
-        p.put("ftcPoseYaw", cameraYaw);
-        p.put("current Relative Gyro Angle", Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
-        p.put("current Absolute Gyro Angle", Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees);
-        p.put("Current Pose", mecanumDrive.pose);
-        FtcDashboard.getInstance().sendTelemetryPacket(p);
         telemetry.addLine();
-
         telemetry.addData("Tag", tag.detection.metadata.name);
         telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
         telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
@@ -545,8 +536,6 @@ public final class VisionSubsystem extends SubsystemBase {
             double drive = ClipDrive(rangeError);
             double turn = ClipTurn(headingError);
             double strafe = ClipStrafe(yawError);
-
-
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 
 @Config
 public class ClimberSubsystem extends SubsystemBase {
@@ -17,21 +18,12 @@ public class ClimberSubsystem extends SubsystemBase {
         public ClimberArmStates CLIMBER_ARM_STARTING_STATE = ClimberArmStates.STOWED;
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
-        public double CLIMBER_ARM_THRESHOLD = .03;
         public double STOWED_VALUE = .5;
         public double READY_VALUE = .7;
-        public double END_GAME_TIME = 120;
 
-        public static int WINCH_TICK_THRESHOLD = 30;
-        public static double ROBOT_DOWN_POWER = -.8;
-        public static double ROBOT_UP_POWER = .8;
-        public static double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
-        public static double POS_P=5;
-        public static double SCALE_FACTOR_FOR_WINCH=150;
+        public double ROBOT_DOWN_POWER = -.8;
+        public double ROBOT_UP_POWER = .8;
     }
-
-    public final int MAX_TARGET_TICKS = 400;
-    public final int MIN_TARGET_TICKS = 0;
 
     public static ClimberParameters climberParameters = new ClimberParameters();
 
@@ -56,33 +48,21 @@ public class ClimberSubsystem extends SubsystemBase {
         WinchMotorStates(double p) {
             this.power = p;
         }
+        void SetState(double p){
+            this.power = p;
+        }
     }
 
     public Servo climberArm;
     public DcMotorEx winchMotor;
     public ClimberSubsystem.ClimberArmStates currentClimberArmState;
-    public double currentClimberArmPosition;
     public ClimberSubsystem.WinchMotorStates currentWinchMotorState;
-    public double power;
 
+    public void setCurrentWinchMotorState(ClimberSubsystem.WinchMotorStates state) {currentWinchMotorState = state;}
+    public ClimberSubsystem.WinchMotorStates getCurrentWinchMotorState() {return currentWinchMotorState;}
 
-    ClimberSubsystem.WinchMotorStates currentState;
-    public void setCurrentState(ClimberSubsystem.WinchMotorStates state) {currentState = state;}
-    public ClimberSubsystem.WinchMotorStates getCurrentState() {return currentState;}
-
-    private ClimberSubsystem.WinchMotorStates targetState;
-    public void setTargetState(ClimberSubsystem.WinchMotorStates state) {targetState = state;}
-    public ClimberSubsystem.WinchMotorStates getTargetState() {return targetState;}
-
-    private int targetTicks;
-    public int getTargetTicks() {return targetTicks;}
-    public void setTargetTicks(int ticks) {targetTicks=ticks;}
-
-    private int currentTicks;
-    public int getCurrentTicks() {
-        return currentTicks;
-    }
-
+    public void setCurrentClimberArmState(ClimberSubsystem.ClimberArmStates state) {currentClimberArmState = state;}
+    public ClimberSubsystem.ClimberArmStates getCurrentClimberArmState() {return currentClimberArmState;}
 
     public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName) {
         climberArm = hMap.servo.get(climberArmName);
@@ -95,14 +75,11 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private void climberArmInit() {
-        ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
-        ClimberArmStates.STOWED.SetState(climberParameters.STOWED_VALUE);
-
         currentClimberArmState = climberParameters.CLIMBER_ARM_STARTING_STATE;
-        currentClimberArmPosition = currentClimberArmState.position;
     }
 
     private void winchMotorInit() {
+        currentWinchMotorState = climberParameters.WINCH_MOTOR_STARTING_STATE;
         winchMotor.setDirection(DcMotor.Direction.REVERSE);
         winchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         currentWinchMotorState = WinchMotorStates.OFF;
@@ -112,7 +89,16 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public void periodic(){
+        //Save the values to the enum every loop so we can adjust in the dashboard
         ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
         ClimberArmStates.STOWED.SetState(climberParameters.STOWED_VALUE);
+        WinchMotorStates.ROBOT_DOWN.SetState(climberParameters.ROBOT_DOWN_POWER);
+        WinchMotorStates.ROBOT_UP.SetState(climberParameters.ROBOT_UP_POWER);
+
+        //Add the Winch Motor State to our loop telemetry packet
+        MatchConfig.telemetryPacket.put("Current Winch Motor State", currentWinchMotorState);
+
+        //Add the Climber Arm State to our loop telemetry packet
+        MatchConfig.telemetryPacket.put("Current Climber Arm State", currentClimberArmState);
     }
 }

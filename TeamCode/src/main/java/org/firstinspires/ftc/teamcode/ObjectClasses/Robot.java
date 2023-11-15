@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSubsystem;
@@ -28,7 +27,7 @@ public class Robot {
     private static GyroSubsystem gyroSubsystem;
     private static VisionSubsystem visionSubsystem;
     private static IntakeSubsystem intakeSubsystem;
-    private static EndEffectorSubsystem endEffectorSubsystem;
+    private static GripperSubsystem gripperSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
     private static DroneSubsystem droneSubsystem;
@@ -62,7 +61,7 @@ public class Robot {
             }
 
             case ROBOT_SCORING_ARM: {
-                endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
+                gripperSubsystem = new GripperSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
                 droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
@@ -80,7 +79,7 @@ public class Robot {
                 gyroSubsystem = new GyroSubsystem(hardwareMap, "imu");
                 visionSubsystem = new VisionSubsystem(hardwareMap, "Webcam 1");
                 intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake", "intake2");
-                endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
+                gripperSubsystem = new GripperSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
                 droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
@@ -144,7 +143,7 @@ public class Robot {
                 break;
             }
             case ROBOT_SCORING_ARM: {
-                endEffectorSubsystem.init();
+                gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
                 droneSubsystem.init();
@@ -160,7 +159,7 @@ public class Robot {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();
-                endEffectorSubsystem.init();
+                gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
                 droneSubsystem.init();
@@ -194,7 +193,7 @@ public class Robot {
                 gyroSubsystem.init();
                 mecanumDriveSubsystem.init();
                 intakeSubsystem.init();
-                endEffectorSubsystem.init();
+                gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
                 //droneSubsystem.init();
@@ -212,7 +211,7 @@ public class Robot {
     public DriveSubsystem getDriveSubsystem()  {return mecanumDriveSubsystem;}
     public VisionSubsystem getVisionSubsystem()  {return visionSubsystem;}
     public IntakeSubsystem getIntakeSubsystem()  {return intakeSubsystem;}
-    public EndEffectorSubsystem getEndEffectorSubsystem()  {return endEffectorSubsystem;}
+    public GripperSubsystem getEndEffectorSubsystem()  {return gripperSubsystem;}
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}

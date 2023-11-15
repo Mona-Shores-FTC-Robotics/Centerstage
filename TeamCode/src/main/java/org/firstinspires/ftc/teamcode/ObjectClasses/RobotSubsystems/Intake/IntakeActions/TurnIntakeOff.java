@@ -19,10 +19,20 @@ public class TurnIntakeOff implements Action {
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         telemetryPacket.addLine("Intake Off Action");
-        Robot.getInstance().getIntakeSubsystem().currentState = IntakeSubsystem.IntakeStates.INTAKE_OFF;
-        Robot.getInstance().getIntakeSubsystem().intake.setPower(intakeParameters.INTAKE_OFF_POWER);
-        Robot.getInstance().getIntakeSubsystem().intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        Robot.getInstance().getIntakeSubsystem().intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
+
+        intakeSubsystem.intake1.setDirection(DcMotor.Direction.FORWARD);
+        intakeSubsystem.intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intakeSubsystem.currentIntake1State = IntakeSubsystem.IntakeStates.INTAKE_OFF;
+        intakeSubsystem.intake1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeSubsystem.intake1.setPower(intakeParameters.INTAKE_OFF_POWER);
+
+        intakeSubsystem.intake2.setDirection(DcMotor.Direction.REVERSE);
+        intakeSubsystem.intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        intakeSubsystem.currentIntake2State = IntakeSubsystem.IntakeStates.INTAKE_OFF;
+        intakeSubsystem.intake2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeSubsystem.intake2.setPower(intakeParameters.INTAKE_OFF_POWER);
+
         return false;
     }
 }

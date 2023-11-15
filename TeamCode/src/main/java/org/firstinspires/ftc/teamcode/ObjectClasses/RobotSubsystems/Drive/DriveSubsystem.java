@@ -3,10 +3,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -145,8 +143,7 @@ public class DriveSubsystem extends SubsystemBase {
             }
         }
 
-        //Prepare and send a telemetry packet with drive information
-//        DashboardTelemetryDriveTrain();
+        DashboardTelemetryDriveTrain();
 
         //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
         mecanumDrive.SetRoadRunnerParameters();
@@ -160,30 +157,28 @@ public class DriveSubsystem extends SubsystemBase {
 
     private void DashboardTelemetryDriveTrain() {
         //****************** DriveSubsystem TELEMETRY PACKET *************************//
-        TelemetryPacket packet = new TelemetryPacket();
-        c = packet.fieldOverlay();
+
+        c = MatchConfig.telemetryPacket.fieldOverlay();
 
         //Lets just look at the Left Front wheel speed to get an idea of speed of the robot
         double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
         double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
         double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
 
-        packet.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
-        packet.put("LF Speed", actualSpeedLF);
-        packet.put("LF Target", targetSpeedLF);
-        packet.put("LF Power", powerLF);
+        MatchConfig.telemetryPacket.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
+        MatchConfig.telemetryPacket.put("LF Speed", actualSpeedLF);
+        MatchConfig.telemetryPacket.put("LF Target", targetSpeedLF);
+        MatchConfig.telemetryPacket.put("LF Power", powerLF);
 
-        packet.put("x", mecanumDrive.pose.position.x);
-        packet.put("y", mecanumDrive.pose.position.y);
-        packet.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
+        MatchConfig.telemetryPacket.put("x", mecanumDrive.pose.position.x);
+        MatchConfig.telemetryPacket.put("y", mecanumDrive.pose.position.y);
+        MatchConfig.telemetryPacket.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
 
-        packet.fieldOverlay().getOperations().addAll(c.getOperations());
+        MatchConfig.telemetryPacket.fieldOverlay().getOperations().addAll(c.getOperations());
         mecanumDrive.drawPoseHistory(c);
 
         c.setStroke("#3F51B5");
         mecanumDrive.drawRobot(c, mecanumDrive.pose);
-        FtcDashboard.getInstance().sendTelemetryPacket(packet);
-
     }
 
     public void DriverStationTelemetry() {
@@ -231,12 +226,10 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
-                TelemetryPacket telemetryPacket = new TelemetryPacket();
-                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
-                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
-                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
-                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
 
+                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
@@ -247,11 +240,9 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
-                TelemetryPacket telemetryPacket = new TelemetryPacket();
-                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
-                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
-                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
-                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
+                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
             } else drivingToAprilTag = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving

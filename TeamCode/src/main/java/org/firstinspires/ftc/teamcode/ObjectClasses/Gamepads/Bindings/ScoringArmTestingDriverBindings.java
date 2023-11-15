@@ -10,9 +10,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateEndEffectorCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.DefaultLiftSlideCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
@@ -54,7 +53,7 @@ public class ScoringArmTestingDriverBindings {
 
     private static DriveSubsystem driveSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
-    private static EndEffectorSubsystem endEffectorSubsystem;
+    private static GripperSubsystem gripperSubsystem;
     private static IntakeSubsystem intakeSubsystem;
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static MecanumDriveMona mecanumDrive;
@@ -68,8 +67,8 @@ public class ScoringArmTestingDriverBindings {
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .toggleWhenPressed(
-                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN),
-                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
+                        new ActuateGripperCommand(Robot.getInstance().getEndEffectorSubsystem(), GripperSubsystem.GripperStates.OPEN),
+                        new ActuateGripperCommand(Robot.getInstance().getEndEffectorSubsystem(), GripperSubsystem.GripperStates.CLOSED));
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
@@ -107,7 +106,7 @@ public class ScoringArmTestingDriverBindings {
 
     private void makeSequenceCommands() {
 
-        EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
@@ -135,11 +134,11 @@ public class ScoringArmTestingDriverBindings {
         liftHigh = new MoveLiftSlideCommand(liftSlideSubsystem,
                 LiftSlideSubsystem.LiftStates.HIGH);
 
-        openClaw = new ActuateEndEffectorCommand(endEffectorSubsystem,
-                EndEffectorSubsystem.EndEffectorStates.OPEN);
+        openClaw = new ActuateGripperCommand(gripperSubsystem,
+                GripperSubsystem.GripperStates.OPEN);
 
-        closeClaw = new ActuateEndEffectorCommand(endEffectorSubsystem,
-                EndEffectorSubsystem.EndEffectorStates.CLOSED);
+        closeClaw = new ActuateGripperCommand(gripperSubsystem,
+                GripperSubsystem.GripperStates.CLOSED);
 
 //        moveToPixelScoreLocation = new MoveToPointCommand(Robot.getInstance().getDriveSubsystem(),
 //                mecanumDrive.pose.position.x+3,
@@ -153,8 +152,8 @@ public class ScoringArmTestingDriverBindings {
 
         readyToScorePixel =
                 new SequentialCommandGroup(
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                        new ActuateGripperCommand(gripperSubsystem,
+                                GripperSubsystem.GripperStates.CLOSED),
                         new MoveLiftSlideCommand(liftSlideSubsystem,
                                 LiftSlideSubsystem.LiftStates.SAFE),
                         new RotateShoulderCommand(shoulderSubsystem,
@@ -165,14 +164,14 @@ public class ScoringArmTestingDriverBindings {
 
         releasePixels =
                 new SequentialCommandGroup(
-                        new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                EndEffectorSubsystem.EndEffectorStates.OPEN),
+                        new ActuateGripperCommand(gripperSubsystem,
+                                GripperSubsystem.GripperStates.OPEN),
                         new WaitCommand(325),
                         new ParallelCommandGroup(
                                 new MoveLiftSlideCommand(liftSlideSubsystem,
                                         LiftSlideSubsystem.LiftStates.SAFE),
-                                new ActuateEndEffectorCommand(endEffectorSubsystem,
-                                        EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                                new ActuateGripperCommand(gripperSubsystem,
+                                        GripperSubsystem.GripperStates.CLOSED),
                                 new RotateShoulderCommand(shoulderSubsystem,
                                         ShoulderSubsystem.ShoulderStates.HALFWAY)
                         ),
