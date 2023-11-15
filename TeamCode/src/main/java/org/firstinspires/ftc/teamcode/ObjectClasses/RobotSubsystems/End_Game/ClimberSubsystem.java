@@ -1,30 +1,30 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
+@Config
 public class ClimberSubsystem extends SubsystemBase {
 
     public static class ClimberParameters  {
 
         public ClimberArmStates CLIMBER_ARM_STARTING_STATE = ClimberArmStates.STOWED;
-        public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.WOUND;
+        public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
         public double CLIMBER_ARM_THRESHOLD = .03;
         public double STOWED_VALUE = .5;
-        public double READY_VALUE = .8;
+        public double READY_VALUE = .7;
         public double END_GAME_TIME = 120;
 
         public static int WINCH_TICK_THRESHOLD = 30;
-        public static double LET_OUT_POWER = 0;
-        public static double PULL_IN_POWER = .6;
+        public static double ROBOT_DOWN_POWER = -.8;
+        public static double ROBOT_UP_POWER = .8;
         public static double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
         public static double POS_P=5;
         public static double SCALE_FACTOR_FOR_WINCH=150;
@@ -48,15 +48,13 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public enum WinchMotorStates {
-        WOUND (0),
-        UNWOUND (500);
+        ROBOT_DOWN(-1),
+        ROBOT_UP(1),
+        OFF(0);
 
-        public int ticks;
-        WinchMotorStates(int t) {
-            this.ticks = t;
-        }
-        void SetStateTicks(int t){
-            this.ticks = t;
+        public double power;
+        WinchMotorStates(double p) {
+            this.power = p;
         }
     }
 
@@ -85,12 +83,10 @@ public class ClimberSubsystem extends SubsystemBase {
         return currentTicks;
     }
 
-    private GamepadHandling gamepadHandling;
 
     public ClimberSubsystem(final HardwareMap hMap, final String climberArmName, final String winchMotorName) {
         climberArm = hMap.servo.get(climberArmName);
         winchMotor = hMap.get(DcMotorEx.class, winchMotorName);
-
     }
 
     public void init() {
@@ -107,25 +103,15 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private void winchMotorInit() {
-        winchMotor.setDirection(DcMotor.Direction.FORWARD);
+        winchMotor.setDirection(DcMotor.Direction.REVERSE);
         winchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        currentWinchMotorState = WinchMotorStates.WOUND;
+        currentWinchMotorState = WinchMotorStates.OFF;
         winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        power = climberParameters.LET_OUT_POWER;
-        winchMotor.setPower(power);
+        winchMotor.setPower(0);
         winchMotor.setVelocity(0);
     }
 
     public void periodic(){
-
-//        if (MatchConfig.teleOpTimer.seconds() > climberParameters.END_GAME_TIME)
-//        {
-//
-//            gamepadHandling.getOperatorGamepad().getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-//                    .whenPressed(new ReadyClimberArmCommand(this, ClimberArmStates.READY))
-//                    .whenReleased(new PullWinchInCommand(this, WinchMotorStates.WOUND));
-//        }
-
         ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
         ClimberArmStates.STOWED.SetState(climberParameters.STOWED_VALUE);
     }

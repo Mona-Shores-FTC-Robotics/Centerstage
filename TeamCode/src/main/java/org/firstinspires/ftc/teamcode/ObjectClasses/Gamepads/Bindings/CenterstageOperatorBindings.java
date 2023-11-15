@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
 
-import com.acmerobotics.roadrunner.SleepAction;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -20,12 +19,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointRelativeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ChangeWinchPowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReadyClimberArmCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -36,7 +32,7 @@ public class CenterstageOperatorBindings {
     public static TriggerReader leftTrigger;
     public static ParallelCommandGroup readyToScorePixel;
     public static SequentialCommandGroup releasePixels;
-
+    private static boolean armIsUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
 
         MakeCombinationCommands();
@@ -44,6 +40,7 @@ public class CenterstageOperatorBindings {
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
         EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -55,29 +52,66 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // RIGHT BUMPER - LET DRONE FLY                    //
+        // RIGHT BUMPER - ROBOT UP WITH WINCH                   //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new InstantCommand(() -> {
-                    if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
-                        new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
-                    }
-                }));
+                .whenPressed(
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                if (armIsUp) {
+                                    new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
+                                }
+                            }
+                        }
+                        )
+                )
+                .whenReleased(
+                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
+                );
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // LEFT BUMPER  - PULL UP THE WENCH                     //
+        // DPAD-DOWN - ROBOT DOWN WITH WINCH                    //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                if (armIsUp) {
+                                    new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_DOWN).schedule();
+                                }
+                            }
+                        }
+                        )
+                )
+                .whenReleased(
+                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
+                );
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // LEFT BUMPER  - CLIMBER ARM TO READY POSITION         //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(new InstantCommand(() -> {
-                    if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
-                        new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
-                    }
-                }));
+                .toggleWhenPressed(
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
+                                armIsUp=true;
+                            }
+                        }),
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
+                                armIsUp=false;
+                            }
+                        }));
 
         //////////////////////////////////////////////////////////
         //                                                      //

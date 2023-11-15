@@ -49,8 +49,6 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
         roadRunnerDriveSubsystem = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
-        Action testAutoAlignAction = new AutoDriveToBackDrop(DELIVER_LOCATION, DISTANCE_TO_TAG);
-
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
@@ -87,7 +85,8 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
         //Reset Gyro
         Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
-        Actions.runBlocking(testAutoAlignAction);
+        Actions.runBlocking( new AutoDriveToBackDrop(DELIVER_LOCATION));
+
 //        Actions.runBlocking(new TurnToAction(0));
 
     }

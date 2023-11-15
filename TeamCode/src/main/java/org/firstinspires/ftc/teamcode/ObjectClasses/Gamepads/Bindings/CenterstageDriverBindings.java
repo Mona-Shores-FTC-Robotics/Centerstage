@@ -58,17 +58,16 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // LEFT BUMPER     - TOGGLE CLIMBING ARM AT ENDGAME     //
+        // LEFT BUMPER     - fly drone                          //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .toggleWhenPressed(
-                        new InstantCommand(()->{
-                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
-                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY);
-                            }}),
-                        new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED));
+                .whenPressed(new InstantCommand(() -> {
+                    if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                        new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
+                    }
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //

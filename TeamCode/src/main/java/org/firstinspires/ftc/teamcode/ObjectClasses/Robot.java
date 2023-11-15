@@ -83,12 +83,8 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
-                //droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
-
-                //airplane launcher
-                //winch
-                //intake pick up
-                //lights
+                droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
+                climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
                 break;
             }
         }
@@ -161,12 +157,9 @@ public class Robot {
                 endEffectorSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-                //droneSubsystem.init();
-                //Systems to be added:
-                //Servo - Drone launch release
-
-                //Motor - Winch for hanging
-                //Lights for identifying pixels in intake
+                droneSubsystem.init();
+                climberSubsystem.init();
+                 //Lights for identifying pixels in intake
                 break;
             }
         }

@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         // drive model parameters
         public double inPerTick =0.0317919075144509; //60.5\1903
-        public double lateralInPerTick =0.029; // 60\1845.5
+        public double lateralInPerTick =0.025; // 60\1845.5
         public double trackWidthTicks =631.8289216104534;
 
         // feedforward parameters (in tick units)

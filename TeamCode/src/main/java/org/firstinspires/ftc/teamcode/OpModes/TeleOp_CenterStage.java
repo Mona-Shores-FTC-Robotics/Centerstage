@@ -42,11 +42,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+import org.opencv.core.Mat;
 
 @TeleOp(name="TeleOp_CenterStage")
 public class TeleOp_CenterStage extends LinearOpMode
 {
-    private ElapsedTime teleOpTimer;
 
     @Override
     public void runOpMode()
@@ -86,8 +86,8 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPose();
 
         //Start the TeleOp Timer
-        teleOpTimer = new ElapsedTime();
-        teleOpTimer.reset();
+         MatchConfig.teleOpTimer = new ElapsedTime();
+        MatchConfig.teleOpTimer.reset();
 
         while (opModeIsActive())
         {
@@ -106,28 +106,8 @@ public class TeleOp_CenterStage extends LinearOpMode
 //            EndGameRumble();
 //            ActivateEndGameButtons();
 
+            telemetry.addData("time",MatchConfig.teleOpTimer.seconds());
             telemetry.update();
-        }
-    }
-
-    private void EndGameRumble() {
-        if ( teleOpTimer.seconds()>END_GAME_TIME-5){
-            //Rumble the controllers
-            //Flash lights on controller?
-            //Flash lights on robot?
-        }
-    }
-
-    void ActivateEndGameButtons(){
-        if ( teleOpTimer.seconds()>END_GAME_TIME){
-            //check buttons for Wench and drone
-            //Right Trigger shows some telemetry about the buttons
-//            if (CenterstageOperatorBindings.rightTrigger.isDown()) {
-//                //schedule the Wench release command here
-//            }
-//            if (CenterstageOperatorBindings.leftTrigger.isDown()) {
-//                //schedule the Drone release command here
-//            }
         }
     }
 
