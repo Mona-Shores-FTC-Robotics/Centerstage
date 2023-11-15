@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.PitModeDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -62,7 +63,7 @@ public class TeleOp_PitMode extends LinearOpMode
         telemetry.clearAll();
 
         /* Setup Button Bindings **/
-        new ScoringArmTestingDriverBindings(gamepadHandling.getDriverGamepad());
+        new PitModeDriverBindings(gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -86,10 +87,7 @@ public class TeleOp_PitMode extends LinearOpMode
             gamepadHandling.getDriverGamepad().readButtons();
 
 
-            telemetry.addData("Ticks", Robot.getInstance().getLiftSlideSubsystem().liftSlide.getCurrentPosition());
 
-            sleep(10);
-            telemetry.update();
         }
     }
 }

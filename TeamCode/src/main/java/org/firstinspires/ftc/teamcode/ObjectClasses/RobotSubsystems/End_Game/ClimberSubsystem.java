@@ -48,7 +48,7 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     public enum WinchMotorStates {
-        ROBOT_DOWN(-1),
+        ROBOT_DOWN(-.3),
         ROBOT_UP(1),
         OFF(0);
 
