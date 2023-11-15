@@ -137,7 +137,6 @@ public final class MecanumDriveMona {
 
         defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
 
-
         FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
         FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
     }

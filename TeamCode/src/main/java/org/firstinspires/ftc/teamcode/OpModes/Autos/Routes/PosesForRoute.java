@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 
-
-import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_PIXEL_PICKUP;
-import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_STAGING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_PIXEL_PICKUP;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_STAGING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.example.meepmeeptesting.MeepMeepTesting;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;

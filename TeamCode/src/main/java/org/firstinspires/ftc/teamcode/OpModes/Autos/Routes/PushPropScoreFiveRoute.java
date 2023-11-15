@@ -15,9 +15,6 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
@@ -27,6 +24,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.LineToXRelativeAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
@@ -140,7 +138,7 @@ public class PushPropScoreFiveRoute {
 
     public static class RouteBuilder {
         MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
-        Action AutoDriveToBackDrop(Pose2d scorePose, PosesForRoute posesForRoute) {
+        Action TrajectoryToBackDrop(Pose2d scorePose, PosesForRoute posesForRoute) {
             Action autoDriveToBackdrop = mecanumDrive.actionBuilder(posesForRoute.backdropStagingPose)
                     .splineToLinearHeading(scorePose, TANGENT_TOWARD_BACKSTAGE)
                     .build();
@@ -197,21 +195,41 @@ public class PushPropScoreFiveRoute {
             return autoDriveToNeutralStack;
         }
 
+
+
+        //This action shouldn't require us to know we are as long as we have vision of an april tag
+        //leaving the old "route" way of doing things here and the inputs it used for now incase the tag stuff doesnt work out
+//        new RouteBuilder().TrajectoryToBackDrop(scorePose, posesForRoute)
+//       new RouteBuilder().TrajectoryFromBackDrop(scorePose, posesForRoute)
         public Action ScorePixelAction(Pose2d scorePose, VisionSubsystem.DeliverLocation deliverLocation, PosesForRoute posesForRoute) {
-            SequentialAction scorePixel = new SequentialAction(
-                    new ParallelAction(
-                            new AutoDriveToBackDrop(deliverLocation, Robot.getInstance().getVisionSubsystem().tunableVisionConstants.DISTANCE_FOR_SCORING),
-                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRoute),
-                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.LOW),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
-                    new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
-                    new ParallelAction(
-                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRoute),
-                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
-                    ),
-                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME
-                    )
+            SequentialAction scorePixel =
+                    new SequentialAction(
+                            new ParallelAction(
+                                    new SequentialAction(
+                                            new AutoDriveToBackDrop(deliverLocation),
+                                            new LineToXRelativeAction(+3)
+                                    ),
+                                    new SequentialAction(
+                                            new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
+                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
+                                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE)
+                                    )),
+                            new SleepAction(.9),
+                            new SequentialAction(
+                                    new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.OPEN),
+                                    new SleepAction(.5),
+                                    new LineToXRelativeAction(-5)
+                            ),
+                            new ParallelAction(
+                                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
+                                    new ActuateEndEffectorAction(EndEffectorSubsystem.EndEffectorStates.CLOSED),
+                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
+                            ),
+                            new ParallelAction(
+                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE),
+                                    new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME)
+                            )
             );
             return scorePixel;
         }

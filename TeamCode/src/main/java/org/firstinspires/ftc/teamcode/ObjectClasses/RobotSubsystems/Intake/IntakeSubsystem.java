@@ -34,7 +34,7 @@ public class IntakeSubsystem extends SubsystemBase {
             this.velocity = vel;
         }
     }
-
+    //SECOND INTAKE MOTOR - PORT 3 EXPANSION HUB
     public DcMotorEx intake;
     public PIDFCoefficients pidfCoefficients;
 

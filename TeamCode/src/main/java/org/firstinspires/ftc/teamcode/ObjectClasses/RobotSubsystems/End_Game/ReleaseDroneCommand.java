@@ -28,9 +28,7 @@ public class ReleaseDroneCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {
-        droneSubsystem.drone.setPosition(targetState.position);
-    }
+    public void initialize() {droneSubsystem.drone.setPosition(targetState.position);}
 
     public void execute() {
         TelemetryPacket telemetryPacket = new TelemetryPacket();

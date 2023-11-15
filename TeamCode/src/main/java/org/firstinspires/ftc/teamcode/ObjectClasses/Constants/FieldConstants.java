@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 
 public class FieldConstants {
 
-    public static double END_GAME_TIME=120;
+    public static double END_GAME_TIME=10;
 
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;
@@ -47,20 +47,19 @@ public class FieldConstants {
     public static double TANGENT_TOWARD_RED = Math.toRadians(270);
     public static double TANGENT_315_DEGREES = Math.toRadians(315);
 
-
     public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-10, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-10, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d RED_NEUTRAL_STAGING = new Pose2d(-2*TILE+10, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_NEUTRAL_STAGING = new Pose2d(-2*TILE+10, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
-    public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, TILE+HALF_TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, TILE+HALF_TILE+QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE+3, TILE+HALF_TILE-QUARTER_TILE+3, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE+3, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE+3, TILE+HALF_TILE+QUARTER_TILE-3, FACE_TOWARD_BACKSTAGE);
 
-    public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -TILE-TILE+QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -TILE-QUARTER_TILE-3, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE+3, -TILE-TILE+QUARTER_TILE+3, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE+3, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE+3, -TILE-QUARTER_TILE-3, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_AUDIENCE_START_POSE = new Pose2d(-HALF_TILE-TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_RED);
 

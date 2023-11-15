@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
-import com.acmerobotics.roadrunner.SleepAction;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
+
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -9,6 +10,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.EndEffectorSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
@@ -17,8 +19,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointRelativeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ChangeWinchPowerCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReadyClimberArmCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -29,7 +32,7 @@ public class CenterstageOperatorBindings {
     public static TriggerReader leftTrigger;
     public static ParallelCommandGroup readyToScorePixel;
     public static SequentialCommandGroup releasePixels;
-
+    private static boolean armIsUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
 
         MakeCombinationCommands();
@@ -37,6 +40,8 @@ public class CenterstageOperatorBindings {
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
         EndEffectorSubsystem endEffectorSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
+
         //////////////////////////////////////////////////////////
         //                                                      //
         // LEFT STICK / RIGHT STICK                             //
@@ -47,36 +52,79 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // RIGHT BUMPER                                         //
+        // RIGHT BUMPER - ROBOT UP WITH WINCH                   //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenPressed(
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                if (armIsUp) {
+                                    new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
+                                }
+                            }
+                        }
+                        )
+                )
+                .whenReleased(
+                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
+                );
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // DPAD-DOWN - ROBOT DOWN WITH WINCH                    //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                if (armIsUp) {
+                                    new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_DOWN).schedule();
+                                }
+                            }
+                        }
+                        )
+                )
+                .whenReleased(
+                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
+                );
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // LEFT BUMPER  - CLIMBER ARM TO READY POSITION         //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
-                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.OPEN),
-                        new ActuateEndEffectorCommand(Robot.getInstance().getEndEffectorSubsystem(), EndEffectorSubsystem.EndEffectorStates.CLOSED));
-
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
+                                armIsUp=true;
+                            }
+                        }),
+                        new InstantCommand(() -> {
+                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
+                                armIsUp=false;
+                            }
+                        }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // LEFT BUMPER                                          //
+        //  X BUTTON - INTAKE                                   //
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //end game?
-
-        //////////////////////////////////////////////////////////
-        //                                                      //
-        //  X BUTTON                                            //
-        //                                                      //
-        //////////////////////////////////////////////////////////
-
-       // INTAKE ON while held down, off when not
+        // INTAKE ON while held down, off when not
         operatorGamepad.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(
                         new SequentialCommandGroup(
-                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON),
-                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.OPEN)
+                                new ActuateEndEffectorCommand(endEffectorSubsystem, EndEffectorSubsystem.EndEffectorStates.OPEN),
+                                new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_ON)
                         ))
                 .whenReleased(
                         new SequentialCommandGroup(
@@ -86,21 +134,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  Y BUTTON                                            //
-        //                                                      //
-        //////////////////////////////////////////////////////////
-
-        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            Robot.getInstance().getVisionSubsystem().setDeliverHeight(VisionSubsystem.DeliverHeight.MID);}),
-                        readyToScorePixel
-                ), false);
-
-
-        //////////////////////////////////////////////////////////
-        //                                                      //
-        //  B BUTTON                                            //
+        //  B BUTTON - REVERSE INTAKE                           //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -109,17 +143,27 @@ public class CenterstageOperatorBindings {
                 .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_REVERSE))
                 .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF));
 
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  Y BUTTON - READY TO SCORE PIXELS MID HEIGHT         //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new SequentialCommandGroup(
+                        new InstantCommand(() -> {
+                            Robot.getInstance().getVisionSubsystem().setDeliverHeight(VisionSubsystem.DeliverHeight.MID);
+                        }),
+                        readyToScorePixel), false);
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  A BUTTON                                            //
+        //  A BUTTON  - RELEASE PIXELS                          //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(
-                        releasePixels
-                , false);
+                .whenPressed(releasePixels, false);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -145,7 +189,9 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        }
+
+
+    }
 
     private void MakeCombinationCommands() {
 

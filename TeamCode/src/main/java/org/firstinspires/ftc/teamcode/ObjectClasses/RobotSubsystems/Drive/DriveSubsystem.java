@@ -48,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         // drive model parameters
         public double inPerTick =0.0317919075144509; //60.5\1903
-        public double lateralInPerTick =0.029; // 60\1845.5
+        public double lateralInPerTick =0.025; // 60\1845.5
         public double trackWidthTicks =631.8289216104534;
 
         // feedforward parameters (in tick units)
@@ -145,11 +145,10 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         //Prepare and send a telemetry packet with drive information
-        DashboardTelemetryDriveTrain();
+//        DashboardTelemetryDriveTrain();
 
         //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
         mecanumDrive.SetRoadRunnerParameters();
-
 
         //update the PIDFCoefficients every loop so that changes we make in the dashboard take effect
         Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
@@ -231,6 +230,12 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
+                TelemetryPacket telemetryPacket = new TelemetryPacket();
+                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
+                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
+                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
+                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
+
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().allianceColor == InitVisionProcessor.AllianceColor.BLUE &&
@@ -241,6 +246,11 @@ public class DriveSubsystem extends SubsystemBase {
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
+                TelemetryPacket telemetryPacket = new TelemetryPacket();
+                telemetryPacket.put("April Tag Drive", mecanumDrive.aprilTagDrive);
+                telemetryPacket.put("April Tag Strafe", mecanumDrive.aprilTagStrafe);
+                telemetryPacket.put("April Tag Turn", mecanumDrive.aprilTagTurn);
+                FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
             } else drivingToAprilTag = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving

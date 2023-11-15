@@ -48,13 +48,13 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-        public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double SPEED_GAIN = 0.12;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.04;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double DRIVE_FEEDFORWARD=.08;
-        public double STRAFE_FEEDFORWARD=.04;
-        public double TURN_FEEDFORWARD=.04;
-        public double TURN_GAIN = -0.04;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = -0.15;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double DRIVE_FEEDFORWARD=.015; //this seesm to be the amount to move forard needed
+        public double STRAFE_FEEDFORWARD=.44; //tihs is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.015;
+        public double TURN_GAIN = -0.015;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -64,11 +64,14 @@ public final class VisionSubsystem extends SubsystemBase {
         public double BACKDROP_DRIVE_THRESHOLD=.2;
         public double BACKDROP_STRAFE_THRESHOLD=.2;
         public double BACKDROP_TURN_THRESHOLD=.2;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=1;
+
+        public double GYRO_SWITCH_THRESHOLD=.9;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
+    public boolean switchToGyroTurnValue=false;
     public boolean resetPoseReady=false;
     public boolean resetHeading=false;
     public Pose2d resetPose;
@@ -382,8 +385,10 @@ public final class VisionSubsystem extends SubsystemBase {
         p.put("ftcPoseX", distanceX);
         p.put("ftcPoseX", distanceY);
         p.put("ftcPoseYaw", cameraYaw);
+        p.put("current Relative Gyro Angle", Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
+        p.put("current Absolute Gyro Angle", Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees);
         p.put("Current Pose", mecanumDrive.pose);
-
+        FtcDashboard.getInstance().sendTelemetryPacket(p);
         telemetry.addLine();
 
         telemetry.addData("Tag", tag.detection.metadata.name);
@@ -541,9 +546,12 @@ public final class VisionSubsystem extends SubsystemBase {
             double turn = ClipTurn(headingError);
             double strafe = ClipStrafe(yawError);
 
+
+
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+
 
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
@@ -566,6 +574,8 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+
+
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
@@ -645,6 +655,12 @@ public final class VisionSubsystem extends SubsystemBase {
 
     //returns false once the pose reaches a steady state for a certain number of checks
     private boolean resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
+
+        if    ( (Math.abs(drive)    < tunableVisionConstants.GYRO_SWITCH_THRESHOLD) &&
+                (Math.abs(strafe)   < tunableVisionConstants.GYRO_SWITCH_THRESHOLD))
+        {
+            switchToGyroTurnValue=true;
+        }
 
         //We have found the target if this is true
         if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
