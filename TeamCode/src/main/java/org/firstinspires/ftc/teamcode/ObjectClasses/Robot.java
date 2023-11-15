@@ -20,7 +20,7 @@ public class Robot {
     private static Robot robot = null;
     public RobotType robotType;
     public OpModeType opModeType;
-    public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE}
+    public enum RobotType {ROBOT_CENTERSTAGE, ROBOT_DRIVE_BASE, ROBOT_VISION, ROBOT_SCORING_ARM, ROBOT_INTAKE, ROBOT_PIT_MODE}
     public enum OpModeType {TELEOP, AUTO}
 
     private static LinearOpMode activeOpMode;
@@ -83,6 +83,12 @@ public class Robot {
                 endEffectorSubsystem = new EndEffectorSubsystem(hardwareMap, "endeffector");
                 liftSlideSubsystem = new LiftSlideSubsystem(hardwareMap, "liftslide");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
+                climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
+                break;
+            }
+            case ROBOT_PIT_MODE: {
+
                 droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
                 climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
                 break;
@@ -160,6 +166,12 @@ public class Robot {
                 droneSubsystem.init();
                 climberSubsystem.init();
                  //Lights for identifying pixels in intake
+                break;
+            }
+            case ROBOT_PIT_MODE: {
+
+                droneSubsystem.init();
+                climberSubsystem.init();
                 break;
             }
         }
