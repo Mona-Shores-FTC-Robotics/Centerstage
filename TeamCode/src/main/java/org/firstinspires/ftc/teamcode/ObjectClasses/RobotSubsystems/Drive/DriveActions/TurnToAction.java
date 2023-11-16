@@ -31,7 +31,7 @@ public class TurnToAction implements Action{
     public TurnToAction(double targetDegrees) {
         mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         turnPIDController=new TurnPIDController(targetDegrees,P_TERM, I_TERM, D_TERM, F_TERM);
-        turnCompleteCounter=0;
+
     }
 
     @Override
@@ -50,6 +50,7 @@ public class TurnToAction implements Action{
 
         if (turnCompleteCounter > COUNT_THRESHOLD)
         {
+            turnCompleteCounter=0;
             return false;
         } else return true;
     }

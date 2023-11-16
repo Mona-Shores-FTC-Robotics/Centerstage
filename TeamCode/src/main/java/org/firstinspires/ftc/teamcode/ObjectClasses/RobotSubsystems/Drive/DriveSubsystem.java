@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.D_TERM;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.F_TERM;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.I_TERM;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.P_TERM;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
@@ -113,7 +117,7 @@ public class DriveSubsystem extends SubsystemBase {
     private boolean overrideAprilTagDriving = false;
 
     public VisionSubsystem visionSubsystem;
-    public boolean drivingToAprilTag;
+    public boolean aprilTagAutoDriving;
     public boolean fieldOrientedControl;
 
     public double drive;
@@ -124,6 +128,14 @@ public class DriveSubsystem extends SubsystemBase {
     public double leftXAdjusted;
     public double rightXAdjusted;
 
+    private boolean aprilTagStrafing = false;
+    private boolean aprilTagDriving = false;
+    private boolean aprilTagTurning = false;
+
+    private TurnPIDController pidTurn;
+    private TurnPIDController pidStrafe;
+    private TurnPIDController pidDrive;
+
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
@@ -133,7 +145,7 @@ public class DriveSubsystem extends SubsystemBase {
     public void init()
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
-        drivingToAprilTag=false;
+        aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         mecanumDrive.init();
     }
@@ -230,7 +242,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         boolean gamepadActive = driverGamepadIsActive(leftY, leftX, rightX);
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (gamepadActive || drivingToAprilTag) {
+        if (gamepadActive || aprilTagAutoDriving) {
 
             //apply speed factors
             leftYAdjusted = leftY * driveParameters.DRIVE_SPEED_FACTOR;
@@ -244,35 +256,91 @@ public class DriveSubsystem extends SubsystemBase {
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
             // I'm not sure if this works for field oriented control
-            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD) drivingToAprilTag = false;
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+                aprilTagAutoDriving = false;
+                aprilTagTurning =false;
+                aprilTagStrafing=false;
+                aprilTagDriving=false;
+            }
 
             //Align to the Backdrop AprilTags - CASE RED
             if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFoundInLast3Seconds &&
-                    (leftYAdjusted > .2 || drivingToAprilTag) &&
+                    visionSubsystem.redBackdropAprilTagFoundRecently &&
+                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
-                drivingToAprilTag = visionSubsystem.AutoDriveToBackdropRed();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
 
+                if (!aprilTagAutoDriving)
+                {
+                    aprilTagAutoDriving =true;
+                    aprilTagTurning =true;
+                    aprilTagStrafing=false;
+                    aprilTagDriving=false;
+
+                    pidTurn = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
+                    pidStrafe = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
+                    pidDrive = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
+
+                }
+
+                if (aprilTagTurning){
+
+                    visionSubsystem.AutoDriveToBackdropRed();
+                    leftYAdjusted = 0;
+                    leftXAdjusted = 0;
+                    rightXAdjusted = pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
+
+                    if (Math.abs(pidTurn.error) < 2)
+                    {
+                        aprilTagTurning =false;
+                        aprilTagStrafing=true;
+                        aprilTagDriving=false;
+                    }
+                }
+
+                if (aprilTagStrafing){
+                    visionSubsystem.AutoDriveToBackdropRed();
+                    leftYAdjusted = 0;
+                    leftXAdjusted = pidStrafe.update(visionSubsystem.bearingError);
+                    rightXAdjusted = 0;
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().bearingError) < 2)
+                    {
+                        aprilTagTurning =false;
+                        aprilTagStrafing=false;
+                        aprilTagDriving=true;
+                    }
+                }
+
+                if (aprilTagDriving) {
+                    visionSubsystem.AutoDriveToBackdropRed();
+                    leftYAdjusted = pidDrive.update(visionSubsystem.rangeError);
+                    leftXAdjusted = 0;
+                    rightXAdjusted = 0;
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < 2)
+                    {
+                        aprilTagTurning =false;
+                        aprilTagStrafing=false;
+                        aprilTagDriving=false;
+                        aprilTagAutoDriving=false;
+                    }
+                }
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFoundInLastSecond &&
-                    (leftYAdjusted > .2 || drivingToAprilTag) &&
+                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
+                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
-                drivingToAprilTag = visionSubsystem.AutoDriveToBackdropBlue();
+                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-            } else drivingToAprilTag = false;
+            } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             leftYAdjusted = 0;

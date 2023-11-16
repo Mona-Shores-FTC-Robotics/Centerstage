@@ -165,13 +165,13 @@ public final class MecanumDriveMona {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
-            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundInLastSecond &&
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundRecently &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFoundInLast3Seconds &&
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFoundRecently &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
