@@ -248,7 +248,7 @@ public class DriveSubsystem extends SubsystemBase {
 
             //Align to the Backdrop AprilTags - CASE RED
             if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFound &&
+                    visionSubsystem.redBackdropAprilTagFoundInLast3Seconds &&
                     (leftYAdjusted > .2 || drivingToAprilTag) &&
                     !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropRed();
@@ -262,7 +262,7 @@ public class DriveSubsystem extends SubsystemBase {
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFound &&
+                    visionSubsystem.blueBackdropAprilTagFoundInLastSecond &&
                     (leftYAdjusted > .2 || drivingToAprilTag) &&
                     !getOverrideAprilTagDriving()) {
                 drivingToAprilTag = visionSubsystem.AutoDriveToBackdropBlue();

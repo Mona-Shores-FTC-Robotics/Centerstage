@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
 import static java.lang.Math.abs;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.MecanumKinematics;
@@ -28,8 +26,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.FollowTrajectoryAction;
@@ -169,13 +165,13 @@ public final class MecanumDriveMona {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
-            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundInLastSecond &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFoundInLast3Seconds &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);

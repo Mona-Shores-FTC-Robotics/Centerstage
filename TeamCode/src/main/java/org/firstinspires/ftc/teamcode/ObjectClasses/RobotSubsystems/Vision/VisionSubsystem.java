@@ -215,8 +215,8 @@ public final class VisionSubsystem extends SubsystemBase {
 
     private DeliverHeight deliverHeight = DeliverHeight.LOW;
 
-    public boolean blueBackdropAprilTagFound = false;
-    public boolean redBackdropAprilTagFound = false;
+    public boolean blueBackdropAprilTagFoundInLastSecond = false;
+    public boolean redBackdropAprilTagFoundInLast3Seconds = false;
 
     public VisionSubsystem(final HardwareMap hMap, final String name) {
 
@@ -450,8 +450,8 @@ public final class VisionSubsystem extends SubsystemBase {
     //  2) the delivery location is center, but center isn't found
     //  3) the delivery location is left, but left isn't found
     public boolean AutoDriveToBackdropBlue() {
-        if (        BLUE_BACKDROP_RIGHT_TAG.isDetected ||
-                (BLUE_BACKDROP_RIGHT_TAG.getTimestamp() > MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)  && (
+        if (        (BLUE_BACKDROP_RIGHT_TAG.isDetected ||
+                (BLUE_BACKDROP_RIGHT_TAG.getTimestamp() > MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))  && (
                     getDeliverLocationBlue().equals(DeliverLocation.RIGHT)    ||
                     (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)       ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected)))
@@ -476,9 +476,9 @@ public final class VisionSubsystem extends SubsystemBase {
         // if its left, but left is not detected or
         // if its right, but right is not detected
 
-        else if (   BLUE_BACKDROP_CENTER_TAG.isDetected ||
+        else if (   (BLUE_BACKDROP_CENTER_TAG.isDetected ||
                     (BLUE_BACKDROP_CENTER_TAG.getTimestamp() >
-                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))
                         && (
                     getDeliverLocationBlue().equals(DeliverLocation.CENTER) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected) ||
@@ -505,9 +505,9 @@ public final class VisionSubsystem extends SubsystemBase {
         //Drive to the Right backdrop if its the deliver location, or
         // if its left, but left is not detected or
         // if its center, but center is not detected
-        else if (   BLUE_BACKDROP_LEFT_TAG.isDetected ||
+        else if (   (BLUE_BACKDROP_LEFT_TAG.isDetected ||
                 (BLUE_BACKDROP_LEFT_TAG.getTimestamp() >
-                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS) &&
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)) &&
                 (getDeliverLocationBlue().equals(DeliverLocation.LEFT)    ||
                 (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)       ||
                 (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)))
@@ -533,9 +533,9 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public boolean AutoDriveToBackdropRed() {
 
-        if (    RED_BACKDROP_LEFT_TAG.isDetected ||
+        if (    (RED_BACKDROP_LEFT_TAG.isDetected ||
                 (RED_BACKDROP_LEFT_TAG.getTimestamp() >
-                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))
                 && (
                 getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
@@ -558,9 +558,9 @@ public final class VisionSubsystem extends SubsystemBase {
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
 
-        } else if (     RED_BACKDROP_CENTER_TAG.isDetected ||
+        } else if (    (RED_BACKDROP_CENTER_TAG.isDetected ||
                        (RED_BACKDROP_CENTER_TAG.getTimestamp() >
-                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))
                                && (getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
                        (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
                        (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
@@ -585,9 +585,9 @@ public final class VisionSubsystem extends SubsystemBase {
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
 
         }
-        else if ( RED_BACKDROP_RIGHT_TAG.isDetected ||
+        else if ( (RED_BACKDROP_RIGHT_TAG.isDetected ||
                 (RED_BACKDROP_RIGHT_TAG.getTimestamp() >
-                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))
                         && (
                  getDeliverLocationRed().equals(DeliverLocation.RIGHT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
