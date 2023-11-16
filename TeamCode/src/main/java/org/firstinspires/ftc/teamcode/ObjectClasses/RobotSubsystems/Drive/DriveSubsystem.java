@@ -75,8 +75,8 @@ public class DriveSubsystem extends SubsystemBase {
 //        public double lateralVelGain =0;
 //        public double headingVelGain =0; // shared with turn
 
-        public double inPerTick = 0.0295; // 0.0317919075144509
-        public double lateralInPerTick =0.0267; // 60\1845.5 .025
+        public double inPerTick = 0.0313; // 0.0317919075144509
+        public double lateralInPerTick =0.0283; // 60\1845.5 .025
         public double trackWidthTicks =631.8289216104534;  //631.8289216104534
 
         //new values
