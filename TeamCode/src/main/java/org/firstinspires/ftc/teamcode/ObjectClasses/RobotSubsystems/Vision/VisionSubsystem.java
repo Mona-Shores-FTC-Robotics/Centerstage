@@ -383,6 +383,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 }
             }
         }
+
+
     }
 
     private Pose2d DeterminePoseFromAprilTag(AprilTagID tag) {
