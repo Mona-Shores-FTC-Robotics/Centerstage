@@ -175,8 +175,6 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         DashboardTelemetryDriveTrain();
-
-        //todo can we make this more robust so all drive parameters are being live updated in the dashboard?
         mecanumDrive.SetRoadRunnerParameters();
 
         //update the PIDFCoefficients every loop so that changes we make in the dashboard take effect

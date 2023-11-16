@@ -85,8 +85,10 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
         Robot.getInstance().getActiveOpMode().telemetry.update();
+
         MatchConfig.timestampTimer = new ElapsedTime();
         MatchConfig.timestampTimer.reset();
+
         Actions.runBlocking(selectedRoute);
     }
 

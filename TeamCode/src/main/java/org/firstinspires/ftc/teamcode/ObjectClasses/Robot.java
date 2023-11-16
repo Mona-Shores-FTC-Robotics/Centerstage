@@ -168,7 +168,6 @@ public class Robot {
                 break;
             }
             case ROBOT_PIT_MODE: {
-
                 droneSubsystem.init();
                 climberSubsystem.init();
                 break;
@@ -196,12 +195,9 @@ public class Robot {
                 gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-                //droneSubsystem.init();
 
-                //airplane launcher
-                //winch
-                //intake pick up
-                //lights
+                //todo do any subsystems need to be init during auto?
+
                 break;
             }
         }
