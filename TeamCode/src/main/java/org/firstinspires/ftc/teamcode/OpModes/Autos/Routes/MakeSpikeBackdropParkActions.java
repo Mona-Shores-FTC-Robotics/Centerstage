@@ -23,13 +23,13 @@ public class MakeSpikeBackdropParkActions {
         }
 
 
-    public Action MakeReadyToScorePixelAction() {
+    public Action MakeReadyToScorePixelAction(LiftSlideSubsystem.LiftStates liftHeight) {
         return new SequentialAction(
                         new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
                         new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE),
                         new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                         new SleepAction(.5),
-                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.LOW)
+                        new MoveLiftSlideActionFinishImmediate(liftHeight)
                 );
     }
 
