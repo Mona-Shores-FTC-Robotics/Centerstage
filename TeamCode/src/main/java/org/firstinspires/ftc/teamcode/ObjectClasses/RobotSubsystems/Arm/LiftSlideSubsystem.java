@@ -34,6 +34,11 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public int ZERO_HEIGHT_TICKS=0;
         public int HOME_HEIGHT_TICKS=25;
         public int SAFE_HEIGHT_TICKS=125;
+        public int AUTO_LOW_HEIGHT_TICKS=700;
+        public int AUTO_MID_HEIGHT_TICKS=1100;
+        public int AUTO_HIGH_HEIGHT_TICKS=1650;
+
+
         public int LOW_HEIGHT_TICKS=700;
         public int MID_HEIGHT_TICKS=1900;
         public int HIGH_HEIGHT_TICKS=2400;
@@ -47,7 +52,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
     public static LiftSlideSubsystem.LiftSlideHeights liftSlideHeights = new LiftSlideHeights();
 
     public enum LiftStates {
-        HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
+        AUTO_LOW, AUTO_MID, AUTO_HIGH, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
         public int ticks;
 
         static {
@@ -57,6 +62,9 @@ public class LiftSlideSubsystem extends SubsystemBase {
             HOME.ticks = liftSlideHeights.HOME_HEIGHT_TICKS;;
             ZERO.ticks = liftSlideHeights.ZERO_HEIGHT_TICKS;;
             SAFE.ticks = liftSlideHeights.SAFE_HEIGHT_TICKS;;
+            AUTO_LOW.ticks = liftSlideHeights.AUTO_LOW_HEIGHT_TICKS;
+            AUTO_MID.ticks = liftSlideHeights.AUTO_MID_HEIGHT_TICKS;
+            AUTO_HIGH.ticks = liftSlideHeights.AUTO_HIGH_HEIGHT_TICKS;
         }
         public void setLiftHeightTicks(int t){
             this.ticks = t;
