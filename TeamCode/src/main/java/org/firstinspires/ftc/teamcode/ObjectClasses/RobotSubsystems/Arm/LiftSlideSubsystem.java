@@ -15,10 +15,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-
+@Config
 public class LiftSlideSubsystem extends SubsystemBase {
 
-    @Config
+
     public static class LiftSlideParameters {
         public int LIFT_HEIGHT_TICK_THRESHOLD = 45;
         public double TIMEOUT_TIME_SECONDS = 2;
@@ -30,13 +30,12 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public double LIFT_DEAD_ZONE_FOR_MANUAL_LIFT;
     }
 
-    @Config
     public static class LiftSlideHeights{
         public int ZERO_HEIGHT_TICKS=0;
         public int HOME_HEIGHT_TICKS=25;
         public int SAFE_HEIGHT_TICKS=125;
-        public int LOW_HEIGHT_TICKS=1200;
-        public int MID_HEIGHT_TICKS=1800;
+        public int LOW_HEIGHT_TICKS=700;
+        public int MID_HEIGHT_TICKS=1250;
         public int HIGH_HEIGHT_TICKS=1800;
     }
 

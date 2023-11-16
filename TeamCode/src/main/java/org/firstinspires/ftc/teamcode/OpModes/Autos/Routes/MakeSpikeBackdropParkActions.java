@@ -29,12 +29,9 @@ public class MakeSpikeBackdropParkActions {
                         new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE),
                         new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                         new SleepAction(.5),
-                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.MID)
+                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.LOW)
                 );
     }
-
-
-
 
     public Action MakeRetractArmAction() {
         return new SequentialAction(
