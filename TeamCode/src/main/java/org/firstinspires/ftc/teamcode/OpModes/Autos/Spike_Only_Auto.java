@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
@@ -32,7 +33,6 @@ public class Spike_Only_Auto extends LinearOpMode {
     public void runOpMode() {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
@@ -85,7 +85,8 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
         Robot.getInstance().getActiveOpMode().telemetry.update();
-
+        MatchConfig.timestampTimer = new ElapsedTime();
+        MatchConfig.timestampTimer.reset();
         Actions.runBlocking(selectedRoute);
     }
 

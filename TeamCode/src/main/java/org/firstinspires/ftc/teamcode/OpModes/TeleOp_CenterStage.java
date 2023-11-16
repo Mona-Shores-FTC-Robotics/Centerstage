@@ -96,6 +96,9 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.loopTimer = new ElapsedTime();
         MatchConfig.loopTimer.reset();
 
+        MatchConfig.timestampTimer = new ElapsedTime();
+        MatchConfig.timestampTimer.reset();
+
         MatchConfig.telemetryPacket = new TelemetryPacket();
         while (opModeIsActive())
         {

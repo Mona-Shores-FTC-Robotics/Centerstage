@@ -46,17 +46,18 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+@Config
 public final class MecanumDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick = 0.0317919075144509; //60.5\1903
-        public double lateralInPerTick = 0.0325115144947169; // 60\1845.5
-        public double trackWidthTicks = 631.8289216104534;
+        public double inPerTick = 0.04122; // 0.0317919075144509
+        public double lateralInPerTick =0.04329; // 60\1845.5 .025
+        public double trackWidthTicks =486.4610149342712;  //631.8289216104534
 
         // feedforward parameters (in tick units)
-        public double kS = 0.9574546275336608;
-        public double kV = 0.004264232249424524;
-        public double kA = 0.00055;
+        public double kS =  1.0;  //0.9574546275336608
+        public double kV = 0.003858438495965098; //=0.004264232249424524;
+        public double kA =.0007;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 25;
@@ -68,13 +69,13 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 12;
-        public double lateralGain = 3;
-        public double headingGain = 8; // shared with turn
+        public double axialGain =9.5;
+        public double lateralGain =7.5;
+        public double headingGain =15; // shared with turn
 
-        public double axialVelGain = 1;
-        public double lateralVelGain = 1;
-        public double headingVelGain = 1; // shared with turn
+        public double axialVelGain =0;
+        public double lateralVelGain =0;
+        public double headingVelGain =0; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -122,7 +123,6 @@ public final class MecanumDrive {
             LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
             RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
-
 
             leftFront = new OverflowEncoder(LFEncoder);
             leftRear = new OverflowEncoder(LBEncoder);

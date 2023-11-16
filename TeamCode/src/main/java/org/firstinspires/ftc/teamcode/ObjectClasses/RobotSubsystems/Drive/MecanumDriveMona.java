@@ -171,13 +171,13 @@ public final class MecanumDriveMona {
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFound &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    drive > .1) {
+                    drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
             //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFound &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    drive > .1) {
+                    drive > .2) {
                 drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
             }
 

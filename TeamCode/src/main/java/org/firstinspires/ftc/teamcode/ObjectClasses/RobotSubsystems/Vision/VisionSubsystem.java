@@ -9,7 +9,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,7 +22,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
-import org.firstinspires.ftc.robotcore.external.navigation.Rotation;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -48,26 +47,55 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
         //  applied to the drive motors to correct the error.
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-        public double SPEED_GAIN = 0.12;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
         public double SAFETY_SPEED_GAIN = 0.01;   //
-        public double STRAFE_GAIN = -0.15;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double DRIVE_FEEDFORWARD=.015; //this seesm to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=.44; //tihs is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.015;
-        public double TURN_GAIN = -0.015;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = 0.04;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double DRIVE_FEEDFORWARD=.08; //this seesm to be the amount to move forard needed
+        public double STRAFE_FEEDFORWARD=.04; //tihs is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.04;
+        public double TURN_GAIN = 0.04;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.2;
-        public double BACKDROP_STRAFE_THRESHOLD=.2;
-        public double BACKDROP_TURN_THRESHOLD=.2;
+        public double BACKDROP_DRIVE_THRESHOLD=.15;
+        public double BACKDROP_STRAFE_THRESHOLD=.15;
+        public double BACKDROP_TURN_THRESHOLD=.15;
+        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = 3;
 
         public double GYRO_SWITCH_THRESHOLD=.9;
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
+
+//    // These are from the chassis bot with it working really well
+//    public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
+//    public double DISTANCE_FOR_SCORING = 5;
+//    public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
+//
+//    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
+//    //  applied to the drive motors to correct the error.
+//    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
+//    public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+//    public double SAFETY_SPEED_GAIN = 0.01;   //
+//    public double STRAFE_GAIN = -0.04;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+//    public double DRIVE_FEEDFORWARD=.08;
+//    public double STRAFE_FEEDFORWARD=.04;
+//    public double TURN_FEEDFORWARD=.04;
+//    public double TURN_GAIN = -0.04;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+//
+//    public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+//    public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
+//    public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+//
+//    public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
+//    public double BACKDROP_DRIVE_THRESHOLD=.2;
+//    public double BACKDROP_STRAFE_THRESHOLD=.2;
+//    public double BACKDROP_TURN_THRESHOLD=.2;
+//    public int BACKDROP_POSE_COUNT_THRESHOLD=1;
+
+
     private int blueTagFrameCount;
     private int redTagFrameCount;
     private int backdropPoseCount=0;
@@ -83,6 +111,7 @@ public final class VisionSubsystem extends SubsystemBase {
     private LinearOpMode activeOpMode;
     private MecanumDriveMona mecanumDrive;
 
+    private int aprilTagNotSeen =0;
     public boolean manualOverrideInitSettingsFlag = false;
 
     public void periodic()
@@ -126,12 +155,14 @@ public final class VisionSubsystem extends SubsystemBase {
 
         private final int id;
         private boolean isDetected;
+        private double timestamp;
         private AprilTagDetection detection;
 
         AprilTagID(int id) {
             this.id = id;
             this.isDetected = false;
             this.detection = null;
+            this.timestamp=0;
         }
 
         public static AprilTagID getByID(int id) {
@@ -147,6 +178,16 @@ public final class VisionSubsystem extends SubsystemBase {
                 tag.isDetected = false;
             }
         }
+
+        public void setTimestamp() {
+           this.timestamp = MatchConfig.timestampTimer.seconds();
+        }
+
+        public double getTimestamp() {
+            return this.timestamp;
+        }
+
+
 
         public void setDetected() {
             this.isDetected = true;
@@ -329,12 +370,12 @@ public final class VisionSubsystem extends SubsystemBase {
             if ((detection.metadata != null)) {
                 currentTag = AprilTagID.getByID(detection.id);
                 currentTag.setDetected();
+                currentTag.setTimestamp();
                 currentTag.storeDetection(detection);
 
                 DeterminePoseFromAprilTag(currentTag);
 
                 double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
-
                 // Pick whichever value is lower
                 double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
                 if (manualDriveLimit < DriveSubsystem.driveParameters.safetyDriveSpeedFactor) {
@@ -342,14 +383,6 @@ public final class VisionSubsystem extends SubsystemBase {
                 }
             }
         }
-
-        //If no april tags are detected then reset the safety drive speed factor
-        if (currentDetections.size() == 0) {
-            DriveSubsystem.driveParameters.safetyDriveSpeedFactor = DriveSubsystem.driveParameters.DRIVE_SPEED_FACTOR;
-        }
-
-        blueBackdropAprilTagFound = CheckBlueBackdropAprilTags();
-        redBackdropAprilTagFound = CheckRedBackdropAprilTags();
     }
 
     private Pose2d DeterminePoseFromAprilTag(AprilTagID tag) {
@@ -412,42 +445,13 @@ public final class VisionSubsystem extends SubsystemBase {
         return yawDegrees;
     }
 
-    private boolean CheckBlueBackdropAprilTags() {
-        if (BLUE_BACKDROP_LEFT_TAG.isDetected || BLUE_BACKDROP_RIGHT_TAG.isDetected || BLUE_BACKDROP_CENTER_TAG.isDetected) {
-            blueTagFrameCount++;
-        } else
-        {
-            blueTagFrameCount=0;
-        }
-
-        //this method only returns true if we see 1 frame of one of the tags being detected
-        if (blueTagFrameCount>0)
-        {
-            return true;
-        } return false;
-    }
-
-    private boolean CheckRedBackdropAprilTags() {
-        if (RED_BACKDROP_LEFT_TAG.isDetected || RED_BACKDROP_RIGHT_TAG.isDetected || RED_BACKDROP_CENTER_TAG.isDetected) {
-            redTagFrameCount++;
-        } else
-        {
-            redTagFrameCount=0;
-        }
-
-        //this method only returns true if we see 1 frame of one of the tags being detected
-        if (redTagFrameCount>0)
-        {
-            return true;
-        } return false;
-    }
-
     //  If right tag is detected AND one of the following three things is true, then drive to the right tag:
     //  1) the delivery location is right; or
     //  2) the delivery location is center, but center isn't found
     //  3) the delivery location is left, but left isn't found
     public boolean AutoDriveToBackdropBlue() {
-        if (        BLUE_BACKDROP_RIGHT_TAG.isDetected && (
+        if (        BLUE_BACKDROP_RIGHT_TAG.isDetected ||
+                (BLUE_BACKDROP_RIGHT_TAG.getTimestamp() > MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)  && (
                     getDeliverLocationBlue().equals(DeliverLocation.RIGHT)    ||
                     (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)       ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected)))
@@ -472,7 +476,10 @@ public final class VisionSubsystem extends SubsystemBase {
         // if its left, but left is not detected or
         // if its right, but right is not detected
 
-        else if (   BLUE_BACKDROP_CENTER_TAG.isDetected && (
+        else if (   BLUE_BACKDROP_CENTER_TAG.isDetected ||
+                    (BLUE_BACKDROP_CENTER_TAG.getTimestamp() >
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        && (
                     getDeliverLocationBlue().equals(DeliverLocation.CENTER) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)))
@@ -498,7 +505,9 @@ public final class VisionSubsystem extends SubsystemBase {
         //Drive to the Right backdrop if its the deliver location, or
         // if its left, but left is not detected or
         // if its center, but center is not detected
-        else if (   BLUE_BACKDROP_LEFT_TAG.isDetected &&
+        else if (   BLUE_BACKDROP_LEFT_TAG.isDetected ||
+                (BLUE_BACKDROP_LEFT_TAG.getTimestamp() >
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS) &&
                 (getDeliverLocationBlue().equals(DeliverLocation.LEFT)    ||
                 (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)       ||
                 (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)))
@@ -524,7 +533,10 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public boolean AutoDriveToBackdropRed() {
 
-        if (    RED_BACKDROP_LEFT_TAG.isDetected && (
+        if (    RED_BACKDROP_LEFT_TAG.isDetected ||
+                (RED_BACKDROP_LEFT_TAG.getTimestamp() >
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                && (
                 getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
                 (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
@@ -546,8 +558,10 @@ public final class VisionSubsystem extends SubsystemBase {
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_LEFT_TAG);
 
-        } else if (     RED_BACKDROP_CENTER_TAG.isDetected && (
-                        getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
+        } else if (     RED_BACKDROP_CENTER_TAG.isDetected ||
+                       (RED_BACKDROP_CENTER_TAG.getTimestamp() >
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                               && (getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
                        (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
                        (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
         )
@@ -571,7 +585,10 @@ public final class VisionSubsystem extends SubsystemBase {
             return resetRobotPoseBasedOnAprilTag(drive, strafe, turn, RED_BACKDROP_CENTER_TAG);
 
         }
-        else if ( RED_BACKDROP_RIGHT_TAG.isDetected && (
+        else if ( RED_BACKDROP_RIGHT_TAG.isDetected ||
+                (RED_BACKDROP_RIGHT_TAG.getTimestamp() >
+                        MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS)
+                        && (
                  getDeliverLocationRed().equals(DeliverLocation.RIGHT) ||
                 (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
                 (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
@@ -599,22 +616,22 @@ public final class VisionSubsystem extends SubsystemBase {
     private double ClipDrive(double rangeError) {
         double drive = Range.clip(
                     (rangeError * tunableVisionConstants.SPEED_GAIN) + //GAIN multiplied by Error
-                        (Math.signum(-rangeError)*tunableVisionConstants.DRIVE_FEEDFORWARD), //add a feedforward in the correct direction
+                        (Math.signum(rangeError)*tunableVisionConstants.DRIVE_FEEDFORWARD), //add a feedforward in the correct direction
                                             -tunableVisionConstants.MAX_AUTO_SPEED, // clip to this low value
                                             tunableVisionConstants.MAX_AUTO_SPEED); // or this high value
         return drive;
     }
     private double ClipStrafe(double yawError) {
           double strafe = Range.clip(
-                  (-yawError * tunableVisionConstants.STRAFE_GAIN)
-                          + (Math.signum(-yawError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
+                  (yawError * tunableVisionConstants.STRAFE_GAIN)
+                          + (Math.signum(yawError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
                   -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
           return strafe;
     }
     private double ClipTurn(double headingError) {
         double turn = Range.clip(
                 (headingError * tunableVisionConstants.TURN_GAIN)
-                        + + (Math.signum(-headingError)*tunableVisionConstants.TURN_FEEDFORWARD),
+                        + + (Math.signum(headingError)*tunableVisionConstants.TURN_FEEDFORWARD),
                 -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
         return turn;
     }
@@ -645,12 +662,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
     //returns false once the pose reaches a steady state for a certain number of checks
     private boolean resetRobotPoseBasedOnAprilTag(double drive, double strafe, double turn, AprilTagID tag) {
-
-        if    ( (Math.abs(drive)    < tunableVisionConstants.GYRO_SWITCH_THRESHOLD) &&
-                (Math.abs(strafe)   < tunableVisionConstants.GYRO_SWITCH_THRESHOLD))
-        {
-            switchToGyroTurnValue=true;
-        }
 
         //We have found the target if this is true
         if (    (Math.abs(drive)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&

@@ -18,7 +18,7 @@ public class MatchConfig {
 
     public static ElapsedTime teleOpTimer;
     public static ElapsedTime loopTimer;
+    public static ElapsedTime timestampTimer;
 
     public static TelemetryPacket telemetryPacket;
-
 }

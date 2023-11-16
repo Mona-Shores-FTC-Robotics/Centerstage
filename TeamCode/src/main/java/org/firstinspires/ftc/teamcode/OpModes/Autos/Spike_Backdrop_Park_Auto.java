@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -86,6 +87,9 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         CheckRedAudience();
 
         telemetry.clearAll();
+
+        MatchConfig.timestampTimer = new ElapsedTime();
+        MatchConfig.timestampTimer.reset();
 
         Actions.runBlocking(selectedRoute);
         MatchConfig.endOfAutonomousAbsoluteYawDegrees = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees;

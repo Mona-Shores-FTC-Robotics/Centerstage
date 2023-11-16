@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -88,6 +89,8 @@ public class PushPropScoreFive extends LinearOpMode {
 
         telemetry.clearAll();
 
+        MatchConfig.timestampTimer = new ElapsedTime();
+        MatchConfig.timestampTimer.reset();
         Actions.runBlocking(selectedRoute);
 
         MatchConfig.endOfAutonomousAbsoluteYawDegrees = Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees;
