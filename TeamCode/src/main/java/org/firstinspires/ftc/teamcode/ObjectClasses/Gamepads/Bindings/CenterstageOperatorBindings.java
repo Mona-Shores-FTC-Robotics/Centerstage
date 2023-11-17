@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
 
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -34,9 +35,6 @@ public class CenterstageOperatorBindings {
     public static SequentialCommandGroup releasePixels;
     private static boolean armIsUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
-
-        MakeCombinationCommands();
-
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
         GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
@@ -73,24 +71,46 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // DPAD-DOWN - ROBOT DOWN WITH WINCH                    //
+        // DPAD-UP -                                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new InstantCommand(()->{
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MAX);
+                }));
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // DPAD-RIGHT -                                         //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(new InstantCommand(()->{
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH);
+                }));
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // DPAD-LEFT -                                          //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(new InstantCommand(()->{
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
+                }));
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // DPAD-DOWN -                                          //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(
-                        new InstantCommand(() -> {
-                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
-                                if (armIsUp) {
-                                    new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_DOWN).schedule();
-                                }
-                            }
-                        }
-                        )
-                )
-                .whenReleased(
-                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
-                );
+                .whenPressed(new InstantCommand(()->{
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -151,11 +171,9 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new SequentialCommandGroup(
-                        new InstantCommand(() -> {
-                            Robot.getInstance().getVisionSubsystem().setDeliverHeight(VisionSubsystem.DeliverHeight.MID);
-                        }),
-                        readyToScorePixel), false);
+                .whenPressed(new InstantCommand(()-> {
+                            new MakeOperatorCombinationCommands().ReadyToScorePixelCommand().schedule();
+                        }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -164,7 +182,7 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(releasePixels, false);
+                .whenPressed(new MakeOperatorCombinationCommands().ReleasePixels(), false);
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -190,51 +208,55 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-
-
     }
 
-    private void MakeCombinationCommands() {
+    private class MakeOperatorCombinationCommands{
 
         GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
-        readyToScorePixel =
+        private Command ReadyToScorePixelCommand() {
 
-                new ParallelCommandGroup(
-                        new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
-                new SequentialCommandGroup(
-                        new ActuateGripperCommand(gripperSubsystem,
-                                GripperSubsystem.GripperStates.CLOSED),
-                        new MoveLiftSlideCommand(liftSlideSubsystem,
-                                LiftSlideSubsystem.LiftStates.SAFE),
-                        new RotateShoulderCommand(shoulderSubsystem,
-                                ShoulderSubsystem.ShoulderStates.BACKDROP),
-                        new MoveLiftSlideCommand(liftSlideSubsystem,
-                                LiftSlideSubsystem.LiftStates.MID)
-                ));
+            GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+            ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
+            LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
+            return new ParallelCommandGroup(
+                    new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
+                    new SequentialCommandGroup(
+                            new ActuateGripperCommand(gripperSubsystem,
+                                    GripperSubsystem.GripperStates.CLOSED),
+                            new MoveLiftSlideCommand(liftSlideSubsystem,
+                                    LiftSlideSubsystem.LiftStates.SAFE),
+                            new RotateShoulderCommand(shoulderSubsystem,
+                                    ShoulderSubsystem.ShoulderStates.BACKDROP),
+                            new MoveLiftSlideCommand(liftSlideSubsystem,
+                                    Robot.getInstance().getVisionSubsystem().getDeliverHeight())
+                    ));
+        }
 
-        releasePixels =
-                new SequentialCommandGroup(
-                        new ActuateGripperCommand(gripperSubsystem,
-                                GripperSubsystem.GripperStates.OPEN),
-                        new WaitCommand(325),
-                        new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(),-5),
-                        new ParallelCommandGroup(
-                                new MoveLiftSlideCommand(liftSlideSubsystem,
-                                        LiftSlideSubsystem.LiftStates.SAFE),
-                                new ActuateGripperCommand(gripperSubsystem,
-                                        GripperSubsystem.GripperStates.CLOSED),
-                                new RotateShoulderCommand(shoulderSubsystem,
-                                        ShoulderSubsystem.ShoulderStates.HALFWAY)
-                        ),
-                        new WaitCommand(250),
-                        new RotateShoulderCommand(shoulderSubsystem,
-                                ShoulderSubsystem.ShoulderStates.INTAKE),
-                        new WaitCommand(250),
-                        new MoveLiftSlideCommand(liftSlideSubsystem,
-                                LiftSlideSubsystem.LiftStates.HOME)
-                );
+        private Command ReleasePixels() {
+
+            return new SequentialCommandGroup(
+                            new ActuateGripperCommand(gripperSubsystem,
+                                    GripperSubsystem.GripperStates.OPEN),
+                            new WaitCommand(325),
+                            new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), -5),
+                            new ParallelCommandGroup(
+                                    new MoveLiftSlideCommand(liftSlideSubsystem,
+                                            LiftSlideSubsystem.LiftStates.SAFE),
+                                    new ActuateGripperCommand(gripperSubsystem,
+                                            GripperSubsystem.GripperStates.CLOSED),
+                                    new RotateShoulderCommand(shoulderSubsystem,
+                                            ShoulderSubsystem.ShoulderStates.HALFWAY)
+                            ),
+                            new WaitCommand(250),
+                            new RotateShoulderCommand(shoulderSubsystem,
+                                    ShoulderSubsystem.ShoulderStates.INTAKE),
+                            new WaitCommand(250),
+                            new MoveLiftSlideCommand(liftSlideSubsystem,
+                                    LiftSlideSubsystem.LiftStates.HOME)
+                    );
+        }
     }
 }

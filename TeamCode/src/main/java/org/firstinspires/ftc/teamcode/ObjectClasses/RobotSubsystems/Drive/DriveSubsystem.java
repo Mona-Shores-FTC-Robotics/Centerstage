@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.D_TERM;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.F_TERM;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.I_TERM;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction.P_TERM;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
@@ -11,6 +7,7 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
@@ -30,6 +27,28 @@ public class DriveSubsystem extends SubsystemBase {
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .2;
     }
+
+    public static class AutoDriveParameters {
+        public double TURN_ERROR_THRESHOLD = 1;
+        public double STRAFE_ERROR_THRESHOLD = .5;
+        public double DRIVE_ERROR_THRESHOLD = .5;
+
+        public double TURN_P = .016;
+        public double TURN_I = 0 ;
+        public double TURN_D = 0;
+        public double TURN_F = .15;
+
+        public double STRAFE_P=0;
+        public double STRAFE_I=0;
+        public double STRAFE_D=0;
+        public double STRAFE_F=0;
+
+        public double DRIVE_P=0;
+        public double DRIVE_I=0;
+        public double DRIVE_D=0;
+        public double DRIVE_F=0;
+    }
+
 
     public static class ParamsMona {
         /** Set Mona motor parameters for faster TeleOp driving**/
@@ -111,6 +130,8 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static DriveParameters driveParameters= new DriveParameters();
+    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
+
 
     public MecanumDriveMona mecanumDrive;
 
@@ -133,8 +154,8 @@ public class DriveSubsystem extends SubsystemBase {
     private boolean aprilTagTurning = false;
 
     private TurnPIDController pidTurn;
-    private TurnPIDController pidStrafe;
-    private TurnPIDController pidDrive;
+    private PIDFController pidStrafe;
+    private PIDFController pidDrive;
 
     public Canvas c;
 
@@ -272,14 +293,15 @@ public class DriveSubsystem extends SubsystemBase {
                 if (!aprilTagAutoDriving)
                 {
                     aprilTagAutoDriving =true;
-                    aprilTagTurning =true;
-                    aprilTagStrafing=false;
+                    aprilTagTurning =false;
+                    aprilTagStrafing=true;
                     aprilTagDriving=false;
 
-                    pidTurn = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
-                    pidStrafe = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
-                    pidDrive = new TurnPIDController(0, P_TERM, I_TERM, D_TERM, F_TERM);
-
+                    pidTurn = new TurnPIDController(0, autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
+                    pidStrafe = new PIDFController(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
+                    pidStrafe.setSetPoint(0);
+                    pidDrive = new PIDFController(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
+                    pidDrive.setSetPoint(0);
                 }
 
                 if (aprilTagTurning){
@@ -289,21 +311,7 @@ public class DriveSubsystem extends SubsystemBase {
                     leftXAdjusted = 0;
                     rightXAdjusted = pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
 
-                    if (Math.abs(pidTurn.error) < 2)
-                    {
-                        aprilTagTurning =false;
-                        aprilTagStrafing=true;
-                        aprilTagDriving=false;
-                    }
-                }
-
-                if (aprilTagStrafing){
-                    visionSubsystem.AutoDriveToBackdropRed();
-                    leftYAdjusted = 0;
-                    leftXAdjusted = pidStrafe.update(visionSubsystem.bearingError);
-                    rightXAdjusted = 0;
-
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().bearingError) < 2)
+                    if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD)
                     {
                         aprilTagTurning =false;
                         aprilTagStrafing=false;
@@ -311,12 +319,28 @@ public class DriveSubsystem extends SubsystemBase {
                     }
                 }
 
+                if (aprilTagStrafing){
+                    visionSubsystem.AutoDriveToBackdropRed();
+                    leftYAdjusted = 0;
+                    leftXAdjusted = pidStrafe.calculate(visionSubsystem.yawError);
+                    rightXAdjusted = 0;
+
+                    MatchConfig.telemetryPacket.put("pidStrafeOutput", leftXAdjusted);
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD)
+                    {
+                        aprilTagTurning =true;
+                        aprilTagStrafing=false;
+                        aprilTagDriving=false;
+                    }
+                }
+
                 if (aprilTagDriving) {
                     visionSubsystem.AutoDriveToBackdropRed();
-                    leftYAdjusted = pidDrive.update(visionSubsystem.rangeError);
+                    leftYAdjusted = pidDrive.calculate(visionSubsystem.rangeError);
                     leftXAdjusted = 0;
                     rightXAdjusted = 0;
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < 2)
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD)
                     {
                         aprilTagTurning =false;
                         aprilTagStrafing=false;

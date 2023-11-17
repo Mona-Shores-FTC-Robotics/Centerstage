@@ -51,11 +51,11 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(slowModeZeroHeadingCommand);
-
 //        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-//                .whenHeld(slowModeCommand);
+//                .whenHeld(slowModeZeroHeadingCommand);
+
+        gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(slowModeCommand);
 
         //////////////////////////////////////////////////////////
         //                                                      //

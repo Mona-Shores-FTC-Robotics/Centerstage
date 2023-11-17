@@ -15,6 +15,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+
 @Config
 public class LiftSlideSubsystem extends SubsystemBase {
 
@@ -38,24 +40,25 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public int AUTO_MID_HEIGHT_TICKS=1100;
         public int AUTO_HIGH_HEIGHT_TICKS=1650;
 
-
-        public int LOW_HEIGHT_TICKS=700;
-        public int MID_HEIGHT_TICKS=1900;
-        public int HIGH_HEIGHT_TICKS=2400;
+        public int LOW_HEIGHT_TICKS=1365;
+        public int MID_HEIGHT_TICKS=2100;
+        public int HIGH_HEIGHT_TICKS=2800;
+        public int MAX_HEIGHT_TICKETS=2800;
     }
 
-    public final int MAX_TARGET_TICKS = 2500;
+    public final int MAX_TARGET_TICKS = 2800;
     public final int MIN_TARGET_TICKS = 0;
-
 
     public static LiftSlideSubsystem.LiftSlideParameters liftSlideParameters = new LiftSlideParameters();
     public static LiftSlideSubsystem.LiftSlideHeights liftSlideHeights = new LiftSlideHeights();
 
     public enum LiftStates {
-        AUTO_LOW, AUTO_MID, AUTO_HIGH, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
+        AUTO_LOW, AUTO_MID, AUTO_HIGH, MAX, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
         public int ticks;
 
         static {
+
+            MAX.ticks = liftSlideHeights.MAX_HEIGHT_TICKETS;
             HIGH.ticks = liftSlideHeights.HIGH_HEIGHT_TICKS;
             MID.ticks = liftSlideHeights.MID_HEIGHT_TICKS;;
             LOW.ticks = liftSlideHeights.LOW_HEIGHT_TICKS;;
@@ -121,12 +124,14 @@ public class LiftSlideSubsystem extends SubsystemBase {
         LiftStates.LOW.setLiftHeightTicks(liftSlideHeights.LOW_HEIGHT_TICKS);
         LiftStates.MID.setLiftHeightTicks(liftSlideHeights.MID_HEIGHT_TICKS);
         LiftStates.HIGH.setLiftHeightTicks(liftSlideHeights.HIGH_HEIGHT_TICKS);
+        LiftStates.MAX.setLiftHeightTicks(liftSlideHeights.MAX_HEIGHT_TICKETS);
 
         //this is the one call per loop to get the currentPosition from the lift motor
         currentTicks = liftSlide.getCurrentPosition();
 
         MatchConfig.telemetryPacket.put("LiftSlide State", currentState);
         MatchConfig.telemetryPacket.put("LiftSlide Ticks", currentTicks);
+        MatchConfig.telemetryPacket.put("LiftSlide Deliver Height", Robot.getInstance().getVisionSubsystem().getDeliverHeight());
 
         if (targetState!=currentState) {
             MatchConfig.telemetryPacket.put("LiftSlide Target State", targetState);
