@@ -185,7 +185,7 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
             while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
                 sleep(20);
             }
-            telemetry.addData("Camera", "Ready");
+            telemetry.addData("Camera", "Starting");
             telemetry.update();
         }
 
