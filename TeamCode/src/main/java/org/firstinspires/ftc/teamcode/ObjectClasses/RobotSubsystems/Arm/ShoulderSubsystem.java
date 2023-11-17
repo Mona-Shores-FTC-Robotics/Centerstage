@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 public class ShoulderSubsystem extends SubsystemBase {
 
     public static class ShoulderParameters {
+
+        public double INTAKE_REST = .5;
         public double INTAKE_VALUE = .6;
         public double STARTING_POSITION = .7;
         public double BACKDROP_VALUE = .2;
@@ -23,6 +25,7 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static ShoulderParameters shoulderParameters = new ShoulderParameters();
 
     public enum ShoulderStates {
+        REST (.5),
         INTAKE (.55),
         HALFWAY(.4),
         BACKDROP (.2),
