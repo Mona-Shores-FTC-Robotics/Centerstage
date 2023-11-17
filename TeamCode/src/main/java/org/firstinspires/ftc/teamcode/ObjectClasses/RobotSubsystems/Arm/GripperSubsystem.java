@@ -11,10 +11,12 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 public final class GripperSubsystem extends SubsystemBase {
 
     public static GripperStates GRIPPER_STARTING_STATE = GripperStates.OPEN;
+    public static double REST_POSITION = .5;
     public static double OPEN_POSITION = .45;
     public static double CLOSED_POSITION = .55;
 
     public enum GripperStates {
+        REST (.5),
         CLOSED (.55),
         OPEN (.45);
         public double position;

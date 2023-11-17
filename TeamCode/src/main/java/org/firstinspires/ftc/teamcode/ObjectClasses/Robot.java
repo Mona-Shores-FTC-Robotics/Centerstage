@@ -90,6 +90,8 @@ public class Robot {
 
                 droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
                 climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
+                shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+                gripperSubsystem = new GripperSubsystem(hardwareMap, "endeffector");
                 break;
             }
         }
@@ -170,6 +172,8 @@ public class Robot {
             case ROBOT_PIT_MODE: {
                 droneSubsystem.init();
                 climberSubsystem.init();
+                gripperSubsystem.init();
+                shoulderSubsystem.init();
                 break;
             }
         }
