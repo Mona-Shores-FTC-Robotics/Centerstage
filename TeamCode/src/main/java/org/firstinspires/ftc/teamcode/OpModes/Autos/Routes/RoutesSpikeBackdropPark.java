@@ -136,10 +136,10 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
-                .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
+                .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))/*
                 .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)
+                .turnTo(FACE_45_DEGREES)*/
                 .build();
 
         redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -152,9 +152,9 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_RIGHT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
+           /*     .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)
+                .turnTo(FACE_315_DEGREES)*/
                 .build();
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
@@ -168,9 +168,9 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_RIGHT,LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
+          /*      .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)
+                .turnTo(FACE_45_DEGREES)*/
                 .build();
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -182,9 +182,9 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
+/*                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)
+                .turnTo(FACE_315_DEGREES)*/
                 .build();
 
         /** BLUE AUDIENCE CENTER / RED AUDIENCE CENTER **/
@@ -199,9 +199,9 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
+               /* .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)
+                .turnTo(FACE_45_DEGREES)*/
                 .build();
 
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -215,9 +215,9 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(1)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D), overrideVelConstraint, overrideAccelConstraint)
+        /*        .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D), overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)
+                .turnTo(FACE_315_DEGREES)*/
                 .build();
     }
 
