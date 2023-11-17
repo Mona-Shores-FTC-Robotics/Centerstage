@@ -1,10 +1,14 @@
-package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
+package org.firstinspires.ftc.teamcode.OpModes.Disabled;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-@TeleOp(name = "Idicator Light Test")
+import kotlin.DslMarker;
+
+@Disabled
+@TeleOp(name = "Indicator Light Test")
 
 public class IndicatorlLight extends LinearOpMode {
 

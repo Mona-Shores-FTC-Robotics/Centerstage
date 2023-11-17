@@ -27,22 +27,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
+package org.firstinspires.ftc.teamcode.OpModes.Disabled;
+
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@TeleOp(name="TeleOp_Vision")
-public class TeleOp_Vision extends LinearOpMode
+@Disabled
+@TeleOp(name="TeleOp_ScoringArmTesting")
+public class TeleOp_ScoringArmTesting extends LinearOpMode
 {
+
+    public Robot robot;
 
     @Override public void runOpMode()
     {
@@ -52,55 +55,42 @@ public class TeleOp_Vision extends LinearOpMode
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
-        //Create the Robot
-        Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
+        /* Create and Initialize the robot **/
+        Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
-        //Initialize the Robot
-        Robot.getInstance().init(Robot.OpModeType.TELEOP);
+        /* Initialize Gamepad and Robot - Order Important **/
+        robot.init(Robot.OpModeType.TELEOP);
+
+        telemetry.clearAll();
 
         /* Setup Button Bindings **/
-        new VisionDriverBindings( gamepadHandling.getDriverGamepad());
+        new ScoringArmTestingDriverBindings(gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
-            gamepadHandling.getDriverGamepad().readButtons();
-            gamepadHandling.lockColorAndSide();
+            // Add Vision Init Processor Telemetry
             telemetry.update();
             sleep(10);
         }
 
-        //Switch the vision processing to AprilTags
-        Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
-
-        //Reset Gyro
-        Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
-
         //Start the TeleOp Timer
-        MatchConfig.teleOpTimer = new ElapsedTime();
-        MatchConfig.teleOpTimer.reset();
+        ElapsedTime teleOpTimer = new ElapsedTime();
+        teleOpTimer.reset();
+
+        //Set the default lift command -no default command needed
+//        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
         while (opModeIsActive())
         {
-            //just print this every loop because we want to know
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-
             //Run the Scheduler
             CommandScheduler.getInstance().run();
+
+            //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
 
-            //Look for AprilTags
-            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
-            //Add AprilTag Telemetry
-            if (gamepad1.left_trigger>.1) {
-               Robot.getInstance().getVisionSubsystem().DriverStationAprilTagTelemetry();
-            }
+            telemetry.addData("Ticks", Robot.getInstance().getLiftSlideSubsystem().liftSlide.getCurrentPosition());
 
-            //Add DriveTrain Telemetry
-            if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
-                Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
-            }
+            sleep(10);
             telemetry.update();
         }
     }

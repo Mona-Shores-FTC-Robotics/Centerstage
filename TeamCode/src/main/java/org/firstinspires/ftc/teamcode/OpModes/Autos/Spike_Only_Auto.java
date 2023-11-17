@@ -1,23 +1,25 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Disabled.SpikeOnlyRoute.*;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.SpikeOnlyRoute;
+import org.firstinspires.ftc.teamcode.OpModes.Disabled.SpikeOnlyRoute;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
+@Disabled
 @Autonomous(name = "Spike Only Auto")
 public class Spike_Only_Auto extends LinearOpMode {
 
