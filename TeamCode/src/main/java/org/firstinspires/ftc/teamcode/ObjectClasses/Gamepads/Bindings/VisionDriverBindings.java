@@ -11,7 +11,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DefaultDriveCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveWithConstantHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromBlueBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeBackUpFromRedBackdropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -129,24 +128,6 @@ public class VisionDriverBindings {
                 gamepad::getLeftX,
                 gamepad::getRightX
         );
-
-
-        Command driveWhileAt90Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
-                gamepad::getLeftY,
-                gamepad::getLeftX,
-                Math.toDegrees(Math.toRadians(0)));
-
-        Command driveWhileAt270Heading = new DriveWithConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
-                gamepad::getLeftY,
-                gamepad::getLeftX,
-                Math.toDegrees(Math.toRadians(0)));
-
-        if (MatchConfig.finalAllianceColor==RED){
-            driveAwayFromBackdropWithConstantHeading=driveWhileAt270Heading;
-        } else driveAwayFromBackdropWithConstantHeading= driveWhileAt90Heading;
-
-
-
 
         backupFromBackdropCommand = new InstantCommand(()->{
             if (MatchConfig.finalAllianceColor == RED) {

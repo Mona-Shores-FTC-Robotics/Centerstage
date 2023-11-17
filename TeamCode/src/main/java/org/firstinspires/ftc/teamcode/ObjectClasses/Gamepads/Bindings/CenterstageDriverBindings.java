@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeCommand;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeZeroHeadingCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -27,7 +26,6 @@ public class CenterstageDriverBindings {
     public Command defaultDriveCommand;
     public Command slowModeCommand;
     public Command backupFromBackdropCommand;
-    public Command slowModeZeroHeadingCommand;
 
     public CenterstageDriverBindings(GamepadEx gamepad) {
         //Make the commands to use for the bindings
@@ -99,13 +97,10 @@ public class CenterstageDriverBindings {
         //  B BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
-//        gamepad.getGamepadButton(GamepadKeys.Button.B)
-//                .whenPressed(new InstantCommand(() -> {
-//                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
-//                }));
-
         gamepad.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)));
+                .whenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getVisionSubsystem().setDeliverLocation(VisionSubsystem.DeliverLocation.RIGHT);
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -135,6 +130,18 @@ public class CenterstageDriverBindings {
                     Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
                     Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
                 }));
+
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        //  DPAD UP  -                                          //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)));
+
+
     }
 
     private void MakeCommands(GamepadEx gamepad) {
@@ -148,12 +155,6 @@ public class CenterstageDriverBindings {
                 gamepad::getLeftY,
                 gamepad::getLeftX,
                 gamepad::getRightX
-        );
-
-        slowModeZeroHeadingCommand = new SlowModeZeroHeadingCommand(Robot.getInstance().getDriveSubsystem(),
-                gamepad::getLeftY,
-                gamepad::getLeftX,
-                0
         );
 
         backupFromBackdropCommand = new InstantCommand(()->{

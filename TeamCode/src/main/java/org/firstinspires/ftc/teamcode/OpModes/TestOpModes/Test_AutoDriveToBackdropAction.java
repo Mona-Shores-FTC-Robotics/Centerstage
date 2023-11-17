@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,8 +12,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDrop;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.LineToXRelativeAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
@@ -76,9 +87,42 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         MatchConfig.timestampTimer = new ElapsedTime();
         MatchConfig.timestampTimer.reset();
 
-        Actions.runBlocking( new AutoDriveToBackDrop(DELIVER_LOCATION));
+
+        Actions.runBlocking( new AutoDriveToBackDropAction(DELIVER_LOCATION));
+        telemetry.addLine("finished drive to april tag");
+        Actions.runBlocking( ScorePixelAction(VisionSubsystem.DeliverLocation.LEFT));
 
     }
+
+    public Action ScorePixelAction(VisionSubsystem.DeliverLocation deliverLocation) {
+        SequentialAction scorePixel =
+                new SequentialAction(
+                        new ParallelAction(
+                            new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                            new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)
+                                ),
+                        new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.AUTO_LOW),
+                        new SleepAction(.5),
+                        new LineToXRelativeAction(+3),
+                        new SleepAction(.5),
+                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN),
+                        new SleepAction(.5),
+                        new LineToXRelativeAction(-5),
+                        new ParallelAction(
+                                new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
+                                new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                                new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
+                        ),
+                        new ParallelAction(
+                                new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE),
+                                new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.HOME)
+                        )
+                );
+        return scorePixel;
+    }
+
+
 
 }
 

@@ -51,12 +51,12 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
         public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .015;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = .060;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .015;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double SPEED_FEEDFORWARD =.06; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=.3; //this is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.15;
+        public double STRAFE_FEEDFORWARD=0; //this is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.18;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -66,7 +66,7 @@ public final class VisionSubsystem extends SubsystemBase {
         public double BACKDROP_DRIVE_THRESHOLD=1;
         public double BACKDROP_STRAFE_THRESHOLD=2;
         public double BACKDROP_TURN_THRESHOLD=2;
-        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
+        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = 1;
         public int BACKDROP_POSE_COUNT_THRESHOLD=1;
     }
 
@@ -213,7 +213,6 @@ public final class VisionSubsystem extends SubsystemBase {
     private DeliverLocation deliverLocationBlue = DeliverLocation.CENTER;
     private DeliverLocation deliverLocationRed = DeliverLocation.CENTER;
 
-    public LiftSlideSubsystem.LiftStates currentDeliverHeight = LiftSlideSubsystem.LiftStates.LOW;
 
     public boolean blueBackdropAprilTagFoundRecently = false;
     public boolean redBackdropAprilTagFoundRecently = false;
@@ -501,7 +500,7 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG);
+            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Seen Recently", recentBlueRight);
             MatchConfig.telemetryPacket.put("Range Error", rangeError);
             MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
@@ -533,7 +532,7 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG);
+            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Center Seen Recently", recentBlueCenter);
             MatchConfig.telemetryPacket.put("Range Error", rangeError);
             MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
@@ -564,11 +563,11 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_CENTER_TAG);
+            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Left Seen Recently", recentBlueLeft);
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
 
             telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, headingError, yawError, BLUE_BACKDROP_LEFT_TAG);
@@ -586,8 +585,7 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
 
-            MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG);
-            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
+
             rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
@@ -600,9 +598,11 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
-            MatchConfig.telemetryPacket.put("Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
 
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
 
@@ -625,11 +625,11 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG);
+            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedCenter);
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
@@ -656,9 +656,11 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_RIGHT_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedRight);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
 
             telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_RIGHT_TAG);
@@ -698,13 +700,7 @@ public final class VisionSubsystem extends SubsystemBase {
         deliverLocationBlue = location;
     }
 
-    public void setDeliverHeight(LiftSlideSubsystem.LiftStates targetLiftState) {
-        currentDeliverHeight = targetLiftState;
-    }
 
-    public LiftSlideSubsystem.LiftStates getDeliverHeight() {
-        return currentDeliverHeight;
-    }
 
 
     public DeliverLocation getDeliverLocationRed() {

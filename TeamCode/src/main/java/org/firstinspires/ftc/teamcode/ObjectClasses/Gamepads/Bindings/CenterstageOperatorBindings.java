@@ -75,7 +75,7 @@ public class CenterstageOperatorBindings {
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new InstantCommand(()->{
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MAX);
+                    Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MAX);
                 }));
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -85,7 +85,7 @@ public class CenterstageOperatorBindings {
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(new InstantCommand(()->
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH)));
+                    Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH)));
 
 
         //////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ public class CenterstageOperatorBindings {
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(new InstantCommand(()->
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MID)));
+                    Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID)));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -106,7 +106,7 @@ public class CenterstageOperatorBindings {
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(new InstantCommand(()->
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW)));
+                    Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW)));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -226,7 +226,7 @@ public class CenterstageOperatorBindings {
                             new RotateShoulderCommand(shoulderSubsystem,
                                     ShoulderSubsystem.ShoulderStates.BACKDROP),
                             new MoveLiftSlideCommand(liftSlideSubsystem,
-                                    Robot.getInstance().getVisionSubsystem().getDeliverHeight())
+                                    Robot.getInstance().getLiftSlideSubsystem().getDeliverHeight())
                     ));
         }
 

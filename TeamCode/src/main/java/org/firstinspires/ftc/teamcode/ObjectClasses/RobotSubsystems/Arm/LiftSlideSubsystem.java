@@ -92,6 +92,19 @@ public class LiftSlideSubsystem extends SubsystemBase {
     public int getCurrentTicks() {
         return currentTicks;
     }
+    public LiftSlideSubsystem.LiftStates currentDeliverHeight = LiftSlideSubsystem.LiftStates.LOW;
+
+
+    public LiftSlideSubsystem.LiftStates getDeliverHeight() {
+        return currentDeliverHeight;
+    }
+
+
+    public void setDeliverHeight(LiftSlideSubsystem.LiftStates targetLiftState) {
+        currentDeliverHeight = targetLiftState;
+    }
+
+
 
     private double power;
 
@@ -131,7 +144,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
         MatchConfig.telemetryPacket.put("LiftSlide State", currentState);
         MatchConfig.telemetryPacket.put("LiftSlide Ticks", currentTicks);
-        MatchConfig.telemetryPacket.put("LiftSlide Deliver Height", Robot.getInstance().getVisionSubsystem().getDeliverHeight());
+        MatchConfig.telemetryPacket.put("LiftSlide Deliver Height", Robot.getInstance().getLiftSlideSubsystem().getDeliverHeight());
 
         if (targetState!=currentState) {
             MatchConfig.telemetryPacket.put("LiftSlide Target State", targetState);

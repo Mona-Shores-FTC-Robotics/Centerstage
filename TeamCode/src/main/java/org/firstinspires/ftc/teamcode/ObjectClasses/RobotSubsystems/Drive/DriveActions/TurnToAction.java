@@ -15,11 +15,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.TurnPI
 public class TurnToAction implements Action{
 
     public static double P_TERM = .016;
-    public static double I_TERM;
-    public static double D_TERM;
+    public static double I_TERM = 0;
+    public static double D_TERM = 0;
     public static double F_TERM = .15;
     public static int COUNT_THRESHOLD = 3;
-    public static double ERROR_THRESHOLD = .5;
+    public static double ERROR_THRESHOLD = 1;
 
     private double currentAngle;
     private final MecanumDriveMona mecanumDrive;

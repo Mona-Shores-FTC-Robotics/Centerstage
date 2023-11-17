@@ -23,11 +23,12 @@ public class PosesForRoute {
     public VisionSubsystem.DeliverLocation firstDeliverLocation;
     public VisionSubsystem.DeliverLocation additionalDeliverLocation;
 
-    PosesForRoute(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField, InitVisionProcessor.TeamPropLocation teamPropLocation){
+    public PosesForRoute(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField, InitVisionProcessor.TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
         SetStartingPose(allianceColor, sideOfField);
         SetAlliancePoses(allianceColor);
     }
+
 
     public void SetDeliverLocationPoses(InitVisionProcessor.TeamPropLocation teamPropLocation, InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {

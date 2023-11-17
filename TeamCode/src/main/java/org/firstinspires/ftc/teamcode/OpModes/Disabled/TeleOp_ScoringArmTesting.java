@@ -30,6 +30,8 @@
 package org.firstinspires.ftc.teamcode.OpModes.Disabled;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,9 +40,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-@Disabled
+
 @TeleOp(name="TeleOp_ScoringArmTesting")
 public class TeleOp_ScoringArmTesting extends LinearOpMode
 {
@@ -79,6 +82,8 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         //Set the default lift command -no default command needed
 //        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
+        MatchConfig.telemetryPacket = new TelemetryPacket();
+
         while (opModeIsActive())
         {
             //Run the Scheduler
@@ -92,6 +97,9 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
 
             sleep(10);
             telemetry.update();
+
+            MatchConfig.telemetryPacket = new TelemetryPacket();
+            FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
         }
     }
 }
