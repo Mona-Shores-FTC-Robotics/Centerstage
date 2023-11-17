@@ -104,6 +104,15 @@ public final class VisionSubsystem extends SubsystemBase {
     public boolean resetHeading=false;
     public Pose2d resetPose;
 
+    private boolean recentBlueLeft=false;
+    private boolean recentBlueCenter=false;
+    private boolean recentBlueRight=false;
+
+    private boolean recentRedLeft=false;
+    private boolean recentRedCenter=false;
+    private boolean recentRedRight=false;
+
+
     private static VisionPortal visionPortal;               // Used to manage the video source.
     private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
     private static InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
@@ -375,41 +384,25 @@ public final class VisionSubsystem extends SubsystemBase {
         redBackdropAprilTagFoundRecently = CheckRedBackdropAprilTags();
     }
 
-
-
     private boolean CheckBlueBackdropAprilTags() {
-        boolean blueTagFoundRightNow=false;
-        boolean blueTagFoundRecently=false;
-        if (    BLUE_BACKDROP_LEFT_TAG.isDetected ||
-                BLUE_BACKDROP_RIGHT_TAG.isDetected ||
-                BLUE_BACKDROP_CENTER_TAG.isDetected) {
-            blueTagFoundRightNow = true;
-        }
-        if (    CheckIfTagSeenRecently(BLUE_BACKDROP_LEFT_TAG) ||
-                CheckIfTagSeenRecently(BLUE_BACKDROP_RIGHT_TAG) ||
-                CheckIfTagSeenRecently(BLUE_BACKDROP_CENTER_TAG)){
-            blueTagFoundRecently = true;
-        }
-        if (blueTagFoundRightNow || blueTagFoundRecently){
+        recentBlueLeft = CheckIfTagSeenRecently(BLUE_BACKDROP_LEFT_TAG);
+        recentBlueCenter = CheckIfTagSeenRecently(BLUE_BACKDROP_CENTER_TAG);
+        recentBlueRight = CheckIfTagSeenRecently(BLUE_BACKDROP_RIGHT_TAG);
+        if (    BLUE_BACKDROP_LEFT_TAG.isDetected || recentBlueLeft ||
+                BLUE_BACKDROP_CENTER_TAG.isDetected || recentBlueCenter ||
+                BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight) {
             return true;
         } else return false;
     }
 
     private boolean CheckRedBackdropAprilTags() {
-        boolean redTagFoundRightNow;
-        boolean redTagFoundRecently;
-        if (    RED_BACKDROP_CENTER_TAG.isDetected ||
-                RED_BACKDROP_RIGHT_TAG.isDetected ||
-                RED_BACKDROP_LEFT_TAG.isDetected) {
-            redTagFoundRightNow = true;
-        } else redTagFoundRightNow=false;
-        if (    CheckIfTagSeenRecently(RED_BACKDROP_CENTER_TAG) ||
-                CheckIfTagSeenRecently(RED_BACKDROP_RIGHT_TAG) ||
-                CheckIfTagSeenRecently(RED_BACKDROP_LEFT_TAG)){
-            redTagFoundRecently = true;
-        } else redTagFoundRecently=false;
+        recentRedLeft = CheckIfTagSeenRecently(RED_BACKDROP_LEFT_TAG);
+        recentRedCenter = CheckIfTagSeenRecently(RED_BACKDROP_CENTER_TAG);
+        recentRedRight = CheckIfTagSeenRecently(RED_BACKDROP_RIGHT_TAG);
 
-        if (redTagFoundRightNow || redTagFoundRecently){
+        if (    RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft ||
+                RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter ||
+                RED_BACKDROP_RIGHT_TAG.isDetected || recentRedRight) {
             return true;
         } else return false;
     }
@@ -485,9 +478,6 @@ public final class VisionSubsystem extends SubsystemBase {
     //  3) the delivery location is left, but left isn't found
     public boolean AutoDriveToBackdropBlue() {
 
-        boolean recentBlueLeft = hasBeenSeenRecently(BLUE_BACKDROP_LEFT_TAG);
-        boolean recentBlueCenter = hasBeenSeenRecently(BLUE_BACKDROP_CENTER_TAG);
-        boolean recentBlueRight = hasBeenSeenRecently(BLUE_BACKDROP_RIGHT_TAG);
 
         if  (
                 (BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight)  &&
@@ -588,10 +578,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public boolean AutoDriveToBackdropRed() {
 
-        boolean recentRedLeft = hasBeenSeenRecently(RED_BACKDROP_LEFT_TAG);
-        boolean recentRedCenter = hasBeenSeenRecently(RED_BACKDROP_CENTER_TAG);
-        boolean recentRedRight = hasBeenSeenRecently(RED_BACKDROP_RIGHT_TAG);
-
         if (    (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft)
                 && (
                 getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
@@ -600,6 +586,8 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
 
+            MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG);
+            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
             rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
@@ -612,8 +600,6 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG);
-            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
             MatchConfig.telemetryPacket.put("Range Error", rangeError);
             MatchConfig.telemetryPacket.put("Heading Error", headingError);
             MatchConfig.telemetryPacket.put("Yaw Error", yawError);
@@ -654,6 +640,9 @@ public final class VisionSubsystem extends SubsystemBase {
                 (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
                 (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
         {
+
+            MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
+            MatchConfig.telemetryPacket.put("Red Right Seen Recently", recentRedRight);
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
              headingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
@@ -667,8 +656,6 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
-            MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
-            MatchConfig.telemetryPacket.put("Red Right Seen Recently", recentRedRight);
             MatchConfig.telemetryPacket.put("Range Error", rangeError);
             MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
             MatchConfig.telemetryPacket.put("Heading Error", headingError);
