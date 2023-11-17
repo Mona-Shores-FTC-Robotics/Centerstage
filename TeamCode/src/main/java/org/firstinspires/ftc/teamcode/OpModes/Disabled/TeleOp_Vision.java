@@ -78,8 +78,8 @@ public class TeleOp_Vision extends LinearOpMode
         Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
         //Start the TeleOp Timer
-        MatchConfig.teleOpTimer = new ElapsedTime();
-        MatchConfig.teleOpTimer.reset();
+        MatchConfig.OpModeTimer = new ElapsedTime();
+        MatchConfig.OpModeTimer.reset();
 
         while (opModeIsActive())
         {

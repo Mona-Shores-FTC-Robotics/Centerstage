@@ -14,10 +14,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
 public class GamepadHandling {
-    private double DEAD_ZONE = .1;
 
-    private GamepadEx driverGamepad;
-    private GamepadEx operatorGamepad;
+    private final GamepadEx driverGamepad;
+    private final GamepadEx operatorGamepad;
 
     public boolean LockedInitSettingsFlag = false;
     public boolean ManualOverrideInitSettingsFlag = false;
@@ -25,8 +24,6 @@ public class GamepadHandling {
     private Gamepad.RumbleEffect endGameRumbleEffect;
     private Gamepad.RumbleEffect problemRumbleEffect;
     private Gamepad.LedEffect problemLedEffect;
-
-    private int timeoutRumbleCounter;
 
     public GamepadHandling(LinearOpMode opMode) {
         driverGamepad = new GamepadEx(opMode.gamepad1);
@@ -65,9 +62,6 @@ public class GamepadHandling {
                 .addStep(.5, .5, 250)  //  Rumble both motors 50% for 250 mSec
                 .addStep(0.0, 0.0, 1000)  //  Pause for 1 Sec
                 .build();
-
-        //set the rumble counter to 0
-        timeoutRumbleCounter = 0;
     }
 
 
@@ -121,7 +115,7 @@ public class GamepadHandling {
                 if (driverGamepad.wasJustPressed(GamepadKeys.Button.A)) {
                     ManualOverrideInitSettingsFlag = true;
                 }
-            } else if (ManualOverrideInitSettingsFlag) {
+            } else {
                 telemetry.addLine("Color (DPAD-UP/DOWN) - Side Of Field (DPAD-LEFT/RIGHT");
                 if (driverGamepad.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                     initVisionProcessor.allianceColorOverride = InitVisionProcessor.AllianceColor.BLUE;
@@ -153,8 +147,8 @@ public class GamepadHandling {
 
     public void endGameRumble() {
         //Rumble 3 seconds before end game begins
-        if (MatchConfig.teleOpTimer.seconds() > FieldConstants.END_GAME_TIME - 3) {
-            if (MatchConfig.teleOpTimer.seconds() < FieldConstants.END_GAME_TIME) {
+        if (MatchConfig.OpModeTimer.seconds() > FieldConstants.END_GAME_TIME - 3) {
+            if (MatchConfig.OpModeTimer.seconds() < FieldConstants.END_GAME_TIME) {
                 Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
                 Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
             } else {

@@ -31,8 +31,6 @@ public class CenterstageOperatorBindings {
 
     public static TriggerReader rightTrigger;
     public static TriggerReader leftTrigger;
-    public static ParallelCommandGroup readyToScorePixel;
-    public static SequentialCommandGroup releasePixels;
     private static boolean armIsUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
@@ -57,7 +55,7 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
                         new InstantCommand(() -> {
-                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
                                 if (armIsUp) {
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
                                 }
@@ -86,9 +84,9 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new InstantCommand(()->{
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH);
-                }));
+                .whenPressed(new InstantCommand(()->
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH)));
+
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -97,9 +95,8 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new InstantCommand(()->{
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
-                }));
+                .whenPressed(new InstantCommand(()->
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.MID)));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -108,9 +105,8 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new InstantCommand(()->{
-                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW);
-                }));
+                .whenPressed(new InstantCommand(()->
+                    visionSubsystem.setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW)));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -121,13 +117,13 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
                         new InstantCommand(() -> {
-                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
                                 new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
                                 armIsUp=true;
                             }
                         }),
                         new InstantCommand(() -> {
-                            if (MatchConfig.teleOpTimer.seconds() > END_GAME_TIME) {
+                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
                                 new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
                                 armIsUp=false;
                             }
@@ -171,9 +167,8 @@ public class CenterstageOperatorBindings {
         //////////////////////////////////////////////////////////
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new InstantCommand(()-> {
-                            new MakeOperatorCombinationCommands().ReadyToScorePixelCommand().schedule();
-                        }));
+                .whenPressed(new InstantCommand(()->
+                            new MakeOperatorCombinationCommands().ReadyToScorePixelCommand().schedule()));
 
         //////////////////////////////////////////////////////////
         //                                                      //

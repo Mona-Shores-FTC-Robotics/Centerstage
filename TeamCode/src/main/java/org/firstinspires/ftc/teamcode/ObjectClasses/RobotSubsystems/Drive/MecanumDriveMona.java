@@ -44,9 +44,9 @@ public final class MecanumDriveMona {
 
     public static class ParamsDriveTrainConstants {
         // DriveTrain physical constants
-        public static double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
-        public static double TICKS_PER_REV = 384.5;
-        public static double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+        public double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
+        public double TICKS_PER_REV = 384.5;
+        public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
     }
 
     public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
@@ -164,7 +164,7 @@ public final class MecanumDriveMona {
         {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
-            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the oposite alliance color)
+            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the opposite alliance color)
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundRecently &&
                     MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     drive > .2) {
@@ -209,8 +209,6 @@ public final class MecanumDriveMona {
             return target;
         }
     }
-
-
 
     // This is what updates the pose estimate of the robot using the localizer
     public PoseVelocity2d updatePoseEstimate() {

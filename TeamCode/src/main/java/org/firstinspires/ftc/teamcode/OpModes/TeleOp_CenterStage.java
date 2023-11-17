@@ -36,7 +36,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageOperatorBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -90,8 +89,8 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.getInstance().getVisionSubsystem().resetHeading=true;
 
         //Start the TeleOp Timer
-        MatchConfig.teleOpTimer = new ElapsedTime();
-        MatchConfig.teleOpTimer.reset();
+        MatchConfig.OpModeTimer = new ElapsedTime();
+        MatchConfig.OpModeTimer.reset();
 
         MatchConfig.loopTimer = new ElapsedTime();
         MatchConfig.loopTimer.reset();
@@ -102,8 +101,6 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.telemetryPacket = new TelemetryPacket();
         while (opModeIsActive())
         {
-            LoopDriverStationTelemetry();
-
             //Reset the timer for the loop timer
             MatchConfig.loopTimer.reset();
 
@@ -119,26 +116,9 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Activate End Game Rumble at 87 seconds into TeleOp
             gamepadHandling.endGameRumble();
 
-            telemetry.update();
             FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
             MatchConfig.telemetryPacket = new TelemetryPacket();
+            MatchConfig.LoopDriverStationTelemetry();
         }
-    }
-
-    private void LoopDriverStationTelemetry() {
-        //Print our color,
-        telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
-        telemetry.addLine("TeleOp Time " + JavaUtil.formatNumber(MatchConfig.teleOpTimer.seconds(), 4, 1) + " / 120 seconds");
-        telemetry.addData("Loop Time ", JavaUtil.formatNumber(MatchConfig.loopTimer.milliseconds(), 4, 1));
-
-        Robot.getInstance().getActiveOpMode().telemetry.addLine();
-        telemetry.addData("Current Pose", "X %5.2f, Y %5.2f, heading %5.2f ",
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.x,
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.position.y,
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.pose.heading.log());
-
-        Robot.getInstance().getActiveOpMode().telemetry.addLine();
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Absolute (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 5, 2));
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("Yaw Angle Relative (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees, 5, 2));
     }
 }
