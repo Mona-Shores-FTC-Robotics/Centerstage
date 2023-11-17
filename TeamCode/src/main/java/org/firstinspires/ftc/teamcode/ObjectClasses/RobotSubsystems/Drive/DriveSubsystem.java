@@ -9,6 +9,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -26,6 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double APRIL_TAG_CANCEL_THRESHOLD = -.1;
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .2;
+        public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=2;
     }
 
 //    public static class AutoDriveParameters {
@@ -132,6 +135,7 @@ public class DriveSubsystem extends SubsystemBase {
     public static DriveParameters driveParameters= new DriveParameters();
 //    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
+    public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
 
     public MecanumDriveMona mecanumDrive;
 
@@ -278,13 +282,11 @@ public class DriveSubsystem extends SubsystemBase {
                     visionSubsystem.redBackdropAprilTagFoundRecently &&
                     (leftYAdjusted > .2 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
-
-                if (!aprilTagAutoDriving)
-                {
-                    aprilTagAutoDriving =true;
+                //start apriltag timeout timer
+                if (!aprilTagAutoDriving) {
+                    aprilTagTimeoutTimer.reset();
                 }
-
-                visionSubsystem.AutoDriveToBackdropRed();
+                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
@@ -292,12 +294,22 @@ public class DriveSubsystem extends SubsystemBase {
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+
+                //Check if we timed out
+                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+                    aprilTagAutoDriving=false;
+                }
+
             }
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFoundRecently &&
                     (leftYAdjusted > .2 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
+                //start apriltag timeout timer
+                if (!aprilTagAutoDriving) {
+                    aprilTagTimeoutTimer.reset();
+                }
                 aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
@@ -305,6 +317,12 @@ public class DriveSubsystem extends SubsystemBase {
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+
+                //Check if we timed out
+                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+                    aprilTagAutoDriving=false;
+                }
+
             } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving

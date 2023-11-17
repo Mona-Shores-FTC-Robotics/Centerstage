@@ -50,24 +50,24 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
-        public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .060;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .015;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double SPEED_GAIN = 0.075;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double STRAFE_GAIN = .06;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .0178;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double SPEED_FEEDFORWARD =.06; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=0; //this is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.18;
+        public double STRAFE_FEEDFORWARD=.085; //this is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.14;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=1;
+        public double BACKDROP_DRIVE_THRESHOLD=2;
         public double BACKDROP_STRAFE_THRESHOLD=2;
-        public double BACKDROP_TURN_THRESHOLD=2;
-        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = 1;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=1;
+        public double BACKDROP_TURN_THRESHOLD=3;
+        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
 
 //    // These are from the chassis bot with it working really well
@@ -577,11 +577,13 @@ public final class VisionSubsystem extends SubsystemBase {
 
     public boolean AutoDriveToBackdropRed() {
 
+
+
         if (    (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft)
-                && (
-                getDeliverLocationRed().equals(DeliverLocation.LEFT) ||
-                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
-                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
+                && (getDeliverLocationRed().equals(DeliverLocation.LEFT) ))
+//                ||
+//                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
+//                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
 
@@ -607,10 +609,11 @@ public final class VisionSubsystem extends SubsystemBase {
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
 
         } else if (    (RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter) &&
-                            (getDeliverLocationRed().equals(DeliverLocation.CENTER) ||
-                            (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-                            (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
-                    )
+                            (getDeliverLocationRed().equals(DeliverLocation.CENTER) ))
+//            ||
+//                            (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
+//                            (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
+//                    )
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
@@ -636,9 +639,10 @@ public final class VisionSubsystem extends SubsystemBase {
 
         }
         else if ( (RED_BACKDROP_RIGHT_TAG.isDetected || recentRedRight) && (
-                 getDeliverLocationRed().equals(DeliverLocation.RIGHT) ||
-                (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
+                 getDeliverLocationRed().equals(DeliverLocation.RIGHT) ))
+//                         ||
+//                (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
+//                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
         {
 
             MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
