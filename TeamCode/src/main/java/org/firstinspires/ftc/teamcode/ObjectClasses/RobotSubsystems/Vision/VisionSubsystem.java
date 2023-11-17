@@ -52,25 +52,25 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
         public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .0215;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .03;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = .015;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double SPEED_FEEDFORWARD =.06; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=.35; //this is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.211;
+        public double STRAFE_FEEDFORWARD=.3; //this is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.15;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double BACKDROP_DRIVE_THRESHOLD=.15;
-        public double BACKDROP_STRAFE_THRESHOLD=.15;
-        public double BACKDROP_TURN_THRESHOLD=.15;
+        public double BACKDROP_DRIVE_THRESHOLD=1;
+        public double BACKDROP_STRAFE_THRESHOLD=2;
+        public double BACKDROP_TURN_THRESHOLD=2;
         public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
 
         public double GYRO_SWITCH_THRESHOLD=.9;
-        public int BACKDROP_POSE_COUNT_THRESHOLD=5;
+        public int BACKDROP_POSE_COUNT_THRESHOLD=1;
     }
 
 //    // These are from the chassis bot with it working really well
