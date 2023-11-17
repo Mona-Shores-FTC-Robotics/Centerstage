@@ -246,10 +246,10 @@ public class RoutesSpikeBackdropPark {
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(secondHeight))
                     .waitSeconds(.2)
                     .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
-                    .waitSeconds(.3)
+                    .waitSeconds(.5)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(firstHeight))
                     .waitSeconds(.3)
-                    .lineToX(TILE*2-5.5)
+                    .lineToX(TILE*2-2)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
                     .build();
         }

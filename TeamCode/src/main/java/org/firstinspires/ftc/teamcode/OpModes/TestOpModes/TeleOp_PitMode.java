@@ -30,6 +30,8 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -38,6 +40,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.PitModeDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.ScoringArmTestingDriverBindings;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
 @TeleOp(name="Pit_Mode")
@@ -78,6 +81,8 @@ public class TeleOp_PitMode extends LinearOpMode
         //Set the default lift command -no default command needed
 //        CommandScheduler.getInstance().setDefaultCommand(robot.getLiftSlideSubsystem(), defaultLiftSlideCommand);
 
+        MatchConfig.telemetryPacket = new TelemetryPacket();
+
         while (opModeIsActive())
         {
             //Run the Scheduler
@@ -86,7 +91,8 @@ public class TeleOp_PitMode extends LinearOpMode
             //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
 
-
+            MatchConfig.telemetryPacket = new TelemetryPacket();
+            FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
 
         }
     }

@@ -28,26 +28,26 @@ public class DriveSubsystem extends SubsystemBase {
         public double DEAD_ZONE = .2;
     }
 
-    public static class AutoDriveParameters {
-        public double TURN_ERROR_THRESHOLD = 1;
-        public double STRAFE_ERROR_THRESHOLD = .5;
-        public double DRIVE_ERROR_THRESHOLD = .5;
-
-        public double TURN_P = .016;
-        public double TURN_I = 0 ;
-        public double TURN_D = 0;
-        public double TURN_F = .15;
-
-        public double STRAFE_P=0;
-        public double STRAFE_I=0;
-        public double STRAFE_D=0;
-        public double STRAFE_F=0;
-
-        public double DRIVE_P=0;
-        public double DRIVE_I=0;
-        public double DRIVE_D=0;
-        public double DRIVE_F=0;
-    }
+//    public static class AutoDriveParameters {
+//        public double TURN_ERROR_THRESHOLD = 1;
+//        public double STRAFE_ERROR_THRESHOLD = .5;
+//        public double DRIVE_ERROR_THRESHOLD = .5;
+//
+//        public double TURN_P = .016;
+//        public double TURN_I = 0 ;
+//        public double TURN_D = 0;
+//        public double TURN_F = .15;
+//
+//        public double STRAFE_P=0;
+//        public double STRAFE_I=0;
+//        public double STRAFE_D=0;
+//        public double STRAFE_F=0;
+//
+//        public double DRIVE_P=0;
+//        public double DRIVE_I=0;
+//        public double DRIVE_D=0;
+//        public double DRIVE_F=0;
+//    }
 
 
     public static class ParamsMona {
@@ -130,7 +130,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static DriveParameters driveParameters= new DriveParameters();
-    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
+//    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
 
     public MecanumDriveMona mecanumDrive;
@@ -148,14 +148,6 @@ public class DriveSubsystem extends SubsystemBase {
     public double leftYAdjusted;
     public double leftXAdjusted;
     public double rightXAdjusted;
-
-    private boolean aprilTagStrafing = false;
-    private boolean aprilTagDriving = false;
-    private boolean aprilTagTurning = false;
-
-    private TurnPIDController pidTurn;
-    private PIDFController pidStrafe;
-    private PIDFController pidDrive;
 
     public Canvas c;
 
@@ -279,9 +271,6 @@ public class DriveSubsystem extends SubsystemBase {
             // I'm not sure if this works for field oriented control
             if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
                 aprilTagAutoDriving = false;
-                aprilTagTurning =false;
-                aprilTagStrafing=false;
-                aprilTagDriving=false;
             }
 
             //Align to the Backdrop AprilTags - CASE RED
@@ -293,61 +282,13 @@ public class DriveSubsystem extends SubsystemBase {
                 if (!aprilTagAutoDriving)
                 {
                     aprilTagAutoDriving =true;
-                    aprilTagTurning =false;
-                    aprilTagStrafing=true;
-                    aprilTagDriving=false;
-
-                    pidTurn = new TurnPIDController(0, autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
-                    pidStrafe = new PIDFController(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
-                    pidStrafe.setSetPoint(0);
-                    pidDrive = new PIDFController(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
-                    pidDrive.setSetPoint(0);
                 }
 
-                if (aprilTagTurning){
+                visionSubsystem.AutoDriveToBackdropRed();
+                leftYAdjusted = mecanumDrive.aprilTagDrive;
+                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                rightXAdjusted = mecanumDrive.aprilTagTurn;
 
-                    visionSubsystem.AutoDriveToBackdropRed();
-                    leftYAdjusted = 0;
-                    leftXAdjusted = 0;
-                    rightXAdjusted = pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
-
-                    if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD)
-                    {
-                        aprilTagTurning =false;
-                        aprilTagStrafing=false;
-                        aprilTagDriving=true;
-                    }
-                }
-
-                if (aprilTagStrafing){
-                    visionSubsystem.AutoDriveToBackdropRed();
-                    leftYAdjusted = 0;
-                    leftXAdjusted = pidStrafe.calculate(visionSubsystem.yawError);
-                    rightXAdjusted = 0;
-
-                    MatchConfig.telemetryPacket.put("pidStrafeOutput", leftXAdjusted);
-
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD)
-                    {
-                        aprilTagTurning =true;
-                        aprilTagStrafing=false;
-                        aprilTagDriving=false;
-                    }
-                }
-
-                if (aprilTagDriving) {
-                    visionSubsystem.AutoDriveToBackdropRed();
-                    leftYAdjusted = pidDrive.calculate(visionSubsystem.rangeError);
-                    leftXAdjusted = 0;
-                    rightXAdjusted = 0;
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD)
-                    {
-                        aprilTagTurning =false;
-                        aprilTagStrafing=false;
-                        aprilTagDriving=false;
-                        aprilTagAutoDriving=false;
-                    }
-                }
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));

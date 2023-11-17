@@ -591,7 +591,6 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public boolean AutoDriveToBackdropRed() {
-
         if (    (RED_BACKDROP_LEFT_TAG.isDetected ||
                 (RED_BACKDROP_LEFT_TAG.getTimestamp() >
                         MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS))
@@ -615,7 +614,8 @@ public final class VisionSubsystem extends SubsystemBase {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
 
             MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Bearing Error", yawError);
+            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("Yaw Error", yawError);
 
             telemetry.addData("Auto to Left Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return resetRobotPoseBasedOnAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
