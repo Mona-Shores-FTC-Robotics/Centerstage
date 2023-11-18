@@ -239,7 +239,6 @@ public class CenterstageOperatorBindings {
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.OPEN),
                             new WaitCommand(325),
-                            new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), -5),
                             new ParallelCommandGroup(
                                     new MoveLiftSlideCommand(liftSlideSubsystem,
                                             LiftSlideSubsystem.LiftStates.SAFE),
