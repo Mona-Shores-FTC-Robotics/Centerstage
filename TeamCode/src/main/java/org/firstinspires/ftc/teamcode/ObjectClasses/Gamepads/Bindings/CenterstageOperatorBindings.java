@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
-
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -58,12 +56,10 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
                         new InstantCommand(() -> {
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                if (armHasBeenUp) {
                                     new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED);
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
-                                }
-                            }
+
+
                         }
                         )
                 )
@@ -123,15 +119,12 @@ public class CenterstageOperatorBindings {
                         new InstantCommand(() -> {
                             //Switch the vision processing to AprilTags
                             Robot.getInstance().getVisionSubsystem().VisionOff();
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
-                                armHasBeenUp =true;
-                            }
+                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
+
                         }),
                         new InstantCommand(() -> {
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
-                            }
+                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
+
                         }));
 
         //////////////////////////////////////////////////////////

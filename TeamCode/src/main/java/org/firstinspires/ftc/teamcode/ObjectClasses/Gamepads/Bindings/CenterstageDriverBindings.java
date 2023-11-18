@@ -1,6 +1,4 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
-
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.RED;
 
 import com.arcrobotics.ftclib.command.Command;
@@ -59,9 +57,7 @@ public class CenterstageDriverBindings {
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(new InstantCommand(() -> {
-                    if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
                         new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
-                    }
                 }));
 
         //////////////////////////////////////////////////////////
