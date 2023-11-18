@@ -20,8 +20,9 @@ public class WinchHoldPositionCommand extends CommandBase {
     @Override
     public void initialize() {
         int position = climberSubsystem.winchMotor.getCurrentPosition();
-        climberSubsystem.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         climberSubsystem.winchMotor.setTargetPosition(position);
+
+        climberSubsystem.winchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void execute() {
