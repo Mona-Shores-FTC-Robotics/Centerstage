@@ -19,7 +19,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.DriveBackXSeconds;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ChangeWinchPowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.MoveClimberArmCommand;
@@ -239,6 +241,7 @@ public class CenterstageOperatorBindings {
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.OPEN),
                             new WaitCommand(325),
+                            new DriveBackXSeconds(Robot.getInstance().getDriveSubsystem(), .6),
                             new ParallelCommandGroup(
                                     new MoveLiftSlideCommand(liftSlideSubsystem,
                                             LiftSlideSubsystem.LiftStates.SAFE),

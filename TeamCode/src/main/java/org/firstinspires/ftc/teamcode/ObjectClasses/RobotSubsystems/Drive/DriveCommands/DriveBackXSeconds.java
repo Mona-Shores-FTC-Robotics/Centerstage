@@ -33,8 +33,14 @@ public class DriveBackXSeconds extends CommandBase {
     @Override
     public void execute() {
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
-        if (timer.seconds() < time) {
-            driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(.2, 0, 0);
-        } else driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, 0, 0);
+        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(-.5, 0, 0);
+    }
+
+    @Override
+    public boolean isFinished(){
+        if (timer.seconds() > time) {
+            driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, 0, 0);
+            return true;
+        } else return false;
     }
 }
