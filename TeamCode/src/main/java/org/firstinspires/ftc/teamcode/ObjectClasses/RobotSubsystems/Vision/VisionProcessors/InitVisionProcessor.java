@@ -64,11 +64,11 @@ public class InitVisionProcessor implements VisionProcessor {
     /** Our Default Values **/
     public AllianceColor allianceColor = AllianceColor.RED;
     public SideOfField sideOfField = SideOfField.BACKSTAGE;
-    public TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
+    public TeamPropLocation teamPropLocation = TeamPropLocation.LEFT;
 
     public AllianceColor allianceColorOverride = AllianceColor.RED;
     public SideOfField sideOfFieldOverride = SideOfField.BACKSTAGE;
-    public TeamPropLocation teamPropLocationOverride = TeamPropLocation.CENTER;
+    public TeamPropLocation teamPropLocationOverride = TeamPropLocation.LEFT;
 
     /** Our Vision enums **/
     public enum AllianceColor {BLUE, RED}
