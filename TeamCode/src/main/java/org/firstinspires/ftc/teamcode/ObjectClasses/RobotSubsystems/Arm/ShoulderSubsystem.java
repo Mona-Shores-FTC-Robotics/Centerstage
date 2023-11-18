@@ -26,7 +26,7 @@ public class ShoulderSubsystem extends SubsystemBase {
 
     public enum ShoulderStates {
         REST (.5),
-        INTAKE (.55),
+        INTAKE (.59),
         HALFWAY(.4),
         BACKDROP (.2),
         STARTING_POSITION (.7);
