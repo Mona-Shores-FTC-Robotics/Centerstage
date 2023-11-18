@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
@@ -22,7 +23,7 @@ public class ChangeWinchPowerCommand extends CommandBase {
 
     @Override
     public void initialize() {
-
+        climberSubsystem.winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         climberSubsystem.winchMotor.setPower(targetState.power);
     }
 

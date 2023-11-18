@@ -28,7 +28,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double APRIL_TAG_CANCEL_THRESHOLD = -.1;
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .2;
-        public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=2;
+        public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=3;
     }
 
 //    public static class AutoDriveParameters {

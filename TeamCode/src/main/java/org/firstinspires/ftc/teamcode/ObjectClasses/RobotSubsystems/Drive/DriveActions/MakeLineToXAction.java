@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute;
 
 import java.util.Arrays;
 
@@ -29,11 +30,11 @@ public class MakeLineToXAction {
         drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
-                        drive.kinematics.new WheelVelConstraint(10),
-                        new AngularVelConstraint(10)
+                        drive.kinematics.new WheelVelConstraint(25),
+                        new AngularVelConstraint(25)
                 ));
 
-        overrideAccelConstraint = new ProfileAccelConstraint(-20, 20);
+        overrideAccelConstraint = new ProfileAccelConstraint(-25, 25);
 
         t = drive.actionBuilder(drive.pose)
                 .lineToX(xTarget, overrideVelConstraint, overrideAccelConstraint)

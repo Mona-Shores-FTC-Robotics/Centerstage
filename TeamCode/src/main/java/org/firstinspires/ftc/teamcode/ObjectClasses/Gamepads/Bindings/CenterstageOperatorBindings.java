@@ -22,7 +22,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.LineToXRelativeCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ChangeWinchPowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReadyClimberArmCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.MoveClimberArmCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.WinchHoldPositionCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -31,7 +32,7 @@ public class CenterstageOperatorBindings {
 
     public static TriggerReader rightTrigger;
     public static TriggerReader leftTrigger;
-    private static boolean armIsUp = false;
+    private static boolean armHasBeenUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
         VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
@@ -56,7 +57,8 @@ public class CenterstageOperatorBindings {
                 .whenPressed(
                         new InstantCommand(() -> {
                             if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                if (armIsUp) {
+                                if (armHasBeenUp) {
+                                    new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED);
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
                                 }
                             }
@@ -64,7 +66,7 @@ public class CenterstageOperatorBindings {
                         )
                 )
                 .whenReleased(
-                        new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.OFF)
+                        new WinchHoldPositionCommand(climberSubsystem)
                 );
 
         //////////////////////////////////////////////////////////
@@ -117,15 +119,16 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
                         new InstantCommand(() -> {
+                            //Switch the vision processing to AprilTags
+                            Robot.getInstance().getVisionSubsystem().VisionOff();
                             if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
-                                armIsUp=true;
+                                new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
+                                armHasBeenUp =true;
                             }
                         }),
                         new InstantCommand(() -> {
                             if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
-                                new ReadyClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
-                                armIsUp=false;
+                                new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
                             }
                         }));
 
@@ -217,7 +220,7 @@ public class CenterstageOperatorBindings {
             ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
             LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
             return new ParallelCommandGroup(
-                    new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
+//                    new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), 6.2),
                     new SequentialCommandGroup(
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.CLOSED),

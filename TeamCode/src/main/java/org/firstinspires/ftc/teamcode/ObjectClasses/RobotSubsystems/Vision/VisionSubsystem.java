@@ -135,6 +135,11 @@ public final class VisionSubsystem extends SubsystemBase {
         Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), false);
     }
 
+    public void VisionOff() {
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getInitVisionProcessor(), false);
+        Robot.getInstance().getVisionSubsystem().getVisionPortal().setProcessorEnabled(this.getAprilTagProcessor(), false);
+    }
+
     public void setStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
         if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE){
             mecanumDrive.pose = BLUE_BACKSTAGE_START_POSE;
@@ -259,6 +264,14 @@ public final class VisionSubsystem extends SubsystemBase {
         telemetry.addLine("");
 
         setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+
+        recentBlueLeft=false;
+        recentBlueCenter=false;
+        recentBlueRight=false;
+
+        recentRedLeft=false;
+        recentRedCenter=false;
+        recentRedRight=false;
     }
 
     public InitVisionProcessor getInitVisionProcessor() {
@@ -391,7 +404,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 BLUE_BACKDROP_CENTER_TAG.isDetected || recentBlueCenter ||
                 BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight) {
             return true;
-        } else return false;
+        } else
+            return false;
     }
 
     private boolean CheckRedBackdropAprilTags() {
@@ -476,10 +490,9 @@ public final class VisionSubsystem extends SubsystemBase {
     //  2) the delivery location is center, but center isn't found
     //  3) the delivery location is left, but left isn't found
     public boolean AutoDriveToBackdropBlue() {
-
-
         if  (
-                (BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight)  &&
+                (BLUE_BACKDROP_RIGHT_TAG.detection!=null &&
+                        (BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight))  &&
                         (
                             getDeliverLocationBlue().equals(DeliverLocation.RIGHT) ||
                             (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)  ||
@@ -512,7 +525,9 @@ public final class VisionSubsystem extends SubsystemBase {
         // if its left, but left is not detected or
         // if its right, but right is not detected
 
-        else if (   (BLUE_BACKDROP_CENTER_TAG.isDetected || recentBlueCenter)
+        else if (
+                (BLUE_BACKDROP_CENTER_TAG.detection!=null &&
+                (BLUE_BACKDROP_CENTER_TAG.isDetected || recentBlueCenter))
                     && (
                     getDeliverLocationBlue().equals(DeliverLocation.CENTER) ||
                     (getDeliverLocationBlue().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected) ||
@@ -545,7 +560,9 @@ public final class VisionSubsystem extends SubsystemBase {
         //Drive to the Right backdrop if its the deliver location, or
         // if its left, but left is not detected or
         // if its center, but center is not detected
-        else if (   (BLUE_BACKDROP_LEFT_TAG.isDetected || recentBlueLeft) &&
+        else if (
+                (BLUE_BACKDROP_LEFT_TAG.detection!=null &&
+                (BLUE_BACKDROP_LEFT_TAG.isDetected || recentBlueLeft)) &&
                 (getDeliverLocationBlue().equals(DeliverLocation.LEFT)    ||
                 (getDeliverLocationBlue().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)       ||
                 (getDeliverLocationBlue().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)))
@@ -579,15 +596,15 @@ public final class VisionSubsystem extends SubsystemBase {
 
 
 
-        if (    (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft)
-                && (getDeliverLocationRed().equals(DeliverLocation.LEFT) ))
-//                ||
-//                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
-//                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
+        if (
+                (RED_BACKDROP_LEFT_TAG.detection!=null &&
+                (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft))
+                && (getDeliverLocationRed().equals(DeliverLocation.LEFT)
+                ||
+                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
+                (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-
-
             rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
@@ -608,12 +625,13 @@ public final class VisionSubsystem extends SubsystemBase {
 
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
 
-        } else if (    (RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter) &&
-                            (getDeliverLocationRed().equals(DeliverLocation.CENTER) ))
-//            ||
-//                            (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-//                            (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
-//                    )
+        } else if (
+                (RED_BACKDROP_CENTER_TAG.detection!=null &&
+                (RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter)) &&
+                            (getDeliverLocationRed().equals(DeliverLocation.CENTER)
+            ||              (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
+                            (getDeliverLocationRed().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
+                    )
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
@@ -638,11 +656,13 @@ public final class VisionSubsystem extends SubsystemBase {
             return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
 
         }
-        else if ( (RED_BACKDROP_RIGHT_TAG.isDetected || recentRedRight) && (
-                 getDeliverLocationRed().equals(DeliverLocation.RIGHT) ))
-//                         ||
-//                (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-//                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
+        else if (
+                (RED_BACKDROP_RIGHT_TAG.detection!=null &&
+                (RED_BACKDROP_RIGHT_TAG.isDetected || recentRedRight)) && (
+                 getDeliverLocationRed().equals(DeliverLocation.RIGHT)
+                         ||
+                (getDeliverLocationRed().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
+                (getDeliverLocationRed().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
         {
 
             MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
@@ -672,11 +692,6 @@ public final class VisionSubsystem extends SubsystemBase {
         return false;
     }
 
-    private boolean hasBeenSeenRecently(AprilTagID id) {
-
-        return id.getTimestamp() > (MatchConfig.timestampTimer.seconds()-tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS);
-
-    }
 
     private double ClipDrive(double rangeError) {
         return Range.clip(

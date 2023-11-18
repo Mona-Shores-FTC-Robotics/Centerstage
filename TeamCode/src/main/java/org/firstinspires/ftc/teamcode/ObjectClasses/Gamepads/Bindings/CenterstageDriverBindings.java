@@ -48,7 +48,7 @@ public class CenterstageDriverBindings {
 //                .whenHeld(slowModeZeroHeadingCommand);
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenHeld(slowModeCommand);
+                .whenHeld(slowModeCommand, true);
 
         //////////////////////////////////////////////////////////
         //                                                      //

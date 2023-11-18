@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
+import android.service.autofill.FieldClassification;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -7,6 +9,8 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
@@ -19,6 +23,8 @@ public class AutoDriveToBackDropAction implements Action {
     private VisionSubsystem.DeliverLocation deliverLocation;
     private int count=0;
 
+    private ElapsedTime timeoutTimer;
+
     public AutoDriveToBackDropAction() {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         running=true;
@@ -27,11 +33,13 @@ public class AutoDriveToBackDropAction implements Action {
     public AutoDriveToBackDropAction(VisionSubsystem.DeliverLocation delLoc) {
         driveSubsystem = Robot.getInstance().getDriveSubsystem();
         deliverLocation=delLoc;
+
         running=true;
     }
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+        MatchConfig.telemetryPacket = new TelemetryPacket();
 
         //Reset the timer for the loop timer for the AutoDrive Action (which is only used in Auto)
         MatchConfig.loopTimer.reset();
@@ -63,6 +71,7 @@ public class AutoDriveToBackDropAction implements Action {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = Robot.getInstance().getVisionSubsystem().resetPose;
         }
 
+        telemetryPacket = MatchConfig.telemetryPacket;
         //Fill and send telemetry packet to the Ftc Dashboard
         DashboardTelemetry(telemetryPacket);
 

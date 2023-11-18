@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandBase;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-public class ReadyClimberArmCommand extends CommandBase {
+public class MoveClimberArmCommand extends CommandBase {
 
     // The subsystem the command runs on
     private final ClimberSubsystem climberSubsystem;
@@ -17,7 +13,7 @@ public class ReadyClimberArmCommand extends CommandBase {
     private final ClimberSubsystem.ClimberArmStates targetState;
 
 
-    public ReadyClimberArmCommand(ClimberSubsystem subsystem, ClimberSubsystem.ClimberArmStates inputState) {
+    public MoveClimberArmCommand(ClimberSubsystem subsystem, ClimberSubsystem.ClimberArmStates inputState) {
         climberSubsystem = subsystem;
         targetState = inputState;
 

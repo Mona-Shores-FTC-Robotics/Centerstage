@@ -16,7 +16,7 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static class ShoulderParameters {
 
         public double INTAKE_REST = .5;
-        public double INTAKE_VALUE = .6;
+        public double INTAKE_VALUE = .55;
         public double STARTING_POSITION = .7;
         public double BACKDROP_VALUE = .2;
         public double HALFWAY = .4;

@@ -1,15 +1,27 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.RED;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.CENTER;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.LEFT;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.RIGHT;
+
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
@@ -21,13 +33,20 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.LineToXRelativeAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeMoveToPointAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+
+import java.util.Arrays;
 
 @Autonomous(name = "TEST - Just AutoDriveToBackdrop")
 public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
-    private static final VisionSubsystem.DeliverLocation DELIVER_LOCATION= VisionSubsystem.DeliverLocation.LEFT;
+    private static final VisionSubsystem.DeliverLocation DELIVER_LOCATION= LEFT;
+    public double FORWARD_SCORE_DISTANCE= 5.5;
+    public Action forwardAction;
+    public Action backwardAction;
 
     @Override
     public void runOpMode() {
@@ -87,28 +106,27 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         MatchConfig.timestampTimer = new ElapsedTime();
         MatchConfig.timestampTimer.reset();
 
+        SequentialAction autoDriveAndScore =
+                new SequentialAction(
+                        new AutoDriveToBackDropAction(DELIVER_LOCATION),
+                        ScorePixelAction(DELIVER_LOCATION));
 
-        Actions.runBlocking( new AutoDriveToBackDropAction(DELIVER_LOCATION));
-        telemetry.addLine("finished drive to april tag");
-        Actions.runBlocking( ScorePixelAction(VisionSubsystem.DeliverLocation.LEFT));
-
+        Actions.runBlocking( autoDriveAndScore);
     }
 
     public Action ScorePixelAction(VisionSubsystem.DeliverLocation deliverLocation) {
         SequentialAction scorePixel =
                 new SequentialAction(
+                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
                         new ParallelAction(
-                            new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
                             new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
                             new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)
                                 ),
                         new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.AUTO_LOW),
-                        new SleepAction(.5),
-                        new LineToXRelativeAction(+3),
-                        new SleepAction(.5),
+                        MoveRobotForward(deliverLocation),
                         new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN),
-                        new SleepAction(.5),
-                        new LineToXRelativeAction(-5),
+                        new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.AUTO_HIGH),
+                        MoveRobotBackwards(deliverLocation),
                         new ParallelAction(
                                 new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
                                 new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
@@ -122,7 +140,99 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         return scorePixel;
     }
 
+    private Action MoveRobotForward(VisionSubsystem.DeliverLocation deliverLocation) {
+        Pose2d beginPose;
+        if (MatchConfig.finalAllianceColor==RED)
+        {
+            if (deliverLocation==LEFT)
+            {
+                beginPose= FieldConstants.RED_BACKDROP_LEFT;
+            } else if (deliverLocation==RIGHT)
+            {
+                beginPose= FieldConstants.RED_BACKDROP_RIGHT;
+            } else {
+                beginPose = FieldConstants.RED_BACKDROP_CENTER;
+            }
 
+        } else
+        {
+            if (deliverLocation==LEFT)
+            {
+                beginPose= FieldConstants.BLUE_BACKDROP_LEFT;
+            } else if (deliverLocation==RIGHT)
+            {
+                beginPose= FieldConstants.BLUE_BACKDROP_RIGHT;
+            } else {
+                beginPose = FieldConstants.BLUE_BACKDROP_CENTER;
+            }
+        }
 
+        MecanumDriveMona drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+
+        VelConstraint overrideVelConstraint;
+        AccelConstraint overrideAccelConstraint;
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(10),
+                        new AngularVelConstraint(10)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-10, 10);
+
+        Pose2d endPose = new Pose2d(beginPose.position.x+FORWARD_SCORE_DISTANCE,
+                             beginPose.position.y,
+                                beginPose.heading.log());
+
+        return drive.actionBuilder(beginPose)
+                .lineToX(endPose.position.x, overrideVelConstraint, overrideAccelConstraint)
+                .build();
+    }
+
+    private Action MoveRobotBackwards(VisionSubsystem.DeliverLocation deliverLocation) {
+        Pose2d beginPose;
+        if (MatchConfig.finalAllianceColor==RED)
+        {
+            if (deliverLocation==LEFT)
+            {
+                beginPose= FieldConstants.RED_BACKDROP_LEFT;
+            } else if (deliverLocation==RIGHT)
+            {
+                beginPose= FieldConstants.RED_BACKDROP_RIGHT;
+            } else {
+                beginPose = FieldConstants.RED_BACKDROP_CENTER;
+            }
+
+        } else
+        {
+            if (deliverLocation==LEFT)
+            {
+                beginPose= FieldConstants.BLUE_BACKDROP_LEFT;
+            } else if (deliverLocation==RIGHT)
+            {
+                beginPose= FieldConstants.BLUE_BACKDROP_RIGHT;
+            } else {
+                beginPose = FieldConstants.BLUE_BACKDROP_CENTER;
+            }
+        }
+
+        MecanumDriveMona drive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+
+        VelConstraint overrideVelConstraint;
+        AccelConstraint overrideAccelConstraint;
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        drive.kinematics.new WheelVelConstraint(10),
+                        new AngularVelConstraint(10)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-10, 10);
+
+        Pose2d startingBackupPose = new Pose2d(beginPose.position.x+FORWARD_SCORE_DISTANCE, beginPose.position.y, beginPose.heading.log());
+
+        return drive.actionBuilder(startingBackupPose)
+                .setReversed(true)
+                .lineToX(beginPose.position.x-3, overrideVelConstraint, overrideAccelConstraint)
+                .build();
+    }
 }
 
