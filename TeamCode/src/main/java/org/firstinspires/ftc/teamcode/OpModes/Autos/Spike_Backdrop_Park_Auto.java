@@ -48,7 +48,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
 
             // Allow driver to override/lock the vision
             gamepadHandling.getDriverGamepad().readButtons();
@@ -58,7 +58,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
         teamPropLoc = MatchConfig.finalTeamPropLocation;

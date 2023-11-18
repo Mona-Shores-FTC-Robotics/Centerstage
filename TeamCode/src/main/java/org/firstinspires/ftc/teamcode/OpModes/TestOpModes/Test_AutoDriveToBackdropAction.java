@@ -18,6 +18,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -40,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 import java.util.Arrays;
 
+@Disabled
 @Autonomous(name = "TEST - Just AutoDriveToBackdrop")
 public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
@@ -66,7 +68,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
@@ -74,7 +76,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
         //Set the starting pose of the robot

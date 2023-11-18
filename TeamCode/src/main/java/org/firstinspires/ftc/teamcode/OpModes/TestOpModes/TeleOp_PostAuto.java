@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
 
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -42,6 +43,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
+@Disabled
 @TeleOp(name="TeleOp_PostAuto")
 public class TeleOp_PostAuto extends LinearOpMode
 {
@@ -63,7 +65,7 @@ public class TeleOp_PostAuto extends LinearOpMode
         new VisionDriverBindings(   gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();

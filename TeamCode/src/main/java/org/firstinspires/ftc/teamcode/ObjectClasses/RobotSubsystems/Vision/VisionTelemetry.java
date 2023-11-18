@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 public class VisionTelemetry {
 
-    public static void telemetryForInitProcessing(GamepadHandling gamepadHandling) {
+    public static void telemetryForInitProcessing() {
         Telemetry telemetry = Robot.getInstance().getActiveOpMode().telemetry;
 
         telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);

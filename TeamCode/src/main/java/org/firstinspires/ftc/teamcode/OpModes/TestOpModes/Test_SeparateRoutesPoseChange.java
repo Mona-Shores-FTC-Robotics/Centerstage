@@ -28,6 +28,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -40,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Disabled.SpikeOnlyRoute;
 
+@Disabled
 @Autonomous(name = "TEST - forward+AutoDriveAction, then make backward route in real time)")
 public class Test_SeparateRoutesPoseChange extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;
@@ -71,7 +73,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
@@ -79,7 +81,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
         teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();

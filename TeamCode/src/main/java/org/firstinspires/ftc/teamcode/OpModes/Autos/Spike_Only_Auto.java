@@ -53,7 +53,7 @@ public class Spike_Only_Auto extends LinearOpMode {
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
@@ -61,7 +61,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
         //These should be set properly based on vision/override - team prop location cannot be overridden

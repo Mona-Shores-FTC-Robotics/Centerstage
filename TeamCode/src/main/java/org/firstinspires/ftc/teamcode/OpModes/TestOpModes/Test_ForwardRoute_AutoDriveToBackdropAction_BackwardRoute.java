@@ -29,6 +29,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
@@ -41,6 +42,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
+@Disabled
 @Autonomous(name = "TEST - Forward + StopAndAdd(AutoDriveAction) + Backward")
 public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends LinearOpMode {
     private MecanumDriveMona roadRunnerDriveSubsystem;
@@ -72,7 +74,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
@@ -80,7 +82,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
         }
 
         //Display the initVision telemetry a final time
-        VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+        VisionTelemetry.telemetryForInitProcessing();
         telemetry.update();
 
         teamPropLoc = Robot.getInstance().getVisionSubsystem().getInitVisionProcessor().getTeamPropLocation();

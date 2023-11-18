@@ -64,7 +64,7 @@ public class TeleOp_Vision extends LinearOpMode
         new VisionDriverBindings( gamepadHandling.getDriverGamepad());
 
         while (opModeInInit()) {
-            VisionTelemetry.telemetryForInitProcessing(gamepadHandling);
+            VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
