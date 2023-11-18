@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.END_GAME_TIME;
+
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -56,7 +56,7 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
                         new InstantCommand(() -> {
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
+                             {
                                 if (armHasBeenUp) {
                                     new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED);
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
@@ -121,13 +121,13 @@ public class CenterstageOperatorBindings {
                         new InstantCommand(() -> {
                             //Switch the vision processing to AprilTags
                             Robot.getInstance().getVisionSubsystem().VisionOff();
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
+                             {
                                 new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
-                                armHasBeenUp =true;
+
                             }
                         }),
                         new InstantCommand(() -> {
-                            if (MatchConfig.OpModeTimer.seconds() > END_GAME_TIME) {
+                            {
                                 new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
                             }
                         }));
@@ -224,8 +224,8 @@ public class CenterstageOperatorBindings {
                     new SequentialCommandGroup(
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.CLOSED),
-                            new MoveLiftSlideCommand(liftSlideSubsystem,
-                                    LiftSlideSubsystem.LiftStates.SAFE),
+                            //new MoveLiftSlideCommand(liftSlideSubsystem,
+                                    //LiftSlideSubsystem.LiftStates.SAFE),
                             new RotateShoulderCommand(shoulderSubsystem,
                                     ShoulderSubsystem.ShoulderStates.BACKDROP),
                             new MoveLiftSlideCommand(liftSlideSubsystem,
@@ -233,16 +233,16 @@ public class CenterstageOperatorBindings {
                     ));
         }
 
-        private Command ReleasePixels() {
+        private Command  ReleasePixels() {
 
             return new SequentialCommandGroup(
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.OPEN),
-                            new WaitCommand(325),
-                            new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), -5),
+                            new WaitCommand(1500),
+                            //new LineToXRelativeCommand(Robot.getInstance().getDriveSubsystem(), -5),
                             new ParallelCommandGroup(
                                     new MoveLiftSlideCommand(liftSlideSubsystem,
-                                            LiftSlideSubsystem.LiftStates.SAFE),
+                                            LiftSlideSubsystem.LiftStates.HOME),
                                     new ActuateGripperCommand(gripperSubsystem,
                                             GripperSubsystem.GripperStates.CLOSED),
                                     new RotateShoulderCommand(shoulderSubsystem,

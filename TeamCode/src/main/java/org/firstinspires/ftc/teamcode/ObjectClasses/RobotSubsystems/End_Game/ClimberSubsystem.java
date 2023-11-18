@@ -19,7 +19,7 @@ public class ClimberSubsystem extends SubsystemBase {
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
         public double STOWED_VALUE = .5;
-        public double READY_VALUE = .73;
+        public double READY_VALUE = .85;
 
         public double ROBOT_DOWN_POWER = -.8;
         public double ROBOT_UP_POWER = .8;
@@ -29,7 +29,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public enum ClimberArmStates {
         STOWED (.5),
-        READY (.8);
+        READY (.85);
         public double position;
         ClimberArmStates(double p) {
             this.position = p;
