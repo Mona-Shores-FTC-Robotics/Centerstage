@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
@@ -75,7 +74,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -85,7 +84,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(RED_BACKDROP_RIGHT, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
@@ -95,7 +94,7 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_RIGHT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(BLUE_BACKDROP_RIGHT, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -104,7 +103,7 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(RED_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE BACKSTAGE CENTER / RED BACKSTAGE CENTER **/
@@ -114,7 +113,7 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(BLUE_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -123,7 +122,7 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP_CENTER, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(RED_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_LOW))
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE AUDIENCE LEFT / RED AUDIENCE RIGHT **/

@@ -97,7 +97,7 @@ public class PosesForRoute {
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = BLUE_BACKDROP_CENTER;
             additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
-            parkPose = BLUE_BACKSTAGE_PARK_LANE_C;
+            parkPose = BLUE_MIDDLE_PARK;
             parkOrientation = FACE_45_DEGREES;
 
         } else {
@@ -106,7 +106,7 @@ public class PosesForRoute {
             neutralPickupPose = RED_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = RED_BACKDROP_CENTER;
             additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
-            parkPose = RED_BACKSTAGE_PARK_LANE_D;
+            parkPose = RED_MIDDLE_PARK;
             parkOrientation = FACE_315_DEGREES;
         }
     }
