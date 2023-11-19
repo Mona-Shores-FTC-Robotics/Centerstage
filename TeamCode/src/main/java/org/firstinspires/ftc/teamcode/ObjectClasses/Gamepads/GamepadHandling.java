@@ -85,6 +85,8 @@ public class GamepadHandling {
                     + MatchConfig.finalSideOfField + " "
                     + MatchConfig.finalTeamPropLocation);
 
+            MatchConfig.finalTeamPropLocation=initVisionProcessor.teamPropLocation;
+
             telemetry.addLine("Press B to unlock Alliance Color and Side of Field");
             if (driverGamepad.wasJustPressed(GamepadKeys.Button.B)) {
                 LockedInitSettingsFlag = false;

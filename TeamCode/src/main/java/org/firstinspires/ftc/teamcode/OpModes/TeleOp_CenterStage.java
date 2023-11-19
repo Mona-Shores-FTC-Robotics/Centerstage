@@ -41,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.Centerstag
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @TeleOp(name="TeleOp_CenterStage")
@@ -99,6 +100,8 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.timestampTimer.reset();
 
         MatchConfig.telemetryPacket = new TelemetryPacket();
+
+        Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
         while (opModeIsActive())
         {
             //Reset the timer for the loop timer

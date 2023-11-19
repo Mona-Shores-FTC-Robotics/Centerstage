@@ -233,8 +233,11 @@ public class CenterstageOperatorBindings {
             return new SequentialCommandGroup(
                             new ActuateGripperCommand(gripperSubsystem,
                                     GripperSubsystem.GripperStates.OPEN),
-                            new WaitCommand(325),
-                            new DriveBackXSeconds(Robot.getInstance().getDriveSubsystem(), .6),
+                            new WaitCommand(850),
+                            new ParallelCommandGroup(
+                                    new WaitCommand(700),
+                                new DriveBackXSeconds(Robot.getInstance().getDriveSubsystem(), .6)
+                            ),
                             new ParallelCommandGroup(
                                     new MoveLiftSlideCommand(liftSlideSubsystem,
                                             LiftSlideSubsystem.LiftStates.SAFE),
