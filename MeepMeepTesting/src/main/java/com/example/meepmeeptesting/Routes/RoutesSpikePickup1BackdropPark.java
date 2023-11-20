@@ -10,13 +10,12 @@ import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_PARK_LANE_A;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_PARK_LANE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_LANE_A;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
+import static com.example.meepmeeptesting.Constants.BLUE_CORNER_PARK;
 import static com.example.meepmeeptesting.Constants.BLUE_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.BLUE_SAFE_STRAFE;
 import static com.example.meepmeeptesting.Constants.BLUE_STAGEDOOR_ENTRANCE;
@@ -36,13 +35,12 @@ import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
-import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_D;
-import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;
+import static com.example.meepmeeptesting.Constants.RED_CORNER_PARK;
 import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.RED_SAFE_STRAFE;
 import static com.example.meepmeeptesting.Constants.RED_STAGEDOOR_ENTRANCE;
@@ -120,7 +118,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
@@ -128,7 +126,7 @@ public class RoutesSpikePickup1BackdropPark {
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE BACKSTAGE RIGHT / RED BACKSTAGE LEFT **/
@@ -136,14 +134,14 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, TANGENT_225_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_RIGHT, TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, TANGENT_135_DEGREES)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE BACKSTAGE CENTER / RED BACKSTAGE CENTER **/
@@ -151,14 +149,14 @@ public class RoutesSpikePickup1BackdropPark {
                 .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_RED)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_A))
+                .strafeTo(PoseToVector(BLUE_CORNER_PARK))
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP_CENTER, TANGENT_TOWARD_BACKSTAGE)
-                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_F))
+                .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         /** BLUE AUDIENCE LEFT / RED AUDIENCE RIGHT **/

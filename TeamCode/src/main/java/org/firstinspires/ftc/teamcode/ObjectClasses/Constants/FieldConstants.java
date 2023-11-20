@@ -96,8 +96,6 @@ public class FieldConstants {
     // NEUTRAL PIXEL STACK POSES //
     ///////////////////////////////
 
-
-
     public static Pose2d RED_NEUTRAL_PIXEL_STAGEDOOR = new Pose2d(-64.281 + HALF_ROBOT_LENGTH,-11.656, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_NEUTRAL_PIXEL_CENTERSPIKE = new Pose2d(-64.281 + HALF_ROBOT_LENGTH, -23.469, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_NEUTRAL_PIXEL_TRUSS = new Pose2d(-64.281 + HALF_ROBOT_LENGTH,  -35.469, FACE_TOWARD_BACKSTAGE);
