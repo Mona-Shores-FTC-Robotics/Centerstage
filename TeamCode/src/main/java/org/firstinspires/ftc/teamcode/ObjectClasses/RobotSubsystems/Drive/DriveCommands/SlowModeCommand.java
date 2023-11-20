@@ -56,12 +56,12 @@ public class SlowModeCommand extends CommandBase {
 
         //set the apriltag driving override so we aren't limited by the apriltag driving distance
         Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
+        driveSubsystem.currentState = DriveSubsystem.DriveStates.SLOW_MANUAL_DRIVE;
     }
 
     @Override
     public void execute() {
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
-
         driveSubsystem.setDriveStrafeTurnValues(
                 driveSupplier.getAsDouble() * SLOW_DRIVE_FACTOR,
                 strafeSupplier.getAsDouble() * SLOW_STRAFE_FACTOR,

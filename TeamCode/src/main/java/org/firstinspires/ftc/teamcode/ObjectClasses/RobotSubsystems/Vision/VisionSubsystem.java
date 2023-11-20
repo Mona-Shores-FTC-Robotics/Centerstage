@@ -593,9 +593,6 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     public boolean AutoDriveToBackdropRed() {
-
-
-
         if (
                 (RED_BACKDROP_LEFT_TAG.detection!=null &&
                 (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft))

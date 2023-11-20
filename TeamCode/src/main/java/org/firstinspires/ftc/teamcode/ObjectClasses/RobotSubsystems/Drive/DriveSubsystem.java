@@ -31,28 +31,6 @@ public class DriveSubsystem extends SubsystemBase {
         public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=3;
     }
 
-//    public static class AutoDriveParameters {
-//        public double TURN_ERROR_THRESHOLD = 1;
-//        public double STRAFE_ERROR_THRESHOLD = .5;
-//        public double DRIVE_ERROR_THRESHOLD = .5;
-//
-//        public double TURN_P = .016;
-//        public double TURN_I = 0 ;
-//        public double TURN_D = 0;
-//        public double TURN_F = .15;
-//
-//        public double STRAFE_P=0;
-//        public double STRAFE_I=0;
-//        public double STRAFE_D=0;
-//        public double STRAFE_F=0;
-//
-//        public double DRIVE_P=0;
-//        public double DRIVE_I=0;
-//        public double DRIVE_D=0;
-//        public double DRIVE_F=0;
-//    }
-
-
     public static class ParamsMona {
         /** Set Mona motor parameters for faster TeleOp driving**/
         public double DRIVE_RAMP = .2; //ken ramp
@@ -69,38 +47,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static class ParamsRRMona {
-        /** Set Roadrunner motor parameters for faster roadrunner trajectories **/
-
-        // drive model parameters
-//        public double inPerTick = 0.04122; // 0.0317919075144509
-//        public double lateralInPerTick =0.04329; // 60\1845.5 .025
-//        public double trackWidthTicks =486.4610149342712;  //631.8289216104534
-//
-//        //new values
-//        public double kS =  1.0;  //0.9574546275336608
-//        public double kV = 0.003858438495965098; //=0.004264232249424524;
-//        public double kA =.0007;
-//
-//        // path profile parameters (in inches)
-//        public double maxWheelVel =40;
-//        public double minProfileAccel =-45;
-//        public double maxProfileAccel =45;
-//
-//        // turn profile parameters (in radians)
-//        public double maxAngVel =Math.PI; // shared with path
-//        public double maxAngAccel =Math.PI;
-//
-//        //These are being used in the run part of the trajectory and turn action so they should be live updating.
-//        // path controller gains
-//
-//        public double axialGain =9.5;
-//        public double lateralGain =7.5;
-//        public double headingGain =15; // shared with turn
-//
-//        public double axialVelGain =0;
-//        public double lateralVelGain =0;
-//        public double headingVelGain =0; // shared with turn
-
         public double inPerTick = 0.0313; // 0.0317919075144509
         public double lateralInPerTick =0.0283; // 60\1845.5 .025
         public double trackWidthTicks =631.8289216104534;  //631.8289216104534
@@ -135,6 +81,18 @@ public class DriveSubsystem extends SubsystemBase {
     public static DriveParameters driveParameters= new DriveParameters();
 //    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
+    public enum DriveStates {
+        MANUAL_DRIVE,
+        SLOW_MANUAL_DRIVE,
+        BACKUP_FROM_BACKDROP,
+        APRIL_TAG_ALIGNMENT_START,
+        APRIL_TAG_ALIGNMENT_TURNING,
+        APRIL_TAG_ALIGNMENT_STRAFING,
+        APRIL_TAG_ALIGNMENT_DRIVING;
+    }
+
+    public DriveStates currentState = DriveStates.MANUAL_DRIVE;
+
     public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
 
     public MecanumDriveMona mecanumDrive;
@@ -165,12 +123,13 @@ public class DriveSubsystem extends SubsystemBase {
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         mecanumDrive.init();
+        currentState = DriveStates.MANUAL_DRIVE;
     }
 
     public void periodic(){
 
         //If the vision subsystem has a pose ready for us (because we are at the backdrop)
-        // AND the driver set the resetHeading flag (this is the BACK button right now)
+        // AND the driver set the resetHeading flag (this is the SHARE button right now)
         //      then:
         //          1) reset the gyro (to 0)
         //          2) change the relativeYaw to 0 (offset 0 from gyro)
@@ -223,6 +182,7 @@ public class DriveSubsystem extends SubsystemBase {
         double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
         double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
 
+        MatchConfig.telemetryPacket.put("Drive Subsystem State: ", currentState);
         MatchConfig.telemetryPacket.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
         MatchConfig.telemetryPacket.put("LF Speed", actualSpeedLF);
         MatchConfig.telemetryPacket.put("LF Target", targetSpeedLF);
@@ -255,6 +215,8 @@ public class DriveSubsystem extends SubsystemBase {
         } else return false;
     }
 
+
+    //
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
 
         boolean gamepadActive = driverGamepadIsActive(leftY, leftX, rightX);

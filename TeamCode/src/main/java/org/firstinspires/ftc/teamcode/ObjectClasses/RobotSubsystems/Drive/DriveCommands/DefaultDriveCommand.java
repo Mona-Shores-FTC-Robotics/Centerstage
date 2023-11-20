@@ -16,8 +16,6 @@ public class DefaultDriveCommand extends CommandBase {
     private final DoubleSupplier strafeSupplier;
     private final DoubleSupplier turnSupplier;
 
-    private MecanumDriveMona mecanumDrive;
-
     /**
      * Creates a new DefaultDrive.
      */
@@ -32,7 +30,7 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void initialize() {
-
+        driveSubsystem.currentState = DriveSubsystem.DriveStates.MANUAL_DRIVE;
     }
 
     @Override

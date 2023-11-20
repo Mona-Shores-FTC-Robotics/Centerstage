@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.MoveToPointCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
@@ -47,9 +46,6 @@ public class ScoringArmTestingDriverBindings {
 
     public static SequentialCommandGroup moveAndReadyToScorePixel;
     public static SequentialCommandGroup releasePixelsAndMove;
-
-    public static MoveToPointCommand moveToPixelScoreLocation;
-    public static MoveToPointCommand moveAwayFromPixelScoreLocation;
 
     private static DriveSubsystem driveSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
