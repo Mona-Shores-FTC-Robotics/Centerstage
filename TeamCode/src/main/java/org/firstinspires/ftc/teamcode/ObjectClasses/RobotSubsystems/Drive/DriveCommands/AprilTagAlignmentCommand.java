@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_START;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_TURNING;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_CENTER_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_LEFT_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_RIGHT_TAG;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
@@ -31,7 +33,9 @@ public class AprilTagAlignmentCommand extends CommandBase {
     private double strafe;
     private double turn;
 
-    private TurnPIDController pid;
+    private TurnPIDController pidTurn;
+    private PIDFController pidDrive;
+    private PIDFController pidStrafe;
     /**
      * Creates a new DefaultDrive.
      */
@@ -44,8 +48,17 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        pid = new TurnPIDController(0,0,0,0, 0);
-        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_START;
+        //set up the PID controllers
+
+        pidTurn = new TurnPIDController(0, autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
+        pidStrafe = new PIDFController(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
+        pidStrafe.setSetPoint(0);
+        pidDrive = new PIDFController(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
+        pidDrive.setSetPoint(0);
+
+        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_TURNING;
+
+
     }
 
     @Override
@@ -59,11 +72,17 @@ public class AprilTagAlignmentCommand extends CommandBase {
     public void setDriveStrafeTurnValuesForAprilTagAlignment(){
 
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (driveSubsystem.currentState==APRIL_TAG_ALIGNMENT_START) {
+
 
             //Align to the Backdrop AprilTags - CASE RED
             if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFoundRecently){
+                if (driveSubsystem.currentState==APRIL_TAG_ALIGNMENT_START) {
+
+
+
+
+                }
 
                 visionSubsystem.AutoDriveToBackdropRed();
                 drive = 0;
@@ -71,39 +90,87 @@ public class AprilTagAlignmentCommand extends CommandBase {
                 turn = pid.update(gyroSubsystem.currentRelativeYawDegrees);
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(turn, 6, 6));
             }
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
-                    !getOverrideAprilTagDriving()) {
-                //start apriltag timeout timer
-                if (!aprilTagAutoDriving) {
-                    aprilTagTimeoutTimer.reset();
-                }
-                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
 
-                //Check if we timed out
-                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
-                    aprilTagAutoDriving=false;
-                }
+                                  if (!aprilTagAutoDriving)
+                        {
+                            aprilTagAutoDriving =true;
+                            aprilTagTurning =false;
+                            aprilTagStrafing=true;
+                            aprilTagDriving=false;
 
-            } else aprilTagAutoDriving = false;
-        } else {
-            // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
-            leftYAdjusted = 0;
-            leftXAdjusted = 0;
-            rightXAdjusted = 0;
-        }
-        drive = leftYAdjusted;
-        strafe = leftXAdjusted;
-        turn = rightXAdjusted;
-    }
+                        }
+
+                        if (aprilTagTurning){
+
+                            visionSubsystem.AutoDriveToBackdropRed();
+                            leftYAdjusted = 0;
+                            leftXAdjusted = 0;
+                            rightXAdjusted = pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
+
+                            if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD)
+                            {
+                                aprilTagTurning =false;
+                                aprilTagStrafing=false;
+                                aprilTagDriving=true;
+                            }
+                        }
+
+                        if (aprilTagStrafing){
+                            visionSubsystem.AutoDriveToBackdropRed();
+                            leftYAdjusted = 0;
+                            leftXAdjusted = pidStrafe.calculate(visionSubsystem.yawError);
+                            rightXAdjusted = 0;
+
+                            MatchConfig.telemetryPacket.put("pidStrafeOutput", leftXAdjusted);
+
+                            if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD)
+                            {
+                                aprilTagTurning =true;
+                                aprilTagStrafing=false;
+                                aprilTagDriving=false;
+                            }
+                        }
+
+                        if (aprilTagDriving) {
+                            visionSubsystem.AutoDriveToBackdropRed();
+                            leftYAdjusted = pidDrive.calculate(visionSubsystem.rangeError);
+                            leftXAdjusted = 0;
+                            rightXAdjusted = 0;
+                            if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD)
+                            {
+                                aprilTagTurning =false;
+                                aprilTagStrafing=false;
+                                aprilTagDriving=false;
+                                aprilTagAutoDriving=false;
+                            }
+                        }
+                        MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                        MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                        MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                    }
+                    //Aligning to the Backdrop AprilTags - CASE BLUE
+                    else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+                            visionSubsystem.blueBackdropAprilTagFoundRecently &&
+                            (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+                            !getOverrideAprilTagDriving()) {
+                        aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+                        leftYAdjusted = mecanumDrive.aprilTagDrive;
+                        leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                        rightXAdjusted = mecanumDrive.aprilTagTurn;
+                        MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                        MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                        MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                    } else aprilTagAutoDriving = false;
+                } else {
+                    // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
+                    leftYAdjusted = 0;
+                    leftXAdjusted = 0;
+                    rightXAdjusted = 0;
+                }
+                drive = leftYAdjusted;
+                strafe = leftXAdjusted;
+                turn = rightXAdjusted;
+            }
 
 
     public boolean AutoDriveToBackdropRed() {
