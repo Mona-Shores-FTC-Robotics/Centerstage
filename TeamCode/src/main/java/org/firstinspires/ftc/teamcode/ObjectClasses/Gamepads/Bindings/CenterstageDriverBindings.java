@@ -55,11 +55,15 @@ public class CenterstageDriverBindings {
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenHeld(
-                        new ParallelRaceGroup(
-                                new AprilTagAlignmentCommand(Robot.getInstance().getDriveSubsystem()),
-                                new IsGamepadActiveCommand(gamepad)
-                        ));
+                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+
+
+//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+//                .whenHeld(
+//                        new ParallelRaceGroup(
+//                                new AprilTagAlignmentCommand(Robot.getInstance().getDriveSubsystem()),
+//                                new IsGamepadActiveCommand(gamepad)
+//                        ));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -117,20 +121,17 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  START BUTTON  - DRONE                               //
+        //  START BUTTON  - FIELD CENTRIC DRIVING                               //
         //                                                      //
         //////////////////////////////////////////////////////////
-//        gamepad.getGamepadButton(GamepadKeys.Button.START)
-//                .toggleWhenPressed(new InstantCommand(() -> {
-//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
-//                }), new InstantCommand(() -> {
-//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
-//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
-//                }));
-
         gamepad.getGamepadButton(GamepadKeys.Button.START)
-                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+                .toggleWhenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+                }), new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
