@@ -64,7 +64,7 @@ public class Test_SeparateRoutesPoseChange extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        Robot.getInstance().init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO, gamepadHandling);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 

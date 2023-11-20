@@ -62,7 +62,7 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize Gamepad and Robot
-        Robot.getInstance().init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO, gamepadHandling);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 

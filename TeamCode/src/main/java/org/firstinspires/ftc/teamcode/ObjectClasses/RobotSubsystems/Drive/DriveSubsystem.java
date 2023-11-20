@@ -6,14 +6,19 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadAprilTagCancelCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.AprilTagAlignmentCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
@@ -85,11 +90,35 @@ public class DriveSubsystem extends SubsystemBase {
         MANUAL_DRIVE,
         SLOW_MANUAL_DRIVE,
         BACKUP_FROM_BACKDROP,
-        APRIL_TAG_ALIGNMENT_START,
         APRIL_TAG_ALIGNMENT_TURNING,
+        APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG,
         APRIL_TAG_ALIGNMENT_STRAFING,
         APRIL_TAG_ALIGNMENT_DRIVING;
     }
+    public static class AutoDriveParameters {
+        public double TURN_ERROR_THRESHOLD = 1;
+        public double STRAFE_ERROR_THRESHOLD = .5;
+        public double DRIVE_ERROR_THRESHOLD = .5;
+
+        public double STRAFE_TO_TAG_SPEED = .5;
+
+        public double TURN_P = .016;
+        public double TURN_I = 0 ;
+        public double TURN_D = 0;
+        public double TURN_F = .15;
+
+        public double STRAFE_P=0;
+        public double STRAFE_I=0;
+        public double STRAFE_D=0;
+        public double STRAFE_F=0;
+
+        public double DRIVE_P=0;
+        public double DRIVE_I=0;
+        public double DRIVE_D=0;
+        public double DRIVE_F=0;
+    }
+    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
+
 
     public DriveStates currentState = DriveStates.MANUAL_DRIVE;
 
@@ -114,12 +143,17 @@ public class DriveSubsystem extends SubsystemBase {
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
+
+
         mecanumDrive = new MecanumDriveMona();
     }
 
-    public void init()
+    private GamepadHandling gamepadHandling;
+
+    public void init(GamepadHandling gpadHandling)
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
+        gamepadHandling = gpadHandling;
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         mecanumDrive.init();
@@ -215,14 +249,18 @@ public class DriveSubsystem extends SubsystemBase {
         } else return false;
     }
 
+    public boolean driverGamepadCancellingAprilTagDriving(double leftY) {
+        if     (Math.abs(leftY) < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+            return true;
+        } else return false;
+    }
+
 
     //
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
-
         boolean gamepadActive = driverGamepadIsActive(leftY, leftX, rightX);
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (gamepadActive || aprilTagAutoDriving) {
-
+        if (gamepadActive) {
             //apply speed factors
             leftYAdjusted = leftY * driveParameters.DRIVE_SPEED_FACTOR;
             leftXAdjusted = leftX * driveParameters.STRAFE_SPEED_FACTOR;
@@ -233,59 +271,16 @@ public class DriveSubsystem extends SubsystemBase {
                 fieldOrientedControl(leftYAdjusted, leftXAdjusted);
             }
 
-            // Cancel AprilTag driving if the driver is moving away from the backdrop
-            // I'm not sure if this works for field oriented control
-            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
-                aprilTagAutoDriving = false;
-            }
-
-            //Align to the Backdrop AprilTags - CASE RED
-            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+            //If the tag we are trying to deliver to is visible, we are driving forward, and we aren't overriding(e.g. slow mode)
+            if (    visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation())  &&
+                    leftYAdjusted > .2 &&
                     !getOverrideAprilTagDriving()) {
-                //start apriltag timeout timer
-                if (!aprilTagAutoDriving) {
-                    aprilTagTimeoutTimer.reset();
-                }
-                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-
-                //Check if we timed out
-                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
-                    aprilTagAutoDriving=false;
-                }
-
+                //Then schedule AprilTagAlignmentCommand in parallel with a IsAprilTagDrivingCancelled Command
+                new ParallelRaceGroup(
+                        new IsGamepadAprilTagCancelCommand(gamepadHandling.getDriverGamepad()),
+                        new AprilTagAlignmentCommand(Robot.getInstance().getDriveSubsystem())
+                ).schedule();
             }
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
-                    !getOverrideAprilTagDriving()) {
-                //start apriltag timeout timer
-                if (!aprilTagAutoDriving) {
-                    aprilTagTimeoutTimer.reset();
-                }
-                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-
-                //Check if we timed out
-                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
-                    aprilTagAutoDriving=false;
-                }
-
-            } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             leftYAdjusted = 0;

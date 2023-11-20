@@ -61,7 +61,7 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize the robot
-        Robot.getInstance().init(Robot.OpModeType.TELEOP);
+        Robot.getInstance().init(Robot.OpModeType.TELEOP, gamepadHandling);
 
         // Setup Button Bindings
         new CenterstageDriverBindings(gamepadHandling.getDriverGamepad());

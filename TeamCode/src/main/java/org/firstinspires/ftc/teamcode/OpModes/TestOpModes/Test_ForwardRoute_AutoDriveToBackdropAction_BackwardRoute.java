@@ -65,7 +65,7 @@ public class Test_ForwardRoute_AutoDriveToBackdropAction_BackwardRoute extends L
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        Robot.getInstance().init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO, gamepadHandling);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 

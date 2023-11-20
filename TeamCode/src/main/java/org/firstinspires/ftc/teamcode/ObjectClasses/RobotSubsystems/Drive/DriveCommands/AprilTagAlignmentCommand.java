@@ -1,15 +1,30 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_START;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_DRIVING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_STRAFING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.APRIL_TAG_ALIGNMENT_TURNING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.DriveStates.MANUAL_DRIVE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem.autoDriveParameters;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.BLUE_BACKDROP_CENTER_TAG;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.BLUE_BACKDROP_LEFT_TAG;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.BLUE_BACKDROP_RIGHT_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_CENTER_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_LEFT_TAG;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.AprilTagID.RED_BACKDROP_RIGHT_TAG;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.CENTER;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.LEFT;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.tunableVisionConstants;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -17,8 +32,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.TurnPIDController;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
-
-import java.util.function.DoubleSupplier;
 
 /**
  * A command to drive the robot with joystick input *
@@ -33,9 +46,17 @@ public class AprilTagAlignmentCommand extends CommandBase {
     private double strafe;
     private double turn;
 
+    private double rangeError;
+    private double headingError;
+    private double yawError;
+
+    private VisionSubsystem.DeliverLocation previousDeliverLocation;
+
     private TurnPIDController pidTurn;
     private PIDFController pidDrive;
     private PIDFController pidStrafe;
+
+    private boolean targetTagFound=false;
     /**
      * Creates a new DefaultDrive.
      */
@@ -48,226 +69,361 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        //set up the PID controllers
-
-        pidTurn = new TurnPIDController(0, autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
-        pidStrafe = new PIDFController(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
-        pidStrafe.setSetPoint(0);
-        pidDrive = new PIDFController(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
-        pidDrive.setSetPoint(0);
-
-        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_TURNING;
-
-
+        if (visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation()))
+        {
+            //set up the three PID controllers
+            pidTurn = new TurnPIDController(0, autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
+            pidStrafe = new PIDFController(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
+            pidStrafe.setSetPoint(0);
+            pidDrive = new PIDFController(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
+            pidDrive.setSetPoint(0);
+            previousDeliverLocation = visionSubsystem.getDeliverLocation();
+            driveSubsystem.currentState=APRIL_TAG_ALIGNMENT_TURNING;
+        } else driveSubsystem.currentState=MANUAL_DRIVE;
     }
 
     @Override
     public void execute() {
-        //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
+        //This attempts to handle the situation where the driver changes the delivery location during the middle of the command
+        CheckIfDeliveryLocationChanged();
+
+        //this sets the drive/strafe/turn values for automatic alignment in four stages (TURNING, STRAFING TO SEE TAG, STRAFING TO ALIGN TO TAG, DRIVING TO TAG)
         setDriveStrafeTurnValuesForAprilTagAlignment();
+
+        //this moves the robot using drive/strafe/turn values using speed control
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
+
+        //save the current delivery location as the previous delviery location in case the driver changes it mid-command;
+        previousDeliverLocation = visionSubsystem.getDeliverLocation();
     }
 
+    private void CheckIfDeliveryLocationChanged() {
+        if (visionSubsystem.getDeliverLocation()!=previousDeliverLocation)
+        {
+            if (visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation()))
+            {
+                initialize();
+            } else driveSubsystem.currentState=MANUAL_DRIVE;
+        }
+    }
 
-    public void setDriveStrafeTurnValuesForAprilTagAlignment(){
+    @Override
+    public boolean isFinished() {
+        if (driveSubsystem.currentState==MANUAL_DRIVE) {
+            return true;
+        } else return false;
+    }
 
-        //Check if driver controls are active so we can cancel automated driving if they are
+    public void setDriveStrafeTurnValuesForAprilTagAlignment() {
+        //Align to the Backdrop AprilTags - CASE RED
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+                visionSubsystem.redBackdropAprilTagFoundRecently) {
 
+            switch (driveSubsystem.currentState) {
+                case APRIL_TAG_ALIGNMENT_TURNING: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = 0;
+                    turn = pidTurn.update(gyroSubsystem.currentRelativeYawDegrees);
 
-            //Align to the Backdrop AprilTags - CASE RED
-            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFoundRecently){
-                if (driveSubsystem.currentState==APRIL_TAG_ALIGNMENT_START) {
-
-
-
-
-                }
-
-                visionSubsystem.AutoDriveToBackdropRed();
-                drive = 0;
-                strafe = 0;
-                turn = pid.update(gyroSubsystem.currentRelativeYawDegrees);
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(turn, 6, 6));
-            }
-
-                                  if (!aprilTagAutoDriving)
-                        {
-                            aprilTagAutoDriving =true;
-                            aprilTagTurning =false;
-                            aprilTagStrafing=true;
-                            aprilTagDriving=false;
-
-                        }
-
-                        if (aprilTagTurning){
-
-                            visionSubsystem.AutoDriveToBackdropRed();
-                            leftYAdjusted = 0;
-                            leftXAdjusted = 0;
-                            rightXAdjusted = pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees);
-
-                            if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD)
-                            {
-                                aprilTagTurning =false;
-                                aprilTagStrafing=false;
-                                aprilTagDriving=true;
-                            }
-                        }
-
-                        if (aprilTagStrafing){
-                            visionSubsystem.AutoDriveToBackdropRed();
-                            leftYAdjusted = 0;
-                            leftXAdjusted = pidStrafe.calculate(visionSubsystem.yawError);
-                            rightXAdjusted = 0;
-
-                            MatchConfig.telemetryPacket.put("pidStrafeOutput", leftXAdjusted);
-
-                            if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD)
-                            {
-                                aprilTagTurning =true;
-                                aprilTagStrafing=false;
-                                aprilTagDriving=false;
-                            }
-                        }
-
-                        if (aprilTagDriving) {
-                            visionSubsystem.AutoDriveToBackdropRed();
-                            leftYAdjusted = pidDrive.calculate(visionSubsystem.rangeError);
-                            leftXAdjusted = 0;
-                            rightXAdjusted = 0;
-                            if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD)
-                            {
-                                aprilTagTurning =false;
-                                aprilTagStrafing=false;
-                                aprilTagDriving=false;
-                                aprilTagAutoDriving=false;
-                            }
-                        }
-                        MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                        MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                        MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                    if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG;
                     }
-                    //Aligning to the Backdrop AprilTags - CASE BLUE
-                    else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                            visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                            (leftYAdjusted > .2 || aprilTagAutoDriving) &&
-                            !getOverrideAprilTagDriving()) {
-                        aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
-                        leftYAdjusted = mecanumDrive.aprilTagDrive;
-                        leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                        rightXAdjusted = mecanumDrive.aprilTagTurn;
-                        MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                        MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                        MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-                    } else aprilTagAutoDriving = false;
-                } else {
-                    // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
-                    leftYAdjusted = 0;
-                    leftXAdjusted = 0;
-                    rightXAdjusted = 0;
+                    break;
                 }
-                drive = leftYAdjusted;
-                strafe = leftXAdjusted;
-                turn = rightXAdjusted;
-            }
 
+
+                case APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = Math.signum(visionSubsystem.yawError) * autoDriveParameters.STRAFE_TO_TAG_SPEED;
+                    turn = 0;
+
+                    //strafe until we see the target again since we probably can't see it if we just turned
+                    // this step essentially gets skipped if we can see the tag
+                    if (targetTagFound) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING;
+                    }
+                    break;
+                }
+
+                case APRIL_TAG_ALIGNMENT_STRAFING: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = pidStrafe.calculate(visionSubsystem.yawError);
+                    turn = 0;
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_DRIVING;
+                    }
+                    break;
+                }
+
+                case APRIL_TAG_ALIGNMENT_DRIVING: {
+                    AutoDriveToBackdropRed();
+                    drive = pidDrive.calculate(visionSubsystem.rangeError);
+                    strafe = 0;
+                    turn = 0;
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = MANUAL_DRIVE;
+                    }
+                    break;
+                }
+            }
+            MatchConfig.telemetryPacket.put("AprilTag Drive", JavaUtil.formatNumber(drive, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", JavaUtil.formatNumber(rangeError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag Strafe", JavaUtil.formatNumber(strafe, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(yawError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag Turn", JavaUtil.formatNumber(turn, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(headingError, 6, 6));
+        }
+
+        //Align to the Backdrop AprilTags - CASE RED
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+                visionSubsystem.redBackdropAprilTagFoundRecently) {
+
+            switch (driveSubsystem.currentState) {
+                case APRIL_TAG_ALIGNMENT_TURNING: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = 0;
+                    turn = pidTurn.update(gyroSubsystem.currentRelativeYawDegrees);
+
+                    if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG;
+                    }
+                    break;
+                }
+
+
+                case APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = Math.signum(visionSubsystem.yawError) * autoDriveParameters.STRAFE_TO_TAG_SPEED;
+                    turn = 0;
+
+                    //strafe until we see the target again since we probably can't see it if we just turned
+                    // this step essentially gets skipped if we can see the tag
+                    if (targetTagFound) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING;
+                    }
+                    break;
+                }
+
+                case APRIL_TAG_ALIGNMENT_STRAFING: {
+                    AutoDriveToBackdropRed();
+                    drive = 0;
+                    strafe = pidStrafe.calculate(visionSubsystem.yawError);
+                    turn = 0;
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_DRIVING;
+                    }
+                    break;
+                }
+
+                case APRIL_TAG_ALIGNMENT_DRIVING: {
+                    AutoDriveToBackdropRed();
+                    drive = pidDrive.calculate(visionSubsystem.rangeError);
+                    strafe = 0;
+                    turn = 0;
+
+                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
+                        driveSubsystem.currentState = MANUAL_DRIVE;
+                    }
+                    break;
+                }
+            }
+            MatchConfig.telemetryPacket.put("AprilTag Drive", JavaUtil.formatNumber(drive, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", JavaUtil.formatNumber(rangeError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag Strafe", JavaUtil.formatNumber(strafe, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(yawError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag Turn", JavaUtil.formatNumber(turn, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(headingError, 6, 6));
+        }
+
+    }
 
     public boolean AutoDriveToBackdropRed() {
-        if (
-                (RED_BACKDROP_LEFT_TAG.detection!=null &&
-                        (RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft))
-                        && (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.LEFT)
-                        ||
-                        (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
-                        (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
+        if ( RED_BACKDROP_LEFT_TAG.detection!=null &&
+                (RED_BACKDROP_LEFT_TAG.isDetected || visionSubsystem.recentRedLeft) &&
+                (visionSubsystem.getDeliverLocation().equals(LEFT)))
         {
+            targetTagFound=RED_BACKDROP_LEFT_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
             MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("Red Left Seen Recently", visionSubsystem.recentRedLeft);
+            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
 
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
-
-        } else if (
-                (RED_BACKDROP_CENTER_TAG.detection!=null &&
-                        (RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter)) &&
-                        (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.CENTER)
-                                ||              (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-                                (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
-        )
+        } else if ( RED_BACKDROP_CENTER_TAG.detection!=null &&
+                        (RED_BACKDROP_CENTER_TAG.isDetected || visionSubsystem.recentRedCenter) &&
+                        (visionSubsystem.getDeliverLocation().equals(CENTER)))
         {
+            targetTagFound=RED_BACKDROP_CENTER_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
 
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
             MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedCenter);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("Red Center Seen Recently", visionSubsystem.recentRedCenter);
 
-            telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
-
-        }
-        else if (
-                (RED_BACKDROP_RIGHT_TAG.detection!=null &&
-                        (RED_BACKDROP_RIGHT_TAG.isDetected || recentRedRight)) && (
-                        getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.RIGHT)
-                                ||
-                                (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
-                                (getDeliverLocationRed().equals(VisionSubsystem.DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
+            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
+        } else if ( RED_BACKDROP_RIGHT_TAG.detection!=null &&
+                    (RED_BACKDROP_RIGHT_TAG.isDetected || visionSubsystem.recentRedRight) &&
+                    visionSubsystem.getDeliverLocation().equals(RIGHT))
         {
-
-            MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
-            MatchConfig.telemetryPacket.put("Red Right Seen Recently", recentRedRight);
+            targetTagFound=RED_BACKDROP_RIGHT_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
             headingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
+            MatchConfig.telemetryPacket.put("Red Right Seen Recently", visionSubsystem.recentRedRight);
 
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_RIGHT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedRight);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
-
-            telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_RIGHT_TAG);
+            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_RIGHT_TAG);
         }
         return false;
+    }
+
+
+    //returns false once the pose reaches a steady state for a certain number of checks
+    private boolean atBackDrop(double rangeError, double yawError, double headingError, VisionSubsystem.AprilTagID tag) {
+        //We have found the target if this is true
+        if (    (Math.abs(rangeError)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
+                (Math.abs(yawError)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
+                (Math.abs(headingError)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
+
+            visionSubsystem.backdropPoseCount++;
+            if (visionSubsystem.backdropPoseCount > tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
+                visionSubsystem.backdropPoseCount=0;
+                visionSubsystem.resetPose = DeterminePoseFromAprilTag(tag);
+                visionSubsystem.resetPoseReady = true;
+                MatchConfig.telemetryPacket.put("Reset Pose X", visionSubsystem.resetPose.position.x);
+                MatchConfig.telemetryPacket.put("Reset Pose Y", visionSubsystem.resetPose.position.y);
+                MatchConfig.telemetryPacket.put("Reset Pose Heading", visionSubsystem.resetPose.heading.log());
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public boolean AutoDriveToBackdropBlue() {
+        if ( BLUE_BACKDROP_LEFT_TAG.detection!=null &&
+                (BLUE_BACKDROP_LEFT_TAG.isDetected || visionSubsystem.recentBlueLeft) &&
+                (visionSubsystem.getDeliverLocation().equals(LEFT)))
+        {
+            targetTagFound=BLUE_BACKDROP_LEFT_TAG.isDetected;
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            rangeError = (BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            headingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
+            yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
+
+            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_LEFT_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Blue Left Seen Recently", visionSubsystem.recentBlueLeft);
+            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_LEFT_TAG);
+
+        } else if ( BLUE_BACKDROP_CENTER_TAG.detection!=null &&
+                (BLUE_BACKDROP_CENTER_TAG.isDetected || visionSubsystem.recentBlueCenter) &&
+                (visionSubsystem.getDeliverLocation().equals(CENTER)))
+        {
+            targetTagFound=BLUE_BACKDROP_CENTER_TAG.isDetected;
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            rangeError = (BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            headingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
+            yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
+
+            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Blue Center Seen Recently", visionSubsystem.recentBlueCenter);
+
+            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_CENTER_TAG);
+        } else if ( BLUE_BACKDROP_RIGHT_TAG.detection!=null &&
+                (BLUE_BACKDROP_RIGHT_TAG.isDetected || visionSubsystem.recentBlueRight) &&
+                visionSubsystem.getDeliverLocation().equals(RIGHT))
+        {
+            targetTagFound=BLUE_BACKDROP_RIGHT_TAG.isDetected;
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            headingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+            yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
+
+            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG);
+            MatchConfig.telemetryPacket.put("Blue Right Seen Recently", visionSubsystem.recentBlueRight);
+
+            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_RIGHT_TAG);
+        }
+        return false;
+    }
+
+    private Pose2d DeterminePoseFromAprilTag(VisionSubsystem.AprilTagID tag) {
+
+        //get the field position of the AprilTag on the field and store it in a float vector (VectorF)
+        VectorF tagVector = tag.detection.metadata.fieldPosition;
+
+        //store the X value of the tag in tagPosXOnField access the individual values of the vector using .get(0)
+        double tagPosXOnField = tagVector.get(0);
+
+        //store the Y value of the tag - use .get(1) for this one
+        double tagPosYOnField = tagVector.get(1);
+
+        //the +90 rotates this tagheading to be facing the backdrop (it comes in at -90 for the backdrop)
+        double tagHeading = QuaternionToHeading(tag.detection.metadata.fieldOrientation)+90;
+
+        //Look at Fig. 2 at https://ftc-docs.firstinspires.org/en/latest/apriltag/understanding_apriltag_detection_values/understanding-apriltag-detection-values.html
+        //save tag.detection.ftPose.x into a distanceY variable;
+        //save tag.detection.ftcPose.y into a distanceX variable;
+        //This is confusing because the ftCpose X and Y are not the X and Y coordinates of the field, but of the camera image
+        //Ftcpose.x represents left and right on the camera image, which for the backdrop corresponds to the Y value.
+        //Ftcpose.y represents distance to the robot, which for the backdrop is our X value
+
+        double distanceY = tag.detection.ftcPose.x;  //this is correct even though it seems odd
+        double distanceX = tag.detection.ftcPose.y;  //same
+
+        //save the tag.detection.ftPose.yaw as the cameraYaw
+        double cameraYaw = tag.detection.ftcPose.yaw;
+
+        Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians);
+
+        telemetry.addLine();
+        telemetry.addData("Tag", tag.detection.metadata.name);
+//        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
+//        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
+
+        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
+
+        return newPose;
+    }
+
+
+    public double QuaternionToHeading (Quaternion quaternion) {
+
+        // Calculate yaw (heading) from quaternion
+        double t0 = 2.0 * (quaternion.w * quaternion.z + quaternion.x * quaternion.y);
+        double t1 = 1.0 - 2.0 * (quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+        double yawRadians = Math.atan2(t0, t1);
+
+        // Convert yaw angle from radians to degrees
+        double yawDegrees = Math.toDegrees(yawRadians);
+
+        // Ensure the yaw angle is within the range [-180, 180] degrees
+        if (yawDegrees > 180) {
+            yawDegrees -= 360;
+        } else if (yawDegrees < -180) {
+            yawDegrees += 360;
+        }
+
+        return yawDegrees;
     }
 
 }

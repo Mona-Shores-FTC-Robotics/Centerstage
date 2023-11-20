@@ -61,7 +61,7 @@ public class TeleOp_PitMode extends LinearOpMode
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_PIT_MODE);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        robot.init(Robot.OpModeType.TELEOP);
+        robot.init(Robot.OpModeType.TELEOP, gamepadHandling);
 
         telemetry.clearAll();
 

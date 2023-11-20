@@ -44,7 +44,7 @@ public class PushPropScoreFive extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize Gamepad and Robot - Order Important
-        Robot.getInstance().init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO, gamepadHandling);
 
         // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();

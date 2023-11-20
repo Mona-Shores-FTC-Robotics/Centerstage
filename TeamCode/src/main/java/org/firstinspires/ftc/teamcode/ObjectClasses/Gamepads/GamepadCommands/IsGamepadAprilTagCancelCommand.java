@@ -3,14 +3,13 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 
-public class IsGamepadActiveCommand extends CommandBase {
+public class IsGamepadAprilTagCancelCommand extends CommandBase {
 
     boolean done;
     GamepadEx gamepad;
-    public IsGamepadActiveCommand(GamepadEx pad)
+    public IsGamepadAprilTagCancelCommand(GamepadEx pad)
     {
         gamepad=pad;
     }
@@ -22,10 +21,8 @@ public class IsGamepadActiveCommand extends CommandBase {
 
     @Override
     public void execute(){
-        done = Robot.getInstance().getDriveSubsystem().driverGamepadIsActive(
-                gamepad.getLeftY(),
-                gamepad.getLeftX(),
-                gamepad.getRightX());
+        done = Robot.getInstance().getDriveSubsystem().driverGamepadCancellingAprilTagDriving(
+                gamepad.getLeftY());
     }
 
     @Override

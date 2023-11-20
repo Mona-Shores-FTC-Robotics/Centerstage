@@ -58,7 +58,7 @@ public class TeleOp_Vision extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_VISION);
 
         //Initialize the Robot
-        Robot.getInstance().init(Robot.OpModeType.TELEOP);
+        Robot.getInstance().init(Robot.OpModeType.TELEOP, gamepadHandling);
 
         /* Setup Button Bindings **/
         new VisionDriverBindings( gamepadHandling.getDriverGamepad());

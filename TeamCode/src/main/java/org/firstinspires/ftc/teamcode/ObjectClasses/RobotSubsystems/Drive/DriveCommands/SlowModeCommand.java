@@ -63,9 +63,9 @@ public class SlowModeCommand extends CommandBase {
     public void execute() {
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
         driveSubsystem.setDriveStrafeTurnValues(
-                driveSupplier.getAsDouble() * SLOW_DRIVE_FACTOR,
-                strafeSupplier.getAsDouble() * SLOW_STRAFE_FACTOR,
-                turnSupplier.getAsDouble() * SLOW_TURN_FACTOR
+                driveSupplier.getAsDouble(),
+                strafeSupplier.getAsDouble(),
+                turnSupplier.getAsDouble()
         );
 
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
