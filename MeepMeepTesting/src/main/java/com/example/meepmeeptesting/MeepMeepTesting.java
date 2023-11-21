@@ -1,5 +1,6 @@
 package com.example.meepmeeptesting;
 import com.example.meepmeeptesting.Routes.RoutesSpikeBackdropPark;
+import com.example.meepmeeptesting.Routes.RoutesSpikeBackdropParkImproved;
 import com.example.meepmeeptesting.Routes.RoutesSpikeOnly;
 import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPark;
 import com.example.meepmeeptesting.Routes.RoutesSpikeStraightUpTheMiddle;
@@ -25,15 +26,15 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
+    public static TeamPropLocation teamPropLocation = TeamPropLocation.RIGHT;
 
-    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_STRAIGHT;
+    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_BACKDROP_PARK_IMPROVED;
 
     /** Set which robots should show up **/
-    public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
-    public static boolean SHOW_BLUE_BACKSTAGE_BOT = false;
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
+    public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
     public static boolean SHOW_RED_AUDIENCE_BOT = true;
-    public static boolean SHOW_RED_BACKSTAGE_BOT = false;
+    public static boolean SHOW_RED_BACKSTAGE_BOT = true;
 
     public static DriveShim roadRunnerDrive;
     public enum TeamPropLocation {LEFT, CENTER, RIGHT, ALL}
@@ -44,7 +45,7 @@ public class MeepMeepTesting {
     }
 
     public enum SideOfField {BACKSTAGE, AUDIENCE}
-    enum RoutesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK, SPIKE_STRAIGHT}
+    enum RoutesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_BACKDROP_PARK_IMPROVED, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_STRAIGHT}
 
     public static void main(String[] args) {
 
@@ -94,8 +95,19 @@ public class MeepMeepTesting {
             if (teamPropLocation == TeamPropLocation.CENTER) RoutesSpikeStraightUpTheMiddle.setTeamPropCenterRoutes();
             if (teamPropLocation == TeamPropLocation.RIGHT) RoutesSpikeStraightUpTheMiddle.setTeamPropRightRoutes();
             if (teamPropLocation == TeamPropLocation.ALL) RoutesSpikeStraightUpTheMiddle.setTeamPropAllRoutes();
-        }
+        } else if (routesToRunSelection == RoutesToRun.SPIKE_BACKDROP_PARK_IMPROVED) {
 
+            RoutesSpikeBackdropParkImproved.BuildRoutes();
+
+            if (teamPropLocation == TeamPropLocation.LEFT)
+                RoutesSpikeBackdropParkImproved.setTeamPropLeftRoutes();
+            if (teamPropLocation == TeamPropLocation.CENTER)
+                RoutesSpikeBackdropParkImproved.setTeamPropCenterRoutes();
+            if (teamPropLocation == TeamPropLocation.RIGHT)
+                RoutesSpikeBackdropParkImproved.setTeamPropRightRoutes();
+            if (teamPropLocation == TeamPropLocation.ALL)
+                RoutesSpikeBackdropParkImproved.setTeamPropAllRoutes();
+        }
         addRobotsToField(meepMeep);
 
     }

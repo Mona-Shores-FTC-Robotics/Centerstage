@@ -6,8 +6,11 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
+
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadActiveCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.AprilTagAlignmentCommand;
@@ -54,10 +57,10 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+//                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
 
-
+//
 //        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
 //                .whenHeld(
 //                        new ParallelRaceGroup(
@@ -65,14 +68,18 @@ public class CenterstageDriverBindings {
 //                                new IsGamepadActiveCommand(gamepad)
 //                        ));
 
+        // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
+        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenPressed(backupFromBackdropCommand);
+
         //////////////////////////////////////////////////////////
         //                                                      //
         //  Y BUTTON                                            //
         //                                                      //
         //////////////////////////////////////////////////////////
-        // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
+
         gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(backupFromBackdropCommand);
+                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -121,17 +128,22 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  START BUTTON  - FIELD CENTRIC DRIVING                               //
+        //  START BUTTON  - FIELD CENTRIC DRIVING               //
         //                                                      //
         //////////////////////////////////////////////////////////
+//        gamepad.getGamepadButton(GamepadKeys.Button.START)
+//                .toggleWhenPressed(new InstantCommand(() -> {
+//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+//                }), new InstantCommand(() -> {
+//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
+//                }));
+
         gamepad.getGamepadButton(GamepadKeys.Button.START)
-                .toggleWhenPressed(new InstantCommand(() -> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
-                }), new InstantCommand(() -> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
-                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
-                }));
+                .toggleWhenPressed(
+                new InstantCommand(()->Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false)),
+                new InstantCommand(()->Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true)));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -141,7 +153,6 @@ public class CenterstageDriverBindings {
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)));
-
     }
 
     private void MakeCommands(GamepadEx gamepad) {

@@ -28,6 +28,7 @@ public class FieldConstants {
     public static double FACE_TOWARD_BACKSTAGE = Math.toRadians(0);
     public static double FACE_30_DEGREES = Math.toRadians(30);
     public static double FACE_45_DEGREES = Math.toRadians(45);
+    public static double FACE_75_DEGREES = Math.toRadians(75);
     public static double FACE_TOWARD_BLUE = Math.toRadians(90);
     public static double FACE_115_DEGREES = Math.toRadians(115);
     public static double FACE_135_DEGREES = Math.toRadians(135);
@@ -40,6 +41,7 @@ public class FieldConstants {
 
     public static double TANGENT_TOWARD_BACKSTAGE = Math.toRadians(0);
     public static double TANGENT_45_DEGREES = Math.toRadians(45);
+    public static double TANGENT_75_DEGREES = Math.toRadians(75);
     public static double TANGENT_TOWARD_BLUE = Math.toRadians(90);
     public static double TANGENT_135_DEGREES = Math.toRadians(135);
     public static double TANGENT_TOWARD_AUDIENCE = Math.toRadians(180);
@@ -85,6 +87,8 @@ public class FieldConstants {
     public static Pose2d BLUE_BACKSTAGE_SPIKE_R = new Pose2d(TILE-THREE_QUARTER_TILE, TILE+HALF_TILE, FACE_225_DEGREES);
 
     public static Pose2d RED_AUDIENCE_SPIKE_R = new Pose2d(-TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
+    public static Pose2d RED_AUDIENCE_SPIKE_R_PAST = new Pose2d(-TILE-QUARTER_TILE+3, -TILE-QUARTER_TILE-4, Math.toRadians(55));
+    public static Pose2d RED_AUDIENCE_SPIKE_R_DROP = new Pose2d(-TILE-QUARTER_TILE+.5, -TILE-QUARTER_TILE-6, Math.toRadians(55));
     public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE+2, FACE_TOWARD_BLUE);
     public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
 

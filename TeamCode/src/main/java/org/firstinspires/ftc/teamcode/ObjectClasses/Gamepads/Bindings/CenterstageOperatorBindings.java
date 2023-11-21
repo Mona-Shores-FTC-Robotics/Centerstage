@@ -28,11 +28,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 public class CenterstageOperatorBindings {
 
-    public static TriggerReader rightTrigger;
-    public static TriggerReader leftTrigger;
-    private static boolean armHasBeenUp = false;
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
-        VisionSubsystem visionSubsystem = Robot.getInstance().getVisionSubsystem();
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
         GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
         ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
@@ -56,8 +52,6 @@ public class CenterstageOperatorBindings {
                         new InstantCommand(() -> {
                                     new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED);
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
-
-
                         }
                         )
                 )
@@ -75,6 +69,7 @@ public class CenterstageOperatorBindings {
                 .whenPressed(new InstantCommand(()->{
                     Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MAX);
                 }));
+
         //////////////////////////////////////////////////////////
         //                                                      //
         // DPAD-RIGHT -                                         //
@@ -84,7 +79,6 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(new InstantCommand(()->
                     Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.HIGH)));
-
 
         //////////////////////////////////////////////////////////
         //                                                      //
