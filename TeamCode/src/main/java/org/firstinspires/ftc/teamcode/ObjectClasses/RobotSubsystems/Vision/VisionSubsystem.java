@@ -168,6 +168,12 @@ public final class VisionSubsystem extends SubsystemBase {
         public final int id;
         public boolean isDetected;
         public double timestamp;
+        public double rangeError;
+        public double yawError;
+        public double bearingError;
+        public double xError;
+        public double yError;
+
         public AprilTagDetection detection;
 
         AprilTagID(int id) {

@@ -47,8 +47,10 @@ public class AprilTagAlignmentCommand extends CommandBase {
     private double turn;
 
     private double rangeError;
-    private double headingError;
     private double yawError;
+    private double bearingError;
+    private double xError;
+    private double yError;
 
     private VisionSubsystem.DeliverLocation previousDeliverLocation;
 
@@ -56,7 +58,6 @@ public class AprilTagAlignmentCommand extends CommandBase {
     private PIDFController pidDrive;
     private PIDFController pidStrafe;
 
-    private boolean targetTagFound=false;
     /**
      * Creates a new DefaultDrive.
      */
@@ -84,6 +85,9 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
     @Override
     public void execute() {
+        pidTurn.setPIDF(autoDriveParameters.TURN_P, autoDriveParameters.TURN_I, autoDriveParameters.TURN_D, autoDriveParameters.TURN_F);
+        pidStrafe.setPIDF(autoDriveParameters.STRAFE_P, autoDriveParameters.STRAFE_I, autoDriveParameters.STRAFE_D, autoDriveParameters.STRAFE_F);
+        pidDrive.setPIDF(autoDriveParameters.DRIVE_P, autoDriveParameters.DRIVE_I, autoDriveParameters.DRIVE_D, autoDriveParameters.DRIVE_F);
 
         //This attempts to handle the situation where the driver changes the delivery location during the middle of the command
         CheckIfDeliveryLocationChanged();
@@ -178,10 +182,10 @@ public class AprilTagAlignmentCommand extends CommandBase {
             MatchConfig.telemetryPacket.put("AprilTag Range Error", JavaUtil.formatNumber(rangeError, 6, 6));
 
             MatchConfig.telemetryPacket.put("AprilTag Strafe", JavaUtil.formatNumber(strafe, 6, 6));
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(yawError, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(bearingError, 6, 6));
 
             MatchConfig.telemetryPacket.put("AprilTag Turn", JavaUtil.formatNumber(turn, 6, 6));
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(headingError, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(yawError, 6, 6));
         }
 
         //Align to the Backdrop AprilTags - CASE BLUE
@@ -245,69 +249,124 @@ public class AprilTagAlignmentCommand extends CommandBase {
             MatchConfig.telemetryPacket.put("AprilTag Range Error", JavaUtil.formatNumber(rangeError, 6, 6));
 
             MatchConfig.telemetryPacket.put("AprilTag Strafe", JavaUtil.formatNumber(strafe, 6, 6));
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(yawError, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", JavaUtil.formatNumber(bearingError, 6, 6));
 
             MatchConfig.telemetryPacket.put("AprilTag Turn", JavaUtil.formatNumber(turn, 6, 6));
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(headingError, 6, 6));
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", JavaUtil.formatNumber(yawError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag X Error", JavaUtil.formatNumber(xError, 6, 6));
+
+            MatchConfig.telemetryPacket.put("AprilTag Y Error", JavaUtil.formatNumber(yError, 6, 6));
         }
 
     }
-
 
     public boolean AutoDriveToBackdropRed() {
         if ( RED_BACKDROP_LEFT_TAG.detection!=null &&
                 (RED_BACKDROP_LEFT_TAG.isDetected || visionSubsystem.recentRedLeft) &&
                 (visionSubsystem.getDeliverLocation().equals(LEFT)))
         {
-            targetTagFound=RED_BACKDROP_LEFT_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
-            yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_LEFT_TAG.rangeError =  rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            RED_BACKDROP_LEFT_TAG.yawError = yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_LEFT_TAG.bearingError = bearingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
+            RED_BACKDROP_LEFT_TAG.xError = xError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.x;
+            RED_BACKDROP_LEFT_TAG.yError = yError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.y;
 
             MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Left Seen Recently", visionSubsystem.recentRedLeft);
-            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
+            return atBackDrop(rangeError, yawError, bearingError, RED_BACKDROP_LEFT_TAG);
 
         } else if ( RED_BACKDROP_CENTER_TAG.detection!=null &&
                         (RED_BACKDROP_CENTER_TAG.isDetected || visionSubsystem.recentRedCenter) &&
                         (visionSubsystem.getDeliverLocation().equals(CENTER)))
         {
-            targetTagFound=RED_BACKDROP_CENTER_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
-            yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_CENTER_TAG.rangeError = rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            RED_BACKDROP_CENTER_TAG.yawError = yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_CENTER_TAG.bearingError = bearingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
+            RED_BACKDROP_CENTER_TAG.xError = xError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.x;
+            RED_BACKDROP_CENTER_TAG.yError = yError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.y;
 
             MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", visionSubsystem.recentRedCenter);
 
-            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
+            return atBackDrop(rangeError, yawError, bearingError, RED_BACKDROP_CENTER_TAG);
         } else if ( RED_BACKDROP_RIGHT_TAG.detection!=null &&
                     (RED_BACKDROP_RIGHT_TAG.isDetected || visionSubsystem.recentRedRight) &&
                     visionSubsystem.getDeliverLocation().equals(RIGHT))
         {
-            targetTagFound=RED_BACKDROP_RIGHT_TAG.isDetected;
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
-            yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_RIGHT_TAG.rangeError =  rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            RED_BACKDROP_RIGHT_TAG.yawError = yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
+            RED_BACKDROP_RIGHT_TAG.bearingError = bearingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+            RED_BACKDROP_RIGHT_TAG.xError = xError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.x;
+            RED_BACKDROP_RIGHT_TAG.yError = yError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.y;
 
             MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
             MatchConfig.telemetryPacket.put("Red Right Seen Recently", visionSubsystem.recentRedRight);
 
-            return atBackDrop(rangeError, headingError, yawError, RED_BACKDROP_RIGHT_TAG);
+            return atBackDrop(rangeError, yawError, bearingError, RED_BACKDROP_RIGHT_TAG);
         }
         return false;
     }
 
+    public boolean AutoDriveToBackdropBlue() {
+        if ( BLUE_BACKDROP_LEFT_TAG.detection!=null &&
+                (BLUE_BACKDROP_LEFT_TAG.isDetected || visionSubsystem.recentBlueLeft) &&
+                (visionSubsystem.getDeliverLocation().equals(LEFT)))
+        {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            BLUE_BACKDROP_LEFT_TAG.rangeError = rangeError = (BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            BLUE_BACKDROP_LEFT_TAG.yawError = yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
+            BLUE_BACKDROP_LEFT_TAG.bearingError = bearingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
+            BLUE_BACKDROP_LEFT_TAG.xError = xError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.x;
+            BLUE_BACKDROP_LEFT_TAG.yError = yError =  BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.y;
+
+            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_LEFT_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Blue Left Seen Recently", visionSubsystem.recentBlueLeft);
+            return atBackDrop(rangeError, yawError, bearingError, BLUE_BACKDROP_LEFT_TAG);
+
+        } else if ( BLUE_BACKDROP_CENTER_TAG.detection!=null &&
+                (BLUE_BACKDROP_CENTER_TAG.isDetected || visionSubsystem.recentBlueCenter) &&
+                (visionSubsystem.getDeliverLocation().equals(CENTER)))
+        {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            BLUE_BACKDROP_CENTER_TAG.rangeError =  rangeError = (BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            BLUE_BACKDROP_CENTER_TAG.yawError = yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
+            BLUE_BACKDROP_CENTER_TAG.bearingError =  bearingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
+            BLUE_BACKDROP_CENTER_TAG.xError = xError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.x;
+            BLUE_BACKDROP_CENTER_TAG.yError = yError =  BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.y;
+
+            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
+            MatchConfig.telemetryPacket.put("Blue Center Seen Recently", visionSubsystem.recentBlueCenter);
+
+            return atBackDrop(rangeError, yawError, bearingError, BLUE_BACKDROP_CENTER_TAG);
+        } else if ( BLUE_BACKDROP_RIGHT_TAG.detection!=null &&
+                (BLUE_BACKDROP_RIGHT_TAG.isDetected || visionSubsystem.recentBlueRight) &&
+                visionSubsystem.getDeliverLocation().equals(RIGHT))
+        {
+            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
+            BLUE_BACKDROP_RIGHT_TAG.rangeError = rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+            BLUE_BACKDROP_RIGHT_TAG.yawError = yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
+            BLUE_BACKDROP_RIGHT_TAG.bearingError = bearingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+            BLUE_BACKDROP_RIGHT_TAG.xError = xError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.x;
+            BLUE_BACKDROP_RIGHT_TAG.yError = yError =  BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.y;
+
+            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG);
+            MatchConfig.telemetryPacket.put("Blue Right Seen Recently", visionSubsystem.recentBlueRight);
+
+            return atBackDrop(rangeError, yawError, bearingError, BLUE_BACKDROP_RIGHT_TAG);
+        }
+        return false;
+    }
 
     //returns false once the pose reaches a steady state for a certain number of checks
-    private boolean atBackDrop(double rangeError, double yawError, double headingError, VisionSubsystem.AprilTagID tag) {
+    private boolean atBackDrop(double rangeError, double yawError, double bearingError, VisionSubsystem.AprilTagID tag) {
         //We have found the target if this is true
         if (    (Math.abs(rangeError)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
-                (Math.abs(yawError)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
-                (Math.abs(headingError)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
+                (Math.abs(yawError)   < tunableVisionConstants.BACKDROP_TURN_THRESHOLD) &&
+                (Math.abs(bearingError)     < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD)){
 
             visionSubsystem.backdropPoseCount++;
             if (visionSubsystem.backdropPoseCount > tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
@@ -319,54 +378,6 @@ public class AprilTagAlignmentCommand extends CommandBase {
                 MatchConfig.telemetryPacket.put("Reset Pose Heading", visionSubsystem.resetPose.heading.log());
                 return true;
             }
-        }
-        return false;
-    }
-
-
-    public boolean AutoDriveToBackdropBlue() {
-        if ( BLUE_BACKDROP_LEFT_TAG.detection!=null &&
-                (BLUE_BACKDROP_LEFT_TAG.isDetected || visionSubsystem.recentBlueLeft) &&
-                (visionSubsystem.getDeliverLocation().equals(LEFT)))
-        {
-            targetTagFound=BLUE_BACKDROP_LEFT_TAG.isDetected;
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
-            yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
-
-            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_LEFT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Blue Left Seen Recently", visionSubsystem.recentBlueLeft);
-            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_LEFT_TAG);
-
-        } else if ( BLUE_BACKDROP_CENTER_TAG.detection!=null &&
-                (BLUE_BACKDROP_CENTER_TAG.isDetected || visionSubsystem.recentBlueCenter) &&
-                (visionSubsystem.getDeliverLocation().equals(CENTER)))
-        {
-            targetTagFound=BLUE_BACKDROP_CENTER_TAG.isDetected;
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
-            yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
-
-            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Blue Center Seen Recently", visionSubsystem.recentBlueCenter);
-
-            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_CENTER_TAG);
-        } else if ( BLUE_BACKDROP_RIGHT_TAG.detection!=null &&
-                (BLUE_BACKDROP_RIGHT_TAG.isDetected || visionSubsystem.recentBlueRight) &&
-                visionSubsystem.getDeliverLocation().equals(RIGHT))
-        {
-            targetTagFound=BLUE_BACKDROP_RIGHT_TAG.isDetected;
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
-            yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
-
-            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG);
-            MatchConfig.telemetryPacket.put("Blue Right Seen Recently", visionSubsystem.recentBlueRight);
-
-            return atBackDrop(rangeError, headingError, yawError, BLUE_BACKDROP_RIGHT_TAG);
         }
         return false;
     }
