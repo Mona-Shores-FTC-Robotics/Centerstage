@@ -163,7 +163,7 @@ public class Robot {
                 intakeSubsystem.init();
                 gripperSubsystem.init();
                 liftSlideSubsystem.init();
-                shoulderSubsystem.init();
+                shoulderSubsystem.initTele();
                 droneSubsystem.init();
                 climberSubsystem.init();
                  //Lights for identifying pixels in intake

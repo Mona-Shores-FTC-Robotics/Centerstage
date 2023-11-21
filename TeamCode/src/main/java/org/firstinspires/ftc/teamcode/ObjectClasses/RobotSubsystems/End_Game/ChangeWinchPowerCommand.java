@@ -23,6 +23,7 @@ public class ChangeWinchPowerCommand extends CommandBase {
 
     @Override
     public void initialize() {
+
         climberSubsystem.winchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         climberSubsystem.winchMotor.setPower(targetState.power);
     }

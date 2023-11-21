@@ -17,7 +17,7 @@ public class ShoulderSubsystem extends SubsystemBase {
 
         public double INTAKE_REST = .5;
         public double INTAKE_VALUE = .55;
-        public double STARTING_POSITION = .7;
+        public double STARTING_POSITION = .6;
         public double BACKDROP_VALUE = .2;
         public double HALFWAY = .4;
     }
@@ -29,7 +29,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         INTAKE (.55),
         HALFWAY(.4),
         BACKDROP (.2),
-        STARTING_POSITION (.7);
+        STARTING_POSITION (.6);
 
         public double position;
         ShoulderStates(double p) {
@@ -52,6 +52,10 @@ public class ShoulderSubsystem extends SubsystemBase {
         shoulder.setPosition(currentState.position);
     }
 
+    public void initTele() {
+        currentState= ShoulderStates.INTAKE;
+        shoulder.setPosition(currentState.position);
+    }
     public void periodic(){
         ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
         ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);

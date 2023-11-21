@@ -57,10 +57,8 @@ public class CenterstageOperatorBindings {
                 .whenPressed(
                         new InstantCommand(() -> {
                              {
-                                if (armHasBeenUp) {
                                     new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED);
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();
-                                }
                             }
                         }
                         )
