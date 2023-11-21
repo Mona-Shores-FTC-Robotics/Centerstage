@@ -84,6 +84,7 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
     @Override
     public void execute() {
+
         //This attempts to handle the situation where the driver changes the delivery location during the middle of the command
         CheckIfDeliveryLocationChanged();
 
@@ -91,10 +92,11 @@ public class AprilTagAlignmentCommand extends CommandBase {
         setDriveStrafeTurnValuesForAprilTagAlignment();
 
         //this moves the robot using drive/strafe/turn values using speed control
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);
+        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(drive, strafe, turn);
 
         //save the current delivery location as the previous delviery location in case the driver changes it mid-command;
         previousDeliverLocation = visionSubsystem.getDeliverLocation();
+        MatchConfig.telemetryPacket.put("Deliver Location", previousDeliverLocation);
     }
 
     private void CheckIfDeliveryLocationChanged() {
@@ -141,7 +143,8 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
                     //strafe until we see the target again since we probably can't see it if we just turned
                     // this step essentially gets skipped if we can see the tag
-                    if (targetTagFound) {
+                    if (visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation()))
+                    {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING;
                     }
                     break;
@@ -181,13 +184,13 @@ public class AprilTagAlignmentCommand extends CommandBase {
             MatchConfig.telemetryPacket.put("AprilTag Heading Error", JavaUtil.formatNumber(headingError, 6, 6));
         }
 
-        //Align to the Backdrop AprilTags - CASE RED
-        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                visionSubsystem.redBackdropAprilTagFoundRecently) {
+        //Align to the Backdrop AprilTags - CASE BLUE
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+                visionSubsystem.blueBackdropAprilTagFoundRecently) {
 
             switch (driveSubsystem.currentState) {
                 case APRIL_TAG_ALIGNMENT_TURNING: {
-                    AutoDriveToBackdropRed();
+                    AutoDriveToBackdropBlue();
                     drive = 0;
                     strafe = 0;
                     turn = pidTurn.update(gyroSubsystem.currentRelativeYawDegrees);
@@ -200,21 +203,22 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
 
                 case APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG: {
-                    AutoDriveToBackdropRed();
+                    AutoDriveToBackdropBlue();
                     drive = 0;
                     strafe = Math.signum(visionSubsystem.yawError) * autoDriveParameters.STRAFE_TO_TAG_SPEED;
                     turn = 0;
 
                     //strafe until we see the target again since we probably can't see it if we just turned
                     // this step essentially gets skipped if we can see the tag
-                    if (targetTagFound) {
+                    if (visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation()))
+                    {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING;
                     }
                     break;
                 }
 
                 case APRIL_TAG_ALIGNMENT_STRAFING: {
-                    AutoDriveToBackdropRed();
+                    AutoDriveToBackdropBlue();
                     drive = 0;
                     strafe = pidStrafe.calculate(visionSubsystem.yawError);
                     turn = 0;
@@ -226,7 +230,7 @@ public class AprilTagAlignmentCommand extends CommandBase {
                 }
 
                 case APRIL_TAG_ALIGNMENT_DRIVING: {
-                    AutoDriveToBackdropRed();
+                    AutoDriveToBackdropBlue();
                     drive = pidDrive.calculate(visionSubsystem.rangeError);
                     strafe = 0;
                     turn = 0;
@@ -248,6 +252,7 @@ public class AprilTagAlignmentCommand extends CommandBase {
         }
 
     }
+
 
     public boolean AutoDriveToBackdropRed() {
         if ( RED_BACKDROP_LEFT_TAG.detection!=null &&
