@@ -273,7 +273,8 @@ public class DriveSubsystem extends SubsystemBase {
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
             // I'm not sure if this works for field oriented control
-            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD ||
+                Math.abs(rightXAdjusted) < Math.abs(driveParameters.APRIL_TAG_CANCEL_THRESHOLD)){
                 aprilTagAutoDriving = false;
             }
 
