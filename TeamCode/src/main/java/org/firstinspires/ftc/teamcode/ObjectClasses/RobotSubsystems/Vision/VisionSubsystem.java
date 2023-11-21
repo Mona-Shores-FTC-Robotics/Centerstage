@@ -24,7 +24,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -97,7 +96,7 @@ public final class VisionSubsystem extends SubsystemBase {
 //    public int BACKDROP_POSE_COUNT_THRESHOLD=1;
 
     public double rangeError;
-    public double headingError;
+    public double bearingError;
     public double yawError;
     private int backdropPoseCount=0;
     public boolean resetPoseReady=false;
@@ -502,12 +501,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+             bearingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
              yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -515,11 +514,11 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Seen Recently", recentBlueRight);
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
             telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError,  BLUE_BACKDROP_RIGHT_TAG);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError,  BLUE_BACKDROP_RIGHT_TAG);
         }
         //Drive to the Center backdrop if its the deliver location, or
         // if its left, but left is not detected or
@@ -535,12 +534,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
+             bearingError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
              yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             // set the drive/turn strafe values for AutoDriving
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
@@ -549,12 +548,12 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Center Seen Recently", recentBlueCenter);
-            MatchConfig.telemetryPacket.put("Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("Yaw(strafe) Error", yawError);
-            MatchConfig.telemetryPacket.put("Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
+            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
 
             telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, BLUE_BACKDROP_CENTER_TAG);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError, BLUE_BACKDROP_CENTER_TAG);
         }
 
         //Drive to the Right backdrop if its the deliver location, or
@@ -569,12 +568,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
+             bearingError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
              yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -584,10 +583,10 @@ public final class VisionSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("Blue Left Seen Recently", recentBlueLeft);
             MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
             MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
 
             telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, BLUE_BACKDROP_LEFT_TAG);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError, BLUE_BACKDROP_LEFT_TAG);
         }
         return false;
     }
@@ -606,12 +605,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
             rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            headingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
+            bearingError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.bearing;
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -621,9 +620,8 @@ public final class VisionSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
             MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
             MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
-
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_LEFT_TAG);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError, RED_BACKDROP_LEFT_TAG);
 
         } else if (
                 (RED_BACKDROP_CENTER_TAG.detection!=null &&
@@ -635,12 +633,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
+             bearingError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.bearing;
              yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -650,10 +648,10 @@ public final class VisionSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedCenter);
             MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
             MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_CENTER_TAG);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError, RED_BACKDROP_CENTER_TAG);
 
         }
         else if (
@@ -669,12 +667,12 @@ public final class VisionSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("Red Right Seen Recently", recentRedRight);
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+             bearingError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
              yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(bearingError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -684,10 +682,10 @@ public final class VisionSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedRight);
             MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
             MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Heading Error", headingError);
+            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", bearingError);
 
             telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
-            return stillSeekingAprilTag(rangeError, headingError, yawError, RED_BACKDROP_RIGHT_TAG);
+            return stillSeekingAprilTag(rangeError, bearingError, yawError, RED_BACKDROP_RIGHT_TAG);
         }
         return false;
     }
