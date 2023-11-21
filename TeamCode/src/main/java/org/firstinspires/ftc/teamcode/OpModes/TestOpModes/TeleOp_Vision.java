@@ -27,8 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.OpModes.Disabled;
+package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,9 +40,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriv
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Disabled
 @TeleOp(name="TeleOp_Vision")
 public class TeleOp_Vision extends LinearOpMode
 {
@@ -81,10 +82,17 @@ public class TeleOp_Vision extends LinearOpMode
         MatchConfig.OpModeTimer = new ElapsedTime();
         MatchConfig.OpModeTimer.reset();
 
+        MatchConfig.loopTimer = new ElapsedTime();
+        MatchConfig.loopTimer.reset();
+
+        MatchConfig.timestampTimer = new ElapsedTime();
+        MatchConfig.timestampTimer.reset();
+
+        MatchConfig.telemetryPacket = new TelemetryPacket();
+
+        Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
         while (opModeIsActive())
         {
-            //just print this every loop because we want to know
-            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
 
             //Run the Scheduler
             CommandScheduler.getInstance().run();

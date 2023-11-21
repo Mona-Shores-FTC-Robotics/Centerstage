@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -91,6 +92,7 @@ public class DriveSubsystem extends SubsystemBase {
     public enum DriveStates {
         MANUAL_DRIVE,
         SLOW_MANUAL_DRIVE,
+        STRAFING_X_INCHES,
         BACKUP_FROM_BACKDROP,
         APRIL_TAG_ALIGNMENT_TURNING,
         APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG,
@@ -321,6 +323,28 @@ public class DriveSubsystem extends SubsystemBase {
         overrideAprilTagDriving=b;
     }
 
+
+    // Method to get the current average encoder count
+    public double getCurrentEncoderCount() {
+        double fl = mecanumDrive.leftFront.getCurrentPosition();
+        double fr = mecanumDrive.rightFront.getCurrentPosition();
+        double bl = mecanumDrive.leftBack.getCurrentPosition();
+        double br = mecanumDrive.rightBack.getCurrentPosition();
+
+        return (fl + fr + bl + br) / 4.0;
+    }
+
+    // Method to reset encoders
+    public void resetEncoders() {
+        mecanumDrive.leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.leftBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.rightBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        // After resetting, you might need to set them back to the desired run mode
+        mecanumDrive.leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.leftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.rightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
 }
-
-
