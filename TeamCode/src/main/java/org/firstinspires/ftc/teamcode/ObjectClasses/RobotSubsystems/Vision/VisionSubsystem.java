@@ -384,17 +384,18 @@ public final class VisionSubsystem extends SubsystemBase {
         for (AprilTagDetection detection : currentDetections) {
             if ((detection.metadata != null)) {
                 currentTag = AprilTagID.getByID(detection.id);
-                currentTag.setDetected();
-                currentTag.setTimestamp();
-                currentTag.storeDetection(detection);
-
-                DeterminePoseFromAprilTag(currentTag);
-
-                double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
-                // Pick whichever value is lower
-                double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
-                if (manualDriveLimit < DriveSubsystem.driveParameters.safetyDriveSpeedFactor) {
-                    DriveSubsystem.driveParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                if (currentTag.detection.ftcPose.range < 30)
+                {
+                    currentTag.setDetected();
+                    currentTag.setTimestamp();
+                    currentTag.storeDetection(detection);
+                    DeterminePoseFromAprilTag(currentTag);
+                    double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
+                    // Pick whichever value is lower
+                    double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
+                    if (manualDriveLimit < DriveSubsystem.driveParameters.safetyDriveSpeedFactor) {
+                        DriveSubsystem.driveParameters.safetyDriveSpeedFactor = manualDriveLimit;
+                    }
                 }
             }
         }

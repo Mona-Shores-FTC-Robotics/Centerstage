@@ -167,6 +167,17 @@ public final class Constants {
 
   public static Pose2d RED_THROUGH_DOOR = new Pose2d(TILE+EIGHTH_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
   public static Pose2d BLUE_THROUGH_DOOR =  new Pose2d(TILE+EIGHTH_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
+
+  /////////////////
+  // Super Poses //
+  /////////////////
+  public static Pose2d SUPER_BLUE_AUDIENCE_START_POSE = new Pose2d(-HALF_TILE-TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d SUPER_BLUE_BACKSTAGE_START_POSE = new Pose2d(HALF_TILE, HALF_FIELD-HALF_ROBOT_LENGTH, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d SUPER_RED_BACKSTAGE_START_POSE = new Pose2d(HALF_TILE,-HALF_FIELD + HALF_ROBOT_LENGTH, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d SUPER_RED_AUDIENCE_START_POSE = new Pose2d(-HALF_TILE-TILE,  -HALF_FIELD+HALF_ROBOT_LENGTH, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d SUPER_RED_NEUTRAL_PIXEL_TRUSS = new Pose2d(-64.281 + ROBOT_LENGTH,  -35.469, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP = new Pose2d(-64.281 + ROBOT_LENGTH,  -35.469, FACE_TOWARD_BACKSTAGE);
+
   public static Pose2d flipYAxis(Pose2d pose) {
     Pose2d output = new Pose2d(pose.position.x, -pose.position.y, Math.toRadians(pose.heading.imag+pose.heading.real));
     return output;

@@ -47,6 +47,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         shoulder = hMap.servo.get("shoulder");
     }
 
+    //todo make sure this gets merged
     public void init() {
         currentState= ShoulderStates.STARTING_POSITION;
         shoulder.setPosition(currentState.position);
