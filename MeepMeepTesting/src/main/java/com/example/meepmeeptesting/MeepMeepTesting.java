@@ -4,6 +4,7 @@ import com.example.meepmeeptesting.Routes.RoutesSpikeBackdropParkImproved;
 import com.example.meepmeeptesting.Routes.RoutesSpikeOnly;
 import com.example.meepmeeptesting.Routes.RoutesSpikePickup1BackdropPark;
 import com.example.meepmeeptesting.Routes.RoutesSpikeStraightUpTheMiddle;
+import com.example.meepmeeptesting.Routes.RoutesSuper;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 import static com.example.meepmeeptesting.MeepMeepRobots.*;
@@ -28,12 +29,12 @@ public class MeepMeepTesting {
 
     public static TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
 
-    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_STRAIGHT;
+    public static RoutesToRun routesToRunSelection = RoutesToRun.SUPER;
 
     /** Set which robots should show up **/
-    public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
     public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
-    public static boolean SHOW_RED_AUDIENCE_BOT = false;
+    public static boolean SHOW_RED_AUDIENCE_BOT = true;
     public static boolean SHOW_RED_BACKSTAGE_BOT = true;
 
     public static DriveShim roadRunnerDrive;
@@ -45,7 +46,7 @@ public class MeepMeepTesting {
     }
 
     public enum SideOfField {BACKSTAGE, AUDIENCE}
-    enum RoutesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_BACKDROP_PARK_IMPROVED, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_STRAIGHT}
+    enum RoutesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_BACKDROP_PARK_IMPROVED, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_STRAIGHT, SUPER}
 
     public static void main(String[] args) {
 
@@ -107,7 +108,20 @@ public class MeepMeepTesting {
                 RoutesSpikeBackdropParkImproved.setTeamPropRightRoutes();
             if (teamPropLocation == TeamPropLocation.ALL)
                 RoutesSpikeBackdropParkImproved.setTeamPropAllRoutes();
+        } else if (routesToRunSelection == RoutesToRun.SUPER) {
+
+            RoutesSuper.BuildRoutes();
+
+            if (teamPropLocation == TeamPropLocation.LEFT)
+                RoutesSuper.setTeamPropLeftRoutes();
+            if (teamPropLocation == TeamPropLocation.CENTER)
+                RoutesSuper.setTeamPropCenterRoutes();
+            if (teamPropLocation == TeamPropLocation.RIGHT)
+                RoutesSuper.setTeamPropRightRoutes();
+            if (teamPropLocation == TeamPropLocation.ALL)
+                RoutesSuper.setTeamPropAllRoutes();
         }
+
         addRobotsToField(meepMeep);
 
     }
