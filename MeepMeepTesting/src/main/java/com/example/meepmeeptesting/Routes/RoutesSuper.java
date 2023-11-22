@@ -147,9 +147,9 @@ public class RoutesSuper {
                 .stopAndAdd(new RoutesSuper.RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper))
                 .stopAndAdd(new RoutesSuper.RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
                 .stopAndAdd(new RoutesSuper.RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingByWall(posesForRouteSuper))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingByWall(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
                 .stopAndAdd(new RoutesSuper.RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper))
-                .stopAndAdd(new RoutesSuper.RouteBuilder().Park(posesForRouteSuper))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().Park(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.parkPose))
                 .build();
         return superBackstageAuto;
     }
@@ -164,7 +164,7 @@ public class RoutesSuper {
 //                .stopAndAdd(new RoutesSuper.RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.secondNeutralStagingPose))
 //                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
 //                .stopAndAdd(new RoutesSuper.RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper))
-                .stopAndAdd(new RoutesSuper.RouteBuilder().Park(posesForRouteSuper))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().Park(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.parkPose))
                 .build();
         return superAudienceAuto;
     }
@@ -195,13 +195,13 @@ public class RoutesSuper {
             return backDropStagingToNeutralStaging;
         }
 
-        public Action NeutralStagingToBackdropStagingByWall(PosesForRouteSuper posesForRouteSuper) {
+        public Action NeutralStagingToBackdropStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStartPose), posesForRouteSuper.backdropApproachOrientation)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStartPose), TANGENT_TOWARD_BACKSTAGE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backdropStagingPose), TANGENT_TOWARD_BACKSTAGE)
+                    .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE)
                     .build();
             return neutralStagingToBackdropStaging;
         }
@@ -290,9 +290,9 @@ public class RoutesSuper {
             return pushTeamPropAndStage;
         }
 
-        private Action Park(PosesForRouteSuper posesForRouteStraight) {
-            Action park = roadRunnerDrive.actionBuilder(posesForRouteStraight.firstPixelScorePose)
-                    .strafeTo(PoseToVector(posesForRouteStraight.parkPose))
+        private Action Park(Pose2d startPose, Pose2d parkPose) {
+            Action park = roadRunnerDrive.actionBuilder(startPose)
+                    .strafeTo(PoseToVector(parkPose))
                     .build();
             return park;
         }
