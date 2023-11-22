@@ -49,13 +49,13 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
-        public double SPEED_GAIN = 0.075;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .06;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .0178;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double STRAFE_GAIN = -.06;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .0111;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-        public double SPEED_FEEDFORWARD =.06; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=.085; //this is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.14;
+        public double SPEED_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
+        public double STRAFE_FEEDFORWARD=-.05; //this is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.08;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
