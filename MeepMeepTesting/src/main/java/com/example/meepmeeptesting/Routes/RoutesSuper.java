@@ -158,7 +158,9 @@ public class RoutesSuper {
         Action superAudienceAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RoutesSuper.RouteBuilder().PushTeamPropAndNeutralStage(posesForRouteSuper))
                 .stopAndAdd(new RoutesSuper.RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.firstPixelScorePose))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalPixelScorePose))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper))
+                .stopAndAdd(new RoutesSuper.RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
                 .stopAndAdd(new RoutesSuper.RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper))
 //                .stopAndAdd(new RoutesSuper.RouteBuilder().BackdropStagingToNeutralStagingThroughStageDoor(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
 //                .stopAndAdd(new RoutesSuper.RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.secondNeutralStagingPose))
@@ -222,7 +224,7 @@ public class RoutesSuper {
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_AUDIENCE)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.secondNeutralStagingPose), posesForRouteSuper.neutralApproachOrientation)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation)
                     .build();
             return backDropStagingToNeutralStaging;
         }
@@ -239,9 +241,9 @@ public class RoutesSuper {
             return pickupPixels;
         }
 
-        private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteStraight) {
-            Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteStraight.neutralPickupPose)
-                    .lineToX(posesForRouteStraight.neutralStagingPose.position.x)
+        private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteSuper) {
+            Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralPickupPose)
+                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x)
                     .build();
             return autoDriveFromNeutralStack;
         }
@@ -272,20 +274,44 @@ public class RoutesSuper {
             return scorePixel;
         }
 
-        private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteStraight) {
-            Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
-                    .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log())
+        public Action ScoreOnePixelAction(Pose2d scorePose, PosesForRouteSuper posesForRouteSuper) {
+            SequentialAction scorePixel = new SequentialAction(
+                    new ParallelAction(
+                            new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteSuper),
+                            new RobotCommands().LiftLow(),
+                            new RobotCommands().RotateShoulderToBackdrop()),
+                    new SleepAction(.2),
+                    new RobotCommands().OpenClawHalfway(),
+                    new SleepAction(.2),
+                    new ParallelAction(
+                            new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteSuper),
+                            new RobotCommands().CloseClaw(),
+                            new RobotCommands().RotateShoulderToIntake()),
+                    new RobotCommands().LiftHome()
+            );
+            return scorePixel;
+        }
+
+        private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
+            Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
+                    .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteStraight.backdropStagingPose, posesForRouteStraight.backdropStagingPose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
+                    .setReversed(true)
+                    .splineToLinearHeading(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScorePose.heading.log())
                     .build();
             return pushTeamPropAndStage;
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteSuper posesForRouteSuper) {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
-                    .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
+                    .setTangent(posesForRouteSuper.startingTangent)
+                    .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, TANGENT_TOWARD_AUDIENCE)
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
+                    .setTangent(posesForRouteSuper.leaveSpikeTangent)
+                    .setReversed(true)
+                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, posesForRouteSuper.neutralApproachOrientation)
                     .build();
             return pushTeamPropAndStage;
         }
@@ -295,6 +321,14 @@ public class RoutesSuper {
                     .strafeTo(PoseToVector(parkPose))
                     .build();
             return park;
+        }
+
+        public Action StrafeToPlaceFirstPixel(PosesForRouteSuper posesForRouteSuper) {
+
+            Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalPixelScorePose)
+                    .strafeTo(PoseToVector(posesForRouteSuper.firstPixelScorePose))
+                    .build();
+            return strafe;
         }
 
         public static class ActionsForSpikeBackdrop {

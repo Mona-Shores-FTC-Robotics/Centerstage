@@ -230,6 +230,8 @@ public class DriveSubsystem extends SubsystemBase {
         MatchConfig.telemetryPacket.put("y", mecanumDrive.pose.position.y);
         MatchConfig.telemetryPacket.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
 
+        MatchConfig.telemetryPacket.put("April Tag Override Status: ", overrideAprilTagDriving);
+
         MatchConfig.telemetryPacket.fieldOverlay().getOperations().addAll(c.getOperations());
         mecanumDrive.drawPoseHistory(c);
 

@@ -112,11 +112,11 @@ public class CenterstageOperatorBindings {
                             //Switch the vision processing to AprilTags
                             Robot.getInstance().getVisionSubsystem().VisionOff();
                             new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
-
+                            Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
                         }),
                         new InstantCommand(() -> {
                             new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
-
+                            Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false);
                         }));
 
         //////////////////////////////////////////////////////////

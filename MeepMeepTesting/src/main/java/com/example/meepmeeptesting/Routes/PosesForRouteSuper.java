@@ -1,39 +1,60 @@
 package com.example.meepmeeptesting.Routes;
 
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_STAGING;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_CORNER_PARK;
 import static com.example.meepmeeptesting.Constants.BLUE_MIDDLE_PARK;
 import static com.example.meepmeeptesting.Constants.BLUE_STAGEDOOR_ENTRANCE;
-import static com.example.meepmeeptesting.Constants.BLUE_STAGEDOOR_EXIT;
 import static com.example.meepmeeptesting.Constants.FACE_315_DEGREES;
 import static com.example.meepmeeptesting.Constants.FACE_45_DEGREES;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L;
-import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L_PAST;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_STAGING;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_CORNER_PARK;
 import static com.example.meepmeeptesting.Constants.RED_MIDDLE_PARK;
 import static com.example.meepmeeptesting.Constants.RED_STAGEDOOR_ENTRANCE;
-import static com.example.meepmeeptesting.Constants.RED_STAGEDOOR_EXIT;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
@@ -48,6 +69,9 @@ import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_STAG
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_TRUSS;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_STAGEDOOR_BY_BACKDROP;
+import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_BACKSTAGE;
+import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_BLUE;
+import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_RED;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.example.meepmeeptesting.MeepMeepTesting;
@@ -61,8 +85,6 @@ public class PosesForRouteSuper {
     public Pose2d additionalPixelScorePose;
     public Pose2d neutralStagingPose;
     public Pose2d neutralPickupPose;
-    public Pose2d secondNeutralStagingPose;
-    public Pose2d secondNeutralPickupPose;
     public Pose2d audienceStartPose;
     public Pose2d backstageStartPose;
     public Pose2d parkPose;
@@ -70,7 +92,11 @@ public class PosesForRouteSuper {
     public double backdropApproachOrientation;
     public double neutralApproachOrientation;
     public double leaveNeutralTangent;
-    public Pose2d spikePose;
+    public double leaveSpikeTangent;
+    public Pose2d spikePosePast;
+    public Pose2d spikePoseDrop;
+    public double startingTangent;
+
 
     PosesForRouteSuper(MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField, MeepMeepTesting.TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
@@ -85,16 +111,37 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = BLUE_BACKDROP_LEFT;
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_L;
-                    } else spikePose = BLUE_BACKSTAGE_SPIKE_L;
+                        spikePosePast = BLUE_AUDIENCE_SPIKE_L_PAST;
+                        spikePoseDrop = BLUE_AUDIENCE_SPIKE_L_DROP;
+                        neutralApproachOrientation = TANGENT_TOWARD_RED;
+                        leaveSpikeTangent = Math.toRadians(0);
+                        startingTangent = TANGENT_TOWARD_RED;
+                    } else {
+                        spikePosePast = BLUE_BACKSTAGE_SPIKE_L_PAST;
+                        spikePoseDrop = BLUE_BACKSTAGE_SPIKE_L_DROP;
+                        neutralApproachOrientation = TANGENT_TOWARD_RED;
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_RED;
+                    }
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = BLUE_BACKDROP_RIGHT;
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_R;
-                    } else spikePose = BLUE_BACKSTAGE_SPIKE_R;
+                        spikePosePast = BLUE_AUDIENCE_SPIKE_R_PAST;
+                        spikePoseDrop = BLUE_AUDIENCE_SPIKE_R_DROP;
+                        neutralApproachOrientation = Math.toRadians(0);
+                        leaveSpikeTangent = Math.toRadians(0);
+                        startingTangent = Math.toRadians(-130);
+
+                    } else {
+                        spikePosePast = BLUE_BACKSTAGE_SPIKE_R_PAST;
+                        spikePoseDrop = BLUE_BACKSTAGE_SPIKE_R_DROP;
+                        neutralApproachOrientation = TANGENT_TOWARD_RED;
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_RED;
+                    }
                     break;
                 }
                 case CENTER:
@@ -102,43 +149,81 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         additionalPixelScorePose = BLUE_BACKDROP_RIGHT;
-                        spikePose = BLUE_AUDIENCE_SPIKE_C;
+                        spikePosePast = BLUE_AUDIENCE_SPIKE_C_PAST;
+                        spikePoseDrop = BLUE_AUDIENCE_SPIKE_C_DROP;
+                        neutralApproachOrientation = TANGENT_TOWARD_RED;
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_RED;
                     } else
                     {
-                        spikePose = BLUE_BACKSTAGE_SPIKE_C;
                         additionalPixelScorePose = BLUE_BACKDROP_LEFT;
+                        spikePosePast = BLUE_BACKSTAGE_SPIKE_C_PAST;
+                        spikePoseDrop = BLUE_BACKSTAGE_SPIKE_C_DROP;
+                        neutralApproachOrientation =Math.toRadians(-105);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_RED;
                     }
                     break;
                 }
             }
         } else {
+            ///////////////////////////////////
+            //RED RED RED RED RED RED RED RED//
+            ///////////////////////////////////
             switch (teamPropLocation) {
                 case LEFT: {
                     firstPixelScorePose = RED_BACKDROP_LEFT;
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_L;
-                    } else spikePose = RED_BACKSTAGE_SPIKE_L;
+                        spikePosePast = RED_AUDIENCE_SPIKE_L_PAST;
+                        spikePoseDrop = RED_AUDIENCE_SPIKE_L_DROP;
+                        neutralApproachOrientation = Math.toRadians(75);
+                        leaveSpikeTangent = Math.toRadians(0);
+                        startingTangent = TANGENT_TOWARD_BLUE;
+                    } else {
+                        spikePosePast = RED_BACKSTAGE_SPIKE_L_PAST;
+                        spikePoseDrop = RED_BACKSTAGE_SPIKE_L_DROP;
+                        neutralApproachOrientation = Math.toRadians(105);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_BLUE;
+                    }
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = RED_BACKDROP_RIGHT;
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_R;
-                    } else spikePose = RED_BACKSTAGE_SPIKE_R;
+                        spikePosePast = RED_AUDIENCE_SPIKE_R_PAST;
+                        spikePoseDrop = RED_AUDIENCE_SPIKE_R_DROP;
+                        neutralApproachOrientation = Math.toRadians(105);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_BLUE;
+                    } else {
+                        spikePosePast = RED_BACKSTAGE_SPIKE_R_PAST;
+                        spikePoseDrop = RED_BACKSTAGE_SPIKE_R_DROP;
+                        neutralApproachOrientation = Math.toRadians(105);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_BLUE;
+                    }
                     break;
                 }
                 case CENTER:
                 default: {
                     firstPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_C;
                         additionalPixelScorePose = RED_BACKDROP_LEFT;
-
+                        spikePosePast = RED_AUDIENCE_SPIKE_C_PAST;
+                        spikePoseDrop = RED_AUDIENCE_SPIKE_C_DROP;
+                        neutralApproachOrientation = Math.toRadians(45);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_BLUE;
                     } else {
-                        spikePose = RED_BACKSTAGE_SPIKE_C;
+                        spikePosePast = RED_BACKSTAGE_SPIKE_C_PAST;
+                        spikePoseDrop = RED_BACKSTAGE_SPIKE_C_DROP;
                         additionalPixelScorePose = RED_BACKDROP_RIGHT;
+                        neutralApproachOrientation = Math.toRadians(105);
+                        leaveSpikeTangent = Math.toRadians(180);
+                        startingTangent = TANGENT_TOWARD_BLUE;
                     }
                     break;
                 }
@@ -148,8 +233,7 @@ public class PosesForRouteSuper {
 
     public void SetAlliancePoses(MeepMeepTesting.AllianceColor allianceColor) {
         if (allianceColor == MeepMeepTesting.AllianceColor.BLUE) {
-            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
-            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
+
             backdropStagingPose = BLUE_BACKDROP_STAGING;
             backstageStartPose = SUPER_BLUE_BACKSTAGE_START_POSE;
             audienceStartPose = SUPER_BLUE_AUDIENCE_START_POSE;
@@ -158,9 +242,6 @@ public class PosesForRouteSuper {
             parkOrientation = FACE_45_DEGREES;
             backdropApproachOrientation =Math.toRadians(0);
         } else {
-
-            neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
-            neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
             backstageStageDoorPose = SUPER_RED_STAGEDOOR_BY_BACKDROP;
             audienceStageDoorPose = RED_STAGEDOOR_ENTRANCE;
             backdropStagingPose = RED_BACKDROP_STAGING;
@@ -176,28 +257,26 @@ public class PosesForRouteSuper {
             startingPose = BLUE_BACKSTAGE_START_POSE;
             parkPose = BLUE_CORNER_PARK;
             leaveNeutralTangent = Math.toRadians(75);
-            neutralApproachOrientation =Math.toRadians(-105);
-
+            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
+            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
         } else if (allianceColor == MeepMeepTesting.AllianceColor.BLUE && sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
             startingPose = BLUE_AUDIENCE_START_POSE;
             parkPose = BLUE_MIDDLE_PARK;
-            leaveNeutralTangent = Math.toRadians(-75);
-            neutralApproachOrientation =Math.toRadians(105);
-            secondNeutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
-            secondNeutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
-
+            leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
+            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
         } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
             parkPose = RED_CORNER_PARK;
             leaveNeutralTangent = Math.toRadians(-75);
-            neutralApproachOrientation =Math.toRadians(105);
+            neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
+            neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
         } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
             parkPose = RED_MIDDLE_PARK;
-            leaveNeutralTangent = Math.toRadians(75);
-            neutralApproachOrientation =Math.toRadians(-105);
-            secondNeutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
-            secondNeutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
+            leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
+            neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
         }
     }
 

@@ -202,8 +202,6 @@ public class Robot {
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
 
-                //todo do any subsystems need to be init during auto?
-
                 break;
             }
         }

@@ -78,7 +78,6 @@ import com.noahbres.meepmeep.roadrunner.DriveShim;
 
 import java.util.Arrays;
 
-//Todo some of these routes face the wrong way!
 public class RoutesSpikePickup1BackdropPark {
     private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
 

@@ -49,7 +49,6 @@ public final class FollowTrajectoryAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket p) {
-        //todo just put this here to see if this gives us live updating of RR parameters while driving trajectories
         Robot.getInstance().getDriveSubsystem().mecanumDrive.SetRoadRunnerParameters();
 
         double t;
