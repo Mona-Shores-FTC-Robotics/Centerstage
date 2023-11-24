@@ -52,7 +52,6 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
                         new InstantCommand(() -> {
-                                    //todo should the climber arm be put down when we climb anymore? (took it out for now)
                                     new ChangeWinchPowerCommand(climberSubsystem, ClimberSubsystem.WinchMotorStates.ROBOT_UP).schedule();})
                 )
                 .whenReleased(
@@ -176,7 +175,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  LEFT TRIGGER - Release One Pixel                        //
+        //  LEFT TRIGGER - Release One Pixel                    //
         //                                                      //
         //////////////////////////////////////////////////////////
         //See teleop centerstage code - can't figure out how to make binding declarative
@@ -236,8 +235,6 @@ public class CenterstageOperatorBindings {
                             new WaitCommand(250),
                             new RotateShoulderCommand(shoulderSubsystem,
                             ShoulderSubsystem.ShoulderStates.INTAKE)
-
-
                     );
         }
     }

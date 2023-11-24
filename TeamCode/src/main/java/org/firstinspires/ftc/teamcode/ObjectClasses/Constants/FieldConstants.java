@@ -62,10 +62,10 @@ public class FieldConstants {
     ////////////////////
 
     public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, 29.264, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -29.264, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -29.264-1.2, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, 35.264, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -35.264, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -35.264-1.1, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, 41.264, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -41.264, FACE_TOWARD_BACKSTAGE);
@@ -83,8 +83,8 @@ public class FieldConstants {
     public static Pose2d RED_BACKSTAGE_SPIKE_C_DROP = new Pose2d(HALF_TILE+3, -TILE-QUARTER_TILE-4, FACE_TOWARD_BLUE);
 
     public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE+2, FACE_TOWARD_BLUE);
-    public static Pose2d RED_AUDIENCE_SPIKE_C_PAST = new Pose2d(-TILE-HALF_TILE+3, -TILE-QUARTER_TILE, FACE_TOWARD_BLUE);
-    public static Pose2d RED_AUDIENCE_SPIKE_C_DROP = new Pose2d(-TILE-HALF_TILE+3, -TILE-QUARTER_TILE-4, FACE_TOWARD_BLUE);
+    public static Pose2d RED_AUDIENCE_SPIKE_C_PAST = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE+3, FACE_TOWARD_BLUE);
+    public static Pose2d RED_AUDIENCE_SPIKE_C_DROP = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE-1, FACE_TOWARD_BLUE);
 
     //Spike Right
     public static Pose2d RED_BACKSTAGE_SPIKE_R = new Pose2d(TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
@@ -93,12 +93,12 @@ public class FieldConstants {
 
     public static Pose2d RED_AUDIENCE_SPIKE_R = new Pose2d(-TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
     public static Pose2d RED_AUDIENCE_SPIKE_R_PAST = new Pose2d(-TILE-QUARTER_TILE+2, -TILE-HALF_TILE+2.5, Math.toRadians(65));
-    public static Pose2d RED_AUDIENCE_SPIKE_R_DROP = new Pose2d(-TILE-QUARTER_TILE+1.3, -TILE-HALF_TILE+1, Math.toRadians(65));
+    public static Pose2d RED_AUDIENCE_SPIKE_R_DROP = new Pose2d(-TILE-QUARTER_TILE, -TILE-HALF_TILE-4, Math.toRadians(65));
 
     //Left Prop
     public static Pose2d RED_BACKSTAGE_SPIKE_L = new Pose2d(TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
-    public static Pose2d RED_BACKSTAGE_SPIKE_L_PAST = new Pose2d(TILE-THREE_QUARTER_TILE-2, -TILE-HALF_TILE+2.5, Math.toRadians(115));
-    public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE-THREE_QUARTER_TILE-1.3, -TILE-HALF_TILE+1, Math.toRadians(115));
+    public static Pose2d RED_BACKSTAGE_SPIKE_L_PAST = new Pose2d(TILE-THREE_QUARTER_TILE-1.5, -TILE-HALF_TILE+1.5, Math.toRadians(115));
+    public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE-THREE_QUARTER_TILE, -TILE-HALF_TILE-3, Math.toRadians(115));
 
     public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-2*TILE+.5, -TILE-QUARTER_TILE-5, FACE_TOWARD_BLUE);
     public static Pose2d RED_AUDIENCE_SPIKE_L_PAST = new Pose2d(-TILE-THREE_QUARTER_TILE-10, -TILE-2, FACE_TOWARD_BACKSTAGE);

@@ -50,6 +50,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.TurnToAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
@@ -137,16 +139,16 @@ public class TeleOp_CenterStage extends LinearOpMode
             currentDriverLeftTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
             if (currentDriverLeftTrigger > .5 && previousDriverLeftTrigger < .5){
-                MatchConfig.telemetryPacket.addLine("i am pushing the button");
-                boolean currentState = Robot.getInstance().getDriveSubsystem().getOverrideAprilTagDriving();
-                Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(!currentState);
+//                boolean currentState = Robot.getInstance().getDriveSubsystem().getOverrideAprilTagDriving();
+//                Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(!currentState);
+                new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0));
+
             }
 
             previousDriverRightTrigger = currentDriverRightTrigger;
             currentDriverRightTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
             if (currentDriverRightTrigger > .5 && previousDriverRightTrigger < .5){
-                MatchConfig.telemetryPacket.addLine("i am pushing the button");
                 new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
             }
 
@@ -168,10 +170,8 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Run the Scheduler
             CommandScheduler.getInstance().run();
 
-
-
             //Look for AprilTags
-            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
+//            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Activate End Game Rumble at 87 seconds into TeleOp
             gamepadHandling.endGameRumble();

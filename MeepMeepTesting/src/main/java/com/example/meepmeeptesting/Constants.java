@@ -117,8 +117,8 @@ public final class Constants {
 
   //Left Prop
   public static Pose2d RED_BACKSTAGE_SPIKE_L = new Pose2d(TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
-  public static Pose2d RED_BACKSTAGE_SPIKE_L_PAST = new Pose2d(TILE-THREE_QUARTER_TILE-2, -TILE-HALF_TILE+2.5, Math.toRadians(115));
-  public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE-THREE_QUARTER_TILE-1.3, -TILE-HALF_TILE+1, Math.toRadians(115));
+  public static Pose2d RED_BACKSTAGE_SPIKE_L_PAST = new Pose2d(TILE-THREE_QUARTER_TILE-1.5, -TILE-HALF_TILE+1.5, Math.toRadians(115));
+  public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE-THREE_QUARTER_TILE, -TILE-HALF_TILE-3, Math.toRadians(115));
 
   public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-2*TILE+.5, -TILE-QUARTER_TILE-5, FACE_TOWARD_BLUE);
   public static Pose2d RED_AUDIENCE_SPIKE_L_PAST = new Pose2d(-TILE-THREE_QUARTER_TILE-10, -TILE-2, FACE_TOWARD_BACKSTAGE);

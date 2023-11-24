@@ -76,7 +76,7 @@ public class RoutesSpikeBackdropParkImproved {
                 .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L_DROP, Math.toRadians(115))
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
-                .setTangent(FACE_TOWARD_BACKSTAGE)
+                .setTangent(Math.toRadians(-45))
                 .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(RED_BACKDROP_LEFT, LiftStates.AUTO_LOW))
                 .strafeTo(PoseToVector(RED_CORNER_PARK))
