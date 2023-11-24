@@ -12,12 +12,21 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.RotateShoulderCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
@@ -29,22 +38,22 @@ public class RoutesSpikeStraightUpTheMiddle {
     static MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
     //Variables to store routes for team prop center for all four start locations
-    private static Action redAudienceBotTeamPropCenterRoute;
-    private static Action redBackstageBotTeamPropCenterRoute;
-    private static Action blueBackstageBotTeamPropCenterRoute;
-    private static Action blueAudienceBotTeamPropCenterRoute;
+    public static Action redAudienceBotTeamPropCenterRoute;
+    public static Action redBackstageBotTeamPropCenterRoute;
+    public static Action blueBackstageBotTeamPropCenterRoute;
+    public static Action blueAudienceBotTeamPropCenterRoute;
 
     //Variables to store routes for team prop left for all four start locations
-    private static Action redBackstageBotTeamPropLeftRoute;
-    private static Action blueAudienceBotTeamPropLeftRoute;
-    private static Action redAudienceBotTeamPropLeftRoute;
-    private static Action blueBackstageBotTeamPropLeftRoute;
+    public static Action redBackstageBotTeamPropLeftRoute;
+    public static Action blueAudienceBotTeamPropLeftRoute;
+    public static Action redAudienceBotTeamPropLeftRoute;
+    public static Action blueBackstageBotTeamPropLeftRoute;
 
     //Variables to store routes for team prop right for all four start locations
-    private static Action redBackstageBotTeamPropRightRoute;
-    private static Action redAudienceBotTeamPropRightRoute;
-    private static Action blueBackstageBotTeamPropRightRoute;
-    private static Action blueAudienceBotTeamPropRightRoute;
+    public static Action redBackstageBotTeamPropRightRoute;
+    public static Action redAudienceBotTeamPropRightRoute;
+    public static Action blueBackstageBotTeamPropRightRoute;
+    public static Action blueAudienceBotTeamPropRightRoute;
 
     public static void BuildRoutes() {
 
@@ -158,10 +167,9 @@ public class RoutesSpikeStraightUpTheMiddle {
                     new ParallelAction(
                             new TurnIntakeOn(),
                             new RouteBuilder().AutoDriveToNeutralStack(posesForRouteStraight)),
-                    new SleepAction(.1),
-                    new ParallelAction(
-                            new TurnIntakeOff(),
-                            new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteStraight)));
+                    new SleepAction(.3),
+                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteStraight),
+                    new TurnIntakeOff());
             return pickupPixels;
         }
 
@@ -181,24 +189,38 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action ScorePixelAction(Pose2d scorePose, PosesForRouteStraight posesForRouteStraight) {
-            SequentialAction scorePixel = new SequentialAction(
-                    new ParallelAction(
-                            new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteStraight),
-                            new MoveLiftSlideAction(AUTO_LOW),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
-                    new SleepAction(.2),
-                    new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN)),
-                    new SleepAction(.2),
-                    new ParallelAction(
-                            new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteStraight),
-                            new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
-                    new MoveLiftSlideAction(HOME)
-            );
+            SequentialAction scorePixel =
+                    new SequentialAction(
+                            new ParallelAction(
+                                    new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteStraight),
+                                    new SequentialAction(
+                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
+                                            new SleepAction(.15),
+                                            new MoveLiftSlideActionFinishImmediate(AUTO_LOW)
+                                    )
+                            ),
+                            new SleepAction(.4),
+                            new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
+                            new SleepAction(.4),
+                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
+                            new SleepAction(.4),
+                            new ParallelAction(
+                                    new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteStraight),
+                                    new SequentialAction(
+                                            new ParallelAction(
+                                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
+                                                    new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
+                                                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                                            ),
+                                            new SleepAction(.250),
+                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE),
+                                            new SleepAction(.250),
+                                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME)
+                                    )
+                            )
+                    );
             return scorePixel;
         }
-
-
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteStraight posesForRouteStraight) {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
