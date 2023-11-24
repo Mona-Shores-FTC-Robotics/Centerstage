@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
+package org.firstinspires.ftc.teamcode.OpModes.Autos.Poses;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.*;
@@ -27,7 +27,7 @@ public class PosesForRouteSuper {
     public double startingTangent;
 
 
-    PosesForRouteSuper(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
+    public PosesForRouteSuper(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
         SetStartingPose(allianceColor, sideOfField);
         SetAlliancePoses(allianceColor);

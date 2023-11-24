@@ -1,15 +1,15 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftStates.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.*;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.*;
+package org.firstinspires.ftc.teamcode.OpModes.Autos.Poses;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_PIXEL_PICKUP;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_STAGING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.example.meepmeeptesting.MeepMeepTesting;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 
-public class PosesForRouteStraight {
+public class PosesForRoute {
     public Pose2d startingPose;
     public Pose2d backdropStagingPose;
     public Pose2d firstPixelScorePose;
@@ -20,25 +20,31 @@ public class PosesForRouteStraight {
     public double parkOrientation;
     public Pose2d spikePose;
 
-    PosesForRouteStraight(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
+    public VisionSubsystem.DeliverLocation firstDeliverLocation;
+    public VisionSubsystem.DeliverLocation additionalDeliverLocation;
+
+    public PosesForRoute(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField, InitVisionProcessor.TeamPropLocation teamPropLocation){
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
         SetStartingPose(allianceColor, sideOfField);
         SetAlliancePoses(allianceColor);
     }
 
-    public void SetDeliverLocationPoses(TeamPropLocation teamPropLocation, AllianceColor allianceColor, SideOfField sideOfField) {
-        if (allianceColor == AllianceColor.BLUE) {
+
+    public void SetDeliverLocationPoses(InitVisionProcessor.TeamPropLocation teamPropLocation, InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
+        if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
             switch (teamPropLocation) {
                 case LEFT: {
                     firstPixelScorePose = BLUE_BACKDROP_LEFT;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.LEFT;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_L;
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = BLUE_BACKDROP_RIGHT;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.RIGHT;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_R;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_R;
                     break;
@@ -46,7 +52,8 @@ public class PosesForRouteStraight {
                 case CENTER:
                 default: {
                     firstPixelScorePose = BLUE_BACKDROP_CENTER;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                     } else spikePose = BLUE_BACKSTAGE_SPIKE_C;
                     break;
@@ -56,14 +63,16 @@ public class PosesForRouteStraight {
             switch (teamPropLocation) {
                 case LEFT: {
                     firstPixelScorePose = RED_BACKDROP_LEFT;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.LEFT;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_L;
                     } else spikePose = RED_BACKSTAGE_SPIKE_L;
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = RED_BACKDROP_RIGHT;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.RIGHT;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_R;
                     } else spikePose = RED_BACKSTAGE_SPIKE_R;
                     break;
@@ -71,7 +80,8 @@ public class PosesForRouteStraight {
                 case CENTER:
                 default: {
                     firstPixelScorePose = RED_BACKDROP_CENTER;
-                    if (sideOfField == SideOfField.AUDIENCE) {
+                    firstDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
+                    if (sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else spikePose = RED_BACKSTAGE_SPIKE_C;
                     break;
@@ -80,12 +90,13 @@ public class PosesForRouteStraight {
         }
     }
 
-    public void SetAlliancePoses(AllianceColor allianceColor) {
-        if (allianceColor == AllianceColor.BLUE) {
+    public void SetAlliancePoses(InitVisionProcessor.AllianceColor allianceColor) {
+        if (allianceColor == InitVisionProcessor.AllianceColor.BLUE) {
             backdropStagingPose = BLUE_BACKDROP_STAGING;
             neutralStagingPose = BLUE_NEUTRAL_STAGING;
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = BLUE_BACKDROP_CENTER;
+            additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
             parkPose = BLUE_MIDDLE_PARK;
             parkOrientation = FACE_45_DEGREES;
 
@@ -94,19 +105,20 @@ public class PosesForRouteStraight {
             neutralStagingPose = RED_NEUTRAL_STAGING;
             neutralPickupPose = RED_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = RED_BACKDROP_CENTER;
+            additionalDeliverLocation = VisionSubsystem.DeliverLocation.CENTER;
             parkPose = RED_MIDDLE_PARK;
             parkOrientation = FACE_315_DEGREES;
         }
     }
 
-    private void SetStartingPose(AllianceColor allianceColor, SideOfField sideOfField) {
-        if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.BACKSTAGE) {
+    private void SetStartingPose(InitVisionProcessor.AllianceColor allianceColor, InitVisionProcessor.SideOfField sideOfField) {
+        if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
             startingPose = BLUE_BACKSTAGE_START_POSE;
-        } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.BLUE && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
             startingPose = BLUE_AUDIENCE_START_POSE;
-        } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
-        } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.AUDIENCE) {
+        } else if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
         }
     }
