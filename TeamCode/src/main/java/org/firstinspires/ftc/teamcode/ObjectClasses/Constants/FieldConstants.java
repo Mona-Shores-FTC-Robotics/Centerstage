@@ -14,7 +14,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 public class FieldConstants {
 
     public static double END_GAME_TIME=90;
-
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH/2;
 
@@ -71,30 +70,64 @@ public class FieldConstants {
     public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, 41.264, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -41.264, FACE_TOWARD_BACKSTAGE);
 
-    public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-10, 35.264, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-10, -35.264, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-5, 35.264, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-5, -35.264, FACE_TOWARD_BACKSTAGE);
 
     /////////////////
     // SPIKE POSES //
     /////////////////
 
-    public static Pose2d RED_BACKSTAGE_SPIKE_R = new Pose2d(TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
+    //Center Prop
     public static Pose2d RED_BACKSTAGE_SPIKE_C = new Pose2d(HALF_TILE, -TILE-HALF_TILE+2, FACE_TOWARD_BLUE);
-    public static Pose2d RED_BACKSTAGE_SPIKE_L = new Pose2d(TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
+    public static Pose2d RED_BACKSTAGE_SPIKE_C_PAST = new Pose2d(HALF_TILE+3, -TILE-QUARTER_TILE, FACE_TOWARD_BLUE);
+    public static Pose2d RED_BACKSTAGE_SPIKE_C_DROP = new Pose2d(HALF_TILE+3, -TILE-QUARTER_TILE-4, FACE_TOWARD_BLUE);
 
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_L = new Pose2d(TILE-QUARTER_TILE-2, TILE+HALF_TILE, FACE_315_DEGREES);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_C = new Pose2d(HALF_TILE, TILE+HALF_TILE-2, FACE_TOWARD_RED);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_R = new Pose2d(TILE-THREE_QUARTER_TILE, TILE+HALF_TILE, FACE_225_DEGREES);
+    public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE+2, FACE_TOWARD_BLUE);
+    public static Pose2d RED_AUDIENCE_SPIKE_C_PAST = new Pose2d(-TILE-HALF_TILE+3, -TILE-QUARTER_TILE, FACE_TOWARD_BLUE);
+    public static Pose2d RED_AUDIENCE_SPIKE_C_DROP = new Pose2d(-TILE-HALF_TILE+3, -TILE-QUARTER_TILE-4, FACE_TOWARD_BLUE);
+
+    //Spike Right
+    public static Pose2d RED_BACKSTAGE_SPIKE_R = new Pose2d(TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
+    public static Pose2d RED_BACKSTAGE_SPIKE_R_PAST = new Pose2d(TILE-QUARTER_TILE+1, -TILE-HALF_TILE+5, Math.toRadians(45));
+    public static Pose2d RED_BACKSTAGE_SPIKE_R_DROP = new Pose2d(TILE-QUARTER_TILE-.5, -TILE-HALF_TILE+3, Math.toRadians(45));
 
     public static Pose2d RED_AUDIENCE_SPIKE_R = new Pose2d(-TILE-QUARTER_TILE, -TILE-HALF_TILE, FACE_45_DEGREES);
-    public static Pose2d RED_AUDIENCE_SPIKE_R_PAST = new Pose2d(-TILE-QUARTER_TILE+3, -TILE-QUARTER_TILE-4, Math.toRadians(55));
-    public static Pose2d RED_AUDIENCE_SPIKE_R_DROP = new Pose2d(-TILE-QUARTER_TILE+.5, -TILE-QUARTER_TILE-6, Math.toRadians(55));
-    public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, -TILE-HALF_TILE+2, FACE_TOWARD_BLUE);
-    public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
+    public static Pose2d RED_AUDIENCE_SPIKE_R_PAST = new Pose2d(-TILE-QUARTER_TILE+2, -TILE-HALF_TILE+2.5, Math.toRadians(65));
+    public static Pose2d RED_AUDIENCE_SPIKE_R_DROP = new Pose2d(-TILE-QUARTER_TILE+1.3, -TILE-HALF_TILE+1, Math.toRadians(65));
 
-    public static Pose2d BLUE_AUDIENCE_SPIKE_L = new Pose2d(-TILE-QUARTER_TILE-2, TILE+HALF_TILE, FACE_315_DEGREES);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_C = new Pose2d(-TILE-HALF_TILE, TILE+HALF_TILE-2, FACE_TOWARD_RED);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_R = new Pose2d(-TILE-THREE_QUARTER_TILE, TILE+HALF_TILE, FACE_225_DEGREES);
+    //Left Prop
+    public static Pose2d RED_BACKSTAGE_SPIKE_L = new Pose2d(TILE-THREE_QUARTER_TILE+2, -TILE-HALF_TILE, FACE_135_DEGREES);
+    public static Pose2d RED_BACKSTAGE_SPIKE_L_PAST = new Pose2d(TILE-THREE_QUARTER_TILE-2, -TILE-HALF_TILE+2.5, Math.toRadians(115));
+    public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE-THREE_QUARTER_TILE-1.3, -TILE-HALF_TILE+1, Math.toRadians(115));
+
+    public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-2*TILE+.5, -TILE-QUARTER_TILE-5, FACE_TOWARD_BLUE);
+    public static Pose2d RED_AUDIENCE_SPIKE_L_PAST = new Pose2d(-TILE-THREE_QUARTER_TILE-10, -TILE-2, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_AUDIENCE_SPIKE_L_DROP = new Pose2d(-TILE-THREE_QUARTER_TILE-15, -TILE-2, FACE_TOWARD_BACKSTAGE);
+
+
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_L = flipYAxis(RED_BACKSTAGE_SPIKE_R);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_L_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_R_PAST);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_L_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_R_DROP);
+
+    public static Pose2d BLUE_AUDIENCE_SPIKE_L = flipYAxis(RED_AUDIENCE_SPIKE_R);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_L_PAST = flipYAxis(RED_AUDIENCE_SPIKE_R_PAST);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_L_DROP = flipYAxis(RED_AUDIENCE_SPIKE_R_DROP);
+
+    public static Pose2d BLUE_AUDIENCE_SPIKE_R = flipYAxis(RED_AUDIENCE_SPIKE_L);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_R_PAST = flipYAxis(RED_AUDIENCE_SPIKE_L_PAST);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_R_DROP = flipYAxis(RED_AUDIENCE_SPIKE_L_DROP);
+
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_R = flipYAxis(RED_BACKSTAGE_SPIKE_L);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_R_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_L_PAST);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_R_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_L_DROP);
+
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_C = flipYAxis(RED_BACKSTAGE_SPIKE_C);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_C_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_C_PAST);
+    public static Pose2d BLUE_BACKSTAGE_SPIKE_C_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_C_DROP);
+
+    public static Pose2d BLUE_AUDIENCE_SPIKE_C = flipYAxis(RED_AUDIENCE_SPIKE_C);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_C_PAST = flipYAxis(RED_AUDIENCE_SPIKE_C_PAST);
+    public static Pose2d BLUE_AUDIENCE_SPIKE_C_DROP = flipYAxis(RED_AUDIENCE_SPIKE_C_DROP);
 
     ///////////////////////////////
     // NEUTRAL PIXEL STACK POSES //
@@ -149,8 +182,30 @@ public class FieldConstants {
     public static Pose2d RED_THROUGH_DOOR = new Pose2d(TILE+EIGHTH_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_THROUGH_DOOR =  new Pose2d(TILE+EIGHTH_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
+    /////////////////
+    // Super Poses //
+    /////////////////
+    public static Pose2d SUPER_BLUE_AUDIENCE_START_POSE = new Pose2d(-TILE-QUARTER_TILE, 2*TILE+HALF_TILE-1, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_BACKSTAGE_START_POSE = new Pose2d(HALF_TILE, 2*TILE+HALF_TILE-1, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_RED_BACKSTAGE_START_POSE = new Pose2d(HALF_TILE,-2*TILE-HALF_TILE+1, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_RED_AUDIENCE_START_POSE = new Pose2d(-TILE-QUARTER_TILE,  -2*TILE-HALF_TILE+1, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_RED_NEUTRAL_PIXEL_TRUSS = new Pose2d(-2*TILE-QUARTER_TILE-5,  -34.969, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP = new Pose2d(-2*TILE-QUARTER_TILE-8,  -34.969, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_NEUTRAL_PIXEL_TRUSS = new Pose2d(-2*TILE-QUARTER_TILE-5,  34.969, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP = new Pose2d(-2*TILE-QUARTER_TILE-8,  34.969, FACE_TOWARD_BACKSTAGE);
+
+    public static Pose2d SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR = new Pose2d(-2*TILE-QUARTER_TILE-8 + HALF_ROBOT_LENGTH,-11.656, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR = new Pose2d(-2*TILE-QUARTER_TILE-8 + HALF_ROBOT_LENGTH,11.656, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP = new Pose2d(-2*TILE-QUARTER_TILE-15 + HALF_ROBOT_LENGTH,-11.656, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP = new Pose2d(-2*TILE-QUARTER_TILE-15 + HALF_ROBOT_LENGTH,11.656, FACE_TOWARD_BACKSTAGE);
+
+    public static Pose2d SUPER_RED_STAGEDOOR_BY_BACKDROP = new Pose2d(TILE+QUARTER_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d SUPER_BLUE_STAGEDOOR_BY_BACKDROP  = new Pose2d(TILE+ QUARTER_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
+
+    public static double SCORE_DISTANCE = 5.0;
+
     public static Pose2d flipYAxis(Pose2d pose) {
-        Pose2d output = new Pose2d(pose.position.x, -pose.position.y, pose.heading.log());
+        Pose2d output = new Pose2d(pose.position.x, -pose.position.y, -pose.heading.log());
         return output;
     }
 

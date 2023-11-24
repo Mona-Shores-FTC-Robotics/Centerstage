@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkIMPROVED;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved;
 
 @Autonomous(name = "Spike Backdrop Park Auto IMPROVED")
 public class Spike_Backdrop_Park_IMPROVED_Auto extends LinearOpMode {
@@ -58,7 +58,7 @@ public class Spike_Backdrop_Park_IMPROVED_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikeBackdropParkIMPROVED.BuildRoutes();
+        RoutesSpikeBackdropParkImproved.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry

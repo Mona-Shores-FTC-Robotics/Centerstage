@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.RED;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.CENTER;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem.DeliverLocation.RIGHT;
 
@@ -13,7 +12,6 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -27,14 +25,12 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.AutoDriveToBackDropAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.LineToXRelativeAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions.MakeMoveToPointAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
@@ -119,19 +115,19 @@ public class Test_AutoDriveToBackdropAction extends LinearOpMode {
     public Action ScorePixelAction(VisionSubsystem.DeliverLocation deliverLocation) {
         SequentialAction scorePixel =
                 new SequentialAction(
-                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                        new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
                         new ParallelAction(
                             new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
                             new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)
                                 ),
                         new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.AUTO_LOW),
                         MoveRobotForward(deliverLocation),
-                        new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN),
+                        new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                         new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.AUTO_HIGH),
                         MoveRobotBackwards(deliverLocation),
                         new ParallelAction(
                                 new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
-                                new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                                new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
                                 new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
                         ),
                         new ParallelAction(

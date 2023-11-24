@@ -14,7 +14,7 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
@@ -50,7 +50,7 @@ public class RoutesSpikeBackdropPark {
 
     public static void BuildRoutes() {
 
-        Action dropPurple = new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED);
+        Action dropPurple = new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED);
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
@@ -228,7 +228,7 @@ public class RoutesSpikeBackdropPark {
                     .waitSeconds(.5)
                     .lineToX(TILE*2+7, overrideVelConstraint, overrideAccelConstraint)
                     .waitSeconds(.9)
-                    .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
+                    .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
                     .waitSeconds(.5)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID))
                     .waitSeconds(.5)
@@ -245,7 +245,7 @@ public class RoutesSpikeBackdropPark {
                     .waitSeconds(.2)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(secondHeight))
                     .waitSeconds(.2)
-                    .stopAndAdd( new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN))
+                    .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
                     .waitSeconds(.5)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(firstHeight))
                     .waitSeconds(.3)
