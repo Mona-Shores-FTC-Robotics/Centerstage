@@ -279,16 +279,60 @@ public class DriveSubsystem extends SubsystemBase {
                 fieldOrientedControl(leftYAdjusted, leftXAdjusted);
             }
 
-            //If the tag we are trying to deliver to is visible, we are driving forward, and we aren't overriding(e.g. slow mode)
-            if (    visionSubsystem.isDeliverLocationTagVisible(visionSubsystem.getDeliverLocation())  &&
-                    leftYAdjusted > .2 &&
-                    !getOverrideAprilTagDriving()) {
-                //Then schedule AprilTagAlignmentCommand in parallel with a IsAprilTagDrivingCancelled Command
-                new ParallelRaceGroup(
-                        new IsGamepadAprilTagCancelCommand(gamepadHandling.getDriverGamepad()),
-                        new AprilTagAlignmentCommand(Robot.getInstance().getDriveSubsystem())
-                ).schedule();
+
+            // Cancel AprilTag driving if the driver is moving away from the backdrop
+            // I'm not sure if this works for field oriented control
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+                aprilTagAutoDriving = false;
             }
+
+            //Align to the Backdrop AprilTags - CASE RED
+            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+                    visionSubsystem.redBackdropAprilTagFoundRecently &&
+                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+                    !getOverrideAprilTagDriving()) {
+                //start apriltag timeout timer
+                if (!aprilTagAutoDriving) {
+                    aprilTagTimeoutTimer.reset();
+                }
+                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
+                leftYAdjusted = mecanumDrive.aprilTagDrive;
+                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                rightXAdjusted = mecanumDrive.aprilTagTurn;
+
+                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+
+                //Check if we timed out
+                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+                    aprilTagAutoDriving=false;
+                }
+
+            }
+            //Aligning to the Backdrop AprilTags - CASE BLUE
+            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
+                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+                    !getOverrideAprilTagDriving()) {
+                //start apriltag timeout timer
+                if (!aprilTagAutoDriving) {
+                    aprilTagTimeoutTimer.reset();
+                }
+                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+                leftYAdjusted = mecanumDrive.aprilTagDrive;
+                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+                rightXAdjusted = mecanumDrive.aprilTagTurn;
+                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+
+                //Check if we timed out
+                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+                    aprilTagAutoDriving=false;
+                }
+
+            } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             leftYAdjusted = 0;
