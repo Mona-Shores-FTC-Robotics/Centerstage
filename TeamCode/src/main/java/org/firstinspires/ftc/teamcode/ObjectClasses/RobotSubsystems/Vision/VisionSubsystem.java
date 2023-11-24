@@ -384,7 +384,7 @@ public final class VisionSubsystem extends SubsystemBase {
         for (AprilTagDetection detection : currentDetections) {
             if ((detection.metadata != null)) {
                 currentTag = AprilTagID.getByID(detection.id);
-                if (currentTag.detection.ftcPose.range < 30)
+                if (detection.ftcPose.range < 30)
                 {
                     currentTag.setDetected();
                     currentTag.setTimestamp();

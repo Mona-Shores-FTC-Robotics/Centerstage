@@ -179,9 +179,6 @@ public class CenterstageOperatorBindings {
                         }));
 
 
-
-
-
         //////////////////////////////////////////////////////////
         //                                                      //
         //  LEFT TRIGGER                                        //

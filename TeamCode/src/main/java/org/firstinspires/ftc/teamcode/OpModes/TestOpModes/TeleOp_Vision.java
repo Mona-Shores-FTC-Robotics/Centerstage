@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -90,7 +91,7 @@ public class TeleOp_Vision extends LinearOpMode
 
         MatchConfig.telemetryPacket = new TelemetryPacket();
 
-        Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
+        //Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
         while (opModeIsActive())
         {
 
@@ -111,7 +112,10 @@ public class TeleOp_Vision extends LinearOpMode
                 Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
                 Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
             }
-            telemetry.update();
+
+            FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
+            MatchConfig.telemetryPacket = new TelemetryPacket();
+            MatchConfig.LoopDriverStationTelemetry();
         }
     }
 }

@@ -6,16 +6,17 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
 @Config
 public class StrafeXInchesPID extends CommandBase {
     // PIDF Constants
-    public static double KP = 0.1; // Proportional coefficient
+    public static double KP = -0.286; // Proportional coefficient
     public static double KI = 0.0; // Integral coefficient
     public static double KD = 0.0; // Derivative coefficient
     public static double KF = 0.0; // Feed-forward coefficient
-    public static double PID_TOLERANCE = .5;
+    public static double PID_TOLERANCE = .001;
 
     private final DriveSubsystem driveSubsystem;
     private final double targetDistanceInches;
@@ -40,6 +41,8 @@ public class StrafeXInchesPID extends CommandBase {
         pidController = new PIDFController(KP, KI, KD, KF);
         pidController.reset();
         pidController.setSetPoint(targetEncoderCount);
+        MatchConfig.telemetryPacket.put("StrafeXInchesPID target encoder", targetEncoderCount);
+
         pidController.setTolerance(PID_TOLERANCE);
     }
 
@@ -51,8 +54,12 @@ public class StrafeXInchesPID extends CommandBase {
         //Get the current encoder count
         double currentEncoderCount = driveSubsystem.getCurrentEncoderCount();
 
+        MatchConfig.telemetryPacket.put("StrafeXInchesPID current encoder", currentEncoderCount);
+
         //Calculate the velocity we need using the PID Controller
         double velocity = pidController.calculate(currentEncoderCount);
+
+        MatchConfig.telemetryPacket.put("StrafeXInchesPID velocity", velocity);
 
         //Strafe the velocity provided by the PID
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, velocity, 0);

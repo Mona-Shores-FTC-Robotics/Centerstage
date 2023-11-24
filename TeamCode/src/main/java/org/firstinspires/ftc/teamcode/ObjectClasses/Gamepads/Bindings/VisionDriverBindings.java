@@ -163,7 +163,7 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new StrafeXInchesPID(Robot.getInstance().getDriveSubsystem(), 6));
+                .whenPressed(new DriveXInchesPID(Robot.getInstance().getDriveSubsystem(), 6));
 
 
         //////////////////////////////////////////////////////////
