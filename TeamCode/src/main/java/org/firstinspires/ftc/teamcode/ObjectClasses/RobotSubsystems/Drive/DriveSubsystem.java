@@ -111,15 +111,17 @@ public class DriveSubsystem extends SubsystemBase {
         public double TURN_D = 0;
         public double TURN_F = .15;
 
-        public double STRAFE_P=0;
+        public double STRAFE_P=-.2;
         public double STRAFE_I=0;
         public double STRAFE_D=0;
-        public double STRAFE_F=0;
+        public double STRAFE_F=-.002;
 
-        public double DRIVE_P=0;
+        public double DRIVE_P=-.2;
         public double DRIVE_I=0;
         public double DRIVE_D=0;
-        public double DRIVE_F=0;
+        public double DRIVE_F=-.002;
+
+        public double MAX_SPEED=.5;
     }
     public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 

@@ -32,6 +32,12 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -41,7 +47,11 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.Centerstag
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
 @TeleOp(name="TeleOp_CenterStage")
@@ -101,8 +111,54 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.telemetryPacket = new TelemetryPacket();
 
         Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
+
+        TriggerReader leftTriggerReader = new TriggerReader(
+                gamepadHandling.getDriverGamepad(), GamepadKeys.Trigger.LEFT_TRIGGER
+        );
+
+        double currentDriverLeftTrigger = gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        double previousDriverLeftTrigger;
+
+        double currentDriverRightTrigger = gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+        double previousDriverRightTrigger;
+
+        double currentOperatorLeftTrigger = gamepadHandling.getOperatorGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+        double previousOperatorLeftTrigger;
+
         while (opModeIsActive())
         {
+            previousDriverLeftTrigger = currentDriverLeftTrigger;
+            currentDriverLeftTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+
+            if (currentDriverLeftTrigger > .5 && previousDriverLeftTrigger < .5){
+                MatchConfig.telemetryPacket.addLine("i am pushing the button");
+                boolean currentState = Robot.getInstance().getDriveSubsystem().getOverrideAprilTagDriving();
+                Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(!currentState);
+            }
+
+            previousDriverRightTrigger = currentDriverRightTrigger;
+            currentDriverRightTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+
+            if (currentDriverRightTrigger > .5 && previousDriverRightTrigger < .5){
+                MatchConfig.telemetryPacket.addLine("i am pushing the button");
+
+                new SequentialCommandGroup(
+                        new WaitCommand(1000),
+                        new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+            }
+
+            previousOperatorLeftTrigger = currentOperatorLeftTrigger;
+            currentOperatorLeftTrigger =gamepadHandling.getOperatorGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+
+
+            if (currentOperatorLeftTrigger > .5 && previousOperatorLeftTrigger <.5) {
+                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION).schedule();
+            }
+
+            if (previousOperatorLeftTrigger > .5 && currentOperatorLeftTrigger <.5) {
+                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.CLOSED).schedule();
+            }
+
             //Reset the timer for the loop timer
             MatchConfig.loopTimer.reset();
 

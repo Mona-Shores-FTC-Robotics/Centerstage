@@ -181,18 +181,10 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  LEFT TRIGGER - Release Pixel                        //
+        //  LEFT TRIGGER - Release One Pixel                        //
         //                                                      //
         //////////////////////////////////////////////////////////
-
-        TriggerReader leftTriggerReader = new TriggerReader(
-                operatorGamepad, GamepadKeys.Trigger.LEFT_TRIGGER
-        );
-        Trigger leftTrigger = new Trigger(leftTriggerReader::wasJustPressed);
-        leftTrigger.toggleWhenActive(
-                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION),
-                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.CLOSED)
-        );
+        //See teleop centerstage code - can't figure out how to make binding declarative
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -245,11 +237,12 @@ public class CenterstageOperatorBindings {
                                     new MoveLiftSlideCommand(liftSlideSubsystem, LiftSlideSubsystem.LiftStates.SAFE)
                             ),
                             new WaitCommand(250),
-                            new RotateShoulderCommand(shoulderSubsystem,
-                                    ShoulderSubsystem.ShoulderStates.INTAKE),
+                            new MoveLiftSlideCommand(liftSlideSubsystem, LiftSlideSubsystem.LiftStates.HOME),
                             new WaitCommand(250),
-                            new MoveLiftSlideCommand(liftSlideSubsystem,
-                                    LiftSlideSubsystem.LiftStates.HOME)
+                            new RotateShoulderCommand(shoulderSubsystem,
+                            ShoulderSubsystem.ShoulderStates.INTAKE)
+
+
                     );
         }
     }

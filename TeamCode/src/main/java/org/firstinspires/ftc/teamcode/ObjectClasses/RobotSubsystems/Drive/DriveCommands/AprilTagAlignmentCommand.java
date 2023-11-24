@@ -21,6 +21,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Visio
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -51,6 +52,9 @@ public class AprilTagAlignmentCommand extends CommandBase {
     private double bearingError;
     private double xError;
     private double yError;
+
+    private boolean haveXerror=false;
+    private double xErrorSaved;
 
     private VisionSubsystem.DeliverLocation previousDeliverLocation;
 
@@ -128,9 +132,14 @@ public class AprilTagAlignmentCommand extends CommandBase {
             switch (driveSubsystem.currentState) {
                 case APRIL_TAG_ALIGNMENT_TURNING: {
                     AutoDriveToBackdropRed();
+                    if (!haveXerror){
+                        haveXerror=true;
+                        xErrorSaved = xError;
+                    }
+
                     drive = 0;
                     strafe = 0;
-                    turn = pidTurn.update(gyroSubsystem.currentRelativeYawDegrees);
+                    turn = Range.clip(pidTurn.update(yawError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);
 
                     if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG;
@@ -138,12 +147,12 @@ public class AprilTagAlignmentCommand extends CommandBase {
                     break;
                 }
 
-
                 case APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG: {
+                    haveXerror=false;
                     AutoDriveToBackdropRed();
                     drive = 0;
-                    strafe = Math.signum(visionSubsystem.yawError) * autoDriveParameters.STRAFE_TO_TAG_SPEED;
-                    turn = 0;
+                    strafe = Math.signum(xErrorSaved) * -autoDriveParameters.STRAFE_TO_TAG_SPEED;
+                    turn = Range.clip(pidTurn.update(yawError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);;;
 
                     //strafe until we see the target again since we probably can't see it if we just turned
                     // this step essentially gets skipped if we can see the tag
@@ -157,10 +166,10 @@ public class AprilTagAlignmentCommand extends CommandBase {
                 case APRIL_TAG_ALIGNMENT_STRAFING: {
                     AutoDriveToBackdropRed();
                     drive = 0;
-                    strafe = pidStrafe.calculate(visionSubsystem.yawError);
-                    turn = 0;
+                    strafe = Range.clip(pidStrafe.calculate(xError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);
+                    turn = Range.clip(pidTurn.update(yawError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);;;
 
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
+                    if (Math.abs(xError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_DRIVING;
                     }
                     break;
@@ -168,11 +177,11 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
                 case APRIL_TAG_ALIGNMENT_DRIVING: {
                     AutoDriveToBackdropRed();
-                    drive = pidDrive.calculate(visionSubsystem.rangeError);
-                    strafe = 0;
-                    turn = 0;
+                    drive = Range.clip(pidDrive.calculate(rangeError), -.3, .3);
+                    strafe = Range.clip(pidStrafe.calculate(xError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);;
+                    turn = Range.clip(pidTurn.update(yawError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);;
 
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
+                    if (Math.abs(rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = MANUAL_DRIVE;
                     }
                     break;
@@ -195,9 +204,14 @@ public class AprilTagAlignmentCommand extends CommandBase {
             switch (driveSubsystem.currentState) {
                 case APRIL_TAG_ALIGNMENT_TURNING: {
                     AutoDriveToBackdropBlue();
+
+                    if (!haveXerror){
+                        haveXerror=true;
+                        xErrorSaved = xError;
+                    }
                     drive = 0;
                     strafe = 0;
-                    turn = pidTurn.update(gyroSubsystem.currentRelativeYawDegrees);
+                    turn = Range.clip(pidTurn.update(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYawRadians()), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);
 
                     if (Math.abs(pidTurn.error) < autoDriveParameters.TURN_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG;
@@ -207,9 +221,10 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
 
                 case APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG: {
+                    haveXerror=false;
                     AutoDriveToBackdropBlue();
                     drive = 0;
-                    strafe = Math.signum(visionSubsystem.yawError) * autoDriveParameters.STRAFE_TO_TAG_SPEED;
+                    strafe = Math.signum(xErrorSaved) * -autoDriveParameters.STRAFE_TO_TAG_SPEED;
                     turn = 0;
 
                     //strafe until we see the target again since we probably can't see it if we just turned
@@ -224,10 +239,10 @@ public class AprilTagAlignmentCommand extends CommandBase {
                 case APRIL_TAG_ALIGNMENT_STRAFING: {
                     AutoDriveToBackdropBlue();
                     drive = 0;
-                    strafe = pidStrafe.calculate(visionSubsystem.yawError);
-                    turn = 0;
+                    strafe = Range.clip(pidStrafe.calculate(xError), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);
+                    turn = Range.clip(pidTurn.update(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees), -autoDriveParameters.MAX_SPEED, autoDriveParameters.MAX_SPEED);;
 
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().yawError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
+                    if (Math.abs(xError) < autoDriveParameters.STRAFE_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = APRIL_TAG_ALIGNMENT_DRIVING;
                     }
                     break;
@@ -235,11 +250,11 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
                 case APRIL_TAG_ALIGNMENT_DRIVING: {
                     AutoDriveToBackdropBlue();
-                    drive = pidDrive.calculate(visionSubsystem.rangeError);
+                    drive = Range.clip(pidDrive.calculate(rangeError), -.3, .3);
                     strafe = 0;
                     turn = 0;
 
-                    if (Math.abs(Robot.getInstance().getVisionSubsystem().rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
+                    if (Math.abs(rangeError) < autoDriveParameters.DRIVE_ERROR_THRESHOLD) {
                         driveSubsystem.currentState = MANUAL_DRIVE;
                     }
                     break;
@@ -411,12 +426,12 @@ public class AprilTagAlignmentCommand extends CommandBase {
 
         Pose2d newPose = new Pose2d(tagPosXOnField-distanceX, tagPosYOnField+distanceY, Robot.getInstance().getGyroSubsystem().currentRelativeYawRadians);
 
-        telemetry.addLine();
-        telemetry.addData("Tag", tag.detection.metadata.name);
+        Robot.getInstance().getActiveOpMode().telemetry.addLine();
+        Robot.getInstance().getActiveOpMode().telemetry.addData("Tag", tag.detection.metadata.name);
 //        telemetry.addData("Tag Pose", "X %5.2f, Y %5.2f, heading %5.2f ", tagPosXOnField, tagPosYOnField, tagHeading);
 //        telemetry.addData("DistToCamera", "X %5.2f, , Y %5.2f, yaw %5.2f,", distanceX, distanceY, cameraYaw);
 
-        telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
+        Robot.getInstance().getActiveOpMode().telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", newPose.position.x, newPose.position.y, Math.toDegrees(newPose.heading.log()));
 
         return newPose;
     }

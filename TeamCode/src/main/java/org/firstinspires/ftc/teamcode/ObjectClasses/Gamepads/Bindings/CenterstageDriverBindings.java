@@ -6,7 +6,9 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -118,14 +120,14 @@ public class CenterstageDriverBindings {
         //  START BUTTON  - FIELD CENTRIC DRIVING               //
         //                                                      //
         //////////////////////////////////////////////////////////
-        gamepad.getGamepadButton(GamepadKeys.Button.START)
-                .toggleWhenPressed(new InstantCommand(() -> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
-                }), new InstantCommand(() -> {
-                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
-                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
-                }));
+//        gamepad.getGamepadButton(GamepadKeys.Button.START)
+//                .toggleWhenPressed(new InstantCommand(() -> {
+//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+//                }), new InstantCommand(() -> {
+//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
+//                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -142,17 +144,8 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        TriggerReader leftTriggerReader = new TriggerReader(
-                gamepad, GamepadKeys.Trigger.LEFT_TRIGGER
-        );
-        Trigger leftTrigger = new Trigger(leftTriggerReader::wasJustPressed);
-        leftTrigger.toggleWhenActive(
-                new InstantCommand(() -> {
-                    Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false);
-                }),
-                new InstantCommand(() -> {
-                    Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
-                }));
+        //look in teleop code for left trigger binding
+
 
 
         //////////////////////////////////////////////////////////
@@ -161,14 +154,9 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //This should require the user to hold the trigger down for 1 second before the drone fires
-        TriggerReader rightTriggerReader = new TriggerReader(
-                gamepad, GamepadKeys.Trigger.RIGHT_TRIGGER
-        );
-        Trigger rightTrigger = new Trigger(rightTriggerReader::isDown);
-        rightTrigger.whileActiveOnce(new ParallelCommandGroup(
-                new WaitCommand(1000),
-                new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY)));
+        //look in teleop
+
+
     }
 
 
