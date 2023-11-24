@@ -25,16 +25,19 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public int LIFT_HEIGHT_TICK_THRESHOLD = 45;
         public double TIMEOUT_TIME_SECONDS = 2;
         public double EXTENSION_LIFT_POWER = .6;
-        public double RETRACTION_LIFT_POWER = .3;
-        public double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=38;
-        public double POS_P=5;
+        public double RETRACTION_LIFT_POWER = .33;
+        public double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=48;
+        public double VEL_P_DOWN=7, VEL_I_DOWN=0, VEL_D_DOWN=0, VEL_F_DOWN=8;
+        public double POS_P=9;
+        public double POS_P_DOWN=12;
         public double SCALE_FACTOR_FOR_MANUAL_LIFT=150;
-        public double LIFT_DEAD_ZONE_FOR_MANUAL_LIFT;
+        public double LIFT_DEAD_ZONE_FOR_MANUAL_LIFT = 50;
+        public double SAFE_ZONE_FOR_MANUAL_LIFT = 950;
     }
 
     public static class LiftSlideHeights{
         public int ZERO_HEIGHT_TICKS=0;
-        public int HOME_HEIGHT_TICKS=25;
+        public int HOME_HEIGHT_TICKS=0;
         public int SAFE_HEIGHT_TICKS=25;
         public int AUTO_LOW_HEIGHT_TICKS=950;
         public int AUTO_MID_HEIGHT_TICKS=1150;
@@ -108,6 +111,17 @@ public class LiftSlideSubsystem extends SubsystemBase {
 
     private double power;
 
+    public boolean isStageOneReleasePixels() {
+        return stageOneReleasePixels;
+    }
+
+    public void setStageOneReleasePixels(boolean stageOneReleasePixels) {
+        this.stageOneReleasePixels = stageOneReleasePixels;
+    }
+
+    private boolean stageOneReleasePixels = true;
+
+
     public LiftSlideSubsystem(final HardwareMap hMap, final String name) {
         liftSlide = hMap.get(DcMotorEx.class, name);
     }
@@ -129,8 +143,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
     }
 
     public void periodic(){
-        liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P, liftSlideParameters.VEL_I, liftSlideParameters.VEL_D, liftSlideParameters.VEL_F);
-        liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P);
+
 
         LiftStates.HOME.setLiftHeightTicks(liftSlideHeights.HOME_HEIGHT_TICKS);
         LiftStates.SAFE.setLiftHeightTicks(liftSlideHeights.SAFE_HEIGHT_TICKS);
