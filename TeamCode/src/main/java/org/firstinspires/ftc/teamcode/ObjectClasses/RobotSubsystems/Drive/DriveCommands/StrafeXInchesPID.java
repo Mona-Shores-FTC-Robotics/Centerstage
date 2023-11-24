@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
@@ -58,11 +59,11 @@ public class StrafeXInchesPID extends CommandBase {
 
         //Calculate the velocity we need using the PID Controller
         double velocity = pidController.calculate(currentEncoderCount);
-
-        MatchConfig.telemetryPacket.put("StrafeXInchesPID velocity", velocity);
+        double clippedVelocity = Range.clip(velocity, -.4, .4);
+        MatchConfig.telemetryPacket.put("StrafeXInchesPID velocity", clippedVelocity);
 
         //Strafe the velocity provided by the PID
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, velocity, 0);
+        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, clippedVelocity, 0);
     }
 
     @Override

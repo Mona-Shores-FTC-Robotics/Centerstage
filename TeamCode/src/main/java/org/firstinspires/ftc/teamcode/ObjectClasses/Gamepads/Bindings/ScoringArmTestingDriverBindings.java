@@ -63,8 +63,8 @@ public class ScoringArmTestingDriverBindings {
 
         gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .toggleWhenPressed(
-                        new ActuateGripperCommand(Robot.getInstance().getEndEffectorSubsystem(), GripperSubsystem.GripperStates.OPEN),
-                        new ActuateGripperCommand(Robot.getInstance().getEndEffectorSubsystem(), GripperSubsystem.GripperStates.CLOSED));
+                        new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.OPEN),
+                        new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.CLOSED));
 
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
@@ -102,7 +102,7 @@ public class ScoringArmTestingDriverBindings {
 
     private void makeSequenceCommands() {
 
-        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
         ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 

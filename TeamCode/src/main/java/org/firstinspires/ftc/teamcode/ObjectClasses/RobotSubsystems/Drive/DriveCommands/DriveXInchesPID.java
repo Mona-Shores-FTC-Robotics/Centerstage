@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Drive
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.util.Range;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
 
@@ -49,7 +50,7 @@ public class DriveXInchesPID extends CommandBase {
 
         double currentEncoderCount = driveSubsystem.getCurrentEncoderCount();
         double output = pidController.calculate(currentEncoderCount);
-
+        double clippedOutput = Range.clip(output, -.3, .3);
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(output, 0, 0); // Drive forward/backward
     }
 

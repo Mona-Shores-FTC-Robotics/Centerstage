@@ -21,7 +21,7 @@ public class PitModeDriverBindings {
 
     ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
     ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
-    GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+    GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
 
     public PitModeDriverBindings(GamepadEx gamepad) {
 

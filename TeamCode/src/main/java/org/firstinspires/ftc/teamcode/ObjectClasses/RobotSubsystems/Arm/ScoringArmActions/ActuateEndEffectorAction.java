@@ -23,10 +23,10 @@ public class ActuateEndEffectorAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        Robot.getInstance().getEndEffectorSubsystem().endEffector.setPosition(targetPosition);
-        telemetryPacket.put("Current EndEffector State", Robot.getInstance().getEndEffectorSubsystem().currentState);
+        Robot.getInstance().getGripperSubsystem().endEffector.setPosition(targetPosition);
+        telemetryPacket.put("Current EndEffector State", Robot.getInstance().getGripperSubsystem().currentState);
         telemetryPacket.put("Target EndEffector State: ", targetState);
-        Robot.getInstance().getEndEffectorSubsystem().currentState = targetState;
+        Robot.getInstance().getGripperSubsystem().currentState = targetState;
         FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
         return false;
     }

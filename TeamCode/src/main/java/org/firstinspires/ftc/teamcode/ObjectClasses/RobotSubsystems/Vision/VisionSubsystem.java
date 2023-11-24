@@ -124,6 +124,7 @@ public final class VisionSubsystem extends SubsystemBase {
     public void periodic()
     {
 
+        MatchConfig.telemetryPacket.put("Delivery Location: ", Robot.getInstance().getVisionSubsystem().getDeliverLocation() );
     }
 
     public void SwitchToAprilTagProcessor() {

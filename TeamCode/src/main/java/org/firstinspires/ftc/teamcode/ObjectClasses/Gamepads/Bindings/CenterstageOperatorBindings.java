@@ -6,8 +6,10 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.TriggerReader;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
@@ -28,7 +30,7 @@ public class CenterstageOperatorBindings {
 
     public CenterstageOperatorBindings(GamepadEx operatorGamepad) {
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
-        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
         ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
 
         //////////////////////////////////////////////////////////
@@ -59,7 +61,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // DPAD-UP -                                            //
+        // DPAD-UP - Max Delivery Height                        //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -70,7 +72,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // DPAD-RIGHT -                                         //
+        // DPAD-RIGHT - High Delivery Height                    //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -80,7 +82,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // DPAD-LEFT -                                          //
+        // DPAD-LEFT - Mid Delivery Height                      //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -90,7 +92,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // DPAD-DOWN -                                          //
+        // DPAD-DOWN - Low Delivery Height                      //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -107,8 +109,6 @@ public class CenterstageOperatorBindings {
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
                         new InstantCommand(() -> {
-                            //Switch the vision processing to AprilTags
-                            Robot.getInstance().getVisionSubsystem().VisionOff();
                             new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
                             Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
                         }),
@@ -150,7 +150,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  Y BUTTON - READY TO SCORE PIXELS MID HEIGHT         //
+        //  Y BUTTON - Extend Lift                              //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -160,7 +160,7 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  A BUTTON  - RELEASE PIXELS                          //
+        //  A BUTTON  - Release Pixels / Retract Arm             //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -181,9 +181,18 @@ public class CenterstageOperatorBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  LEFT TRIGGER                                        //
+        //  LEFT TRIGGER - Release Pixel                        //
         //                                                      //
         //////////////////////////////////////////////////////////
+
+        TriggerReader leftTriggerReader = new TriggerReader(
+                operatorGamepad, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
+        Trigger leftTrigger = new Trigger(leftTriggerReader::wasJustPressed);
+        leftTrigger.toggleWhenActive(
+                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION),
+                new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.CLOSED)
+        );
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -207,13 +216,12 @@ public class CenterstageOperatorBindings {
 
     private class MakeOperatorCombinationCommands{
 
-        GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+        GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
         ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
         LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
 
         private Command ReadyToScorePixelCommand() {
-
-            GripperSubsystem gripperSubsystem = Robot.getInstance().getEndEffectorSubsystem();
+            GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
             ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
             LiftSlideSubsystem liftSlideSubsystem = Robot.getInstance().getLiftSlideSubsystem();
             return new ParallelCommandGroup(

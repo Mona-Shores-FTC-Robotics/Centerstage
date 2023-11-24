@@ -211,7 +211,7 @@ public class Robot {
     public DriveSubsystem getDriveSubsystem()  {return mecanumDriveSubsystem;}
     public VisionSubsystem getVisionSubsystem()  {return visionSubsystem;}
     public IntakeSubsystem getIntakeSubsystem()  {return intakeSubsystem;}
-    public GripperSubsystem getEndEffectorSubsystem()  {return gripperSubsystem;}
+    public GripperSubsystem getGripperSubsystem()  {return gripperSubsystem;}
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}

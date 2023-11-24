@@ -19,7 +19,8 @@ public final class GripperSubsystem extends SubsystemBase {
     public enum GripperStates {
         REST (.5),
         CLOSED (.55),
-        OPEN (.45);
+        OPEN (.45),
+        ONE_PIXEL_RELEASE_POSITION (.52);
         public double position;
         GripperStates(double pos) {
             this.position = pos;

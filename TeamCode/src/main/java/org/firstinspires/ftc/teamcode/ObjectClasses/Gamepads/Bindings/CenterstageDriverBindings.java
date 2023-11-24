@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.ParallelRaceGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -44,7 +45,7 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // RIGHT BUMPER                                         //
+        // RIGHT BUMPER - Slow Mode                             //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -53,20 +54,9 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        // LEFT BUMPER     - fly drone                          //
+        // LEFT BUMPER - backupPath                             //
         //                                                      //
         //////////////////////////////////////////////////////////
-
-//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-//                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
-
-//
-//        gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-//                .whenHeld(
-//                        new ParallelRaceGroup(
-//                                new AprilTagAlignmentCommand(Robot.getInstance().getDriveSubsystem()),
-//                                new IsGamepadActiveCommand(gamepad)
-//                        ));
 
         // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
         gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
@@ -78,12 +68,9 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        gamepad.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
-
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  X BUTTON                                            //
+        //  X BUTTON - Delivery Location LEFT                   //
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.X)
@@ -93,7 +80,7 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  A BUTTON                                            //
+        //  A BUTTON - Delivery Location CENTER                 //
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.A)
@@ -103,7 +90,7 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  B BUTTON                                            //
+        //  B BUTTON - Delivery Location RIGHT                  //
         //                                                      //
         //////////////////////////////////////////////////////////
         gamepad.getGamepadButton(GamepadKeys.Button.B)
@@ -113,7 +100,7 @@ public class CenterstageDriverBindings {
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  BACK/OPTIONS BUTTON                                 //
+        //  BACK/OPTIONS BUTTON - Reset Gyro at Backdrop        //
         //                                                      //
         //////////////////////////////////////////////////////////
 
@@ -123,7 +110,7 @@ public class CenterstageDriverBindings {
         // because the gyro is much more accurate than the april tag based heading
         gamepad.getGamepadButton(GamepadKeys.Button.BACK)
                 .whenPressed(new InstantCommand(() -> {
-                    Robot.getInstance().getVisionSubsystem().resetHeading=true;
+                    Robot.getInstance().getVisionSubsystem().resetHeading = true;
                 }));
 
         //////////////////////////////////////////////////////////
@@ -131,29 +118,59 @@ public class CenterstageDriverBindings {
         //  START BUTTON  - FIELD CENTRIC DRIVING               //
         //                                                      //
         //////////////////////////////////////////////////////////
-//        gamepad.getGamepadButton(GamepadKeys.Button.START)
-//                .toggleWhenPressed(new InstantCommand(() -> {
-//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
-//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
-//                }), new InstantCommand(() -> {
-//                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
-//                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
-//                }));
-
         gamepad.getGamepadButton(GamepadKeys.Button.START)
-                .toggleWhenPressed(
-                new InstantCommand(()->Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false)),
-                new InstantCommand(()->Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true)));
+                .toggleWhenPressed(new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Field Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = true;
+                }), new InstantCommand(() -> {
+                    Robot.getInstance().getActiveOpMode().telemetry.addLine("Robot Centric Driving");
+                    Robot.getInstance().getDriveSubsystem().fieldOrientedControl = false;
+                }));
 
         //////////////////////////////////////////////////////////
         //                                                      //
-        //  DPAD UP  -                                          //
+        //  DPAD UP  - Turn to Face Backdrop                    //
         //                                                      //
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)));
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // LEFT TRIGGER - Toggle AprilTag Drive Override        //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        TriggerReader leftTriggerReader = new TriggerReader(
+                gamepad, GamepadKeys.Trigger.LEFT_TRIGGER
+        );
+        Trigger leftTrigger = new Trigger(leftTriggerReader::wasJustPressed);
+        leftTrigger.toggleWhenActive(
+                new InstantCommand(() -> {
+                    Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false);
+                }),
+                new InstantCommand(() -> {
+                    Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
+                }));
+
+
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // RIGHT TRIGGER - Fly Drone                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        //This should require the user to hold the trigger down for 1 second before the drone fires
+        TriggerReader rightTriggerReader = new TriggerReader(
+                gamepad, GamepadKeys.Trigger.RIGHT_TRIGGER
+        );
+        Trigger rightTrigger = new Trigger(rightTriggerReader::isDown);
+        rightTrigger.whileActiveOnce(new ParallelCommandGroup(
+                new WaitCommand(1000),
+                new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY)));
     }
+
 
     private void MakeCommands(GamepadEx gamepad) {
         defaultDriveCommand = new DefaultDriveCommand(Robot.getInstance().getDriveSubsystem(),
