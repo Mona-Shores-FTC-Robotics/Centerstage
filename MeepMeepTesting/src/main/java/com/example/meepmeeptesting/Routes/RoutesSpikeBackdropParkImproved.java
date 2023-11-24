@@ -4,15 +4,27 @@ package com.example.meepmeeptesting.Routes;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_LANE_A;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_CORNER_PARK;
@@ -27,9 +39,14 @@ import static com.example.meepmeeptesting.Constants.FACE_315_DEGREES;
 import static com.example.meepmeeptesting.Constants.FACE_45_DEGREES;
 import static com.example.meepmeeptesting.Constants.FACE_TOWARD_BACKSTAGE;
 import static com.example.meepmeeptesting.Constants.FACE_TOWARD_BLUE;
+import static com.example.meepmeeptesting.Constants.FACE_TOWARD_RED;
 import static com.example.meepmeeptesting.Constants.PoseToVector;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R_DROP;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R_PAST;
@@ -38,8 +55,14 @@ import static com.example.meepmeeptesting.Constants.RED_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R_DROP;
+import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R_PAST;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_LANE_F;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_CORNER_PARK;
@@ -114,7 +137,9 @@ public class RoutesSpikeBackdropParkImproved {
         //////////
 
         blueBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L, TANGENT_315_DEGREES)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L_PAST, BLUE_BACKSTAGE_SPIKE_L_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_L_DROP, BLUE_BACKSTAGE_SPIKE_L_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKSTAGE_START_LANE_A, TANGENT_TOWARD_BACKSTAGE)
@@ -124,7 +149,9 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         blueAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L, TANGENT_315_DEGREES)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L_PAST, BLUE_AUDIENCE_SPIKE_L_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_L_DROP, BLUE_AUDIENCE_SPIKE_L_PAST.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_R), TANGENT_TOWARD_RED)
@@ -136,19 +163,24 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         redBackstageBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L, TANGENT_135_DEGREES)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L_PAST, Math.toRadians(115))
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_L_DROP, Math.toRadians(115))
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
+                .setTangent(FACE_TOWARD_BACKSTAGE)
                 .splineToLinearHeading(RED_BACKDROP_LEFT, TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreAndBackup(RED_BACKDROP_LEFT, AUTO_LOW))
                 .strafeTo(PoseToVector(RED_CORNER_PARK))
                 .build();
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L, FACE_135_DEGREES)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L_PAST, Math.toRadians(95))
+                .setReversed(true)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_L_DROP, Math.toRadians(95))
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
-                .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_BLUE)
+                .setTangent(TANGENT_TOWARD_BLUE)
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .waitSeconds(1)
@@ -161,7 +193,9 @@ public class RoutesSpikeBackdropParkImproved {
         ///////////
 
         redBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R, TANGENT_45_DEGREES)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R_PAST, RED_BACKSTAGE_SPIKE_R_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_R_DROP, RED_BACKSTAGE_SPIKE_R_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKSTAGE_START_LANE_F, TANGENT_TOWARD_BACKSTAGE)
@@ -186,7 +220,9 @@ public class RoutesSpikeBackdropParkImproved {
 
 
         blueBackstageBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R, TANGENT_225_DEGREES)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R_PAST, BLUE_BACKSTAGE_SPIKE_R_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_R_DROP, BLUE_BACKSTAGE_SPIKE_R_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_RIGHT, TANGENT_TOWARD_BACKSTAGE)
@@ -195,10 +231,12 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         blueAudienceBotTeamPropRightRoute  = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R, FACE_225_DEGREES)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R_PAST, BLUE_AUDIENCE_SPIKE_R_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_R_DROP, BLUE_AUDIENCE_SPIKE_R_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
-                .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_L), TANGENT_TOWARD_RED)
+                .setTangent(TANGENT_TOWARD_RED)
                 .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .waitSeconds(1)
@@ -211,7 +249,9 @@ public class RoutesSpikeBackdropParkImproved {
         ////////////
 
         blueBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_RED)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C_PAST, BLUE_BACKSTAGE_SPIKE_C_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_BACKSTAGE_SPIKE_C_DROP, BLUE_BACKSTAGE_SPIKE_C_PAST.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_BACKDROP_CENTER, FACE_TOWARD_BACKSTAGE)
@@ -220,7 +260,9 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         blueAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(BLUE_AUDIENCE_START_POSE)
-                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C, TANGENT_TOWARD_RED)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C_PAST, BLUE_AUDIENCE_SPIKE_C_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(BLUE_AUDIENCE_SPIKE_C_DROP, BLUE_AUDIENCE_SPIKE_C_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, TANGENT_TOWARD_RED)
@@ -233,7 +275,9 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
-                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C, TANGENT_TOWARD_BLUE)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C_PAST, RED_BACKSTAGE_SPIKE_C_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(RED_BACKSTAGE_SPIKE_C_DROP, RED_BACKSTAGE_SPIKE_C_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(RED_BACKDROP_CENTER, TANGENT_TOWARD_BACKSTAGE)
@@ -242,7 +286,9 @@ public class RoutesSpikeBackdropParkImproved {
                 .build();
 
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
-                .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, TANGENT_TOWARD_BLUE)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_C_PAST, RED_AUDIENCE_SPIKE_C_PAST.heading.log())
+                .setReversed(true)
+                .splineToLinearHeading(RED_AUDIENCE_SPIKE_C_DROP, RED_AUDIENCE_SPIKE_C_DROP.heading.log())
                 .stopAndAdd(dropPurple)
                 .setReversed(true)
                 .splineToLinearHeading(RED_SAFE_STRAFE, TANGENT_TOWARD_BLUE)
@@ -258,8 +304,8 @@ public class RoutesSpikeBackdropParkImproved {
     public static class ActionsForSpikeBackdrop {
         public Action ScoreAndBackup(Pose2d start_pose, LiftStates liftHeight) {
             return roadRunnerDrive.actionBuilder(start_pose)
-                    .lineToX(TILE * 2 + 7)
-                    .lineToX(TILE * 2 - 5.5)
+                    .lineToX(TILE * 2 + 5.5)
+                    .lineToX(start_pose.position.x)
                     .build();
         }
 
