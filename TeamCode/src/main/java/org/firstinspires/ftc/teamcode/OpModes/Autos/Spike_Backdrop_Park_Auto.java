@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark;
 
-@Disabled
+
 @Autonomous(name = "Spike Backdrop Park Auto")
 public class Spike_Backdrop_Park_Auto extends LinearOpMode {
 

@@ -127,6 +127,12 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         while (opModeIsActive())
         {
+
+            //Read all buttons
+            gamepadHandling.getDriverGamepad().readButtons();
+            //Read all buttons
+            gamepadHandling.getOperatorGamepad().readButtons();
+
             previousDriverLeftTrigger = currentDriverLeftTrigger;
             currentDriverLeftTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
@@ -141,10 +147,7 @@ public class TeleOp_CenterStage extends LinearOpMode
 
             if (currentDriverRightTrigger > .5 && previousDriverRightTrigger < .5){
                 MatchConfig.telemetryPacket.addLine("i am pushing the button");
-
-                new SequentialCommandGroup(
-                        new WaitCommand(1000),
-                        new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+                new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
             }
 
             previousOperatorLeftTrigger = currentOperatorLeftTrigger;
@@ -165,8 +168,7 @@ public class TeleOp_CenterStage extends LinearOpMode
             //Run the Scheduler
             CommandScheduler.getInstance().run();
 
-            //Read all buttons
-            gamepadHandling.getDriverGamepad().readButtons();
+
 
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();

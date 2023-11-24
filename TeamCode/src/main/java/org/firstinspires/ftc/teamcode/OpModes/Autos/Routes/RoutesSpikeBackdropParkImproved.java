@@ -9,6 +9,10 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 
 public class RoutesSpikeBackdropParkImproved {
@@ -34,7 +38,7 @@ public class RoutesSpikeBackdropParkImproved {
 
     public static void BuildRoutes() {
 
-        Action dropPurple = new SleepAction(.1);
+        Action dropPurple = new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED);
 
         //////////
         // LEFT //
@@ -206,19 +210,36 @@ public class RoutesSpikeBackdropParkImproved {
     }
 
     public static class ActionsForSpikeBackdrop {
-        public Action ScoreAndBackup(Pose2d start_pose, LiftStates liftHeight) {
-            return roadRunnerDrive.actionBuilder(start_pose)
-                    .lineToX(TILE * 2 + 5.5)
-                    .lineToX(start_pose.position.x)
+        public Action ScoreAndBackup(Pose2d start_pose, LiftSlideSubsystem.LiftStates liftHeight) {
+            return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
+                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(liftHeight))
+                    .waitSeconds(.5)
+                    .lineToX(TILE*2+7)
+                    .waitSeconds(.9)
+                    .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
+                    .waitSeconds(.5)
+                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID))
+                    .waitSeconds(.5)
+                    .lineToX(TILE*2-5.5)
+                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
                     .build();
         }
 
-        public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, LiftStates firstHeight, LiftStates secondHeight) {
-            return roadRunnerDrive.actionBuilder(start_pose)
-                    .lineToX(TILE * 2 + 7)
-                    .lineToX(TILE * 2 - 2)
+        public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, LiftSlideSubsystem.LiftStates firstHeight, LiftSlideSubsystem.LiftStates secondHeight) {
+            return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
+                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(firstHeight))
+                    .waitSeconds(.2)
+                    .lineToX(TILE*2+7)
+                    .waitSeconds(.2)
+                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(secondHeight))
+                    .waitSeconds(.2)
+                    .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
+                    .waitSeconds(.5)
+                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(firstHeight))
+                    .waitSeconds(.3)
+                    .lineToX(TILE*2-2)
+                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
                     .build();
-
         }
     }
 }

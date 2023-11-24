@@ -108,14 +108,9 @@ public class CenterstageOperatorBindings {
 
         operatorGamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .toggleWhenPressed(
-                        new InstantCommand(() -> {
-                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY).schedule();
-                            Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
-                        }),
-                        new InstantCommand(() -> {
-                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED).schedule();
-                            Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(false);
-                        }));
+                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY),
+                            new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED)
+                        );
 
         //////////////////////////////////////////////////////////
         //                                                      //
