@@ -242,14 +242,15 @@ public class DriveSubsystem extends SubsystemBase {
             }
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
-            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD ||
+                Math.abs(leftXAdjusted) > .3){
                 aprilTagAutoDriving = false;
             }
 
             //Align to the Backdrop AprilTags - CASE RED
             if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+                    (leftYAdjusted > .4 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {
@@ -263,6 +264,9 @@ public class DriveSubsystem extends SubsystemBase {
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
 
                 //Check if we timed out
                 if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
@@ -273,7 +277,7 @@ public class DriveSubsystem extends SubsystemBase {
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+                    (leftYAdjusted > .4 || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {
@@ -286,6 +290,10 @@ public class DriveSubsystem extends SubsystemBase {
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+
 
                 //Check if we timed out
                 if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {

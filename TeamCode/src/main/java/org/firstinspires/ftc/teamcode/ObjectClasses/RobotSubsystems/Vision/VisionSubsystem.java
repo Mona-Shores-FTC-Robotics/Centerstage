@@ -53,12 +53,12 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
         public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = -.06;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .0111;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double STRAFE_GAIN = .145;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double SPEED_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=-.05; //this is about right for strafe feedfoward
-        public double TURN_FEEDFORWARD=.08;
+        public double STRAFE_FEEDFORWARD=.00185; //this is about right for strafe feedfoward
+        public double TURN_FEEDFORWARD=.05;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
         public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -67,7 +67,7 @@ public final class VisionSubsystem extends SubsystemBase {
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
         public double BACKDROP_DRIVE_THRESHOLD=2;
         public double BACKDROP_STRAFE_THRESHOLD=2;
-        public double BACKDROP_TURN_THRESHOLD=3;
+        public double BACKDROP_TURN_THRESHOLD=5;
         public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
@@ -487,9 +487,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Seen Recently", recentBlueRight);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
             telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, xError, yawError,  BLUE_BACKDROP_RIGHT_TAG);
         }
@@ -521,9 +518,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Center Seen Recently", recentBlueCenter);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
 
             telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, xError, yawError, BLUE_BACKDROP_CENTER_TAG);
@@ -554,9 +548,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Blue Left Seen Recently", recentBlueLeft);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
+
 
             telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, xError, yawError, BLUE_BACKDROP_LEFT_TAG);
@@ -588,9 +580,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_LEFT_TAG);
 
         } else if (
@@ -616,9 +605,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedCenter);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
 
             telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_CENTER_TAG);
@@ -650,9 +636,7 @@ public final class VisionSubsystem extends SubsystemBase {
 
             MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_RIGHT_TAG.isDetected);
             MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedRight);
-            MatchConfig.telemetryPacket.put("AprilTag Range Error", rangeError);
-            MatchConfig.telemetryPacket.put("AprilTag Yaw Error", yawError);
-            MatchConfig.telemetryPacket.put("AprilTag Bearing Error", xError);
+
 
             telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_RIGHT_TAG);
