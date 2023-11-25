@@ -135,10 +135,7 @@ public class RoutesSpikeBackdropPark {
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
                 .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
-                .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))/*
-                .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)*/
+                .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
 
         redAudienceBotTeamPropRightRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -151,9 +148,6 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_RIGHT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-           /*     .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)*/
                 .build();
 
         /** BLUE AUDIENCE RIGHT / RED AUDIENCE LEFT **/
@@ -167,9 +161,6 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_RIGHT,LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-          /*      .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)*/
                 .build();
 
         redAudienceBotTeamPropLeftRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -182,9 +173,6 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-/*                .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D))
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)*/
                 .build();
 
         /** BLUE AUDIENCE CENTER / RED AUDIENCE CENTER **/
@@ -199,9 +187,6 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-               /* .strafeTo(PoseToVector(BLUE_BACKSTAGE_PARK_LANE_C))
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(BLUE_BACKSTAGE_PARK_LANE_C))
-                .turnTo(FACE_45_DEGREES)*/
                 .build();
 
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
@@ -215,9 +200,6 @@ public class RoutesSpikeBackdropPark {
                 .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
-        /*        .strafeTo(PoseToVector(RED_BACKSTAGE_PARK_LANE_D), overrideVelConstraint, overrideAccelConstraint)
-                .stopAndAdd(new ActionsForSpikeBackdrop().ForwardSixInches(RED_BACKSTAGE_PARK_LANE_D))
-                .turnTo(FACE_315_DEGREES)*/
                 .build();
     }
 
@@ -226,13 +208,13 @@ public class RoutesSpikeBackdropPark {
             return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(liftHeight))
                     .waitSeconds(.5)
-                    .lineToX(TILE*2+7, overrideVelConstraint, overrideAccelConstraint)
+                    .lineToX(start_pose.position.x+5.5, overrideVelConstraint, overrideAccelConstraint)
                     .waitSeconds(.9)
                     .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
                     .waitSeconds(.5)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID))
                     .waitSeconds(.5)
-                    .lineToX(TILE*2-5.5)
+                    .lineToX(start_pose.position.x)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
                     .build();
         }
@@ -241,7 +223,7 @@ public class RoutesSpikeBackdropPark {
             return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(firstHeight))
                     .waitSeconds(.2)
-                    .lineToX(TILE*2+7, overrideVelConstraint, overrideAccelConstraint)
+                    .lineToX(start_pose.position.x+5.5, overrideVelConstraint, overrideAccelConstraint)
                     .waitSeconds(.2)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(secondHeight))
                     .waitSeconds(.2)
@@ -249,7 +231,7 @@ public class RoutesSpikeBackdropPark {
                     .waitSeconds(.5)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(firstHeight))
                     .waitSeconds(.3)
-                    .lineToX(TILE*2-2)
+                    .lineToX(start_pose.position.x)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
                     .build();
         }
