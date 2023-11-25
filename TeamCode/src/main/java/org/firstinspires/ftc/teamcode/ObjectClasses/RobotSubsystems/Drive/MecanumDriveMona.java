@@ -163,6 +163,7 @@ public final class MecanumDriveMona {
         } else
         {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+
             //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
             //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the opposite alliance color)
             if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundRecently &&
