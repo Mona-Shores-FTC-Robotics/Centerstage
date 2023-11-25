@@ -52,12 +52,12 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
-        public double SPEED_GAIN = 0.075;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .065;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .015;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double STRAFE_GAIN = -.06;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .0111;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-        public double SPEED_FEEDFORWARD =.06; //this seems to be the amount to move forard needed
-        public double STRAFE_FEEDFORWARD=.085; //this is about right for strafe feedfoward
+        public double SPEED_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
+        public double STRAFE_FEEDFORWARD=-.05; //this is about right for strafe feedfoward
         public double TURN_FEEDFORWARD=.08;
 
         public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
@@ -72,47 +72,22 @@ public final class VisionSubsystem extends SubsystemBase {
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
     }
 
-//    // These are from the chassis bot with it working really well
-//    public double DESIRED_DISTANCE = 18; //  this is how close the camera should get to the target for alignment (inches)
-//    public double DISTANCE_FOR_SCORING = 5;
-//    public double DESIRED_DISTANCE_SAFETY = 28; //  this is how close the camera should get to the target for safety(inches)
-//
-//    //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
-//    //  applied to the drive motors to correct the error.
-//    //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-//    public double SPEED_GAIN = 0.08;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-//    public double SAFETY_SPEED_GAIN = 0.01;   //
-//    public double STRAFE_GAIN = -0.04;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-//    public double DRIVE_FEEDFORWARD=.08;
-//    public double STRAFE_FEEDFORWARD=.04;
-//    public double TURN_FEEDFORWARD=.04;
-//    public double TURN_GAIN = -0.04;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
-//
-//    public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-//    public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-//    public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
-//
-//    public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
-//    public double BACKDROP_DRIVE_THRESHOLD=.2;
-//    public double BACKDROP_STRAFE_THRESHOLD=.2;
-//    public double BACKDROP_TURN_THRESHOLD=.2;
-//    public int BACKDROP_POSE_COUNT_THRESHOLD=1;
-
     public double rangeError;
-    public double headingError;
+    public double xError;
     public double yawError;
-    public int backdropPoseCount=0;
+    private int backdropPoseCount=0;
     public boolean resetPoseReady=false;
     public boolean resetHeading=false;
     public Pose2d resetPose;
 
-    public boolean recentBlueLeft=false;
-    public boolean recentBlueCenter=false;
-    public boolean recentBlueRight=false;
+    private boolean recentBlueLeft=false;
+    private boolean recentBlueCenter=false;
+    private boolean recentBlueRight=false;
 
-    public boolean recentRedLeft=false;
-    public boolean recentRedCenter=false;
-    public boolean recentRedRight=false;
+    private boolean recentRedLeft=false;
+    private boolean recentRedCenter=false;
+    private boolean recentRedRight=false;
+
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
     private static AprilTagProcessor aprilTagProcessor;     // Used for managing the AprilTag detection process.
@@ -166,16 +141,10 @@ public final class VisionSubsystem extends SubsystemBase {
         BLUE_AUDIENCE_WALL_SMALL_TAG(9),
         BLUE_AUDIENCE_WALL_LARGE_TAG(10);
 
-        public final int id;
-        public boolean isDetected;
-        public double timestamp;
-        public double rangeError;
-        public double yawError;
-        public double bearingError;
-        public double xError;
-        public double yError;
-
-        public AprilTagDetection detection;
+        private final int id;
+        private boolean isDetected;
+        private double timestamp;
+        private AprilTagDetection detection;
 
         AprilTagID(int id) {
             this.id = id;
@@ -362,11 +331,6 @@ public final class VisionSubsystem extends SubsystemBase {
                 }
             }
         }
-//        telemetry.addLine("");
-//        telemetry.addLine("key:");
-//        telemetry.addLine("XYZ = X (Right), Y (Forward), Z (Up) dist.");
-//        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-//        telemetry.addLine("RBE = Range, Bearing & Elevation");
     }
 
     public VisionPortal getVisionPortal() {
@@ -510,12 +474,12 @@ public final class VisionSubsystem extends SubsystemBase {
         {
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
              rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             headingError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
+             xError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.bearing;
              yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(headingError);
-            double strafe = ClipStrafe(yawError);
+            double turn = ClipTurn(yawError);
+            double strafe = ClipStrafe(xError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;

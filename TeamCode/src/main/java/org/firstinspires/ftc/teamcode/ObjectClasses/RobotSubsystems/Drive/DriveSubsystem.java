@@ -252,22 +252,21 @@ public class DriveSubsystem extends SubsystemBase {
         } else return false;
     }
 
-    public boolean driverGamepadCancellingAprilTagDriving(double leftY) {
-        if     (Math.abs(leftY) < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
-            return true;
-        } else return false;
-    }
-
-
-    //
     public void setDriveStrafeTurnValues(double leftY, double leftX, double rightX ){
+
         boolean gamepadActive = driverGamepadIsActive(leftY, leftX, rightX);
         //Check if driver controls are active so we can cancel automated driving if they are
-        if (gamepadActive) {
+        if (gamepadActive || aprilTagAutoDriving) {
+
             //apply speed factors
             leftYAdjusted = leftY * driveParameters.DRIVE_SPEED_FACTOR;
             leftXAdjusted = leftX * driveParameters.STRAFE_SPEED_FACTOR;
             rightXAdjusted = rightX * driveParameters.TURN_SPEED_FACTOR;
+
+            //adjust stick values if field oriented
+            if (fieldOrientedControl){
+                fieldOrientedControl(leftYAdjusted, leftXAdjusted);
+            }
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
             if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
