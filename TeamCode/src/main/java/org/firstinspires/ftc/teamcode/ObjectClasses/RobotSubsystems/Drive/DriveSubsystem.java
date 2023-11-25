@@ -323,7 +323,6 @@ public class DriveSubsystem extends SubsystemBase {
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
 
-
     public boolean getOverrideAprilTagDriving() {
         return overrideAprilTagDriving;
     }
