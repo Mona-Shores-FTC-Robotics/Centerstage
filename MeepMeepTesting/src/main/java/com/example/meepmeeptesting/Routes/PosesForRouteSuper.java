@@ -62,6 +62,7 @@ import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_STA
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_STAGEDOOR_BY_BACKDROP;
+import static com.example.meepmeeptesting.Constants.SUPER_BLUE_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
@@ -69,6 +70,7 @@ import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_STAG
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_TRUSS;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_STAGEDOOR_BY_BACKDROP;
+import static com.example.meepmeeptesting.Constants.SUPER_RED_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_BACKSTAGE;
 import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_BLUE;
 import static com.example.meepmeeptesting.Constants.TANGENT_TOWARD_RED;
@@ -113,8 +115,9 @@ public class PosesForRouteSuper {
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         spikePosePast = BLUE_AUDIENCE_SPIKE_L_PAST;
                         spikePoseDrop = BLUE_AUDIENCE_SPIKE_L_DROP;
-                        neutralApproachOrientation = TANGENT_TOWARD_RED;
-                        leaveSpikeTangent = Math.toRadians(0);
+                        neutralApproachOrientation = Math.toRadians(-100);
+                        leaveSpikeTangent = Math.toRadians(150);
+
                         startingTangent = TANGENT_TOWARD_RED;
                     } else {
                         spikePosePast = BLUE_BACKSTAGE_SPIKE_L_PAST;
@@ -131,8 +134,8 @@ public class PosesForRouteSuper {
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         spikePosePast = BLUE_AUDIENCE_SPIKE_R_PAST;
                         spikePoseDrop = BLUE_AUDIENCE_SPIKE_R_DROP;
-                        neutralApproachOrientation = Math.toRadians(0);
-                        leaveSpikeTangent = Math.toRadians(0);
+                        neutralApproachOrientation = Math.toRadians(225);
+                        leaveSpikeTangent = Math.toRadians(50);
                         startingTangent = Math.toRadians(-130);
 
                     } else {
@@ -177,8 +180,8 @@ public class PosesForRouteSuper {
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         spikePosePast = RED_AUDIENCE_SPIKE_L_PAST;
                         spikePoseDrop = RED_AUDIENCE_SPIKE_L_DROP;
-                        neutralApproachOrientation = Math.toRadians(75);
-                        leaveSpikeTangent = Math.toRadians(0);
+                        neutralApproachOrientation = Math.toRadians(130);
+                        leaveSpikeTangent = Math.toRadians(-50);
                         startingTangent = TANGENT_TOWARD_BLUE;
                     } else {
                         spikePosePast = RED_BACKSTAGE_SPIKE_L_PAST;
@@ -263,7 +266,7 @@ public class PosesForRouteSuper {
             startingPose = BLUE_AUDIENCE_START_POSE;
             parkPose = BLUE_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
-            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
+            neutralStagingPose = SUPER_BLUE_STAGEDOOR_ENTRANCE;
             neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
         } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
@@ -274,8 +277,7 @@ public class PosesForRouteSuper {
         } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
             parkPose = RED_MIDDLE_PARK;
-            leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
-            neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
+            neutralStagingPose = SUPER_RED_STAGEDOOR_ENTRANCE;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
         }
     }

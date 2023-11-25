@@ -16,8 +16,10 @@ import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
@@ -247,14 +249,18 @@ public class RoutesSuper {
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteSuper),
                             new MoveLiftSlideAction(AUTO_LOW),
                             new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
-                    new SleepAction(.2),
+                    new SleepAction(.25),
                     new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
-                    new SleepAction(.2),
+                    new SleepAction(.25),
+                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
+                    new SleepAction(.25),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteSuper),
                             new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
-                    new MoveLiftSlideAction(HOME)
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
+                            new MoveLiftSlideAction(SAFE)),
+                    new MoveLiftSlideAction(HOME),
+                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
             );
             return scorePixel;
         }
@@ -265,14 +271,18 @@ public class RoutesSuper {
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteSuper),
                             new MoveLiftSlideAction (AUTO_LOW),
                             new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
-                    new SleepAction(.2),
+                    new SleepAction(.25),
                     new ActuateGripperAction(GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION),
-                    new SleepAction(.2),
+                    new SleepAction(.25),
+                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
+                    new SleepAction(.25),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteSuper),
                             new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)),
-                    new MoveLiftSlideAction(HOME)
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
+                            new MoveLiftSlideAction(SAFE)),
+                    new MoveLiftSlideAction(HOME),
+                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
             );
             return scorePixel;
         }
@@ -281,7 +291,7 @@ public class RoutesSuper {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScorePose.heading.log())
                     .build();
@@ -293,9 +303,9 @@ public class RoutesSuper {
                     .setTangent(posesForRouteSuper.startingTangent)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
-                    .setTangent(posesForRouteSuper.leaveSpikeTangent)
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
+                    .setTangent(posesForRouteSuper.leaveSpikeTangent)
                     .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, posesForRouteSuper.neutralApproachOrientation)
                     .build();
             return pushTeamPropAndStage;

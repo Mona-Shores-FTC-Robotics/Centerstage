@@ -296,7 +296,7 @@ public class RoutesSuper {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScorePose.heading.log())
                     .build();
@@ -308,9 +308,9 @@ public class RoutesSuper {
                     .setTangent(posesForRouteSuper.startingTangent)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePosePast.heading.log())
-                    .setTangent(posesForRouteSuper.leaveSpikeTangent)
+                    .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
+                    .setTangent(posesForRouteSuper.leaveSpikeTangent)
                     .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, posesForRouteSuper.neutralApproachOrientation)
                     .build();
             return pushTeamPropAndStage;
