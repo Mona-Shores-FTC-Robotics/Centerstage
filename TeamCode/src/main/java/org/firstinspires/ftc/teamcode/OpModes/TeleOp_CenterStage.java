@@ -114,19 +114,6 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
 
-        TriggerReader leftTriggerReader = new TriggerReader(
-                gamepadHandling.getDriverGamepad(), GamepadKeys.Trigger.LEFT_TRIGGER
-        );
-
-        double currentDriverLeftTrigger = gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        double previousDriverLeftTrigger;
-
-        double currentDriverRightTrigger = gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-        double previousDriverRightTrigger;
-
-        double currentOperatorLeftTrigger = gamepadHandling.getOperatorGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-        double previousOperatorLeftTrigger;
-
         while (opModeIsActive())
         {
             //Reset the timer for the loop timer
@@ -141,7 +128,7 @@ public class TeleOp_CenterStage extends LinearOpMode
             gamepadHandling.getOperatorGamepad().readButtons();
 
             //Look for AprilTags
-//            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
+            Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Activate End Game Rumble at 87 seconds into TeleOp
             gamepadHandling.endGameRumble();

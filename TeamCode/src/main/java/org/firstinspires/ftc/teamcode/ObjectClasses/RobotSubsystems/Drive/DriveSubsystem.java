@@ -29,7 +29,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 public class DriveSubsystem extends SubsystemBase {
 
     public static class DriveParameters {
-        /** Set these drive parameters for faster TeleOp driving**/
         public double DRIVE_SPEED_FACTOR=.9;
         public double STRAFE_SPEED_FACTOR=.9;
         public double TURN_SPEED_FACTOR=.8;
@@ -60,7 +59,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double trackWidthTicks =631.8289216104534;  //631.8289216104534
 
         //new values
-        public double kS =  0.9574546275336608;  //0.9574546275336608
+        public double kS = 0.9574546275336608;  //0.9574546275336608
         public double kV = 0.004264232249424524; //=0.004264232249424524;
         public double kA =0.00055;
 
@@ -87,7 +86,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static DriveParameters driveParameters= new DriveParameters();
-//    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
     public enum DriveStates {
         MANUAL_DRIVE,
@@ -125,7 +123,6 @@ public class DriveSubsystem extends SubsystemBase {
     }
     public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
-
     public DriveStates currentState = DriveStates.MANUAL_DRIVE;
 
     public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
@@ -149,8 +146,6 @@ public class DriveSubsystem extends SubsystemBase {
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-
-
         mecanumDrive = new MecanumDriveMona();
     }
 
@@ -274,14 +269,7 @@ public class DriveSubsystem extends SubsystemBase {
             leftXAdjusted = leftX * driveParameters.STRAFE_SPEED_FACTOR;
             rightXAdjusted = rightX * driveParameters.TURN_SPEED_FACTOR;
 
-            //adjust stick values if field oriented
-            if (fieldOrientedControl){
-                fieldOrientedControl(leftYAdjusted, leftXAdjusted);
-            }
-
-
             // Cancel AprilTag driving if the driver is moving away from the backdrop
-            // I'm not sure if this works for field oriented control
             if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
                 aprilTagAutoDriving = false;
             }

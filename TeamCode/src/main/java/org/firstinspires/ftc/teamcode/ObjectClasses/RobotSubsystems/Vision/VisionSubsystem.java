@@ -390,7 +390,6 @@ public final class VisionSubsystem extends SubsystemBase {
                     currentTag.setDetected();
                     currentTag.setTimestamp();
                     currentTag.storeDetection(detection);
-                    DeterminePoseFromAprilTag(currentTag);
                     double rangeError = (currentTag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE_SAFETY);
                     // Pick whichever value is lower
                     double manualDriveLimit = Math.min(rangeError * tunableVisionConstants.SAFETY_SPEED_GAIN, tunableVisionConstants.MAX_MANUAL_BACKDROP_SPEED);
