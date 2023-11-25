@@ -146,6 +146,12 @@ public class CenterstageDriverBindings {
 
         //look in teleop code for left trigger binding
 
+        Trigger leftTrigger = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3);
+
+        leftTrigger.whenActive(new InstantCommand(()->{
+            boolean currentState = Robot.getInstance().getDriveSubsystem().getOverrideAprilTagDriving();
+            Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(!currentState);
+        }));
 
 
         //////////////////////////////////////////////////////////
@@ -154,8 +160,8 @@ public class CenterstageDriverBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
-        //look in teleop
-
+        Trigger rightTrigger = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3);
+        rightTrigger.whenActive(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
 
     }
 

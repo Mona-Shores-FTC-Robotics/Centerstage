@@ -129,46 +129,16 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         while (opModeIsActive())
         {
-
-            //Read all buttons
-            gamepadHandling.getDriverGamepad().readButtons();
-            //Read all buttons
-            gamepadHandling.getOperatorGamepad().readButtons();
-
-            previousDriverLeftTrigger = currentDriverLeftTrigger;
-            currentDriverLeftTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-
-            if (currentDriverLeftTrigger > .5 && previousDriverLeftTrigger < .5){
-//                boolean currentState = Robot.getInstance().getDriveSubsystem().getOverrideAprilTagDriving();
-//                Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(!currentState);
-                new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0));
-
-            }
-
-            previousDriverRightTrigger = currentDriverRightTrigger;
-            currentDriverRightTrigger =gamepadHandling.getDriverGamepad().getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-
-            if (currentDriverRightTrigger > .5 && previousDriverRightTrigger < .5){
-                new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY).schedule();
-            }
-
-            previousOperatorLeftTrigger = currentOperatorLeftTrigger;
-            currentOperatorLeftTrigger =gamepadHandling.getOperatorGamepad().getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-
-
-            if (currentOperatorLeftTrigger > .5 && previousOperatorLeftTrigger <.5) {
-                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION).schedule();
-            }
-
-            if (previousOperatorLeftTrigger > .5 && currentOperatorLeftTrigger <.5) {
-                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.CLOSED).schedule();
-            }
-
             //Reset the timer for the loop timer
             MatchConfig.loopTimer.reset();
 
             //Run the Scheduler
             CommandScheduler.getInstance().run();
+
+            //Read all buttons
+            gamepadHandling.getDriverGamepad().readButtons();
+            //Read all buttons
+            gamepadHandling.getOperatorGamepad().readButtons();
 
             //Look for AprilTags
 //            Robot.getInstance().getVisionSubsystem().LookForAprilTags();

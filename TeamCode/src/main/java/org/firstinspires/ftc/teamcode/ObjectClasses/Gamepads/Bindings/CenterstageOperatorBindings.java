@@ -21,7 +21,9 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringA
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ChangeWinchPowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.MoveClimberArmCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.WinchHoldPositionCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
@@ -172,13 +174,17 @@ public class CenterstageOperatorBindings {
                             }
                         }));
 
-
         //////////////////////////////////////////////////////////
         //                                                      //
         //  LEFT TRIGGER - Release One Pixel                    //
         //                                                      //
         //////////////////////////////////////////////////////////
         //See teleop centerstage code - can't figure out how to make binding declarative
+
+        Trigger leftTrigger = new Trigger(() -> operatorGamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.3);
+        leftTrigger.toggleWhenActive(
+                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION),
+                new ActuateGripperCommand(Robot.getInstance().getGripperSubsystem(), GripperSubsystem.GripperStates.CLOSED));
 
         //////////////////////////////////////////////////////////
         //                                                      //
