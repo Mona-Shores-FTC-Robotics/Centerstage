@@ -17,11 +17,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadCommands.IsGamepadAprilTagCancelCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.AprilTagAlignmentCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
@@ -97,31 +95,6 @@ public class DriveSubsystem extends SubsystemBase {
         APRIL_TAG_ALIGNMENT_STRAFING,
         APRIL_TAG_ALIGNMENT_DRIVING;
     }
-    public static class AutoDriveParameters {
-        public double TURN_ERROR_THRESHOLD = 1;
-        public double STRAFE_ERROR_THRESHOLD = .5;
-        public double DRIVE_ERROR_THRESHOLD = .5;
-
-        public double STRAFE_TO_TAG_SPEED = .5;
-
-        public double TURN_P = .016;
-        public double TURN_I = 0 ;
-        public double TURN_D = 0;
-        public double TURN_F = .15;
-
-        public double STRAFE_P=-.2;
-        public double STRAFE_I=0;
-        public double STRAFE_D=0;
-        public double STRAFE_F=-.002;
-
-        public double DRIVE_P=-.2;
-        public double DRIVE_I=0;
-        public double DRIVE_D=0;
-        public double DRIVE_F=-.002;
-
-        public double MAX_SPEED=.5;
-    }
-    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
 
     public DriveStates currentState = DriveStates.MANUAL_DRIVE;
 
@@ -357,7 +330,6 @@ public class DriveSubsystem extends SubsystemBase {
     public void setOverrideAprilTagDriving(boolean b) {
         overrideAprilTagDriving=b;
     }
-
 
     // Method to get the current average encoder count
     public double getCurrentEncoderCount() {
