@@ -27,7 +27,7 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static TeamPropLocation teamPropLocation = TeamPropLocation.ALL;
+    public static TeamPropLocation teamPropLocation = TeamPropLocation.LEFT;
 
     public static RoutesToRun routesToRunSelection = RoutesToRun.SUPER;
 
