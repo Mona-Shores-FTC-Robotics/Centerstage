@@ -34,6 +34,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .2;
         public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=3;
+        public double DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING= .4;
     }
 
     public static class ParamsMona {
@@ -250,7 +251,7 @@ public class DriveSubsystem extends SubsystemBase {
             //Align to the Backdrop AprilTags - CASE RED
             if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
                     visionSubsystem.redBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .4 || aprilTagAutoDriving) &&
+                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {
@@ -277,7 +278,7 @@ public class DriveSubsystem extends SubsystemBase {
             //Aligning to the Backdrop AprilTags - CASE BLUE
             else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
                     visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .4 || aprilTagAutoDriving) &&
+                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {

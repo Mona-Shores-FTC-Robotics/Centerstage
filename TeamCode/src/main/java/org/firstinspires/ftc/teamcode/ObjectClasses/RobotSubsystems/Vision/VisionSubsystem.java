@@ -194,8 +194,6 @@ public final class VisionSubsystem extends SubsystemBase {
 
     private DeliverLocation deliverLocation = DeliverLocation.CENTER;
 
-
-
     public boolean blueBackdropAprilTagFoundRecently = false;
     public boolean redBackdropAprilTagFoundRecently = false;
 
@@ -249,16 +247,41 @@ public final class VisionSubsystem extends SubsystemBase {
         recentRedLeft=false;
         recentRedCenter=false;
         recentRedRight=false;
+
+        RED_BACKDROP_LEFT_TAG.isDetected =false;
+        RED_BACKDROP_CENTER_TAG.isDetected =false;
+        RED_BACKDROP_RIGHT_TAG.isDetected = false;
+
+        BLUE_BACKDROP_LEFT_TAG.isDetected =false;
+        BLUE_BACKDROP_CENTER_TAG.isDetected =false;
+        BLUE_BACKDROP_RIGHT_TAG.isDetected = false;
+
+        RED_BACKDROP_LEFT_TAG.timestamp = 0;
+        RED_BACKDROP_CENTER_TAG.timestamp = 0;
+        RED_BACKDROP_RIGHT_TAG.timestamp = 0;
+
+        BLUE_BACKDROP_LEFT_TAG.timestamp = 0;
+        BLUE_BACKDROP_CENTER_TAG.timestamp = 0;
+        BLUE_BACKDROP_RIGHT_TAG.timestamp = 0;
+
+        BLUE_BACKDROP_LEFT_TAG.detection=null;
+        BLUE_BACKDROP_RIGHT_TAG.detection=null;
+        BLUE_BACKDROP_CENTER_TAG.detection=null;
+
+        RED_BACKDROP_LEFT_TAG.detection=null;
+        RED_BACKDROP_RIGHT_TAG.detection=null;
+        RED_BACKDROP_CENTER_TAG.detection=null;
+
+        redBackdropAprilTagFoundRecently=false;
+        blueBackdropAprilTagFoundRecently=false;
     }
 
     public InitVisionProcessor getInitVisionProcessor() {
         return initVisionProcessor;
     }
-
     public AprilTagProcessor getAprilTagProcessor() {
         return aprilTagProcessor;
     }
-
 
     /*
     Manually set the camera gain and exposure.
