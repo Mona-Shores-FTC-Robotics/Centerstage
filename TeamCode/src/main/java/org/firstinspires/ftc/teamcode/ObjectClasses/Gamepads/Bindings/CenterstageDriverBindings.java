@@ -128,7 +128,9 @@
             //////////////////////////////////////////////////////////
 
             gamepad.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                    .whenPressed(new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)));
+                    .whenPressed(new ParallelRaceGroup(
+                            new RoadRunnerActionToCommand.ActionAsCommand(Robot.getInstance().getDriveSubsystem(), new TurnToAction(0)),
+                            new IsGamepadActiveCommand(gamepad)));
 
             //////////////////////////////////////////////////////////
             //                                                      //

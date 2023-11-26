@@ -70,6 +70,8 @@ public final class VisionSubsystem extends SubsystemBase {
         public double BACKDROP_TURN_THRESHOLD=5;
         public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
+        public double TURN_GAIN_ADJUSTMENT_WHEN_XERROR_LOW=.02;
+        public double X_ERROR_LOW_THRESHOLD_FOR_TURN_GAIN_ADJUSTMENT=2;
     }
 
     public double rangeError;
@@ -594,8 +596,8 @@ public final class VisionSubsystem extends SubsystemBase {
             yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
 
             double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
             double strafe = ClipStrafe(xError);
+            double turn = ClipTurn(yawError);
 
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
             Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
@@ -675,15 +677,19 @@ public final class VisionSubsystem extends SubsystemBase {
                                             -tunableVisionConstants.MAX_AUTO_SPEED, // clip to this low value
                                             tunableVisionConstants.MAX_AUTO_SPEED); // or this high value
     }
-    private double ClipStrafe(double yawError) {
+    private double ClipStrafe(double xError) {
           return Range.clip(
-                  (yawError * tunableVisionConstants.STRAFE_GAIN)
-                          + (Math.signum(yawError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
+                  (xError * tunableVisionConstants.STRAFE_GAIN)
+                          + (Math.signum(xError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
                   -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
     }
     private double ClipTurn(double headingError) {
+        double headingGainAdjusted;
+        if (Math.abs(xError) < tunableVisionConstants.X_ERROR_LOW_THRESHOLD_FOR_TURN_GAIN_ADJUSTMENT) headingGainAdjusted = tunableVisionConstants.TURN_GAIN+ tunableVisionConstants.TURN_GAIN_ADJUSTMENT_WHEN_XERROR_LOW;
+            else headingGainAdjusted=tunableVisionConstants.TURN_GAIN;
+
         return Range.clip(
-                (-headingError * tunableVisionConstants.TURN_GAIN)
+                (-headingError * headingGainAdjusted)
                         + + (Math.signum(-headingError)*tunableVisionConstants.TURN_FEEDFORWARD),
                 -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
     }

@@ -114,6 +114,13 @@ public final class MecanumDriveMona {
 
         //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
         SetRoadRunnerParameters();
+
+
+        drive=0; strafe=0; turn=0;
+        last_drive=0; last_strafe=0; last_turn=0;
+        current_drive_ramp = 0; current_strafe_ramp=0; current_turn_ramp=0;
+        aprilTagDrive=0; aprilTagStrafe=0; aprilTagTurn=0;
+
     }
 
     public void SetRoadRunnerParameters() {
