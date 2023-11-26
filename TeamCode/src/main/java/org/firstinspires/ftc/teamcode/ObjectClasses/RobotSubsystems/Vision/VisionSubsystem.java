@@ -52,31 +52,30 @@ public final class VisionSubsystem extends SubsystemBase {
         //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
-        public double SPEED_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .145;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
-        public double TURN_GAIN = .01;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+        public double RANGE_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+        public double STRAFE_GAIN = .165;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double TURN_GAIN = .05;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-        public double SPEED_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
+        public double RANGE_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
         public double STRAFE_FEEDFORWARD=.00185; //this is about right for strafe feedfoward
         public double TURN_FEEDFORWARD=.05;
 
-        public double MAX_AUTO_SPEED = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double MAX_AUTO_STRAFE = 0.8;   //  Clip the approach speed to this max value (adjust for your robot)
-        public double MAX_AUTO_TURN = 0.8;   //  Clip the turn speed to this max value (adjust for your robot)
+        public double MAX_AUTO_SPEED = 0.6;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_STRAFE = 0.7;   //  Clip the approach speed to this max value (adjust for your robot)
+        public double MAX_AUTO_TURN = 0.45;   //  Clip the turn speed to this max value (adjust for  your robot)
 
         public double MAX_MANUAL_BACKDROP_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
         public double BACKDROP_DRIVE_THRESHOLD=2;
         public double BACKDROP_STRAFE_THRESHOLD=2;
-        public double BACKDROP_TURN_THRESHOLD=5;
-        public double APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS = .5;
+        public double BACKDROP_TURN_THRESHOLD=2;
+        public double APRIL_TAG_LAST_SEEN_THRESHOLD_SEC = .4;
         public int BACKDROP_POSE_COUNT_THRESHOLD=5;
-        public double TURN_GAIN_ADJUSTMENT_WHEN_XERROR_LOW=.02;
-        public double X_ERROR_LOW_THRESHOLD_FOR_TURN_GAIN_ADJUSTMENT=2;
     }
 
     public double rangeError;
     public double xError;
     public double yawError;
+    public double bearingError;
     private int backdropPoseCount=0;
     public boolean resetPoseReady=false;
     public boolean resetHeading=false;
@@ -89,6 +88,10 @@ public final class VisionSubsystem extends SubsystemBase {
     private boolean recentRedLeft=false;
     private boolean recentRedCenter=false;
     private boolean recentRedRight=false;
+
+    private AprilTagID deliveryTag;
+    private AprilTagID offsetTagToLeft;
+    private AprilTagID offsetTagToRight;
 
 
     private static VisionPortal visionPortal;               // Used to manage the video source.
@@ -394,9 +397,9 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     private boolean CheckBlueBackdropAprilTags() {
-        recentBlueLeft = CheckIfTagSeenRecently(BLUE_BACKDROP_LEFT_TAG);
-        recentBlueCenter = CheckIfTagSeenRecently(BLUE_BACKDROP_CENTER_TAG);
-        recentBlueRight = CheckIfTagSeenRecently(BLUE_BACKDROP_RIGHT_TAG);
+        recentBlueLeft = isTagSeenRecently(BLUE_BACKDROP_LEFT_TAG);
+        recentBlueCenter = isTagSeenRecently(BLUE_BACKDROP_CENTER_TAG);
+        recentBlueRight = isTagSeenRecently(BLUE_BACKDROP_RIGHT_TAG);
         if (    BLUE_BACKDROP_LEFT_TAG.isDetected || recentBlueLeft ||
                 BLUE_BACKDROP_CENTER_TAG.isDetected || recentBlueCenter ||
                 BLUE_BACKDROP_RIGHT_TAG.isDetected || recentBlueRight) {
@@ -406,9 +409,9 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     private boolean CheckRedBackdropAprilTags() {
-        recentRedLeft = CheckIfTagSeenRecently(RED_BACKDROP_LEFT_TAG);
-        recentRedCenter = CheckIfTagSeenRecently(RED_BACKDROP_CENTER_TAG);
-        recentRedRight = CheckIfTagSeenRecently(RED_BACKDROP_RIGHT_TAG);
+        recentRedLeft = isTagSeenRecently(RED_BACKDROP_LEFT_TAG);
+        recentRedCenter = isTagSeenRecently(RED_BACKDROP_CENTER_TAG);
+        recentRedRight = isTagSeenRecently(RED_BACKDROP_RIGHT_TAG);
 
         if (    RED_BACKDROP_LEFT_TAG.isDetected || recentRedLeft ||
                 RED_BACKDROP_CENTER_TAG.isDetected || recentRedCenter ||
@@ -417,9 +420,9 @@ public final class VisionSubsystem extends SubsystemBase {
         } else return false;
     }
 
-    private boolean CheckIfTagSeenRecently(AprilTagID tag){
+    private boolean isTagSeenRecently(AprilTagID tag){
         return (tag.getTimestamp() >
-                MatchConfig.timestampTimer.seconds() - tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_IN_SECONDS);
+                MatchConfig.timestampTimer.seconds() - tunableVisionConstants.APRIL_TAG_LAST_SEEN_THRESHOLD_SEC);
     }
 
     private Pose2d DeterminePoseFromAprilTag(AprilTagID tag) {
@@ -486,6 +489,33 @@ public final class VisionSubsystem extends SubsystemBase {
     //  1) the delivery location is right; or
     //  2) the delivery location is center, but center isn't found
     //  3) the delivery location is left, but left isn't found
+
+    public boolean AutoDriveToBackdrop() {
+        deliveryTag=null;
+        offsetTagToLeft=null;
+        offsetTagToRight=null;
+        getDeliverLocationTags(getDeliverLocation());
+
+        if (isTagSeenRecently(deliveryTag)) {
+                CalculateErrors(deliveryTag);
+                ClipErrorsAndSaveAprilTagDrivingValues();
+                //these errors seem to be better for telling when we are finished.. (even though they aren't the same)
+                return stillSeekingAprilTag(rangeError, xError, yawError, deliveryTag);
+            }
+            else if (offsetTagToLeft!=null && offsetTagToLeft.isDetected){
+                CalculateErrors(deliveryTag);
+                ClipErrorsAndSaveAprilTagDrivingValues();
+                return true;
+            }
+            else if (offsetTagToRight!=null && offsetTagToRight.isDetected){
+                CalculateErrors(deliveryTag);
+                ClipErrorsAndSaveAprilTagDrivingValues();
+                return true;
+        }
+
+        return false;
+    }
+
     public boolean AutoDriveToBackdropBlue() {
         if  (
                 (BLUE_BACKDROP_RIGHT_TAG.detection!=null &&
@@ -497,22 +527,8 @@ public final class VisionSubsystem extends SubsystemBase {
                         )
             )
         {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-             rangeError = (BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             xError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.x;
-             yawError = BLUE_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
-            double strafe = ClipStrafe(xError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Blue Right Tag", BLUE_BACKDROP_RIGHT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Blue Seen Recently", recentBlueRight);
-            telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            CalculateErrors(BLUE_BACKDROP_RIGHT_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError,  BLUE_BACKDROP_RIGHT_TAG);
         }
         //Drive to the Center backdrop if its the deliver location, or
@@ -527,24 +543,8 @@ public final class VisionSubsystem extends SubsystemBase {
                     (getDeliverLocation().equals(DeliverLocation.LEFT) && !BLUE_BACKDROP_LEFT_TAG.isDetected) ||
                     (getDeliverLocation().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)))
         {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-             rangeError = (BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             xError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.x;
-             yawError = BLUE_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
-            double strafe = ClipStrafe(xError);
-
-            // set the drive/turn strafe values for AutoDriving
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Blue Center Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Blue Center Seen Recently", recentBlueCenter);
-
-            telemetry.addData("Auto to Center Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            CalculateErrors(BLUE_BACKDROP_CENTER_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError, BLUE_BACKDROP_CENTER_TAG);
         }
 
@@ -558,24 +558,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 (getDeliverLocation().equals(DeliverLocation.RIGHT) && !BLUE_BACKDROP_RIGHT_TAG.isDetected)       ||
                 (getDeliverLocation().equals(DeliverLocation.CENTER) && !BLUE_BACKDROP_CENTER_TAG.isDetected)))
         {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-             rangeError = (BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             xError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.x;
-             yawError = BLUE_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
-            double strafe = ClipStrafe(xError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Blue Left Tag", BLUE_BACKDROP_CENTER_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Blue Left Seen Recently", recentBlueLeft);
-
-
-            telemetry.addData("Auto to Left Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            CalculateErrors(BLUE_BACKDROP_LEFT_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError, BLUE_BACKDROP_LEFT_TAG);
         }
         return false;
@@ -590,21 +574,8 @@ public final class VisionSubsystem extends SubsystemBase {
                 (getDeliverLocation().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)    ||
                 (getDeliverLocation().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected)))
         {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-            rangeError = (RED_BACKDROP_LEFT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-            xError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.x;
-            yawError = RED_BACKDROP_LEFT_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double strafe = ClipStrafe(xError);
-            double turn = ClipTurn(yawError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Red Left Tag", RED_BACKDROP_LEFT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Left Seen Recently", recentRedLeft);
+            CalculateErrors(RED_BACKDROP_LEFT_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_LEFT_TAG);
 
         } else if (
@@ -615,23 +586,8 @@ public final class VisionSubsystem extends SubsystemBase {
                             (getDeliverLocation().equals(DeliverLocation.RIGHT) && !RED_BACKDROP_RIGHT_TAG.isDetected))
                     )
         {
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-             rangeError = (RED_BACKDROP_CENTER_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             xError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.x;
-             yawError = RED_BACKDROP_CENTER_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
-            double strafe = ClipStrafe(xError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_CENTER_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedCenter);
-
-            telemetry.addData("Auto to Center Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            CalculateErrors(RED_BACKDROP_CENTER_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_CENTER_TAG);
 
         }
@@ -643,37 +599,36 @@ public final class VisionSubsystem extends SubsystemBase {
                 (getDeliverLocation().equals(DeliverLocation.LEFT) && !RED_BACKDROP_LEFT_TAG.isDetected)    ||
                 (getDeliverLocation().equals(DeliverLocation.CENTER) && !RED_BACKDROP_CENTER_TAG.isDetected)))
         {
-
-            MatchConfig.telemetryPacket.put("Red Right Tag", RED_BACKDROP_RIGHT_TAG);
-            MatchConfig.telemetryPacket.put("Red Right Seen Recently", recentRedRight);
-            // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
-             rangeError = (RED_BACKDROP_RIGHT_TAG.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
-             xError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.x;
-             yawError = RED_BACKDROP_RIGHT_TAG.detection.ftcPose.yaw;
-
-            double drive = ClipDrive(rangeError);
-            double turn = ClipTurn(yawError);
-            double strafe = ClipStrafe(xError);
-
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
-
-            MatchConfig.telemetryPacket.put("Red Center Tag", RED_BACKDROP_RIGHT_TAG.isDetected);
-            MatchConfig.telemetryPacket.put("Red Center Seen Recently", recentRedRight);
-
-
-            telemetry.addData("Auto to Right Red Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            CalculateErrors(RED_BACKDROP_RIGHT_TAG);
+            ClipErrorsAndSaveAprilTagDrivingValues();
             return stillSeekingAprilTag(rangeError, xError, yawError, RED_BACKDROP_RIGHT_TAG);
         }
         return false;
     }
 
+    private void ClipErrorsAndSaveAprilTagDrivingValues() {
+        double drive = ClipDrive(rangeError);
+        double strafe = ClipStrafe(yawError);
+        double turn = ClipTurn(bearingError);
+
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+        telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+    }
+
+    private void CalculateErrors(AprilTagID tag) {
+        MatchConfig.telemetryPacket.put(tag.toString(), tag.isDetected);
+        rangeError = (tag.detection.ftcPose.range - tunableVisionConstants.DESIRED_DISTANCE);
+        xError = tag.detection.ftcPose.x;
+        yawError = tag.detection.ftcPose.yaw;
+        bearingError = tag.detection.ftcPose.bearing;
+    }
 
     private double ClipDrive(double rangeError) {
         return Range.clip(
-                    (rangeError * tunableVisionConstants.SPEED_GAIN) + //GAIN multiplied by Error
-                        (Math.signum(rangeError)*tunableVisionConstants.SPEED_FEEDFORWARD), //add a feedforward in the correct direction
+                    (rangeError * tunableVisionConstants.RANGE_GAIN) + //GAIN multiplied by Error
+                        (Math.signum(rangeError)*tunableVisionConstants.RANGE_FEEDFORWARD), //add a feedforward in the correct direction
                                             -tunableVisionConstants.MAX_AUTO_SPEED, // clip to this low value
                                             tunableVisionConstants.MAX_AUTO_SPEED); // or this high value
     }
@@ -683,17 +638,13 @@ public final class VisionSubsystem extends SubsystemBase {
                           + (Math.signum(xError)*tunableVisionConstants.STRAFE_FEEDFORWARD),
                   -tunableVisionConstants.MAX_AUTO_STRAFE, tunableVisionConstants.MAX_AUTO_STRAFE);
     }
-    private double ClipTurn(double headingError) {
-        double headingGainAdjusted;
-        if (Math.abs(xError) < tunableVisionConstants.X_ERROR_LOW_THRESHOLD_FOR_TURN_GAIN_ADJUSTMENT) headingGainAdjusted = tunableVisionConstants.TURN_GAIN+ tunableVisionConstants.TURN_GAIN_ADJUSTMENT_WHEN_XERROR_LOW;
-            else headingGainAdjusted=tunableVisionConstants.TURN_GAIN;
 
+    private double ClipTurn(double bearingError) {
         return Range.clip(
-                (-headingError * headingGainAdjusted)
-                        + + (Math.signum(-headingError)*tunableVisionConstants.TURN_FEEDFORWARD),
+                (-bearingError * tunableVisionConstants.TURN_GAIN)
+                        + + (Math.signum(-bearingError)*tunableVisionConstants.TURN_FEEDFORWARD),
                 -tunableVisionConstants.MAX_AUTO_TURN, tunableVisionConstants.MAX_AUTO_TURN);
     }
-
 
     public void setDeliverLocation(DeliverLocation location) {
         deliverLocation = location;
@@ -705,11 +656,11 @@ public final class VisionSubsystem extends SubsystemBase {
     }
 
     //returns false once the pose reaches a steady state for a certain number of checks
-    private boolean stillSeekingAprilTag(double rangeError, double yawError, double headingError, AprilTagID tag) {
+    private boolean stillSeekingAprilTag(double rangeError, double yawError, double bearingError, AprilTagID tag) {
         //We have found the target if this is true
         if (    (Math.abs(rangeError)    < tunableVisionConstants.BACKDROP_DRIVE_THRESHOLD) &&
                 (Math.abs(yawError)   < tunableVisionConstants.BACKDROP_STRAFE_THRESHOLD) &&
-                (Math.abs(headingError)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
+                (Math.abs(bearingError)     < tunableVisionConstants.BACKDROP_TURN_THRESHOLD)){
 
             backdropPoseCount++;
             if (backdropPoseCount > tunableVisionConstants.BACKDROP_POSE_COUNT_THRESHOLD){
@@ -718,6 +669,11 @@ public final class VisionSubsystem extends SubsystemBase {
                 resetPoseReady = true;
                 telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", resetPose.position.x, resetPose.position.y, resetPose.heading.log());
                 //We are at our target, stop running the AutoDrive code
+
+                mecanumDrive.drive=0; mecanumDrive.strafe=0; mecanumDrive.turn=0;
+                mecanumDrive.current_drive_ramp = 0; mecanumDrive.current_strafe_ramp=0; mecanumDrive.current_turn_ramp=0;
+                mecanumDrive.aprilTagDrive=0; mecanumDrive.aprilTagStrafe=0; mecanumDrive.aprilTagTurn=0;
+
                 return false;
             }
         }
@@ -737,6 +693,59 @@ public final class VisionSubsystem extends SubsystemBase {
             return true;
         } else return false;
     }
+
+    public void getDeliverLocationTags(VisionSubsystem.DeliverLocation deliverLocation) {
+        if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED) {
+            if (deliverLocation == LEFT) {
+                deliveryTag = RED_BACKDROP_LEFT_TAG;
+                if (RED_BACKDROP_CENTER_TAG.isDetected) {
+                    offsetTagToRight = RED_BACKDROP_CENTER_TAG;
+                } else if (RED_BACKDROP_RIGHT_TAG.isDetected) {
+                    offsetTagToRight = RED_BACKDROP_RIGHT_TAG;
+                }
+            }
+            else if (deliverLocation == RIGHT) {
+                deliveryTag = RED_BACKDROP_RIGHT_TAG;
+                if (RED_BACKDROP_CENTER_TAG.isDetected) {
+                    offsetTagToLeft = RED_BACKDROP_CENTER_TAG;
+                } else if (RED_BACKDROP_LEFT_TAG.isDetected) {
+                    offsetTagToLeft = RED_BACKDROP_LEFT_TAG;
+                }
+            }
+            else {
+                deliveryTag = RED_BACKDROP_CENTER_TAG;
+                if (RED_BACKDROP_RIGHT_TAG.isDetected) {
+                    offsetTagToRight = RED_BACKDROP_RIGHT_TAG;
+                } else if (RED_BACKDROP_LEFT_TAG.isDetected) {
+                    offsetTagToLeft = RED_BACKDROP_LEFT_TAG;
+                }
+            }
+        } else {
+            if (deliverLocation == LEFT) {
+                deliveryTag = BLUE_BACKDROP_LEFT_TAG;
+                if (BLUE_BACKDROP_CENTER_TAG.isDetected) {
+                    offsetTagToRight = BLUE_BACKDROP_CENTER_TAG;
+                } else if (BLUE_BACKDROP_RIGHT_TAG.isDetected) {
+                    offsetTagToRight = BLUE_BACKDROP_RIGHT_TAG;
+                }
+            } else if (deliverLocation == RIGHT) {
+                deliveryTag = BLUE_BACKDROP_RIGHT_TAG;
+                if (BLUE_BACKDROP_CENTER_TAG.isDetected) {
+                    offsetTagToLeft = BLUE_BACKDROP_CENTER_TAG;
+                } else if (BLUE_BACKDROP_LEFT_TAG.isDetected) {
+                    offsetTagToLeft = BLUE_BACKDROP_LEFT_TAG;
+                }
+            } else {
+                deliveryTag = BLUE_BACKDROP_CENTER_TAG;
+                if (BLUE_BACKDROP_RIGHT_TAG.isDetected) {
+                    offsetTagToRight = BLUE_BACKDROP_RIGHT_TAG;
+                } else if (BLUE_BACKDROP_LEFT_TAG.isDetected) {
+                    offsetTagToLeft = BLUE_BACKDROP_LEFT_TAG;
+                }
+            }
+        }
+    }
+
 }
 
 

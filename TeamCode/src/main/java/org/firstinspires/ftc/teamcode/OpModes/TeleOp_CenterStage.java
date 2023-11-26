@@ -119,7 +119,7 @@ public class TeleOp_CenterStage extends LinearOpMode
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Activate End Game Rumble at 87 seconds into TeleOp
-            gamepadHandling.endGameRumble();
+           gamepadHandling.endGameRumble();
 
             FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
             MatchConfig.telemetryPacket = new TelemetryPacket();

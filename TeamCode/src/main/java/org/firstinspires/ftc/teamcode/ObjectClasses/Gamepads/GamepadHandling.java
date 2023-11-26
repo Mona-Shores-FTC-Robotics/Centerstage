@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads;
 
 import static com.qualcomm.robotcore.hardware.Gamepad.LED_DURATION_CONTINUOUS;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad2;
+
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -24,6 +27,8 @@ public class GamepadHandling {
     private Gamepad.RumbleEffect endGameRumbleEffect;
     private Gamepad.RumbleEffect problemRumbleEffect;
     private Gamepad.LedEffect problemLedEffect;
+
+    private boolean rumbleHasNotStopped=true;
 
     public GamepadHandling(LinearOpMode opMode) {
         driverGamepad = new GamepadEx(opMode.gamepad1);
@@ -151,11 +156,15 @@ public class GamepadHandling {
         //Rumble 3 seconds before end game begins
         if (MatchConfig.OpModeTimer.seconds() > FieldConstants.END_GAME_TIME - 3) {
             if (MatchConfig.OpModeTimer.seconds() < FieldConstants.END_GAME_TIME) {
-                Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
-                Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
+                rumbleHasNotStopped = true;
+                if (gamepad1!=null) Robot.getInstance().getActiveOpMode().gamepad1.runRumbleEffect(endGameRumbleEffect);
+                if (gamepad2!=null) Robot.getInstance().getActiveOpMode().gamepad2.runRumbleEffect(endGameRumbleEffect);
             } else {
-                Robot.getInstance().getActiveOpMode().gamepad1.stopRumble();
-                Robot.getInstance().getActiveOpMode().gamepad2.stopRumble();
+                if (rumbleHasNotStopped) {
+                    rumbleHasNotStopped = false;
+                    Robot.getInstance().getActiveOpMode().gamepad1.stopRumble();
+                    Robot.getInstance().getActiveOpMode().gamepad2.stopRumble();
+                }
             }
         }
     }

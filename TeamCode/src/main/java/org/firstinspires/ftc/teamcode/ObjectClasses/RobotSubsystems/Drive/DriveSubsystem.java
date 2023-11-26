@@ -248,43 +248,16 @@ public class DriveSubsystem extends SubsystemBase {
                 aprilTagAutoDriving = false;
             }
 
-            //Align to the Backdrop AprilTags - CASE RED
-            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFoundRecently &&
+
+            if (    ((MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE && visionSubsystem.blueBackdropAprilTagFoundRecently) ||
+                    (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED && visionSubsystem.redBackdropAprilTagFoundRecently)) &&
                     (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {
                     aprilTagTimeoutTimer.reset();
                 }
-                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
-                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
-                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
-
-                //Check if we timed out
-                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
-                    aprilTagAutoDriving=false;
-                }
-
-            }
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
-                    !getOverrideAprilTagDriving()) {
-                //start apriltag timeout timer
-                if (!aprilTagAutoDriving) {
-                    aprilTagTimeoutTimer.reset();
-                }
-                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdrop();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
@@ -294,14 +267,74 @@ public class DriveSubsystem extends SubsystemBase {
                 MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
                 MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
                 MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
-
+                MatchConfig.telemetryPacket.put("AprilTag Bearing Error", visionSubsystem.bearingError);
 
                 //Check if we timed out
                 if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
                     aprilTagAutoDriving=false;
+
+                    mecanumDrive.drive=0; mecanumDrive.strafe=0; mecanumDrive.turn=0;
+                    mecanumDrive.current_drive_ramp = 0; mecanumDrive.current_strafe_ramp=0; mecanumDrive.current_turn_ramp=0;
+                    mecanumDrive.aprilTagDrive=0; mecanumDrive.aprilTagStrafe=0; mecanumDrive.aprilTagTurn=0;
+
                 }
 
             } else aprilTagAutoDriving = false;
+
+//            //Align to the Backdrop AprilTags - CASE RED
+//            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+//                    visionSubsystem.redBackdropAprilTagFoundRecently &&
+//                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
+//                    !getOverrideAprilTagDriving()) {
+//                //start apriltag timeout timer
+//                if (!aprilTagAutoDriving) {
+//                    aprilTagTimeoutTimer.reset();
+//                }
+//                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
+//                leftYAdjusted = mecanumDrive.aprilTagDrive;
+//                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+//                rightXAdjusted = mecanumDrive.aprilTagTurn;
+//
+//                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+//                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+//                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+//                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+//
+//                //Check if we timed out
+//                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+//                    aprilTagAutoDriving=false;
+//                }
+//
+//            }
+//            //Aligning to the Backdrop AprilTags - CASE BLUE
+//            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+//                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
+//                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
+//                    !getOverrideAprilTagDriving()) {
+//                //start apriltag timeout timer
+//                if (!aprilTagAutoDriving) {
+//                    aprilTagTimeoutTimer.reset();
+//                }
+//                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+//                leftYAdjusted = mecanumDrive.aprilTagDrive;
+//                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+//                rightXAdjusted = mecanumDrive.aprilTagTurn;
+//                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+//                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+//                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+//                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+//
+//
+//                //Check if we timed out
+//                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+//                    aprilTagAutoDriving=false;
+//                }
+//
+//            } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             leftYAdjusted = 0;
