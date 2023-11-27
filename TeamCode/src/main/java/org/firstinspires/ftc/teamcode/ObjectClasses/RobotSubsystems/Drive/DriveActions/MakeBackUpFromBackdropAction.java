@@ -38,16 +38,16 @@ public class MakeBackUpFromBackdropAction {
 
         overrideVelConstraint =
                 new MinVelConstraint(Arrays.asList(
-                        drive.kinematics.new WheelVelConstraint(100),
-                        new AngularVelConstraint(100)
+                        drive.kinematics.new WheelVelConstraint(50),
+                        new AngularVelConstraint(50)
                 ));
 
-        overrideAccelConstraint = new ProfileAccelConstraint(-150, 150);
+        overrideAccelConstraint = new ProfileAccelConstraint(-60, 60);
 
         if (MatchConfig.finalAllianceColor== InitVisionProcessor.AllianceColor.RED) {
             t = drive.actionBuilder(drive.pose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(RED_TRUSS), TANGENT_TOWARD_AUDIENCE)
+                    .splineToConstantHeading(PoseToVector(RED_TRUSS), TANGENT_TOWARD_AUDIENCE, overrideVelConstraint, overrideAccelConstraint)
                     .splineToConstantHeading(PoseToVector(RED_SPIKE_L_LINE), TANGENT_TOWARD_AUDIENCE)
                     .turn(Math.toRadians(-83))
                     .build();

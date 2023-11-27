@@ -13,7 +13,7 @@ public final class GripperSubsystem extends SubsystemBase {
     public static GripperStates GRIPPER_STARTING_STATE = GripperStates.OPEN;
     public static double REST_POSITION = .5;
     public static double OPEN_POSITION = .45;
-    public static double ONE_PIXEL_RELEASE_POSITION=.507;
+    public static double ONE_PIXEL_RELEASE_POSITION=.495; //infraed is .507  //ultraviolet needs at least .497 -doing .495 to be safe.
     public static double CLOSED_POSITION = .55;
 
     public enum GripperStates {

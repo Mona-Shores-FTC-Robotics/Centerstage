@@ -5,6 +5,8 @@
     import com.arcrobotics.ftclib.command.CommandScheduler;
     import com.arcrobotics.ftclib.command.InstantCommand;
     import com.arcrobotics.ftclib.command.ParallelRaceGroup;
+    import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+    import com.arcrobotics.ftclib.command.WaitCommand;
     import com.arcrobotics.ftclib.command.button.Trigger;
     import com.arcrobotics.ftclib.gamepad.GamepadEx;
     import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -155,7 +157,10 @@
             //////////////////////////////////////////////////////////
 
             Trigger rightTrigger = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3);
-            rightTrigger.whenActive(new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
+            rightTrigger.whenActive(new SequentialCommandGroup(
+                    new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY)
+            ));
+
 
         }
 

@@ -17,6 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public double INTAKE_REVERSE_POWER = -1;
         public double INTAKE_SLOW_POWER = .2;
         public double INTAKE_OFF_POWER = 0;
+        public double KICKBACK_TIMER_THRESHOLD_MS=500;
     }
     public static IntakeParameters intakeParameters = new IntakeParameters();
 
@@ -32,8 +33,8 @@ public class IntakeSubsystem extends SubsystemBase {
         IntakeStates(double vel, double pow) {
             this.velocity = vel; this.power = pow;
         }
-        void SetStateVelocity(double vel){
-            this.velocity = vel;
+        void SetStatePower(double pow){
+            this.power = pow;
         }
     }
 
@@ -74,9 +75,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-       IntakeStates.INTAKE_ON.SetStateVelocity(intakeParameters.INTAKE_ON_POWER);
-       IntakeStates.INTAKE_SLOW.SetStateVelocity(intakeParameters.INTAKE_SLOW_POWER);
-       IntakeStates.INTAKE_REVERSE.SetStateVelocity(intakeParameters.INTAKE_REVERSE_POWER);
+       IntakeStates.INTAKE_ON.SetStatePower(intakeParameters.INTAKE_ON_POWER);
+       IntakeStates.INTAKE_SLOW.SetStatePower(intakeParameters.INTAKE_SLOW_POWER);
+       IntakeStates.INTAKE_REVERSE.SetStatePower(intakeParameters.INTAKE_REVERSE_POWER);
 
        //Add the Winch Motor State to our loop telemetry packet
        MatchConfig.telemetryPacket.put("Current Intake 1 State", currentIntake1State);
