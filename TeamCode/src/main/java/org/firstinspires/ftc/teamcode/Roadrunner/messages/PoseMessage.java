@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode.Roadrunner.messages;
+
 <<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Roadrunner/PoseMessage.java
 package org.firstinspires.ftc.teamcode.Roadrunner;
 ========
