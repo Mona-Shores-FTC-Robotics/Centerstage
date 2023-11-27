@@ -34,11 +34,13 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.Roadrunner.messages.MecanumEncodersMessage;
@@ -54,18 +56,18 @@ public final class MecanumDrive {
     public static class Params {
         // IMU orientation
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
         public double inPerTick = 0.04122; // 0.0317919075144509
         public double lateralInPerTick =0.04329; // 60\1845.5 .025
-        public double trackWidthTicks =486.4610149342712;  //631.8289216104534
+        public double trackWidthTicks =618.8522619803487;  //631.8289216104534
 
         // feedforward parameters (in tick units)
-        public double kS =  1.0;  //0.9574546275336608
-        public double kV = 0.003858438495965098; //=0.004264232249424524;
+        public double kS =  1.9086990858393218;  //0.9574546275336608
+        public double kV = 0.004214851300838739; //=0.004264232249424524;
         public double kA =.0007;
 
         // path profile parameters (in inches)
@@ -125,10 +127,21 @@ public final class MecanumDrive {
         private Rotation2d lastHeading;
 
         public DriveLocalizer() {
-            leftFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftFront));
-            leftBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
-            rightBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
-            rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
+
+            RawEncoder LFEncoder = new RawEncoder(MecanumDrive.this.leftFront);
+            RawEncoder LBEncoder = new RawEncoder(MecanumDrive.this.leftBack);
+            RawEncoder RFEncoder = new RawEncoder(MecanumDrive.this.rightFront);
+            RawEncoder RBEncoder = new RawEncoder(MecanumDrive.this.rightBack);
+
+            leftFront = new OverflowEncoder(LFEncoder);
+            leftBack = new OverflowEncoder(LBEncoder);
+            rightBack = new OverflowEncoder(RFEncoder);
+            rightFront = new OverflowEncoder(RBEncoder);
+
+            LFEncoder.setDirection(DcMotorEx.Direction.REVERSE);
+            LBEncoder.setDirection(DcMotorEx.Direction.REVERSE);
+            RFEncoder.setDirection(DcMotorEx.Direction.FORWARD);
+            RBEncoder.setDirection(DcMotorEx.Direction.FORWARD);
 
             lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
             lastLeftBackPos = leftBack.getPositionAndVelocity().position;
@@ -136,6 +149,7 @@ public final class MecanumDrive {
             lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
             lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
         }
 
         @Override

@@ -101,14 +101,14 @@ public class DriveSubsystem extends SubsystemBase {
 //        public double lateralVelGain =0;
 //        public double headingVelGain =0; // shared with turn
 
-        public double inPerTick = 0.0313; // 0.0317919075144509
-        public double lateralInPerTick =0.0283; // 60\1845.5 .025
-        public double trackWidthTicks =631.8289216104534;  //631.8289216104534
+        public double inPerTick = 0.04122; // 0.0317919075144509 // 0.0313 .04122 is accurate when tuning.
+        public double lateralInPerTick = 0.04329; // 60\1845.5 .025 0.0283 //.04329 is accurate when tuning.
+        public double trackWidthTicks =618.8522619803487;  //631.8289216104534 //618 is most current value
 
         //new values
-        public double kS =  0.9574546275336608;  //0.9574546275336608
-        public double kV = 0.004264232249424524; //=0.004264232249424524;
-        public double kA =0.00055;
+        public double kS =  0.9574546275336608;  //0.9574546275336608 accurate from 11/27/23
+        public double kV = 0.004264232249424524 ; //0.004264232249424524; accurate from 11/27/23
+        public double kA =.001 ; //accurate from 11/27/23 //0.00055
 
         // path profile parameters (in inches)
         public double maxWheelVel =25;
@@ -122,9 +122,9 @@ public class DriveSubsystem extends SubsystemBase {
         //These are being used in the run part of the trajectory and turn action so they should be live updating.
         // path controller gains
 
-        public double axialGain =12;
-        public double lateralGain =10;
-        public double headingGain =6; // shared with turn
+        public double axialGain =1.95;
+        public double lateralGain =1.2;
+        public double headingGain =5; // shared with turn
 
         public double axialVelGain =1.1;
         public double lateralVelGain =1.1;
