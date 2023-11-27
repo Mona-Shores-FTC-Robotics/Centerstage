@@ -141,7 +141,7 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(new StrafeXInchesPID(Robot.getInstance().getDriveSubsystem(), -6));
+                .whenPressed(new StrafeXInchesPID(Robot.getInstance().getDriveSubsystem(), 12));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -150,7 +150,7 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(new StrafeXInchesPID(Robot.getInstance().getDriveSubsystem(), 6));
+                .whenPressed(new StrafeXInchesPID(Robot.getInstance().getDriveSubsystem(), -12));
 
         //////////////////////////////////////////////////////////
         //                                                      //
@@ -159,7 +159,7 @@ public class VisionDriverBindings {
         //////////////////////////////////////////////////////////
 
         gamepad.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(new DriveXInchesPID(Robot.getInstance().getDriveSubsystem(), 6));
+                .whenPressed(new DriveXInchesPID(Robot.getInstance().getDriveSubsystem(), 12));
 
 
         //////////////////////////////////////////////////////////

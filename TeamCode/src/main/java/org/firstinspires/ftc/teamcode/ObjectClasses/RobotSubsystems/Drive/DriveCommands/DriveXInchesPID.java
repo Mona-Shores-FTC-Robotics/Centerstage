@@ -51,7 +51,7 @@ public class DriveXInchesPID extends CommandBase {
         double currentEncoderCount = driveSubsystem.getCurrentEncoderCount();
         double output = pidController.calculate(currentEncoderCount);
         double clippedOutput = Range.clip(output, -.3, .3);
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(output, 0, 0); // Drive forward/backward
+        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(clippedOutput, 0, 0); // Drive forward/backward
     }
 
     @Override
