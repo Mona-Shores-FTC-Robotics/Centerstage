@@ -31,11 +31,9 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
-    implementation project(path: ':MeepMeepTesting')
-    implementation project(path: ':MeepMeepTesting')
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
-    implementation "com.acmerobotics.roadrunner:ftc:0.1.6"
-    implementation "com.acmerobotics.dashboard:dashboard:0.4.13" //was 0.4.12
     implementation 'org.ftclib.ftclib:core:2.1.1'
+    implementation "com.acmerobotics.roadrunner:ftc:0.1.9"
+    implementation "com.acmerobotics.dashboard:dashboard:0.4.14"
 }
