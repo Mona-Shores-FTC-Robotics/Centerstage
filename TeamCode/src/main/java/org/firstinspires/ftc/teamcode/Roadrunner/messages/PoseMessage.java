@@ -1,11 +1,5 @@
 package org.firstinspires.ftc.teamcode.Roadrunner.messages;
 
-<<<<<<<< HEAD:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Roadrunner/PoseMessage.java
-package org.firstinspires.ftc.teamcode.Roadrunner;
-========
-package org.firstinspires.ftc.teamcode.messages;
->>>>>>>> upstreamRRQuick/master:TeamCode/src/main/java/org/firstinspires/ftc/teamcode/messages/PoseMessage.java
-
 import com.acmerobotics.roadrunner.Pose2d;
 
 public final class PoseMessage {
