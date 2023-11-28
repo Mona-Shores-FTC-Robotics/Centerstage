@@ -34,7 +34,6 @@ import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -60,7 +59,6 @@ public final class MecanumDriveMona {
         public double TICKS_PER_REV = 384.5;
         public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
     }
-
     public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
     public static DriveSubsystem.ParamsRRMona MotorParametersRR = new DriveSubsystem.ParamsRRMona();
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
@@ -72,7 +70,6 @@ public final class MecanumDriveMona {
     public double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
 
     public MecanumKinematics kinematics;
-    public MotorFeedforward feedforward;
     public TurnConstraints defaultTurnConstraints;
     public VelConstraint defaultVelConstraint;
     public AccelConstraint defaultAccelConstraint;
@@ -128,11 +125,10 @@ public final class MecanumDriveMona {
         leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
         rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
 
-        localizer = new DriveLocalizer(this, hardwareMap);
+        localizer = new DriveLocalizer(this);
 
         //Initialize the Roadrunner parameters (kinematics, feedforward, etc.)
         SetRoadRunnerParameters();
-
 
         drive=0; strafe=0; turn=0;
         last_drive=0; last_strafe=0; last_turn=0;
@@ -145,7 +141,7 @@ public final class MecanumDriveMona {
         kinematics = new MecanumKinematics(
                 MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
 
-        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
+//        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
 
         defaultTurnConstraints = new TurnConstraints(
                 MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
@@ -246,7 +242,7 @@ public final class MecanumDriveMona {
             poseHistory.removeFirst();
         }
 
-        FlightRecorder.write("ESTIMATED_POSE", new PoseMessage(pose));
+        estimatedPoseWriter.write(new PoseMessage(pose));
         return twist.velocity().value();
     }
 
@@ -289,18 +285,6 @@ public final class MecanumDriveMona {
                 0.25, 0.1
         );
     }
-
-
-
-    public void setAllPower(double p) {setMotorPower(p,p,p,p);}
-
-    public void setMotorPower (double lF, double rF, double lB, double rB){
-        leftFront.setPower(lF);
-        rightFront.setPower(rF);
-        leftBack.setPower(lB);
-        rightBack.setPower(rB);
-    }
-
 
     public void mecanumDrivePowerControl (){
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
@@ -444,41 +428,52 @@ public final class MecanumDriveMona {
 
             if (t >= turn.duration) {
 
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setPower(0);
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setPower(0);
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setPower(0);
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setPower(0);
+                leftFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
 
                 return false;
             }
 
             Pose2dDual<Time> txWorldTarget = turn.get(t);
 
-            PoseVelocity2d robotVelRobot = Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+            PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
                     MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
                     MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
             )
-                    .compute(txWorldTarget, Robot.getInstance().getDriveSubsystem().mecanumDrive.pose, robotVelRobot);
+                    .compute(txWorldTarget, pose, robotVelRobot);
 
-            MecanumKinematics.WheelVelocities<Time> wheelVels = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.inverse(command);
-            double voltage = Robot.getInstance().getDriveSubsystem().mecanumDrive.voltageSensor.getVoltage();
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.leftFront) / voltage);
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.leftBack) / voltage);
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.rightBack) / voltage);
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setPower(Robot.getInstance().getDriveSubsystem().mecanumDrive.feedforward.compute(wheelVels.rightFront) / voltage);
+            driveCommandWriter.write(new DriveCommandMessage(command));
 
-            FlightRecorder.write("TARGET_POSE", new PoseMessage(txWorldTarget.value()));
+            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
+            double voltage = voltageSensor.getVoltage();
+            final MotorFeedforward feedforward = new MotorFeedforward(MotorParametersRR.kS,
+                    MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
+            double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+            double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
+            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+            double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+
+            mecanumCommandWriter.write(new MecanumCommandMessage(
+                    voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
+            ));
+
+            leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
+            leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
+            rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
+            rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
 
             Canvas c = p.fieldOverlay();
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.drawPoseHistory(c);
+            drawPoseHistory(c);
 
             c.setStroke("#4CAF50");
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.drawRobot(c, txWorldTarget.value());
+            drawRobot(c, txWorldTarget.value());
 
             c.setStroke("#3F51B5");
-            Robot.getInstance().getDriveSubsystem().mecanumDrive.drawRobot(c,Robot.getInstance().getDriveSubsystem().mecanumDrive.pose);
+            drawRobot(c,Robot.getInstance().getDriveSubsystem().mecanumDrive.pose);
 
             c.setStroke("#7C4DFFFF");
             c.fillCircle(turn.beginPose.position.x, turn.beginPose.position.y, 2);

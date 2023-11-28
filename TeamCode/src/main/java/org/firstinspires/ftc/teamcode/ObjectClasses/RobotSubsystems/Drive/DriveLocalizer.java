@@ -12,7 +12,6 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
@@ -21,10 +20,10 @@ import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 public class DriveLocalizer implements Localizer {
     public final Encoder leftFront, leftRear, rightRear, rightFront;
 
-    private int lastLeftFrontPos, lastLeftRearPos, lastRightRearPos, lastRightFrontPos;
+    private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
     private Rotation2d lastHeading;
 
-    public DriveLocalizer(MecanumDriveMona mecanumDrive, HardwareMap hMap) {
+    public DriveLocalizer(MecanumDriveMona mecanumDrive) {
 
         RawEncoder LFEncoder = new RawEncoder(mecanumDrive.leftFront);
         RawEncoder LBEncoder = new RawEncoder(mecanumDrive.leftBack);
@@ -42,14 +41,13 @@ public class DriveLocalizer implements Localizer {
         rightFront = new OverflowEncoder(RFEncoder);
 
         lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
-        lastLeftRearPos = leftRear.getPositionAndVelocity().position;
-        lastRightRearPos = rightRear.getPositionAndVelocity().position;
+        lastLeftBackPos = leftRear.getPositionAndVelocity().position;
+        lastRightBackPos = rightRear.getPositionAndVelocity().position;
         lastRightFrontPos = rightFront.getPositionAndVelocity().position;
 
         double headingRadians = Robot.getInstance().getGyroSubsystem().imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
         lastHeading = Rotation2d.exp(headingRadians);
-        double lastHeadingDegrees = Math.toDegrees(headingRadians);
     }
 
     @Override
@@ -70,11 +68,11 @@ public class DriveLocalizer implements Localizer {
                         leftFrontPosVel.velocity,
                 }).times(MotorParametersRR.inPerTick),
                 new DualNum<Time>(new double[]{
-                        (leftRearPosVel.position - lastLeftRearPos),
+                        (leftRearPosVel.position - lastLeftBackPos),
                         leftRearPosVel.velocity,
                 }).times(MotorParametersRR.inPerTick),
                 new DualNum<Time>(new double[]{
-                        (rightRearPosVel.position - lastRightRearPos),
+                        (rightRearPosVel.position - lastRightBackPos),
                         rightRearPosVel.velocity,
                 }).times(MotorParametersRR.inPerTick),
                 new DualNum<Time>(new double[]{
@@ -84,8 +82,8 @@ public class DriveLocalizer implements Localizer {
         ));
 
         lastLeftFrontPos = leftFrontPosVel.position;
-        lastLeftRearPos = leftRearPosVel.position;
-        lastRightRearPos = rightRearPosVel.position;
+        lastLeftBackPos = leftRearPosVel.position;
+        lastRightBackPos = rightRearPosVel.position;
         lastRightFrontPos = rightFrontPosVel.position;
 
         lastHeading = heading;

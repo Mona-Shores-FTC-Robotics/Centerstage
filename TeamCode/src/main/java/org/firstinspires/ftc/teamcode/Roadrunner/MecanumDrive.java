@@ -440,7 +440,6 @@ public final class MecanumDrive {
         }
 
         estimatedPoseWriter.write(new PoseMessage(pose));
-
         return twist.velocity().value();
     }
 
