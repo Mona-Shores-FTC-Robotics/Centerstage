@@ -6,8 +6,6 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Visio
 
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.example.meepmeeptesting.MeepMeepTesting;
-
 
 public class PosesForRouteStraight {
     public Pose2d startingPose;
