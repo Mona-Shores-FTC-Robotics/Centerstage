@@ -69,6 +69,7 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         telemetry.clearAll();
 
+
         while (opModeInInit()) {
 
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
@@ -124,6 +125,8 @@ public class TeleOp_CenterStage extends LinearOpMode
             FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
             MatchConfig.telemetryPacket = new TelemetryPacket();
             MatchConfig.LoopDriverStationTelemetry();
+
+
         }
     }
 }

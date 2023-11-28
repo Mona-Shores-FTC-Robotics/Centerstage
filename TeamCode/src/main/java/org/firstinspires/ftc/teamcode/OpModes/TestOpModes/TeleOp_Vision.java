@@ -41,6 +41,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriv
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
@@ -65,10 +66,15 @@ public class TeleOp_Vision extends LinearOpMode
         /* Setup Button Bindings **/
         new VisionDriverBindings( gamepadHandling.getDriverGamepad());
 
+        String robotControllerName = RobotConfig.getRobotControllerName();
+
         while (opModeInInit()) {
             VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
+
+            telemetry.addData("Robot controller name: ", robotControllerName);
+
             telemetry.update();
             sleep(10);
         }
