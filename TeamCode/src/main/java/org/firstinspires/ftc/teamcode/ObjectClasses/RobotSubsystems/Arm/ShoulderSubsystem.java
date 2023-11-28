@@ -16,8 +16,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static class ShoulderParameters {
 
         public double INTAKE_REST = .5;
-        public double INTAKE_VALUE = .60;
-        public double STARTING_POSITION = .7;
+        public double INTAKE_VALUE = 0.62; //infrared was .565/// .61 does not touch the ramp for ultraviolet
+        public double STARTING_POSITION = .67;
         public double BACKDROP_VALUE = .2;
         public double HALFWAY = .4;
     }
@@ -26,10 +26,10 @@ public class ShoulderSubsystem extends SubsystemBase {
 
     public enum ShoulderStates {
         REST (.5),
-        INTAKE (.60),
+        INTAKE (0.62),
         HALFWAY(.4),
         BACKDROP (.2),
-        STARTING_POSITION (.7);
+        STARTING_POSITION (.67);
 
         public double position;
         ShoulderStates(double p) {
@@ -47,6 +47,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         shoulder = hMap.servo.get("shoulder");
     }
 
+    //todo make sure this gets merged
     public void init() {
         currentState= ShoulderStates.STARTING_POSITION;
         shoulder.setPosition(currentState.position);

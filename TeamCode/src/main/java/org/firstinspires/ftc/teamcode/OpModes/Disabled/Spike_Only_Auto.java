@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autos;
+package org.firstinspires.ftc.teamcode.OpModes.Disabled;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.OpModes.Disabled.SpikeOnlyRoute.*;
@@ -43,7 +43,7 @@ public class Spike_Only_Auto extends LinearOpMode {
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         /** Initialize Gamepad and Robot - Order Important **/
-        Robot.getInstance().init(Robot.OpModeType.AUTO);
+        Robot.getInstance().init(Robot.OpModeType.AUTO, gamepadHandling);
 
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 

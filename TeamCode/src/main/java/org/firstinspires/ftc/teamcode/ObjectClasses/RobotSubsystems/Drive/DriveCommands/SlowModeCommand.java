@@ -15,9 +15,9 @@ import java.util.function.DoubleSupplier;
 @Config
 public class SlowModeCommand extends CommandBase {
 
-    public static double SLOW_DRIVE_FACTOR = .55;
+    public static double SLOW_DRIVE_FACTOR = .35;
     public static double SLOW_TURN_FACTOR = .5;
-    public static double SLOW_STRAFE_FACTOR = .67;
+    public static double SLOW_STRAFE_FACTOR = .35;
 
 
     private final DriveSubsystem driveSubsystem;
@@ -56,16 +56,16 @@ public class SlowModeCommand extends CommandBase {
 
         //set the apriltag driving override so we aren't limited by the apriltag driving distance
         Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
+        driveSubsystem.currentState = DriveSubsystem.DriveStates.SLOW_MANUAL_DRIVE;
     }
 
     @Override
     public void execute() {
         //this sets the drive/strafe/turn values based on the values supplied, while also doing automatic apriltag driving to the backdrop
-
         driveSubsystem.setDriveStrafeTurnValues(
-                driveSupplier.getAsDouble() * SLOW_DRIVE_FACTOR,
-                strafeSupplier.getAsDouble() * SLOW_STRAFE_FACTOR,
-                turnSupplier.getAsDouble() * SLOW_TURN_FACTOR
+                driveSupplier.getAsDouble(),
+                strafeSupplier.getAsDouble(),
+                turnSupplier.getAsDouble()
         );
 
         driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.drive, driveSubsystem.strafe, driveSubsystem.turn);

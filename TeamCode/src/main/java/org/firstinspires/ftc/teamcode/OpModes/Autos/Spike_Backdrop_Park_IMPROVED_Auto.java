@@ -1,26 +1,38 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.blueBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved.redBackstageBotTeamPropRightRoute;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved;
 
-
-@Autonomous(name = "Spike Backdrop Park Auto")
-public class Spike_Backdrop_Park_Auto extends LinearOpMode {
+@Autonomous(name = "Spike Backdrop Park Auto IMPROVED")
+public class Spike_Backdrop_Park_IMPROVED_Auto extends LinearOpMode {
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private InitVisionProcessor.AllianceColor allianceColor;
@@ -46,7 +58,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikeBackdropPark.BuildRoutes();
+        RoutesSpikeBackdropParkImproved.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry

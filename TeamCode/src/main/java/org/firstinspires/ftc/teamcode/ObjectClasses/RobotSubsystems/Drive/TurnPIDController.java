@@ -66,6 +66,19 @@ public class TurnPIDController {
 
         return -output;
     }
+
+
+    public void setTargetAngle(double angle)
+    {
+        targetAngle=angle;
+    }
+
+    public void setPIDF(double kp, double ki, double kd, double kf) {
+        Kp = kp;
+        Ki = ki;
+        Kd = kd;
+        feedforward = kf;
+    }
 }
 
 

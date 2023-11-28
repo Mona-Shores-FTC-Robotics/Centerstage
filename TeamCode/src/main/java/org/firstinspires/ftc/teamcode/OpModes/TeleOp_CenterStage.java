@@ -61,7 +61,7 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.createInstance(this, Robot.RobotType.ROBOT_CENTERSTAGE);
 
         // Initialize the robot
-        Robot.getInstance().init(Robot.OpModeType.TELEOP);
+        Robot.getInstance().init(Robot.OpModeType.TELEOP, gamepadHandling);
 
         // Setup Button Bindings
         new CenterstageDriverBindings(gamepadHandling.getDriverGamepad());
@@ -71,9 +71,9 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         while (opModeInInit()) {
 
-            VisionTelemetry.telemetryForInitProcessing();
-//            gamepadHandling.getDriverGamepad().readButtons();
-//            gamepadHandling.lockColorAndSide();
+            telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
+            telemetry.addData("Side of the Field", MatchConfig.finalSideOfField);
+            telemetry.addData("Team Prop Location",  MatchConfig.finalTeamPropLocation);
 
             telemetry.update();
             sleep(10);
@@ -83,7 +83,6 @@ public class TeleOp_CenterStage extends LinearOpMode
         Robot.getInstance().getVisionSubsystem().SwitchToAprilTagProcessor();
 
         //Reset Gyro and pose to be 0 at whatever heading the robot is at
-        //todo what happens if we don't have this in
         Robot.getInstance().getGyroSubsystem().synchronizeGyroAndPoseHeading();
 
         //Set the flag so we reset the gyro/pose heading to zero the next time we go to the backdrop
@@ -102,6 +101,7 @@ public class TeleOp_CenterStage extends LinearOpMode
         MatchConfig.telemetryPacket = new TelemetryPacket();
 
         Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
+
         while (opModeIsActive())
         {
             //Reset the timer for the loop timer
@@ -112,12 +112,14 @@ public class TeleOp_CenterStage extends LinearOpMode
 
             //Read all buttons
             gamepadHandling.getDriverGamepad().readButtons();
+            //Read all buttons
+            gamepadHandling.getOperatorGamepad().readButtons();
 
             //Look for AprilTags
             Robot.getInstance().getVisionSubsystem().LookForAprilTags();
 
             //Activate End Game Rumble at 87 seconds into TeleOp
-            gamepadHandling.endGameRumble();
+           gamepadHandling.endGameRumble();
 
             FtcDashboard.getInstance().sendTelemetryPacket(MatchConfig.telemetryPacket);
             MatchConfig.telemetryPacket = new TelemetryPacket();

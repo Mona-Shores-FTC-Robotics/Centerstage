@@ -62,7 +62,7 @@ public class TeleOp_ScoringArmTesting extends LinearOpMode
         Robot robot = Robot.createInstance(this, Robot.RobotType.ROBOT_SCORING_ARM);
 
         /* Initialize Gamepad and Robot - Order Important **/
-        robot.init(Robot.OpModeType.TELEOP);
+        robot.init(Robot.OpModeType.TELEOP, gamepadHandling);
 
         telemetry.clearAll();
 

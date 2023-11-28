@@ -19,7 +19,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateEndEffectorAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Mecanu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRoute;
 
 public class PushPropScoreFiveRoute {
     //Variables to store routes for team prop center for all four start locations
@@ -210,20 +211,20 @@ public class PushPropScoreFiveRoute {
                                             new LineToXRelativeAction(+3)
                                     ),
                                     new SequentialAction(
-                                            new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                                            new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
                                             new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
                                             new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                                             new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE)
                                     )),
                             new SleepAction(.9),
                             new SequentialAction(
-                                    new ActuateEndEffectorAction(GripperSubsystem.GripperStates.OPEN),
+                                    new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                                     new SleepAction(.5),
                                     new LineToXRelativeAction(-5)
                             ),
                             new ParallelAction(
                                     new MoveLiftSlideAction(LiftSlideSubsystem.LiftStates.SAFE),
-                                    new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED),
+                                    new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
                                     new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
                             ),
                             new ParallelAction(
@@ -239,7 +240,7 @@ public class PushPropScoreFiveRoute {
         private Action PushTeamPropAndBackdropStage(PosesForRoute posesForRoute) {
             Action pushTeamPropAndStage = mecanumDrive.actionBuilder(posesForRoute.startingPose)
                     .splineToLinearHeading(posesForRoute.spikePose, posesForRoute.spikePose.heading.log())
-                    .stopAndAdd(new ActuateEndEffectorAction(GripperSubsystem.GripperStates.CLOSED))
+                    .stopAndAdd(new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED))
                     .setReversed(true)
                     .splineToLinearHeading(posesForRoute.backdropStagingPose, posesForRoute.backdropStagingPose.heading.log())
                     .build();

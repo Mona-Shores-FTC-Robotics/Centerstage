@@ -2,17 +2,21 @@ package com.example.meepmeeptesting.Routes;
 
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.*;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_DROP;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_STAGING;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_PARK_LANE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_DROP;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_DROP;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
+import static com.example.meepmeeptesting.Constants.BLUE_MIDDLE_PARK;
 import static com.example.meepmeeptesting.Constants.BLUE_NEUTRAL_PIXEL_PICKUP;
 import static com.example.meepmeeptesting.Constants.BLUE_NEUTRAL_STAGING;
 import static com.example.meepmeeptesting.Constants.FACE_315_DEGREES;
@@ -25,11 +29,11 @@ import static com.example.meepmeeptesting.Constants.RED_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.RED_BACKDROP_STAGING;
-import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_PARK_LANE_D;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;
+import static com.example.meepmeeptesting.Constants.RED_MIDDLE_PARK;
 import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_PIXEL_PICKUP;
 import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_STAGING;
 
@@ -59,23 +63,23 @@ public class PosesForRouteStraight {
                 case LEFT: {
                     firstPixelScorePose = BLUE_BACKDROP_LEFT;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_L;
-                    } else spikePose = BLUE_BACKSTAGE_SPIKE_L;
+                        spikePose = BLUE_AUDIENCE_SPIKE_L_DROP;
+                    } else spikePose = BLUE_BACKSTAGE_SPIKE_L_DROP;
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = BLUE_BACKDROP_RIGHT;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_R;
-                    } else spikePose = BLUE_BACKSTAGE_SPIKE_R;
+                        spikePose = BLUE_AUDIENCE_SPIKE_R_DROP;
+                    } else spikePose = BLUE_BACKSTAGE_SPIKE_R_DROP;
                     break;
                 }
                 case CENTER:
                 default: {
                     firstPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_C;
-                    } else spikePose = BLUE_BACKSTAGE_SPIKE_C;
+                        spikePose = BLUE_AUDIENCE_SPIKE_C_DROP;
+                    } else spikePose = BLUE_BACKSTAGE_SPIKE_C_DROP;
                     break;
                 }
             }
@@ -84,23 +88,23 @@ public class PosesForRouteStraight {
                 case LEFT: {
                     firstPixelScorePose = RED_BACKDROP_LEFT;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_L;
-                    } else spikePose = RED_BACKSTAGE_SPIKE_L;
+                        spikePose = RED_AUDIENCE_SPIKE_L_DROP;
+                    } else spikePose = RED_BACKSTAGE_SPIKE_L_DROP;
                     break;
                 }
                 case RIGHT: {
                     firstPixelScorePose = RED_BACKDROP_RIGHT;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_R;
-                    } else spikePose = RED_BACKSTAGE_SPIKE_R;
+                        spikePose = RED_AUDIENCE_SPIKE_R_DROP;
+                    } else spikePose = RED_BACKSTAGE_SPIKE_R_DROP;
                     break;
                 }
                 case CENTER:
                 default: {
                     firstPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = RED_AUDIENCE_SPIKE_C;
-                    } else spikePose = RED_BACKSTAGE_SPIKE_C;
+                        spikePose = RED_AUDIENCE_SPIKE_C_DROP;
+                    } else spikePose = RED_BACKSTAGE_SPIKE_C_DROP;
                     break;
                 }
             }
@@ -113,7 +117,7 @@ public class PosesForRouteStraight {
             neutralStagingPose = BLUE_NEUTRAL_STAGING;
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = BLUE_BACKDROP_CENTER;
-            parkPose = BLUE_BACKSTAGE_PARK_LANE_C;
+            parkPose = BLUE_MIDDLE_PARK;
             parkOrientation = FACE_45_DEGREES;
 
         } else {
@@ -121,7 +125,7 @@ public class PosesForRouteStraight {
             neutralStagingPose = RED_NEUTRAL_STAGING;
             neutralPickupPose = RED_NEUTRAL_PIXEL_PICKUP;
             additionalPixelScorePose = RED_BACKDROP_CENTER;
-            parkPose = RED_BACKSTAGE_PARK_LANE_D;
+            parkPose = RED_MIDDLE_PARK;
             parkOrientation = FACE_315_DEGREES;
         }
     }

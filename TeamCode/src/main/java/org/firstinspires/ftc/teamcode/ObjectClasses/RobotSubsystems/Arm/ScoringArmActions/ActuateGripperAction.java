@@ -8,13 +8,13 @@ import com.acmerobotics.roadrunner.Action;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 
-public class ActuateEndEffectorAction implements Action {
+public class ActuateGripperAction implements Action {
 
     //declare target state & position
     private GripperSubsystem.GripperStates targetState;
     private double targetPosition;
 
-    public ActuateEndEffectorAction(GripperSubsystem.GripperStates inputState) {
+    public ActuateGripperAction(GripperSubsystem.GripperStates inputState) {
         //save the input state, s, as the target state
         targetState = inputState;
         //get the target position from the input state
@@ -23,10 +23,10 @@ public class ActuateEndEffectorAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        Robot.getInstance().getEndEffectorSubsystem().endEffector.setPosition(targetPosition);
-        telemetryPacket.put("Current EndEffector State", Robot.getInstance().getEndEffectorSubsystem().currentState);
+        Robot.getInstance().getGripperSubsystem().endEffector.setPosition(targetPosition);
+        telemetryPacket.put("Current EndEffector State", Robot.getInstance().getGripperSubsystem().currentState);
         telemetryPacket.put("Target EndEffector State: ", targetState);
-        Robot.getInstance().getEndEffectorSubsystem().currentState = targetState;
+        Robot.getInstance().getGripperSubsystem().currentState = targetState;
         FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
         return false;
     }

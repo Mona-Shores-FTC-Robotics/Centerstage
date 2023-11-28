@@ -28,6 +28,7 @@ public class DriveBackXSeconds extends CommandBase {
     public void initialize() {
         timer = new ElapsedTime();
         timer.reset();
+        driveSubsystem.currentState = DriveSubsystem.DriveStates.BACKUP_FROM_BACKDROP;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftSlideParameters.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.liftSlideParameters;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -13,7 +14,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlid
 
 public class MoveLiftSlideCommand extends CommandBase {
     //Declare and set a timeout threshold for the command called TIMEOUT_TIME_SECONDS - I suggest 1.5 seconds for now
-
 
     //Declare the local variable to hold the liftsubsystem
     private final LiftSlideSubsystem liftSlideSubsystem;
@@ -68,12 +68,16 @@ public class MoveLiftSlideCommand extends CommandBase {
 
         //if the target ticks are higher than the current ticks, then use EXTENSION_POWER
         if (targetTicks > currentTicks) {
-            liftSlideSubsystem.liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
+            liftSlideSubsystem.liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P, liftSlideParameters.VEL_I, liftSlideParameters.VEL_D, liftSlideParameters.VEL_F);
+            liftSlideSubsystem.liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P);
+            liftSlideSubsystem.liftSlide.setPower(liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //if the target ticks are lower than the current ticks, then use RETRACTION_POWER
         if (targetTicks < currentTicks) {
-            liftSlideSubsystem.liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.RETRACTION_LIFT_POWER);
+            liftSlideSubsystem.liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P_DOWN, liftSlideParameters.VEL_I_DOWN, liftSlideParameters.VEL_D_DOWN, liftSlideParameters.VEL_F_DOWN);
+            liftSlideSubsystem.liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P_DOWN);
+            liftSlideSubsystem.liftSlide.setPower(liftSlideParameters.RETRACTION_LIFT_POWER);
         }
 
         //Set the target position using the targetTicks
@@ -94,7 +98,7 @@ public class MoveLiftSlideCommand extends CommandBase {
         // Declare a boolean variable (e.g., finished)
         // Compare the currentTicks to the targetTicks to a threshold (LIFT_HEIGHT_TICK_THRESHOLD) and save as the boolean
         // For example, say our target is 2000 ticks and we are at 1997 - we would want that to count as being close enough
-        boolean finished = Math.abs(liftSlideSubsystem.getCurrentTicks() - liftSlideSubsystem.getTargetTicks()) < LiftSlideSubsystem.liftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
+        boolean finished = Math.abs(liftSlideSubsystem.getCurrentTicks() - liftSlideSubsystem.getTargetTicks()) < liftSlideParameters.LIFT_HEIGHT_TICK_THRESHOLD;
 
         //write an if statement to change the currentState to the targetState and return true if the finished boolean is true
         if (finished){
@@ -103,7 +107,7 @@ public class MoveLiftSlideCommand extends CommandBase {
         }
 
         //compare the elapsed time to a timeout threshold and if the elapsed time is greater than the threshold return true
-        timeout = timeoutTimer.seconds() > LiftSlideSubsystem.liftSlideParameters.TIMEOUT_TIME_SECONDS;
+        timeout = timeoutTimer.seconds() > liftSlideParameters.TIMEOUT_TIME_SECONDS;
         if (timeout){
             return true;
         }

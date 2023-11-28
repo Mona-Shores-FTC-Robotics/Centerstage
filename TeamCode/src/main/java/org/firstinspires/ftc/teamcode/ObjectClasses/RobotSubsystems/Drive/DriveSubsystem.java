@@ -3,15 +3,21 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
+import android.service.autofill.FieldClassification;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -21,7 +27,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 public class DriveSubsystem extends SubsystemBase {
 
     public static class DriveParameters {
-        /** Set these drive parameters for faster TeleOp driving**/
         public double DRIVE_SPEED_FACTOR=.9;
         public double STRAFE_SPEED_FACTOR=.9;
         public double TURN_SPEED_FACTOR=.8;
@@ -29,29 +34,8 @@ public class DriveSubsystem extends SubsystemBase {
         public double safetyDriveSpeedFactor = .7;
         public double DEAD_ZONE = .2;
         public double APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD=3;
+        public double DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING= .4;
     }
-
-//    public static class AutoDriveParameters {
-//        public double TURN_ERROR_THRESHOLD = 1;
-//        public double STRAFE_ERROR_THRESHOLD = .5;
-//        public double DRIVE_ERROR_THRESHOLD = .5;
-//
-//        public double TURN_P = .016;
-//        public double TURN_I = 0 ;
-//        public double TURN_D = 0;
-//        public double TURN_F = .15;
-//
-//        public double STRAFE_P=0;
-//        public double STRAFE_I=0;
-//        public double STRAFE_D=0;
-//        public double STRAFE_F=0;
-//
-//        public double DRIVE_P=0;
-//        public double DRIVE_I=0;
-//        public double DRIVE_D=0;
-//        public double DRIVE_F=0;
-//    }
-
 
     public static class ParamsMona {
         /** Set Mona motor parameters for faster TeleOp driving**/
@@ -69,46 +53,14 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static class ParamsRRMona {
-        /** Set Roadrunner motor parameters for faster roadrunner trajectories **/
-
-        // drive model parameters
-//        public double inPerTick = 0.04122; // 0.0317919075144509
-//        public double lateralInPerTick =0.04329; // 60\1845.5 .025
-//        public double trackWidthTicks =486.4610149342712;  //631.8289216104534
-//
-//        //new values
-//        public double kS =  1.0;  //0.9574546275336608
-//        public double kV = 0.003858438495965098; //=0.004264232249424524;
-//        public double kA =.0007;
-//
-//        // path profile parameters (in inches)
-//        public double maxWheelVel =40;
-//        public double minProfileAccel =-45;
-//        public double maxProfileAccel =45;
-//
-//        // turn profile parameters (in radians)
-//        public double maxAngVel =Math.PI; // shared with path
-//        public double maxAngAccel =Math.PI;
-//
-//        //These are being used in the run part of the trajectory and turn action so they should be live updating.
-//        // path controller gains
-//
-//        public double axialGain =9.5;
-//        public double lateralGain =7.5;
-//        public double headingGain =15; // shared with turn
-//
-//        public double axialVelGain =0;
-//        public double lateralVelGain =0;
-//        public double headingVelGain =0; // shared with turn
-
-        public double inPerTick = 0.04122; // 0.0317919075144509 // 0.0313 .04122 is accurate when tuning.
-        public double lateralInPerTick = 0.04329; // 60\1845.5 .025 0.0283 //.04329 is accurate when tuning.
-        public double trackWidthTicks =618.8522619803487;  //631.8289216104534 //618 is most current value
+        public double inPerTick = 0.04122; // 0.0317919075144509
+        public double lateralInPerTick =0.04329; // 60\1845.5 .025
+        public double trackWidthTicks =631.8289216104534;  //631.8289216104534
 
         //new values
-        public double kS =  0.9574546275336608;  //0.9574546275336608 accurate from 11/27/23
-        public double kV = 0.004264232249424524 ; //0.004264232249424524; accurate from 11/27/23
-        public double kA =.001 ; //accurate from 11/27/23 //0.00055
+        public double kS = 0.9574546275336608;  //0.9574546275336608
+        public double kV = 0.004264232249424524; //=0.004264232249424524;
+        public double kA =0.00055;
 
         // path profile parameters (in inches)
         public double maxWheelVel =25;
@@ -122,9 +74,9 @@ public class DriveSubsystem extends SubsystemBase {
         //These are being used in the run part of the trajectory and turn action so they should be live updating.
         // path controller gains
 
-        public double axialGain =1.95;
-        public double lateralGain =1.2;
-        public double headingGain =5; // shared with turn
+        public double axialGain =12;
+        public double lateralGain =10;
+        public double headingGain =6; // shared with turn
 
         public double axialVelGain =1.1;
         public double lateralVelGain =1.1;
@@ -133,7 +85,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static DriveParameters driveParameters= new DriveParameters();
-//    public static AutoDriveParameters autoDriveParameters = new AutoDriveParameters();
+
+    public enum DriveStates {
+        MANUAL_DRIVE,
+        SLOW_MANUAL_DRIVE,
+        STRAFING_X_INCHES,
+        BACKUP_FROM_BACKDROP,
+        APRIL_TAG_ALIGNMENT_TURNING,
+        APRIL_TAG_ALIGNMENT_STRAFING_TO_FIND_TAG,
+        APRIL_TAG_ALIGNMENT_STRAFING,
+        APRIL_TAG_ALIGNMENT_DRIVING;
+    }
+
+    public DriveStates currentState = DriveStates.MANUAL_DRIVE;
 
     public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
 
@@ -159,18 +123,22 @@ public class DriveSubsystem extends SubsystemBase {
         mecanumDrive = new MecanumDriveMona();
     }
 
-    public void init()
+    private GamepadHandling gamepadHandling;
+
+    public void init(GamepadHandling gpadHandling)
     {
         visionSubsystem = Robot.getInstance().getVisionSubsystem();
+        gamepadHandling = gpadHandling;
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         mecanumDrive.init();
+        currentState = DriveStates.MANUAL_DRIVE;
     }
 
     public void periodic(){
 
         //If the vision subsystem has a pose ready for us (because we are at the backdrop)
-        // AND the driver set the resetHeading flag (this is the BACK button right now)
+        // AND the driver set the resetHeading flag (this is the SHARE button right now)
         //      then:
         //          1) reset the gyro (to 0)
         //          2) change the relativeYaw to 0 (offset 0 from gyro)
@@ -223,6 +191,7 @@ public class DriveSubsystem extends SubsystemBase {
         double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
         double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
 
+        MatchConfig.telemetryPacket.put("Drive Subsystem State: ", currentState);
         MatchConfig.telemetryPacket.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
         MatchConfig.telemetryPacket.put("LF Speed", actualSpeedLF);
         MatchConfig.telemetryPacket.put("LF Target", targetSpeedLF);
@@ -231,6 +200,8 @@ public class DriveSubsystem extends SubsystemBase {
         MatchConfig.telemetryPacket.put("x", mecanumDrive.pose.position.x);
         MatchConfig.telemetryPacket.put("y", mecanumDrive.pose.position.y);
         MatchConfig.telemetryPacket.put("heading (deg)", Math.toDegrees(mecanumDrive.pose.heading.log()));
+
+        MatchConfig.telemetryPacket.put("April Tag Override Status: ", overrideAprilTagDriving);
 
         MatchConfig.telemetryPacket.fieldOverlay().getOperations().addAll(c.getOperations());
         mecanumDrive.drawPoseHistory(c);
@@ -272,58 +243,98 @@ public class DriveSubsystem extends SubsystemBase {
             }
 
             // Cancel AprilTag driving if the driver is moving away from the backdrop
-            // I'm not sure if this works for field oriented control
-            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD){
+            if (leftYAdjusted < driveParameters.APRIL_TAG_CANCEL_THRESHOLD ||
+                Math.abs(leftXAdjusted) > .3){
                 aprilTagAutoDriving = false;
             }
 
-            //Align to the Backdrop AprilTags - CASE RED
-            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
-                    visionSubsystem.redBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
+
+            if (    ((MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE && visionSubsystem.blueBackdropAprilTagFoundRecently) ||
+                    (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED && visionSubsystem.redBackdropAprilTagFoundRecently)) &&
+                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
                     !getOverrideAprilTagDriving()) {
                 //start apriltag timeout timer
                 if (!aprilTagAutoDriving) {
                     aprilTagTimeoutTimer.reset();
                 }
-                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
-
-                //Check if we timed out
-                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
-                    aprilTagAutoDriving=false;
-                }
-
-            }
-            //Aligning to the Backdrop AprilTags - CASE BLUE
-            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
-                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
-                    (leftYAdjusted > .2 || aprilTagAutoDriving) &&
-                    !getOverrideAprilTagDriving()) {
-                //start apriltag timeout timer
-                if (!aprilTagAutoDriving) {
-                    aprilTagTimeoutTimer.reset();
-                }
-                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdrop();
                 leftYAdjusted = mecanumDrive.aprilTagDrive;
                 leftXAdjusted = mecanumDrive.aprilTagStrafe;
                 rightXAdjusted = mecanumDrive.aprilTagTurn;
                 MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
                 MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+                MatchConfig.telemetryPacket.put("AprilTag Bearing Error", visionSubsystem.bearingError);
 
                 //Check if we timed out
                 if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
                     aprilTagAutoDriving=false;
+
+                    mecanumDrive.drive=0; mecanumDrive.strafe=0; mecanumDrive.turn=0;
+                    mecanumDrive.current_drive_ramp = 0; mecanumDrive.current_strafe_ramp=0; mecanumDrive.current_turn_ramp=0;
+                    mecanumDrive.aprilTagDrive=0; mecanumDrive.aprilTagStrafe=0; mecanumDrive.aprilTagTurn=0;
+
                 }
 
             } else aprilTagAutoDriving = false;
+
+//            //Align to the Backdrop AprilTags - CASE RED
+//            if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+//                    visionSubsystem.redBackdropAprilTagFoundRecently &&
+//                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
+//                    !getOverrideAprilTagDriving()) {
+//                //start apriltag timeout timer
+//                if (!aprilTagAutoDriving) {
+//                    aprilTagTimeoutTimer.reset();
+//                }
+//                aprilTagAutoDriving=visionSubsystem.AutoDriveToBackdropRed();
+//                leftYAdjusted = mecanumDrive.aprilTagDrive;
+//                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+//                rightXAdjusted = mecanumDrive.aprilTagTurn;
+//
+//                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+//                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+//                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+//                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+//
+//                //Check if we timed out
+//                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+//                    aprilTagAutoDriving=false;
+//                }
+//
+//            }
+//            //Aligning to the Backdrop AprilTags - CASE BLUE
+//            else if (MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+//                    visionSubsystem.blueBackdropAprilTagFoundRecently &&
+//                    (leftYAdjusted > driveParameters.DRIVE_THRESHOLD_FOR_APRILTAG_DRIVING || aprilTagAutoDriving) &&
+//                    !getOverrideAprilTagDriving()) {
+//                //start apriltag timeout timer
+//                if (!aprilTagAutoDriving) {
+//                    aprilTagTimeoutTimer.reset();
+//                }
+//                aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdropBlue();
+//                leftYAdjusted = mecanumDrive.aprilTagDrive;
+//                leftXAdjusted = mecanumDrive.aprilTagStrafe;
+//                rightXAdjusted = mecanumDrive.aprilTagTurn;
+//                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
+//                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+//                MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
+//                MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
+//                MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
+//
+//
+//                //Check if we timed out
+//                if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
+//                    aprilTagAutoDriving=false;
+//                }
+//
+//            } else aprilTagAutoDriving = false;
         } else {
             // if we aren't automated driving and the sticks aren't out of the deadzone set it all to zero to stop us from moving
             leftYAdjusted = 0;
@@ -354,7 +365,6 @@ public class DriveSubsystem extends SubsystemBase {
         leftYAdjusted = Math.min( leftYAdjusted * 1.1, 1);  // Counteract imperfect strafing
     }
 
-
     public boolean getOverrideAprilTagDriving() {
         return overrideAprilTagDriving;
     }
@@ -362,6 +372,27 @@ public class DriveSubsystem extends SubsystemBase {
         overrideAprilTagDriving=b;
     }
 
+    // Method to get the current average encoder count
+    public double getCurrentEncoderCount() {
+        double fl = mecanumDrive.leftFront.getCurrentPosition();
+        double fr = mecanumDrive.rightFront.getCurrentPosition();
+        double bl = mecanumDrive.leftBack.getCurrentPosition();
+        double br = mecanumDrive.rightBack.getCurrentPosition();
+
+        return (fl + fr + bl + br) / 4.0;
+    }
+
+    // Method to reset encoders
+    public void resetEncoders() {
+        mecanumDrive.leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.leftBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        mecanumDrive.rightBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
+        // After resetting, you might need to set them back to the desired run mode
+        mecanumDrive.leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.leftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        mecanumDrive.rightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
 }
-
-

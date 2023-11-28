@@ -61,4 +61,9 @@ public class RobotCommands {
         return sleep;
     };
 
+    public Action OpenClawHalfway() {
+        SleepAction sleep = new SleepAction(.1);
+        return sleep;
+    }
+
 }

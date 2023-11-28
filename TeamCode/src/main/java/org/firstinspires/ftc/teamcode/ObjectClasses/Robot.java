@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.tel
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
@@ -121,26 +123,26 @@ public class Robot {
 
 
     // Initialize teleop or autonomous, depending on which is used
-    public void init(OpModeType oType){
+    public void init(OpModeType oType, GamepadHandling gamepadHandling){
         opModeType = oType;
             if (opModeType == OpModeType.TELEOP) {
-                initTele();
+                initTele(gamepadHandling);
             } else {
-                initAuto();
+                initAuto(gamepadHandling);
             }
         }
 
 
-    private void initTele() {
+    private void initTele(GamepadHandling gamepadHandling) {
         switch (robotType) {
             case ROBOT_DRIVE_BASE: {
                 gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
+                mecanumDriveSubsystem.init(gamepadHandling);
                 break;
             }
             case ROBOT_VISION: {
                 gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
+                mecanumDriveSubsystem.init(gamepadHandling);
                 visionSubsystem.init();
                 break;
             }
@@ -159,7 +161,7 @@ public class Robot {
             case ROBOT_CENTERSTAGE: {
                 visionSubsystem.init();
                 gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
+                mecanumDriveSubsystem.init(gamepadHandling);
                 intakeSubsystem.init();
                 gripperSubsystem.init();
                 liftSlideSubsystem.init();
@@ -179,14 +181,14 @@ public class Robot {
         }
     }
 
-    private void initAuto() {
+    private void initAuto(GamepadHandling gamepadHandling) {
         // initialize auto-specific scheduler
 
         switch (robotType) {
 
             case ROBOT_VISION: {
                 gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
+                mecanumDriveSubsystem.init(gamepadHandling);
                 visionSubsystem.init();
                 break;
             }
@@ -194,13 +196,11 @@ public class Robot {
             case ROBOT_CENTERSTAGE: {
                 visionSubsystem.init();
                 gyroSubsystem.init();
-                mecanumDriveSubsystem.init();
+                mecanumDriveSubsystem.init(gamepadHandling);
                 intakeSubsystem.init();
                 gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
-
-                //todo do any subsystems need to be init during auto?
 
                 break;
             }
@@ -211,7 +211,7 @@ public class Robot {
     public DriveSubsystem getDriveSubsystem()  {return mecanumDriveSubsystem;}
     public VisionSubsystem getVisionSubsystem()  {return visionSubsystem;}
     public IntakeSubsystem getIntakeSubsystem()  {return intakeSubsystem;}
-    public GripperSubsystem getEndEffectorSubsystem()  {return gripperSubsystem;}
+    public GripperSubsystem getGripperSubsystem()  {return gripperSubsystem;}
     public LiftSlideSubsystem getLiftSlideSubsystem()  {return liftSlideSubsystem;}
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
