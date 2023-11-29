@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.ObjectClasses;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -47,4 +49,15 @@ public class MatchConfig {
         Robot.getInstance().getActiveOpMode().telemetry.update();
     }
 
+    public static void CheckRobotConfig(HardwareMap hwMap) {
+
+        Servo fakeServo=null;
+        try {
+            fakeServo = hwMap.get(Servo.class, "19429");
+        } catch (IllegalArgumentException e)
+        {
+            MatchConfig.robot19429 =false;
+        }
+        if (fakeServo!=null) MatchConfig.robot19429=true;
+    }
 }

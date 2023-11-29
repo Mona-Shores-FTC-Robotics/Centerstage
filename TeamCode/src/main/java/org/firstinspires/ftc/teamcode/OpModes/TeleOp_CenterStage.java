@@ -72,21 +72,14 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         telemetry.clearAll();
 
-        Servo fakeServo=null;
-        try {
-            fakeServo = hardwareMap.get(Servo.class, "19429");
-        } catch (IllegalArgumentException e)
-        {
-            MatchConfig.robot19429 =false;
-        }
-        if (fakeServo!=null) MatchConfig.robot19429=true;
+        MatchConfig.CheckRobotConfig(hardwareMap);
 
         while (opModeInInit()) {
 
             telemetry.addData("Alliance Color", MatchConfig.finalAllianceColor);
             telemetry.addData("Side of the Field", MatchConfig.finalSideOfField);
             telemetry.addData("Team Prop Location",  MatchConfig.finalTeamPropLocation);
-
+            telemetry.addData("Are we 19429? ", MatchConfig.robot19429);
             telemetry.update();
             sleep(10);
         }

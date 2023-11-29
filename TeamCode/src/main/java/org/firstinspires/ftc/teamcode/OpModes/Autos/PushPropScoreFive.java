@@ -36,7 +36,6 @@ public class PushPropScoreFive extends LinearOpMode {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
 
-
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
 
@@ -48,6 +47,8 @@ public class PushPropScoreFive extends LinearOpMode {
 
         // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
+
+        MatchConfig.CheckRobotConfig(hardwareMap);
 
         //Build all the routes so we can select one quickly later
         PushPropScoreFiveRoute.BuildRoutes();

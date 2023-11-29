@@ -57,6 +57,8 @@ public class Spike_Backdrop_Park_IMPROVED_Auto extends LinearOpMode {
         // Turn on the Init Vision Processor to Automatically Figure Out Alliance Color, Side, and Team Prop Location
         Robot.getInstance().getVisionSubsystem().SwitchToInitVisionProcessor();
 
+        MatchConfig.CheckRobotConfig(hardwareMap);
+
         //Build all the routes so we can select one quickly later
         RoutesSpikeBackdropParkImproved.BuildRoutes();
 
