@@ -20,6 +20,7 @@ public class MatchConfig {
     public static ElapsedTime OpModeTimer;
     public static ElapsedTime loopTimer;
     public static ElapsedTime timestampTimer;
+    public static boolean robot19429;
 
     public static TelemetryPacket telemetryPacket;
 

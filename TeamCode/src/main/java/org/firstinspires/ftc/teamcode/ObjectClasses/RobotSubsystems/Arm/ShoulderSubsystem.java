@@ -1,35 +1,43 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 @Config
 public class ShoulderSubsystem extends SubsystemBase {
 
-    public static class ShoulderParameters {
+    public static class ShoulderParameters20245 {
 
         public double INTAKE_REST = .5;
-        public double INTAKE_VALUE = 0.62; //infrared was .565/// .61 does not touch the ramp for ultraviolet
+        public double INTAKE_VALUE = 0.62;
         public double STARTING_POSITION = .67;
         public double BACKDROP_VALUE = .2;
         public double HALFWAY = .4;
     }
 
-    public static ShoulderParameters shoulderParameters = new ShoulderParameters();
+    public static ShoulderParameters20245 shoulderParameters20245 = new ShoulderParameters20245();
+
+    public static class ShoulderParameters19429 {
+
+        public double INTAKE_REST = .5;
+        public double INTAKE_VALUE = 0.565;
+        public double STARTING_POSITION = .6;
+        public double BACKDROP_VALUE = .2;
+        public double HALFWAY = .4;
+    }
+
+    public static ShoulderParameters19429 shoulderParameters19429 = new ShoulderParameters19429();
 
     public enum ShoulderStates {
         REST (.5),
-        INTAKE (0.62),
-        HALFWAY(.4),
-        BACKDROP (.2),
-        STARTING_POSITION (.67);
+        INTAKE (0),
+        HALFWAY(0),
+        BACKDROP (0),
+        STARTING_POSITION (0);
 
         public double position;
         ShoulderStates(double p) {
@@ -49,16 +57,29 @@ public class ShoulderSubsystem extends SubsystemBase {
 
     //todo make sure this gets merged
     public void init() {
+        SetRobotSpecificParameters();
         currentState= ShoulderStates.STARTING_POSITION;
         shoulder.setPosition(currentState.position);
     }
 
-    public void periodic(){
-        ShoulderStates.INTAKE.SetState(shoulderParameters.INTAKE_VALUE);
-        ShoulderStates.BACKDROP.SetState(shoulderParameters.BACKDROP_VALUE);
-        ShoulderStates.HALFWAY.SetState(shoulderParameters.HALFWAY);
-        ShoulderStates.STARTING_POSITION.SetState(shoulderParameters.STARTING_POSITION);
+    private void SetRobotSpecificParameters() {
+        if (MatchConfig.robot19429){
+            ShoulderStates.INTAKE.SetState(shoulderParameters19429.INTAKE_VALUE);
+            ShoulderStates.BACKDROP.SetState(shoulderParameters19429.BACKDROP_VALUE);
+            ShoulderStates.HALFWAY.SetState(shoulderParameters19429.HALFWAY);
+            ShoulderStates.STARTING_POSITION.SetState(shoulderParameters19429.STARTING_POSITION);
 
+        } else{
+            ShoulderStates.INTAKE.SetState(shoulderParameters20245.INTAKE_VALUE);
+            ShoulderStates.BACKDROP.SetState(shoulderParameters20245.BACKDROP_VALUE);
+            ShoulderStates.HALFWAY.SetState(shoulderParameters20245.HALFWAY);
+            ShoulderStates.STARTING_POSITION.SetState(shoulderParameters20245.STARTING_POSITION);
+        }
+    }
+
+
+    public void periodic(){
+        SetRobotSpecificParameters();
         //Add the Shoulder State to our loop telemetry packet
         MatchConfig.telemetryPacket.put("Shoulder State", currentState);
     }

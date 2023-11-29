@@ -29,11 +29,14 @@
 
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import android.service.autofill.FieldClassification;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.CenterstageDriverBindings;
@@ -69,6 +72,14 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         telemetry.clearAll();
 
+        Servo fakeServo=null;
+        try {
+            fakeServo = hardwareMap.get(Servo.class, "19429");
+        } catch (IllegalArgumentException e)
+        {
+            MatchConfig.robot19429 =false;
+        }
+        if (fakeServo!=null) MatchConfig.robot19429=true;
 
         while (opModeInInit()) {
 
