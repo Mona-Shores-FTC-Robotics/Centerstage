@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public double INTAKE_REVERSE_POWER = -1;
         public double INTAKE_SLOW_POWER = .2;
         public double INTAKE_OFF_POWER = 0;
-        public double KICKBACK_TIMER_THRESHOLD_MS=500;
+        public double KICKBACK_TIMER_THRESHOLD_MS=100;
     }
     public static IntakeParameters intakeParameters = new IntakeParameters();
 

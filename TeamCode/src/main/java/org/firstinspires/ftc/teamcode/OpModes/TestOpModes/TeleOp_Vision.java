@@ -35,6 +35,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings.VisionDriverBindings;
@@ -66,14 +67,24 @@ public class TeleOp_Vision extends LinearOpMode
         /* Setup Button Bindings **/
         new VisionDriverBindings( gamepadHandling.getDriverGamepad());
 
-        String robotControllerName = RobotConfig.getRobotControllerName();
+        Servo fakeServo=null;
+        Boolean robot19429 = false;
+        try {
+             fakeServo = hardwareMap.get(Servo.class, "19429");
+        } catch (IllegalArgumentException e)
+        {
+            robot19429=false;
+        }
+
+        if (fakeServo!=null) robot19429=true;
+
 
         while (opModeInInit()) {
             VisionTelemetry.telemetryForInitProcessing();
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
 
-            telemetry.addData("Robot controller name: ", robotControllerName);
+            telemetry.addData("Robot is 19429: ", robot19429);
 
             telemetry.update();
             sleep(10);
