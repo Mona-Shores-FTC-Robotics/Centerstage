@@ -53,7 +53,7 @@ public final class VisionSubsystem extends SubsystemBase {
         public double SAFETY_SPEED_GAIN = 0.01;   //
 
         public double RANGE_GAIN = 0.05;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-        public double STRAFE_GAIN = .165;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
+        public double STRAFE_GAIN = .155;   // As we lose power this needs to go up..  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
         public double TURN_GAIN = .05;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
         public double RANGE_FEEDFORWARD =.03; //this seems to be the amount to move forard needed
@@ -503,12 +503,12 @@ public final class VisionSubsystem extends SubsystemBase {
                 return stillSeekingAprilTag(rangeError, xError, yawError, deliveryTag);
             }
             else if (offsetTagToLeft!=null && offsetTagToLeft.isDetected){
-                CalculateErrors(deliveryTag);
+                CalculateErrors(offsetTagToLeft);
                 ClipErrorsAndSaveAprilTagDrivingValues();
                 return true;
             }
             else if (offsetTagToRight!=null && offsetTagToRight.isDetected){
-                CalculateErrors(deliveryTag);
+                CalculateErrors(offsetTagToRight);
                 ClipErrorsAndSaveAprilTagDrivingValues();
                 return true;
         }

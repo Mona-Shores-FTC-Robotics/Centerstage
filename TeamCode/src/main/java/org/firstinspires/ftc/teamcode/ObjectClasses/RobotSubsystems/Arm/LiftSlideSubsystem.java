@@ -27,7 +27,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public double EXTENSION_LIFT_POWER = .6;
         public double RETRACTION_LIFT_POWER = .33;
         public double VEL_P=5, VEL_I=0, VEL_D=0, VEL_F=48;
-        public double VEL_P_DOWN=7, VEL_I_DOWN=0, VEL_D_DOWN=0, VEL_F_DOWN=8;
+        public double VEL_P_DOWN=7, VEL_I_DOWN=0, VEL_D_DOWN=0, VEL_F_DOWN=15;
         public double POS_P=9;
         public double POS_P_DOWN=12;
         public double SCALE_FACTOR_FOR_MANUAL_LIFT=150;
