@@ -6,12 +6,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Twist2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Roadrunner.TankDrive;
+
 
 public class LocalizationTest extends LinearOpMode {
     @Override
@@ -38,7 +37,8 @@ public class LocalizationTest extends LinearOpMode {
 
                 telemetry.addData("x", drive.pose.position.x);
                 telemetry.addData("y", drive.pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+                telemetry.addData("heading", drive.pose.heading);
+
                 telemetry.update();
 
                 runBlocking(drawTeleOpRobot);
@@ -61,7 +61,7 @@ public class LocalizationTest extends LinearOpMode {
 
                 telemetry.addData("x", drive.pose.position.x);
                 telemetry.addData("y", drive.pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+                telemetry.addData("heading", drive.pose.heading);
                 telemetry.update();
             }
         } else {
