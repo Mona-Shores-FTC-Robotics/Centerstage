@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR19429;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -77,6 +77,6 @@ public class StrafeXInchesPID extends CommandBase {
     }
 
     private double convertInchesToEncoderCounts(double inches) {
-        return inches * MotorParametersRR19429.lateralInPerTick;
+        return inches * MotorParametersRR.lateralInPerTick;
     }
 }

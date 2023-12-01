@@ -40,7 +40,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.Roadrunner.messages.PoseMessage;
+import org.firstinspires.ftc.teamcode.Roadrunner.PoseMessage;
 
 import java.lang.Math;
 import java.util.Arrays;
