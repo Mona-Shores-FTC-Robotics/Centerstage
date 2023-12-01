@@ -133,15 +133,15 @@ public final class MecanumDrive {
             RawEncoder RFEncoder = new RawEncoder(MecanumDrive.this.rightFront);
             RawEncoder RBEncoder = new RawEncoder(MecanumDrive.this.rightBack);
 
+            LFEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            LBEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            RFEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+            RBEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
+
             leftFront = new OverflowEncoder(LFEncoder);
             leftBack = new OverflowEncoder(LBEncoder);
             rightBack = new OverflowEncoder(RFEncoder);
             rightFront = new OverflowEncoder(RBEncoder);
-
-            LFEncoder.setDirection(DcMotorEx.Direction.REVERSE);
-            LBEncoder.setDirection(DcMotorEx.Direction.REVERSE);
-            RFEncoder.setDirection(DcMotorEx.Direction.FORWARD);
-            RBEncoder.setDirection(DcMotorEx.Direction.FORWARD);
 
             lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
             lastLeftBackPos = leftBack.getPositionAndVelocity().position;
