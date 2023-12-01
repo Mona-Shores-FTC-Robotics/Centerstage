@@ -38,7 +38,7 @@ public class LocalizationTest extends LinearOpMode {
 
                 telemetry.addData("x", drive.pose.position.x);
                 telemetry.addData("y", drive.pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.log()));
                 telemetry.update();
 
                 runBlocking(drawTeleOpRobot);
@@ -61,7 +61,7 @@ public class LocalizationTest extends LinearOpMode {
 
                 telemetry.addData("x", drive.pose.position.x);
                 telemetry.addData("y", drive.pose.position.y);
-                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.toDouble()));
+                telemetry.addData("heading (deg)", Math.toDegrees(drive.pose.heading.log()));
                 telemetry.update();
             }
         } else {
