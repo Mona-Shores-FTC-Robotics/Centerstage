@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 
 public class ChangeIntakePowerCommand extends CommandBase {
 
-
-
     // The subsystem the command runs on
     private final IntakeSubsystem intakeSubsystem;
 
@@ -19,39 +17,27 @@ public class ChangeIntakePowerCommand extends CommandBase {
     private IntakeSubsystem.IntakeStates targetState1;
     private IntakeSubsystem.IntakeStates targetState2;
 
-    private ElapsedTime kickbackTimer;
-    private boolean hasKickedBack=false;
-
     public ChangeIntakePowerCommand(IntakeSubsystem subsystem, IntakeSubsystem.IntakeStates inputState1, IntakeSubsystem.IntakeStates inputState2) {
         intakeSubsystem = subsystem;
         targetState1 = inputState1;
         targetState2 = inputState2;
-        kickbackTimer = new ElapsedTime();
         addRequirements(intakeSubsystem);
     }
     @Override
     public void initialize() {
-        intakeSubsystem.intake1.setPower(-targetState1.power);
+        intakeSubsystem.intake1.setPower(targetState1.power);
         intakeSubsystem.intake2.setPower(targetState2.power);
-        kickbackTimer.reset();
-        hasKickedBack=false;
 
     }
 
     public void execute() {
-        if (!hasKickedBack && kickbackTimer.milliseconds() > IntakeSubsystem.intakeParameters.KICKBACK_TIMER_THRESHOLD_MS)
-        {
-            //reverse the direction back to the right way
-            intakeSubsystem.intake1.setPower(targetState1.power);
-            hasKickedBack=true;
-        }
+
     }
 
     //this only needs to run once to change teh state of the intake motor so it can just return true
     @Override
     public boolean isFinished() {
-
-        if (hasKickedBack) return true; else return false;
+        return true;
     }
 
     @Override

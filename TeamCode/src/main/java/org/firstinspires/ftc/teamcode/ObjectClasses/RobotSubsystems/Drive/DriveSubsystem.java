@@ -3,15 +3,10 @@ package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
 
-import android.service.autofill.FieldClassification;
-
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.arcrobotics.ftclib.command.ParallelRaceGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.controller.PIDFController;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -52,11 +47,10 @@ public class DriveSubsystem extends SubsystemBase {
         public double F =8; // default = 0
     }
 
-    public static class ParamsRRMona {
+    public static class ParamsRRMona19429 {
         public double inPerTick = 0.0313;  // was 0.04122; lower numbers move robot more
         public double lateralInPerTick =0.0283;        // was 0.04329; lower numbers move robot more
         public double trackWidthTicks =631.8289216104534;  //631.8289216104534
-
 
         //new values
         public double kS = 0.9574546275336608;  //0.9574546275336608
@@ -84,6 +78,39 @@ public class DriveSubsystem extends SubsystemBase {
         public double headingVelGain =1.1; // shared with turn
 
     }
+
+    public static class ParamsRRMona20245 {
+        public double inPerTick = 0.0313;  // was 0.04122; lower numbers move robot more
+        public double lateralInPerTick =0.0283;        // was 0.04329; lower numbers move robot more
+        public double trackWidthTicks =631.8289216104534;  //631.8289216104534
+
+        //new values
+        public double kS = 0.9574546275336608;  //0.9574546275336608
+        public double kV = 0.004264232249424524; //=0.004264232249424524;
+        public double kA =0.00055;
+
+        // path profile parameters (in inches)
+        public double maxWheelVel =25;
+        public double minProfileAccel =-30;
+        public double maxProfileAccel =30;
+
+        // turn profile parameters (in radians)
+        public double maxAngVel =Math.PI; // shared with path
+        public double maxAngAccel =Math.PI;
+
+        //These are being used in the run part of the trajectory and turn action so they should be live updating.
+        // path controller gains
+
+        public double axialGain =12;
+        public double lateralGain =10;
+        public double headingGain =6; // shared with turn
+
+        public double axialVelGain =1.1;
+        public double lateralVelGain =1.1;
+        public double headingVelGain =1.1; // shared with turn
+
+    }
+
 
     public static DriveParameters driveParameters= new DriveParameters();
 

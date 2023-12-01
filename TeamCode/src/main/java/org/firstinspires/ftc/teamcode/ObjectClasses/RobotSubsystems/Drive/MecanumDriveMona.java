@@ -60,7 +60,9 @@ public final class MecanumDriveMona {
         public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
     }
     public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
-    public static DriveSubsystem.ParamsRRMona MotorParametersRR = new DriveSubsystem.ParamsRRMona();
+    public static DriveSubsystem.ParamsRRMona19429 MotorParametersRR19429 = new DriveSubsystem.ParamsRRMona19429();
+    public static DriveSubsystem.ParamsRRMona20245 MotorParametersRR20245 = new DriveSubsystem.ParamsRRMona20245();
+
     public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
 
     public double drive, strafe, turn;
@@ -138,24 +140,42 @@ public final class MecanumDriveMona {
     }
 
     public void SetRoadRunnerParameters() {
-        kinematics = new MecanumKinematics(
-                MotorParametersRR.inPerTick * MotorParametersRR.trackWidthTicks, MotorParametersRR.inPerTick / MotorParametersRR.lateralInPerTick);
+        if (MatchConfig.robot19429) {
+            kinematics = new MecanumKinematics(
+                    MotorParametersRR19429.inPerTick * MotorParametersRR19429.trackWidthTicks, MotorParametersRR19429.inPerTick / MotorParametersRR19429.lateralInPerTick);
 
 //        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
 
-        defaultTurnConstraints = new TurnConstraints(
-                MotorParametersRR.maxAngVel, -MotorParametersRR.maxAngAccel, MotorParametersRR.maxAngAccel);
+            defaultTurnConstraints = new TurnConstraints(
+                    MotorParametersRR19429.maxAngVel, -MotorParametersRR19429.maxAngAccel, MotorParametersRR19429.maxAngAccel);
 
-        defaultVelConstraint =
-                new MinVelConstraint(Arrays.asList(
-                        kinematics.new WheelVelConstraint(MotorParametersRR.maxWheelVel),
-                        new AngularVelConstraint(MotorParametersRR.maxAngVel)
-                ));
+            defaultVelConstraint =
+                    new MinVelConstraint(Arrays.asList(
+                            kinematics.new WheelVelConstraint(MotorParametersRR19429.maxWheelVel),
+                            new AngularVelConstraint(MotorParametersRR19429.maxAngVel)
+                    ));
 
-        defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR.minProfileAccel, MotorParametersRR.maxProfileAccel);
+            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR19429.minProfileAccel, MotorParametersRR19429.maxProfileAccel);
 
-        FlightRecorder.write("MECANUM_RR_PARAMS", MotorParametersRR);
-        FlightRecorder.write("MECANUM_PID_PARAMS", MotorParameters);
+        } else
+        {
+            kinematics = new MecanumKinematics(
+                    MotorParametersRR20245.inPerTick * MotorParametersRR20245.trackWidthTicks, MotorParametersRR20245.inPerTick / MotorParametersRR20245.lateralInPerTick);
+
+//        feedforward = new MotorFeedforward(MotorParametersRR.kS, MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
+
+            defaultTurnConstraints = new TurnConstraints(
+                    MotorParametersRR20245.maxAngVel, -MotorParametersRR20245.maxAngAccel, MotorParametersRR20245.maxAngAccel);
+
+            defaultVelConstraint =
+                    new MinVelConstraint(Arrays.asList(
+                            kinematics.new WheelVelConstraint(MotorParametersRR20245.maxWheelVel),
+                            new AngularVelConstraint(MotorParametersRR20245.maxAngVel)
+                    ));
+
+            defaultAccelConstraint = new ProfileAccelConstraint(MotorParametersRR20245.minProfileAccel, MotorParametersRR20245.maxProfileAccel);
+
+        }
     }
 
 
@@ -343,23 +363,41 @@ public final class MecanumDriveMona {
                 return false;
             }
 
+
             Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
             targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
-            PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
-                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
-            )
-                    .compute(txWorldTarget, pose, robotVelRobot);
+            PoseVelocity2dDual<Time> command;
+            final MotorFeedforward feedforward;
+            if (MatchConfig.robot19429) {
+                command = new HolonomicController(
+                        MotorParametersRR19429.axialGain, MotorParametersRR19429.lateralGain, MotorParametersRR19429.headingGain,
+                        MotorParametersRR19429.axialVelGain, MotorParametersRR19429.lateralVelGain, MotorParametersRR19429.headingVelGain
+                )
+                        .compute(txWorldTarget, pose, robotVelRobot);
+
+                feedforward = new MotorFeedforward(MotorParametersRR19429.kS,
+                        MotorParametersRR19429.kV / MotorParametersRR19429.inPerTick, MotorParametersRR19429.kA / MotorParametersRR19429.inPerTick);
+            } else {
+
+                    command = new HolonomicController(
+                            MotorParametersRR20245.axialGain, MotorParametersRR20245.lateralGain, MotorParametersRR20245.headingGain,
+                            MotorParametersRR20245.axialVelGain, MotorParametersRR20245.lateralVelGain, MotorParametersRR20245.headingVelGain
+                    )
+                            .compute(txWorldTarget, pose, robotVelRobot);
+
+                feedforward = new MotorFeedforward(MotorParametersRR19429.kS,
+                        MotorParametersRR20245.kV / MotorParametersRR20245.inPerTick, MotorParametersRR20245.kA / MotorParametersRR20245.inPerTick);
+            }
+
             driveCommandWriter.write(new DriveCommandMessage(command));
 
             MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
 
-            final MotorFeedforward feedforward = new MotorFeedforward(MotorParametersRR.kS,
-                    MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
+
             double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
             double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
@@ -440,19 +478,33 @@ public final class MecanumDriveMona {
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
-            PoseVelocity2dDual<Time> command = new HolonomicController(
-                    MotorParametersRR.axialGain, MotorParametersRR.lateralGain, MotorParametersRR.headingGain,
-                    MotorParametersRR.axialVelGain, MotorParametersRR.lateralVelGain, MotorParametersRR.headingVelGain
-            )
-                    .compute(txWorldTarget, pose, robotVelRobot);
+            PoseVelocity2dDual<Time> command;
+            final MotorFeedforward feedforward;
+            if (MatchConfig.robot19429) {
+                command = new HolonomicController(
+                        MotorParametersRR19429.axialGain, MotorParametersRR19429.lateralGain, MotorParametersRR19429.headingGain,
+                        MotorParametersRR19429.axialVelGain, MotorParametersRR19429.lateralVelGain, MotorParametersRR19429.headingVelGain
+                )
+                        .compute(txWorldTarget, pose, robotVelRobot);
+                 feedforward = new MotorFeedforward(MotorParametersRR19429.kS,
+                        MotorParametersRR19429.kV / MotorParametersRR19429.inPerTick, MotorParametersRR19429.kA / MotorParametersRR19429.inPerTick);
+
+            } else {
+                command = new HolonomicController(
+                        MotorParametersRR20245.axialGain, MotorParametersRR20245.lateralGain, MotorParametersRR20245.headingGain,
+                        MotorParametersRR20245.axialVelGain, MotorParametersRR20245.lateralVelGain, MotorParametersRR20245.headingVelGain
+                )
+                        .compute(txWorldTarget, pose, robotVelRobot);
+                feedforward = new MotorFeedforward(MotorParametersRR19429.kS,
+                        MotorParametersRR20245.kV / MotorParametersRR20245.inPerTick, MotorParametersRR20245.kA / MotorParametersRR20245.inPerTick);
+
+            }
 
             driveCommandWriter.write(new DriveCommandMessage(command));
 
             MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
-            final MotorFeedforward feedforward = new MotorFeedforward(MotorParametersRR.kS,
-                    MotorParametersRR.kV / MotorParametersRR.inPerTick, MotorParametersRR.kA / MotorParametersRR.inPerTick);
-            double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+              double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
             double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
             double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;

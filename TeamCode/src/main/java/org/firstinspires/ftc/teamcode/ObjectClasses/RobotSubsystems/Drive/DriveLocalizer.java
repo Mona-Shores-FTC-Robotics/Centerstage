@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR19429;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR20245;
 
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MecanumKinematics;
@@ -14,6 +15,7 @@ import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.Roadrunner.Localizer;
 
@@ -61,25 +63,48 @@ public class DriveLocalizer implements Localizer {
         double headingDegrees = Math.toDegrees(headingRadians);
         Rotation2d heading = Rotation2d.exp(Robot.getInstance().getGyroSubsystem().imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         double headingDelta = heading.minus(lastHeading);
+        Twist2dDual<Time> twist;
+        if (MatchConfig.robot19429) {
 
-        Twist2dDual<Time> twist = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.forward(new MecanumKinematics.WheelIncrements<>(
-                new DualNum<Time>(new double[]{
-                        (leftFrontPosVel.position - lastLeftFrontPos),
-                        leftFrontPosVel.velocity,
-                }).times(MotorParametersRR.inPerTick),
-                new DualNum<Time>(new double[]{
-                        (leftRearPosVel.position - lastLeftBackPos),
-                        leftRearPosVel.velocity,
-                }).times(MotorParametersRR.inPerTick),
-                new DualNum<Time>(new double[]{
-                        (rightRearPosVel.position - lastRightBackPos),
-                        rightRearPosVel.velocity,
-                }).times(MotorParametersRR.inPerTick),
-                new DualNum<Time>(new double[]{
-                        (rightFrontPosVel.position - lastRightFrontPos),
-                        rightFrontPosVel.velocity,
-                }).times(MotorParametersRR.inPerTick)
-        ));
+             twist = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.forward(new MecanumKinematics.WheelIncrements<>(
+                    new DualNum<Time>(new double[]{
+                            (leftFrontPosVel.position - lastLeftFrontPos),
+                            leftFrontPosVel.velocity,
+                    }).times(MotorParametersRR19429.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (leftRearPosVel.position - lastLeftBackPos),
+                            leftRearPosVel.velocity,
+                    }).times(MotorParametersRR19429.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightRearPosVel.position - lastRightBackPos),
+                            rightRearPosVel.velocity,
+                    }).times(MotorParametersRR19429.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightFrontPosVel.position - lastRightFrontPos),
+                            rightFrontPosVel.velocity,
+                    }).times(MotorParametersRR19429.inPerTick)
+            ));
+        } else
+        {
+            twist = Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.forward(new MecanumKinematics.WheelIncrements<>(
+                    new DualNum<Time>(new double[]{
+                            (leftFrontPosVel.position - lastLeftFrontPos),
+                            leftFrontPosVel.velocity,
+                    }).times(MotorParametersRR20245.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (leftRearPosVel.position - lastLeftBackPos),
+                            leftRearPosVel.velocity,
+                    }).times(MotorParametersRR20245.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightRearPosVel.position - lastRightBackPos),
+                            rightRearPosVel.velocity,
+                    }).times(MotorParametersRR20245.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightFrontPosVel.position - lastRightFrontPos),
+                            rightFrontPosVel.velocity,
+                    }).times(MotorParametersRR20245.inPerTick)
+            ));
+        }
 
         lastLeftFrontPos = leftFrontPosVel.position;
         lastLeftBackPos = leftRearPosVel.position;
