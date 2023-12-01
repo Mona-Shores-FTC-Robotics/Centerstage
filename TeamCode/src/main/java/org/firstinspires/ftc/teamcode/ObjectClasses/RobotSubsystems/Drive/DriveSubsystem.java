@@ -47,7 +47,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double F =8; // default = 0
     }
 
-    public static class ParamsRRMona19429 {
+    public static class ParamsRRMona {
         public double inPerTick = 0.0313;  // was 0.04122; lower numbers move robot more
         public double lateralInPerTick =0.0283;        // was 0.04329; lower numbers move robot more
         public double trackWidthTicks =631.8289216104534;  //631.8289216104534
