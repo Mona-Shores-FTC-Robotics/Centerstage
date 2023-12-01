@@ -58,6 +58,7 @@ public class Spike_Backdrop_Park_Auto extends LinearOpMode {
             gamepadHandling.getDriverGamepad().readButtons();
             gamepadHandling.lockColorAndSide();
             telemetry.update();
+            telemetry.addData("Are we 19429? ", MatchConfig.robot19429);
             sleep(10);
         }
 

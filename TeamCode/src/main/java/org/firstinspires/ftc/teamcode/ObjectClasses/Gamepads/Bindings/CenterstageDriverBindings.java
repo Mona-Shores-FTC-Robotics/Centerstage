@@ -155,18 +155,14 @@
             // RIGHT TRIGGER - Fly Drone                            //
             //                                                      //
             //////////////////////////////////////////////////////////
-
-            Command flyDrone =
-                    new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY);
-
-            Command armDrone =
-                    new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.HOLD);
-
+            SequentialCommandGroup flyDrone = new SequentialCommandGroup(
+                    new WaitCommand(1000),
+                    new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
 
             Trigger rightTriggerDown = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3);
             Trigger rightTriggerUp = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) < 0.3);
             rightTriggerDown.whenActive(flyDrone);
-            rightTriggerUp.whenActive(armDrone);
+            rightTriggerUp.cancelWhenActive(flyDrone);
 
 
         }

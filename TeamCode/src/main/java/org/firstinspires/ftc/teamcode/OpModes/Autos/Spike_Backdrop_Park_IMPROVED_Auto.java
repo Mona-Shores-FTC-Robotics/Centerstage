@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.OpModes.Autos;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
+
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
@@ -30,7 +33,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropParkImproved;
-
+@Disabled
 @Autonomous(name = "Spike Backdrop Park Auto IMPROVED")
 public class Spike_Backdrop_Park_IMPROVED_Auto extends LinearOpMode {
 

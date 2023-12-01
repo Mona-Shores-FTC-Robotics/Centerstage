@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeStraightUpTheMiddle;
-
+@Disabled
 @Autonomous(name = "Spike Straight Up The Middle")
 public class SpikeStraightUpTheMiddle extends LinearOpMode {
 
