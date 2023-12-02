@@ -81,23 +81,47 @@ public final class Constants {
   // BACKDROP POSES //
   ////////////////////
 
-//  public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, 29.264, FACE_TOWARD_BACKSTAGE);
-//  public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -29.264, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, TILE+HALF_TILE-QUARTER_TILE+1.5, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -TILE-QUARTER_TILE-1.5, FACE_TOWARD_BACKSTAGE);
+  //Actual Right Coloma Poses
+  public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2 * TILE, TILE + HALF_TILE - QUARTER_TILE - 1.5, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2 * TILE, -TILE - TILE + QUARTER_TILE - 1.5, FACE_TOWARD_BACKSTAGE);
 
-//  public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, 35.264, FACE_TOWARD_BACKSTAGE);
-//  public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -35.264, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
+  //Infraed Fruitport Poses
+//    public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, TILE+HALF_TILE-QUARTER_TILE+1.5, FACE_TOWARD_BACKSTAGE);
+//   public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -TILE-TILE+QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
 
-//  public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, 41.264, FACE_TOWARD_BACKSTAGE);
+  //Perfect Poses
+//   public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, 29.264, FACE_TOWARD_BACKSTAGE);
 //  public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -41.264, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, TILE+HALF_TILE+QUARTER_TILE-1.5, FACE_TOWARD_BACKSTAGE);
-  public static Pose2d RED_BACKDROP_RIGHT = new Pose2d(2*TILE, -TILE-TILE+QUARTER_TILE+1.5, FACE_TOWARD_BACKSTAGE);
+
+  //Actual Center Coloma Poses
+  public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2 * TILE, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2 * TILE, -TILE - HALF_TILE, FACE_TOWARD_BACKSTAGE);
+
+//  //Infrared Fruitport Poses
+//    public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, TILE+HALF_TILE+2, FACE_TOWARD_BACKSTAGE);
+//    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -TILE-HALF_TILE-2, FACE_TOWARD_BACKSTAGE);
+
+  // Perfect Poses
+//    public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, 35.264, FACE_TOWARD_BACKSTAGE);
+//    public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -35.264, FACE_TOWARD_BACKSTAGE);
 
 
-//  public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-5, 35.264, FACE_TOWARD_BACKSTAGE);
+  //Actual Left Coloma Pose
+  public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2 * TILE, TILE + HALF_TILE + QUARTER_TILE + 1.5, FACE_TOWARD_BACKSTAGE);
+  public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2 * TILE, -TILE - QUARTER_TILE + 1.5, FACE_TOWARD_BACKSTAGE);
+
+  //  Fruitport Infrared
+//   public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, TILE+HALF_TILE+QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+//    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -TILE-QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
+
+  //  Perfect Poses
+//    public static Pose2d BLUE_BACKDROP_LEFT = new Pose2d(2*TILE, 41.264, FACE_TOWARD_BACKSTAGE);
+//    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -29.264, FACE_TOWARD_BACKSTAGE);
+
+
+
+
+  //  public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-5, 35.264, FACE_TOWARD_BACKSTAGE);
 //  public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-5, -35.264, FACE_TOWARD_BACKSTAGE);
   public static Pose2d RED_BACKDROP_STAGING = new Pose2d(2*TILE-10, -TILE-HALF_TILE, FACE_TOWARD_BACKSTAGE);
   public static Pose2d BLUE_BACKDROP_STAGING = new Pose2d(2*TILE-10, TILE+HALF_TILE, FACE_TOWARD_BACKSTAGE);

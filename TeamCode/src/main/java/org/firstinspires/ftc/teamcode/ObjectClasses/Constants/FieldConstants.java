@@ -63,8 +63,8 @@ public class FieldConstants {
 
     //  public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2*TILE, 29.264, FACE_TOWARD_BACKSTAGE);
 //  public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2*TILE, -29.264, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2 * TILE, TILE + HALF_TILE - QUARTER_TILE + 1.5, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2 * TILE, -TILE - QUARTER_TILE - 1.5, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_BACKDROP_RIGHT = new Pose2d(2 * TILE, TILE + HALF_TILE - QUARTER_TILE - 1.5, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d RED_BACKDROP_LEFT = new Pose2d(2 * TILE, -TILE - QUARTER_TILE + 1.5, FACE_TOWARD_BACKSTAGE);
 
     //  public static Pose2d BLUE_BACKDROP_CENTER = new Pose2d(2*TILE, 35.264, FACE_TOWARD_BACKSTAGE);
 //  public static Pose2d RED_BACKDROP_CENTER = new Pose2d(2*TILE, -35.264, FACE_TOWARD_BACKSTAGE);
