@@ -62,6 +62,13 @@ public class ShoulderSubsystem extends SubsystemBase {
         shoulder.setPosition(currentState.position);
     }
 
+    public void initTele() {
+        SetRobotSpecificParameters();
+        currentState= ShoulderStates.INTAKE;
+        shoulder.setPosition(currentState.position);
+    }
+
+
     private void SetRobotSpecificParameters() {
         if (MatchConfig.robot19429){
             ShoulderStates.INTAKE.SetState(shoulderParameters19429.INTAKE_VALUE);
