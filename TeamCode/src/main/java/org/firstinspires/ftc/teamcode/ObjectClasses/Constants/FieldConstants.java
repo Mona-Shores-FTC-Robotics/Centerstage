@@ -156,7 +156,7 @@ public class FieldConstants {
     public static Pose2d BLUE_NEUTRAL_PIXEL_CENTERSPIKE = new Pose2d(-64.281 + HALF_ROBOT_LENGTH, 23.469, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_NEUTRAL_PIXEL_TRUSS = new Pose2d(-64.281 + HALF_ROBOT_LENGTH, 35.469, FACE_TOWARD_BACKSTAGE);
 
-    public static Pose2d BLUE_NEUTRAL_PIXEL_PICKUP = new Pose2d(-TILE * 2 - HALF_TILE, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_PICKUP = new Pose2d(-TILE * 2 - HALF_TILE -QUARTER_TILE+.5, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     ///////////////////
     // Parking Poses //
