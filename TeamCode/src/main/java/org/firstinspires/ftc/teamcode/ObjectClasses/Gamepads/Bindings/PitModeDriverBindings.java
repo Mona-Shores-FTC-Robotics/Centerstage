@@ -72,7 +72,7 @@ public class PitModeDriverBindings {
         gamepad.getGamepadButton(GamepadKeys.Button.A)
                 .whenPressed(
                         new ParallelCommandGroup(
-                                new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED),
+                                new MoveClimberArmCommand(climberSubsystem, ClimberSubsystem.ClimberArmStates.STOWED_STEP2),
                                 new RotateShoulderCommand(shoulderSubsystem, ShoulderSubsystem.ShoulderStates.REST),
                                 new ActuateGripperCommand(gripperSubsystem, GripperSubsystem.GripperStates.REST))
                         );

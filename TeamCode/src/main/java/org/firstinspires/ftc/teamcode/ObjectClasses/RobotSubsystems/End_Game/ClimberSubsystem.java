@@ -4,36 +4,46 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
+
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 
 @Config
 public class ClimberSubsystem extends SubsystemBase {
 
     public static class ClimberParameters  {
 
-        public ClimberArmStates CLIMBER_ARM_STARTING_STATE = ClimberArmStates.STOWED;
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
-        public double STOWED_VALUE = .5;
+        public double STOWED_STEP1_VALUE = .6;
+        public double STOWED_STEP2_VALUE = .53;
+        public double STOWED_STEP3_VALUE = .5;
         public double READY_VALUE = .85;
 
         public double ROBOT_DOWN_POWER = -.8;
         public double ROBOT_UP_POWER = .8;
     }
 
+    //.6 -> .53 -> .5 add time between
+
     public static ClimberParameters climberParameters = new ClimberParameters();
 
     public enum ClimberArmStates {
-        STOWED (.5),
-        READY (.85);
+        STOWED_STEP1,
+        STOWED_STEP2,
+        STOWED_STEP3,
+        READY;
+
         public double position;
-        ClimberArmStates(double p) {
-            this.position = p;
+        static {
+            STOWED_STEP1.position = climberParameters.STOWED_STEP1_VALUE;
+            STOWED_STEP2.position = climberParameters.STOWED_STEP2_VALUE;
+            STOWED_STEP3.position = climberParameters.STOWED_STEP3_VALUE;
+            READY.position = climberParameters.READY_VALUE;
         }
+
         void SetState(double pos){
             this.position = pos;
         }
@@ -75,10 +85,11 @@ public class ClimberSubsystem extends SubsystemBase {
     }
 
     private void climberArmInit() {
-        currentClimberArmState = climberParameters.CLIMBER_ARM_STARTING_STATE;
+        SetClimberArmStatesValues();
     }
 
     private void winchMotorInit() {
+        SetWinchStatesValues();
         currentWinchMotorState = climberParameters.WINCH_MOTOR_STARTING_STATE;
         winchMotor.setDirection(DcMotor.Direction.REVERSE);
         winchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -90,10 +101,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public void periodic(){
         //Save the values to the enum every loop so we can adjust in the dashboard
-        ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
-        ClimberArmStates.STOWED.SetState(climberParameters.STOWED_VALUE);
-        WinchMotorStates.ROBOT_DOWN.SetState(climberParameters.ROBOT_DOWN_POWER);
-        WinchMotorStates.ROBOT_UP.SetState(climberParameters.ROBOT_UP_POWER);
+        SetClimberArmStatesValues();
+        SetWinchStatesValues();
 
         //Add the Winch Motor State to our loop telemetry packet
         MatchConfig.telemetryPacket.put("End Game Winch State", currentWinchMotorState);
@@ -101,4 +110,19 @@ public class ClimberSubsystem extends SubsystemBase {
         //Add the Climber Arm State to our loop telemetry packet
         MatchConfig.telemetryPacket.put("Climber Arm State", currentClimberArmState);
     }
+
+    private void SetWinchStatesValues() {
+        WinchMotorStates.ROBOT_DOWN.SetState(climberParameters.ROBOT_DOWN_POWER);
+        WinchMotorStates.ROBOT_UP.SetState(climberParameters.ROBOT_UP_POWER);
+    }
+
+    private void SetClimberArmStatesValues() {
+        ClimberArmStates.READY.SetState(climberParameters.READY_VALUE);
+        ClimberArmStates.STOWED_STEP1.SetState(climberParameters.STOWED_STEP1_VALUE);
+        ClimberArmStates.STOWED_STEP2.SetState(climberParameters.STOWED_STEP2_VALUE);
+        ClimberArmStates.STOWED_STEP3.SetState(climberParameters.STOWED_STEP3_VALUE);
+    }
+
+
 }
+

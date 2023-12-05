@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteSuper;
 
 public class RoutesSuper {
@@ -54,7 +56,7 @@ public class RoutesSuper {
 
     public static void BuildRoutes() {
 
-        Action dropPurple = new SleepAction(.1);
+
 
         //////////
         // LEFT //
@@ -244,16 +246,17 @@ public class RoutesSuper {
         }
 
         public Action ScorePixelAction(Pose2d scorePose, PosesForRouteSuper posesForRouteSuper) {
+
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteSuper),
-                            new MoveLiftSlideAction(AUTO_LOW),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
+                            new MoveLiftSlideAction(AUTO_LOW)),
                     new SleepAction(.25),
                     new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                     new SleepAction(.25),
-                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
-                    new SleepAction(.25),
+                    new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
+                    new SleepAction(.35),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteSuper),
                             new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
@@ -261,6 +264,9 @@ public class RoutesSuper {
                             new MoveLiftSlideAction(SAFE)),
                     new MoveLiftSlideAction(HOME),
                     new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+
+
+
             );
             return scorePixel;
         }
@@ -288,8 +294,10 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
@@ -299,9 +307,12 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteSuper posesForRouteSuper) {
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .setTangent(posesForRouteSuper.startingTangent)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)

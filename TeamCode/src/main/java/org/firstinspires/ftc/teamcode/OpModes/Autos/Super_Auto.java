@@ -4,26 +4,34 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConsta
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueAudienceBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueBackstageBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redAudienceBotTeamPropRightRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redBackstageBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redBackstageBotTeamPropLeftRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redBackstageBotTeamPropRightRoute;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.PushPropScoreFiveRoute;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
-import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
+import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeStraightUpTheMiddle;
 
-@Disabled
-@Autonomous(name = "PushPropScoreFive")
-public class PushPropScoreFive extends LinearOpMode {
+@Autonomous(name = "Super Auto")
+public class Super_Auto extends LinearOpMode {
 
     private InitVisionProcessor.TeamPropLocation teamPropLoc;
     private InitVisionProcessor.AllianceColor allianceColor;
@@ -35,6 +43,7 @@ public class PushPropScoreFive extends LinearOpMode {
     public void runOpMode() {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
+
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
@@ -51,7 +60,7 @@ public class PushPropScoreFive extends LinearOpMode {
         MatchConfig.CheckRobotConfig(hardwareMap);
 
         //Build all the routes so we can select one quickly later
-        PushPropScoreFiveRoute.BuildRoutes();
+        RoutesSpikeStraightUpTheMiddle.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
@@ -106,7 +115,7 @@ public class PushPropScoreFive extends LinearOpMode {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
-                selectedRoute = redAudienceBotTeamPropLeftRoute;
+                selectedRoute = redAudienceBotTeamPropCenterRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
                 selectedRoute = redAudienceBotTeamPropRightRoute;
             } else {
