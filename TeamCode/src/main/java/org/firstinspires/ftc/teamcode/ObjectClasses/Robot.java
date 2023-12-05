@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.GyroSu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ClimberSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
@@ -33,6 +34,7 @@ public class Robot {
     private static LiftSlideSubsystem liftSlideSubsystem;
     private static ShoulderSubsystem shoulderSubsystem;
     private static DroneSubsystem droneSubsystem;
+    private static PixelPusherSubsystem pixelPusherSubsystem;
 
     private static ClimberSubsystem climberSubsystem;
 
@@ -86,6 +88,7 @@ public class Robot {
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
                 droneSubsystem = new DroneSubsystem(hardwareMap, "drone");
                 climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
+                pixelPusherSubsystem = new PixelPusherSubsystem(hardwareMap, "pixelpusher");
                 break;
             }
             case ROBOT_PIT_MODE: {
@@ -168,7 +171,7 @@ public class Robot {
                 shoulderSubsystem.initTele();
                 droneSubsystem.init();
                 climberSubsystem.init();
-                 //Lights for identifying pixels in intake
+                pixelPusherSubsystem.initTeleOp();
                 break;
             }
             case ROBOT_PIT_MODE: {
@@ -201,6 +204,8 @@ public class Robot {
                 gripperSubsystem.init();
                 liftSlideSubsystem.init();
                 shoulderSubsystem.init();
+                pixelPusherSubsystem.init();
+
 
                 break;
             }
@@ -216,7 +221,7 @@ public class Robot {
     public ShoulderSubsystem getShoulderSubsystem()  {return shoulderSubsystem;}
     public LinearOpMode getActiveOpMode()  {return activeOpMode;}
     public DroneSubsystem getDroneSubsystem(){return droneSubsystem;}
-
+    public PixelPusherSubsystem getPixelPusherSubsystem(){return pixelPusherSubsystem;}
     public ClimberSubsystem getClimberSubsystem(){return climberSubsystem;};
 
 

@@ -40,6 +40,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Mecanu
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeReverse;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteStraight;
 
 import java.util.Arrays;
@@ -254,8 +256,11 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteStraight posesForRouteStraight) {
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
                     .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log())
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteStraight.backdropStagingPose, posesForRouteStraight.backdropStagingPose.heading.log())
                     .build();
@@ -263,11 +268,12 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteStraight posesForRouteStraight) {
-            Action dropPurple = new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED);
+
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
 
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
                     .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log())
-                    .stopAndAdd(dropPurple)
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRouteStraight.neutralStagingPose), posesForRouteStraight.neutralPickupPose.heading.log())
                     .stopAndAdd(new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE))

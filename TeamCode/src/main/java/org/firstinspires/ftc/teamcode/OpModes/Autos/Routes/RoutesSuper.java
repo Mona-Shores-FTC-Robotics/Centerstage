@@ -25,6 +25,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteSuper;
 
 public class RoutesSuper {
@@ -54,7 +56,7 @@ public class RoutesSuper {
 
     public static void BuildRoutes() {
 
-        Action dropPurple = new SleepAction(.1);
+
 
         //////////
         // LEFT //
@@ -288,8 +290,10 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)
@@ -299,9 +303,12 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteSuper posesForRouteSuper) {
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .setTangent(posesForRouteSuper.startingTangent)
                     .splineToLinearHeading(posesForRouteSuper.spikePosePast, posesForRouteSuper.spikePosePast.heading.log())
+                    .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.spikePoseDrop, -posesForRouteSuper.spikePoseDrop.heading.log())
                     .setReversed(true)

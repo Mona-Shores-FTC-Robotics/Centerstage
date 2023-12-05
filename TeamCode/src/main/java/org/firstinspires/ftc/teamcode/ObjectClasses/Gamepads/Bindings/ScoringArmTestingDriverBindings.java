@@ -94,7 +94,7 @@
                     .whenPressed(new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.READY));
 
             gamepad.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                    .whenPressed(new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED));
+                    .whenPressed(new MoveClimberArmCommand(Robot.getInstance().getClimberSubsystem(), ClimberSubsystem.ClimberArmStates.STOWED_STEP2));
 
 
 
