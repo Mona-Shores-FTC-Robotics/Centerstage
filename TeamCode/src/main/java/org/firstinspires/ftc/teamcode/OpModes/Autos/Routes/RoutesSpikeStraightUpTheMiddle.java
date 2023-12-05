@@ -5,13 +5,21 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.L
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark.ACCELERATION_OVERRIDE;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeBackdropPark.VELOCITY_OVERRIDE;
 
 
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -31,7 +39,10 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.Shoulder
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeReverse;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteStraight;
+
+import java.util.Arrays;
 
 
 public class RoutesSpikeStraightUpTheMiddle {
@@ -134,7 +145,7 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static class RouteBuilder {
         Action AutoDriveToBackDrop(Pose2d scorePose, PosesForRouteStraight posesForRouteStraight) {
             Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(posesForRouteStraight.backdropStagingPose)
-                    .splineToLinearHeading(scorePose, TANGENT_TOWARD_BACKSTAGE)
+                    .splineToLinearHeading(new Pose2d(scorePose.position.x+8, scorePose.position.y, scorePose.heading.log()), TANGENT_TOWARD_BACKSTAGE)
                     .build();
             return autoDriveToBackdrop;
         }
@@ -158,18 +169,20 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action NeutralStagingToBackdropStaging(PosesForRouteStraight posesForRouteStraight) {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteStraight.neutralStagingPose)
                     .lineToX(posesForRouteStraight.backdropStagingPose.position.x)
+                    .stopAndAdd(new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED))
+                    .stopAndAdd(new TurnIntakeOff())
                     .build();
             return neutralStagingToBackdropStaging;
         }
 
         public Action PickupPixels(PosesForRouteStraight posesForRouteStraight) {
             SequentialAction pickupPixels = new SequentialAction(
+                    new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                     new ParallelAction(
-                            new TurnIntakeOn(),
+                            new TurnIntakeReverse(),
                             new RouteBuilder().AutoDriveToNeutralStack(posesForRouteStraight)),
-                    new SleepAction(.3),
-                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteStraight),
-                    new TurnIntakeOff());
+                    new SleepAction(.2),
+                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteStraight));
             return pickupPixels;
         }
 
@@ -181,9 +194,26 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action AutoDriveToNeutralStack(PosesForRouteStraight posesForRouteStraight) {
+
+            VelConstraint overrideVelConstraint =
+                    new MinVelConstraint(Arrays.asList(
+                            Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(25),
+                            new AngularVelConstraint(28)
+                    ));
+
+            AccelConstraint overrideAccelConstraint = new ProfileAccelConstraint(-40, 40);
+
+
+
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteStraight.neutralStagingPose)
                     .setReversed(true)
-                    .lineToX(posesForRouteStraight.neutralPickupPose.position.x)
+                    .lineToX(posesForRouteStraight.neutralPickupPose.position.x, overrideVelConstraint,overrideAccelConstraint)
+                    .stopAndAdd(new TurnIntakeOn())
+                    .setReversed(true)
+                    .lineToX(posesForRouteStraight.neutralStagingPose.position.x, overrideVelConstraint,overrideAccelConstraint)
+                    .setReversed(true)
+                    .lineToX(posesForRouteStraight.neutralPickupPose.position.x, overrideVelConstraint,overrideAccelConstraint)
+                    .waitSeconds(.2)
                     .build();
             return autoDriveToNeutralStack;
         }
@@ -202,11 +232,12 @@ public class RoutesSpikeStraightUpTheMiddle {
                             new SleepAction(.4),
                             new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                             new SleepAction(.4),
-                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
-                            new SleepAction(.4),
+                            new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
+                            new SleepAction(.8),
                             new ParallelAction(
                                     new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteStraight),
                                     new SequentialAction(
+                                            new SleepAction(.8),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
@@ -232,10 +263,14 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteStraight posesForRouteStraight) {
+            Action dropPurple = new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED);
+
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
                     .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log())
+                    .stopAndAdd(dropPurple)
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRouteStraight.neutralStagingPose), posesForRouteStraight.neutralPickupPose.heading.log())
+                    .stopAndAdd(new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE))
                     .turnTo(posesForRouteStraight.neutralPickupPose.heading.log())
                     .build();
             return pushTeamPropAndStage;

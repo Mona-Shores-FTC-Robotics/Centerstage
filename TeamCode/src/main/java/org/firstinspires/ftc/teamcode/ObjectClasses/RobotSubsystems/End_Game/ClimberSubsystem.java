@@ -18,12 +18,14 @@ public class ClimberSubsystem extends SubsystemBase {
         public ClimberArmStates CLIMBER_ARM_STARTING_STATE = ClimberArmStates.STOWED;
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
-        public double STOWED_VALUE = .5;
+        public double STOWED_VALUE = .55;
         public double READY_VALUE = .85;
-
+    //todo .45 .55 retract
         public double ROBOT_DOWN_POWER = -.8;
         public double ROBOT_UP_POWER = .8;
     }
+
+    //.6 -> .53 -> .5 add time between
 
     public static ClimberParameters climberParameters = new ClimberParameters();
 
