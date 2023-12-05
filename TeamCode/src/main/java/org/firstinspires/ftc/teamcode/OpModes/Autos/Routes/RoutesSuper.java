@@ -246,16 +246,17 @@ public class RoutesSuper {
         }
 
         public Action ScorePixelAction(Pose2d scorePose, PosesForRouteSuper posesForRouteSuper) {
+
             SequentialAction scorePixel = new SequentialAction(
                     new ParallelAction(
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
                             new RouteBuilder().AutoDriveToBackDrop(scorePose, posesForRouteSuper),
-                            new MoveLiftSlideAction(AUTO_LOW),
-                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP)),
+                            new MoveLiftSlideAction(AUTO_LOW)),
                     new SleepAction(.25),
                     new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                     new SleepAction(.25),
-                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.AUTO_MID),
-                    new SleepAction(.25),
+                    new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
+                    new SleepAction(.35),
                     new ParallelAction(
                             new RouteBuilder().AutoDriveFromBackDrop(scorePose, posesForRouteSuper),
                             new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
@@ -263,6 +264,9 @@ public class RoutesSuper {
                             new MoveLiftSlideAction(SAFE)),
                     new MoveLiftSlideAction(HOME),
                     new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+
+
+
             );
             return scorePixel;
         }
