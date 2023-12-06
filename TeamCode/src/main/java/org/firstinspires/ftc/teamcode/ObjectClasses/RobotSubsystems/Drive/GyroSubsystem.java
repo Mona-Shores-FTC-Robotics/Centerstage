@@ -25,8 +25,6 @@ public class GyroSubsystem extends SubsystemBase {
     public double currentRelativeYawDegrees;
     public double currentRelativeYawRadians;
 
-    private double lastRelativeYawDegrees;
-
     public double offsetFromAbsoluteYawDegrees;
 
     public GyroSubsystem(final HardwareMap hMap, final String name) {
