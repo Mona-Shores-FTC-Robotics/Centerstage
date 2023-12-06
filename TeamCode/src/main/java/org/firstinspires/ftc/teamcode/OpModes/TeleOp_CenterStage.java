@@ -105,7 +105,7 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         MatchConfig.telemetryPacket = new TelemetryPacket();
 
-        Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.MID);
+        Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW);
 
         while (opModeIsActive())
         {
