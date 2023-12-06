@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -8,18 +9,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 
+@Config
 public class DroneSubsystem extends SubsystemBase {
 
     public static class DroneParameters {
         public DroneDeployState DRONE_DEPLOY_STARTING_STATE = DroneDeployState.HOLD;
-        public double HOLD_VALUE = .5;
+        public double HOLD_VALUE = .35;
         public double FLY_VALUE = 1;
     }
 
     public static  DroneParameters droneParameters = new DroneParameters();
 
     public enum DroneDeployState {
-        HOLD (.5),
+        HOLD (.35),
         FLY (1);
         public double position;
         DroneDeployState(double p) {

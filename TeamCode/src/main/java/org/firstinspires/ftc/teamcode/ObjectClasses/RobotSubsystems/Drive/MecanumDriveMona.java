@@ -71,7 +71,7 @@ public final class MecanumDriveMona {
         public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
     }
 
-    public static class OldParamsRRMona {
+    public static class ParamsRRMona {
         // IMU orientation
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
@@ -109,7 +109,7 @@ public final class MecanumDriveMona {
 
     }
 
-    public static class ParamsRRMona {
+    public static class NewParamsRRMona {
         // IMU orientation
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT;

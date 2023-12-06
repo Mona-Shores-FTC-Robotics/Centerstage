@@ -15,7 +15,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     public static class ClimberParameters  {
 
-        public ClimberArmStates CLIMBER_ARM_STARTING_STATE = ClimberArmStates.STOWED_STEP3;
         public WinchMotorStates WINCH_MOTOR_STARTING_STATE = WinchMotorStates.ROBOT_DOWN;
 
         public double STOWED_STEP1_VALUE = .6;
@@ -87,7 +86,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
     private void climberArmInit() {
         SetClimberArmStatesValues();
-        currentClimberArmState = climberParameters.CLIMBER_ARM_STARTING_STATE;
     }
 
     private void winchMotorInit() {

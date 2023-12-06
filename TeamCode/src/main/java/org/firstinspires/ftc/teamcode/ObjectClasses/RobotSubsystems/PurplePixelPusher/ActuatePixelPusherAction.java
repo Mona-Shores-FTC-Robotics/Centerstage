@@ -24,7 +24,7 @@ public class ActuatePixelPusherAction implements Action {
 
     @Override
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-        telemetryPacket.put("Current PixelPusher State", Robot.getInstance().getGripperSubsystem().currentState);
+        telemetryPacket.put("Current PixelPusher State", Robot.getInstance().getPixelPusherSubsystem().currentState);
         telemetryPacket.put("Target PixelPusher State: ", targetState);
         Robot.getInstance().getPixelPusherSubsystem().pixelPusher.setPosition(targetPosition);
         Robot.getInstance().getPixelPusherSubsystem().currentState = targetState;
