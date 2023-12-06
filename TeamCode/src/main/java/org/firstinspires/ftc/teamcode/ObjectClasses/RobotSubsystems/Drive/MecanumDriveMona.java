@@ -78,36 +78,38 @@ public final class MecanumDriveMona {
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
-        public double inPerTick = 0.0313;  // was 0.04122; lower numbers move robot more
-        public double lateralInPerTick =0.0283; //this is the amount that worked for both robots...
-        public double trackWidthTicks =631.8289216104534;  //631.8289216104534
+        // drive model parameters
+        public double inPerTick = 0.041; //73inches /2312.5 ticks
+        public double lateralInPerTick = .045; //73inches / 2119.75 ticks
+        public double trackWidthTicks = 616.837658902129;
 
-        //new values
-        public double kS = 0.9574546275336608;  //0.9574546275336608
-        public double kV = 0.004264232249424524; //=0.004264232249424524;
-        public double kA =0.00055;
+        // feedforward parameters (in tick units)
+        public double kS = 1.89;
+        public double kV = 0.00231;
+        public double kA = .0001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel =25;
-        public double minProfileAccel =-30;
-        public double maxProfileAccel =30;
+        public double maxWheelVel = 15;
+        public double minProfileAccel = -15;
+        public double maxProfileAccel = 15;
 
         // turn profile parameters (in radians)
-        public double maxAngVel =Math.PI; // shared with path
-        public double maxAngAccel =Math.PI;
+        public double maxAngVel = Math.PI; // shared with path
+        public double maxAngAccel = Math.PI;
 
-        //These are being used in the run part of the trajectory and turn action so they should be live updating.
         // path controller gains
+        public double axialGain = 11;
+        public double lateralGain = 4;
+        public double headingGain = 4; // shared with turn
 
-        public double axialGain =12;
-        public double lateralGain =10;
-        public double headingGain =6; // shared with turn
-
-        public double axialVelGain =1.1;
-        public double lateralVelGain =1.1;
-        public double headingVelGain =1.1; // shared with turn
+        public double axialVelGain = .5;
+        public double lateralVelGain = .8;
+        public double headingVelGain = .8; // shared with turn
 
     }
+
+
+
 
     public static class NewParamsRRMona {
         // IMU orientation
@@ -357,6 +359,8 @@ public final class MecanumDriveMona {
                 defaultVelConstraint, defaultAccelConstraint,
                 0.25, 0.1
         );
+
+
     }
 
 
