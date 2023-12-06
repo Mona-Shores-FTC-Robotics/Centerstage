@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.DriveTrainConstants;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParameters;
+import static java.lang.Math.abs;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,7 +9,6 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
@@ -20,6 +18,13 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.Visio
 
 @Config
 public class DriveSubsystem extends SubsystemBase {
+
+    public static class ParamsDriveTrainConstants {
+        // DriveTrain physical constants
+        public double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
+        public double TICKS_PER_REV = 384.5;
+        public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+    }
 
     public static class DriveParameters {
         public double DRIVE_SPEED_FACTOR=.9;
@@ -48,6 +53,9 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public static DriveParameters driveParameters= new DriveParameters();
+    public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
+    public static ParamsDriveTrainConstants DriveTrainConstants = new ParamsDriveTrainConstants();
+
 
     public enum DriveStates {
         MANUAL_DRIVE,
@@ -62,19 +70,22 @@ public class DriveSubsystem extends SubsystemBase {
 
     public DriveStates currentState = DriveStates.MANUAL_DRIVE;
 
+  // AprilTag Driving Variables
+    private boolean overrideAprilTagDriving = false;
+    public double drive, strafe, turn;
+    public double aprilTagDrive, aprilTagStrafe, aprilTagTurn;
+    public double last_drive=0, last_strafe=0, last_turn=0;
+    public double current_drive_ramp = 0, current_strafe_ramp=0, current_turn_ramp=0;
+
+    public double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
+
     public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
 
-    public MecanumDriveMona mecanumDrive;
-
-    private boolean overrideAprilTagDriving = false;
+    public MecanumDrive mecanumDrive;
 
     public VisionSubsystem visionSubsystem;
     public boolean aprilTagAutoDriving;
     public boolean fieldOrientedControl;
-
-    public double drive;
-    public double strafe;
-    public double turn;
 
     public double leftYAdjusted;
     public double leftXAdjusted;
@@ -83,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        mecanumDrive = new MecanumDriveMona();
+        mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
     }
 
     private GamepadHandling gamepadHandling;
@@ -94,7 +105,6 @@ public class DriveSubsystem extends SubsystemBase {
         gamepadHandling = gpadHandling;
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
-        mecanumDrive.init();
         currentState = DriveStates.MANUAL_DRIVE;
     }
 
@@ -135,13 +145,6 @@ public class DriveSubsystem extends SubsystemBase {
         }
 
         DashboardTelemetryDriveTrain();
-        mecanumDrive.SetRoadRunnerParameters();
-
-        //update the PIDFCoefficients every loop so that changes we make in the dashboard take effect
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightFront.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.rightBack.setVelocityPIDFCoefficients(MotorParameters.P, MotorParameters.I, MotorParameters.D, MotorParameters.F);
     }
 
     private void DashboardTelemetryDriveTrain() {
@@ -150,14 +153,10 @@ public class DriveSubsystem extends SubsystemBase {
         c = MatchConfig.telemetryPacket.fieldOverlay();
 
         //Lets just look at the Left Front wheel speed to get an idea of speed of the robot
-        double targetSpeedLF = Math.round(100.0 * mecanumDrive.leftFrontTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedLF = Math.round(100.0 * mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
+
         double powerLF = Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower();
 
         MatchConfig.telemetryPacket.put("Drive Subsystem State: ", currentState);
-        MatchConfig.telemetryPacket.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) + "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * powerLF) / 100.0);
-        MatchConfig.telemetryPacket.put("LF Speed", actualSpeedLF);
-        MatchConfig.telemetryPacket.put("LF Target", targetSpeedLF);
         MatchConfig.telemetryPacket.put("LF Power", powerLF);
 
         MatchConfig.telemetryPacket.put("x", mecanumDrive.pose.position.x);
@@ -173,13 +172,6 @@ public class DriveSubsystem extends SubsystemBase {
         mecanumDrive.drawRobot(c, mecanumDrive.pose);
     }
 
-    public void DriverStationTelemetry() {
-        double targetSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftBackTargetSpeed / DriveTrainConstants.TICKS_PER_REV);
-        double actualSpeedLF = Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getVelocity() / DriveTrainConstants.TICKS_PER_REV);
-
-        Robot.getInstance().getActiveOpMode().telemetry.addLine("LF" + " Speed: " + JavaUtil.formatNumber(actualSpeedLF, 4, 1) +
-                "/" + JavaUtil.formatNumber(targetSpeedLF, 4, 1) + " " + "Power: " + Math.round(100.0 * Robot.getInstance().getDriveSubsystem().mecanumDrive.leftFront.getPower()) / 100.0);
-    }
 
     public Boolean driverGamepadIsActive(double leftY, double leftX, double rightX) {
         if     (Math.abs(leftY) > driveParameters.DEAD_ZONE ||
@@ -221,12 +213,12 @@ public class DriveSubsystem extends SubsystemBase {
                     aprilTagTimeoutTimer.reset();
                 }
                 aprilTagAutoDriving = visionSubsystem.AutoDriveToBackdrop();
-                leftYAdjusted = mecanumDrive.aprilTagDrive;
-                leftXAdjusted = mecanumDrive.aprilTagStrafe;
-                rightXAdjusted = mecanumDrive.aprilTagTurn;
-                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(mecanumDrive.aprilTagDrive, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(mecanumDrive.aprilTagStrafe, 6, 6));
-                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(mecanumDrive.aprilTagTurn, 6, 6));
+                leftYAdjusted = aprilTagDrive;
+                leftXAdjusted = aprilTagStrafe;
+                rightXAdjusted = aprilTagTurn;
+                MatchConfig.telemetryPacket.put("April Tag Drive", JavaUtil.formatNumber(aprilTagDrive, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Strafe", JavaUtil.formatNumber(aprilTagStrafe, 6, 6));
+                MatchConfig.telemetryPacket.put("April Tag Turn", JavaUtil.formatNumber(aprilTagTurn, 6, 6));
                 MatchConfig.telemetryPacket.put("AprilTag Range Error", visionSubsystem.rangeError);
                 MatchConfig.telemetryPacket.put("AprilTag Yaw Error", visionSubsystem.yawError);
                 MatchConfig.telemetryPacket.put("AprilTag xError Error", visionSubsystem.xError);
@@ -236,9 +228,9 @@ public class DriveSubsystem extends SubsystemBase {
                 if (aprilTagTimeoutTimer.seconds() > driveParameters.APRILTAG_AUTODRIVING_TIMEOUT_THRESHOLD) {
                     aprilTagAutoDriving=false;
 
-                    mecanumDrive.drive=0; mecanumDrive.strafe=0; mecanumDrive.turn=0;
-                    mecanumDrive.current_drive_ramp = 0; mecanumDrive.current_strafe_ramp=0; mecanumDrive.current_turn_ramp=0;
-                    mecanumDrive.aprilTagDrive=0; mecanumDrive.aprilTagStrafe=0; mecanumDrive.aprilTagTurn=0;
+                    drive=0; strafe=0; turn=0;
+                    current_drive_ramp = 0; current_strafe_ramp=0; current_turn_ramp=0;
+                    aprilTagDrive=0; aprilTagStrafe=0; aprilTagTurn=0;
 
                 }
 
@@ -358,4 +350,95 @@ public class DriveSubsystem extends SubsystemBase {
         mecanumDrive.leftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         mecanumDrive.rightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
+
+    public void mecanumDriveSpeedControl(double drive, double strafe, double turn) {
+
+        //I believe this is the best spot to put this for tracking our pose
+        //We had this method call in the periodic() of the Drivesystem, but that means it can be called twice a loop if we run any RR actions (e.g.follow a trajectory)
+        //putting it here, should avoid that double call
+
+        if (drive==0 && strafe ==0 && turn==0) {
+            //if power is not set to zero its jittery, doesn't work at all if we don't reset the motors back to run using encoders...
+            mecanumDrive.leftFront.setVelocity(0);
+            mecanumDrive.leftBack.setVelocity(0);
+            mecanumDrive.rightFront.setVelocity(0);
+            mecanumDrive.rightBack.setVelocity(0);
+
+            mecanumDrive.leftFront.setPower(0);
+            mecanumDrive.leftBack.setPower(0);
+            mecanumDrive.rightFront.setPower(0);
+            mecanumDrive.rightBack.setPower(0);
+
+            current_drive_ramp=0;
+            current_strafe_ramp=0;
+            current_turn_ramp=0;
+
+        } else
+        {
+            Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();
+
+            //If we see blue tags and we are red and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            //safetydrivespeedfactor is set when we lookforapriltags based on the closest backdrop apriltag we see (for the opposite alliance color)
+            if (Robot.getInstance().getVisionSubsystem().blueBackdropAprilTagFoundRecently &&
+                    MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.RED &&
+                    drive > .2) {
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
+            }
+            //If we see red tags and we are blue and we are driving toward them, then use the safetydrivespeedfactor to slow us down
+            else if (Robot.getInstance().getVisionSubsystem().redBackdropAprilTagFoundRecently &&
+                    MatchConfig.finalAllianceColor == InitVisionProcessor.AllianceColor.BLUE &&
+                    drive > .2) {
+                drive = Math.min(drive, DriveSubsystem.driveParameters.safetyDriveSpeedFactor);
+            }
+
+            current_drive_ramp = Ramp(drive, current_drive_ramp, MotorParameters.DRIVE_RAMP);
+            current_strafe_ramp = Ramp(strafe, current_strafe_ramp, MotorParameters.STRAFE_RAMP);
+            current_turn_ramp = Ramp(turn, current_turn_ramp, MotorParameters.TURN_RAMP);
+
+            double dPercent = abs(current_drive_ramp) / (abs(current_drive_ramp) + abs(current_strafe_ramp) + abs(current_turn_ramp));
+            double sPercent = abs(current_strafe_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
+            double tPercent = abs(current_turn_ramp) / (abs(current_drive_ramp) + abs(current_turn_ramp) + abs(current_strafe_ramp));
+
+            leftFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (current_strafe_ramp * sPercent) + (current_turn_ramp * tPercent));
+            rightFrontTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (-current_strafe_ramp * sPercent) + (-current_turn_ramp * tPercent));
+            leftBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (-current_strafe_ramp * sPercent) + (current_turn_ramp * tPercent));
+            rightBackTargetSpeed = DriveTrainConstants.MAX_SPEED_TICK_PER_SEC * ((current_drive_ramp * dPercent) + (current_strafe_ramp * sPercent) + (-current_turn_ramp * tPercent));
+
+            mecanumDrive.leftFront.setVelocity(leftFrontTargetSpeed);
+            mecanumDrive.rightFront.setVelocity(rightFrontTargetSpeed);
+            mecanumDrive.leftBack.setVelocity(leftBackTargetSpeed);
+            mecanumDrive.rightBack.setVelocity(rightBackTargetSpeed);
+
+            last_drive=drive;
+            last_strafe=strafe;
+            last_turn=turn;
+        }
+    }
+
+    private double Ramp(double target, double currentValue, double ramp_amount) {
+        if (Math.abs(currentValue) + MotorParameters.RAMP_THRESHOLD < Math.abs(target)) {
+            return Math.signum(target) * (Math.abs(currentValue) + ramp_amount);
+        }  else
+        {
+            return target;
+        }
+    }
+
+
+    public void mecanumDrivePowerControl (){
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
+
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+
+        mecanumDrive.leftFront.setPower(leftFrontPower);
+        mecanumDrive.rightFront.setPower(rightFrontPower);
+        mecanumDrive.leftBack.setPower(leftBackPower);
+        mecanumDrive.rightBack.setPower(rightBackPower);
+    }
+
 }
