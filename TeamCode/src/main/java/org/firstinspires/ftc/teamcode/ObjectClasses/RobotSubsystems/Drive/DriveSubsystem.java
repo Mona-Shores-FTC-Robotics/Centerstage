@@ -106,13 +106,13 @@ public class DriveSubsystem extends SubsystemBase {
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         currentState = DriveStates.MANUAL_DRIVE;
-        mecanumDrive = new MecanumDrive(Robot.getInstance().getActiveOpMode().hardwareMap, new Pose2d(0,0,0));
         overrideAprilTagDriving = false;
         drive=0; strafe=0; turn=0;
         aprilTagDrive=0; aprilTagStrafe=0; aprilTagTurn=0;
         last_drive=0; last_strafe=0; last_turn=0;
         current_drive_ramp = 0; current_strafe_ramp=0; current_turn_ramp=0;
         leftFrontTargetSpeed=0; rightFrontTargetSpeed=0; leftBackTargetSpeed=0; rightBackTargetSpeed=0;
+        mecanumDrive = new MecanumDrive(Robot.getInstance().getActiveOpMode().hardwareMap, new Pose2d(0,0,0));
     }
 
     public void periodic(){
