@@ -114,7 +114,6 @@ public class TeleOp_PostAuto extends LinearOpMode
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
                 Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
                 telemetry.addData("leftstick y",    gamepadHandling.getDriverGamepad().getLeftY());
                 telemetry.addData("leftstick x",    gamepadHandling.getDriverGamepad().getLeftX() );

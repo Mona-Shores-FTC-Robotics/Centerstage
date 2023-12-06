@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
@@ -99,7 +99,7 @@ public final class VisionSubsystem extends SubsystemBase {
     private static InitVisionProcessor initVisionProcessor; // Used for managing detection of 1) team prop; 2) Alliance Color; and 3) Side of Field
     private Telemetry telemetry;
     private LinearOpMode activeOpMode;
-    private MecanumDriveMona mecanumDrive;
+    private MecanumDrive mecanumDrive;
 
     public void periodic()
     {
@@ -611,9 +611,9 @@ public final class VisionSubsystem extends SubsystemBase {
         double strafe = ClipStrafe(yawError);
         double turn = ClipTurn(bearingError);
 
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagDrive = drive;
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagStrafe = strafe;
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.aprilTagTurn = turn;
+        Robot.getInstance().getDriveSubsystem().aprilTagDrive = drive;
+        Robot.getInstance().getDriveSubsystem().aprilTagStrafe = strafe;
+        Robot.getInstance().getDriveSubsystem().aprilTagTurn = turn;
         telemetry.addData("Auto to Right Blue Backdrop", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
     }
 
@@ -670,9 +670,11 @@ public final class VisionSubsystem extends SubsystemBase {
                 telemetry.addData("New Pose", "X %5.2f, Y %5.2f, heading %5.2f ", resetPose.position.x, resetPose.position.y, resetPose.heading.log());
                 //We are at our target, stop running the AutoDrive code
 
-                mecanumDrive.drive=0; mecanumDrive.strafe=0; mecanumDrive.turn=0;
-                mecanumDrive.current_drive_ramp = 0; mecanumDrive.current_strafe_ramp=0; mecanumDrive.current_turn_ramp=0;
-                mecanumDrive.aprilTagDrive=0; mecanumDrive.aprilTagStrafe=0; mecanumDrive.aprilTagTurn=0;
+                DriveSubsystem driveSubsystem = Robot.getInstance().getDriveSubsystem();
+
+                driveSubsystem.drive=0; driveSubsystem.strafe=0; driveSubsystem.turn=0;
+                driveSubsystem.current_drive_ramp = 0; driveSubsystem.current_strafe_ramp=0; driveSubsystem.current_turn_ramp=0;
+                driveSubsystem.aprilTagDrive=0; driveSubsystem.aprilTagStrafe=0; driveSubsystem.aprilTagTurn=0;
 
                 return false;
             }

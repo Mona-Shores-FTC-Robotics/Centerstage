@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Roadrunner;
+package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner;
 
 import androidx.annotation.NonNull;
 
@@ -9,8 +9,9 @@ import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.Arclength;
 import com.acmerobotics.roadrunner.DualNum;
+import com.acmerobotics.roadrunner.HolonomicController;
+import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.MotorFeedforward;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -18,8 +19,7 @@ import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.RamseteController;
-import com.acmerobotics.roadrunner.TankKinematics;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.acmerobotics.roadrunner.TimeTurn;
@@ -27,7 +27,6 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.Vector2dDual;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.Encoder;
@@ -40,63 +39,67 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.Roadrunner.messages.DriveCommandMessage;
-import org.firstinspires.ftc.teamcode.Roadrunner.messages.PoseMessage;
-import org.firstinspires.ftc.teamcode.Roadrunner.messages.TankCommandMessage;
-import org.firstinspires.ftc.teamcode.Roadrunner.messages.TankEncodersMessage;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.messages.DriveCommandMessage;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.messages.MecanumCommandMessage;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.messages.MecanumEncodersMessage;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.messages.PoseMessage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 @Config
-public final class TankDrive {
+public final class MecanumDrive {
     public static class Params {
         // IMU orientation
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 0;
-        public double trackWidthTicks = 0;
+        public double inPerTick = 0.041; //73inches /2312.5 ticks
+        public double lateralInPerTick = .045; //73inches / 2119.75 ticks
+        public double trackWidthTicks = 616.837658902129;
 
         // feedforward parameters (in tick units)
-        public double kS = 0;
-        public double kV = 0;
-        public double kA = 0;
+        public double kS = 1.89;
+        public double kV = 0.00231;
+        public double kA = .0001;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxWheelVel = 20;
+        public double minProfileAccel = -15;
+        public double maxProfileAccel = 15;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double ramseteZeta = 0.7; // in the range (0, 1)
-        public double ramseteBBar = 2.0; // positive
+        public double axialGain = 11;
+        public double lateralGain = 4;
+        public double headingGain = 4; // shared with turn
 
-        // turn controller gains
-        public double turnGain = 0.0;
-        public double turnVelGain = 0.0;
+        public double axialVelGain = .5;
+        public double lateralVelGain = .8;
+        public double headingVelGain = .8; // shared with turn
     }
 
     public static Params PARAMS = new Params();
 
-    public final TankKinematics kinematics = new TankKinematics(PARAMS.inPerTick * PARAMS.trackWidthTicks);
+    public final MecanumKinematics kinematics = new MecanumKinematics(
+            PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
 
     public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
-            PARAMS.maxAngVel, -PARAMS.maxAngVel, PARAMS.maxAngAccel);
+            PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
     public final VelConstraint defaultVelConstraint =
             new MinVelConstraint(Arrays.asList(
                     kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
@@ -105,97 +108,95 @@ public final class TankDrive {
     public final AccelConstraint defaultAccelConstraint =
             new ProfileAccelConstraint(PARAMS.minProfileAccel, PARAMS.maxProfileAccel);
 
-    public final List<DcMotorEx> leftMotors, rightMotors;
-
-    public final IMU imu;
+    public final DcMotorEx leftFront, leftBack, rightBack, rightFront;
 
     public final VoltageSensor voltageSensor;
+
+    public final IMU imu;
 
     public final Localizer localizer;
     public Pose2d pose;
 
-    private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+    public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
     private final DownsampledWriter estimatedPoseWriter = new DownsampledWriter("ESTIMATED_POSE", 50_000_000);
     private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
     private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
-
-    private final DownsampledWriter tankCommandWriter = new DownsampledWriter("TANK_COMMAND", 50_000_000);
+    private final DownsampledWriter mecanumCommandWriter = new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
 
     public class DriveLocalizer implements Localizer {
-        public final List<Encoder> leftEncs, rightEncs;
+        public final Encoder leftFront, leftBack, rightBack, rightFront;
 
-        private double lastLeftPos, lastRightPos;
+        private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
+        private Rotation2d lastHeading;
 
         public DriveLocalizer() {
-            {
-                List<Encoder> leftEncs = new ArrayList<>();
-                for (DcMotorEx m : leftMotors) {
-                    Encoder e = new OverflowEncoder(new RawEncoder(m));
-                    leftEncs.add(e);
-                    lastLeftPos += e.getPositionAndVelocity().position;
-                }
-                lastLeftPos /= leftEncs.size();
-                this.leftEncs = Collections.unmodifiableList(leftEncs);
-            }
+            leftFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftFront));
+            leftBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
+            rightBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
+            rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
 
-            {
-                List<Encoder> rightEncs = new ArrayList<>();
-                for (DcMotorEx m : rightMotors) {
-                    Encoder e = new OverflowEncoder(new RawEncoder(m));
-                    rightEncs.add(e);
-                    lastRightPos += e.getPositionAndVelocity().position;
-                }
-                lastRightPos /= rightEncs.size();
-                this.rightEncs = Collections.unmodifiableList(rightEncs);
-            }
+            leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+            leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+            rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
+            rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+
+
+            lastLeftFrontPos = leftFront.getPositionAndVelocity().position;
+            lastLeftBackPos = leftBack.getPositionAndVelocity().position;
+            lastRightBackPos = rightBack.getPositionAndVelocity().position;
+            lastRightFrontPos = rightFront.getPositionAndVelocity().position;
+
+            lastHeading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
         }
 
         @Override
         public Twist2dDual<Time> update() {
-            List<PositionVelocityPair> leftReadings = new ArrayList<>(), rightReadings = new ArrayList<>();
-            double meanLeftPos = 0.0, meanLeftVel = 0.0;
-            for (Encoder e : leftEncs) {
-                PositionVelocityPair p = e.getPositionAndVelocity();
-                meanLeftPos += p.position;
-                meanLeftVel += p.velocity;
-                leftReadings.add(p);
-            }
-            meanLeftPos /= leftEncs.size();
-            meanLeftVel /= leftEncs.size();
+            PositionVelocityPair leftFrontPosVel = leftFront.getPositionAndVelocity();
+            PositionVelocityPair leftBackPosVel = leftBack.getPositionAndVelocity();
+            PositionVelocityPair rightBackPosVel = rightBack.getPositionAndVelocity();
+            PositionVelocityPair rightFrontPosVel = rightFront.getPositionAndVelocity();
 
-            double meanRightPos = 0.0, meanRightVel = 0.0;
-            for (Encoder e : rightEncs) {
-                PositionVelocityPair p = e.getPositionAndVelocity();
-                meanRightPos += p.position;
-                meanRightVel += p.velocity;
-                rightReadings.add(p);
-            }
-            meanRightPos /= rightEncs.size();
-            meanRightVel /= rightEncs.size();
+            FlightRecorder.write("MECANUM_ENCODERS", new MecanumEncodersMessage(
+                    leftFrontPosVel, leftBackPosVel, rightBackPosVel, rightFrontPosVel));
 
-            FlightRecorder.write("TANK_ENCODERS",
-                    new TankEncodersMessage(leftReadings, rightReadings));
+            Rotation2d heading = Rotation2d.exp(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+            double headingDelta = heading.minus(lastHeading);
 
-            TankKinematics.WheelIncrements<Time> twist = new TankKinematics.WheelIncrements<>(
-                    new DualNum<Time>(new double[] {
-                            meanLeftPos - lastLeftPos,
-                            meanLeftVel
+            Twist2dDual<Time> twist = kinematics.forward(new MecanumKinematics.WheelIncrements<>(
+                    new DualNum<Time>(new double[]{
+                            (leftFrontPosVel.position - lastLeftFrontPos),
+                            leftFrontPosVel.velocity,
                     }).times(PARAMS.inPerTick),
-                    new DualNum<Time>(new double[] {
-                            meanRightPos - lastRightPos,
-                            meanRightVel,
+                    new DualNum<Time>(new double[]{
+                            (leftBackPosVel.position - lastLeftBackPos),
+                            leftBackPosVel.velocity,
+                    }).times(PARAMS.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightBackPosVel.position - lastRightBackPos),
+                            rightBackPosVel.velocity,
+                    }).times(PARAMS.inPerTick),
+                    new DualNum<Time>(new double[]{
+                            (rightFrontPosVel.position - lastRightFrontPos),
+                            rightFrontPosVel.velocity,
                     }).times(PARAMS.inPerTick)
+            ));
+
+            lastLeftFrontPos = leftFrontPosVel.position;
+            lastLeftBackPos = leftBackPosVel.position;
+            lastRightBackPos = rightBackPosVel.position;
+            lastRightFrontPos = rightFrontPosVel.position;
+
+            lastHeading = heading;
+
+            return new Twist2dDual<>(
+                    twist.line,
+                    DualNum.cons(headingDelta, twist.angle.drop(1))
             );
-
-            lastLeftPos = meanLeftPos;
-            lastRightPos = meanRightPos;
-
-            return kinematics.forward(twist);
         }
     }
 
-    public TankDrive(HardwareMap hardwareMap, Pose2d pose) {
+    public MecanumDrive(HardwareMap hardwareMap, Pose2d pose) {
         this.pose = pose;
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);
@@ -204,15 +205,18 @@ public final class TankDrive {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        leftMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "left"));
-        rightMotors = Arrays.asList(hardwareMap.get(DcMotorEx.class, "right"));
+        leftFront = hardwareMap.get(DcMotorEx.class, "LFDrive");
+        leftBack = hardwareMap.get(DcMotorEx.class, "LBDrive");
+        rightBack = hardwareMap.get(DcMotorEx.class, "RBDrive");
+        rightFront = hardwareMap.get(DcMotorEx.class, "RFDrive");
 
-        for (DcMotorEx m : leftMotors) {
-            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
-        for (DcMotorEx m : rightMotors) {
-            m.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }
+        leftFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBack.setDirection(DcMotorEx.Direction.REVERSE);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -221,13 +225,17 @@ public final class TankDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new TankDrive.DriveLocalizer();
+        localizer = new DriveLocalizer();
 
-        FlightRecorder.write("TANK_PARAMS", PARAMS);
+        FlightRecorder.write("MECANUM_PARAMS", PARAMS);
+
+        //INITIALIZE THE SHOULDER
+        ShoulderSubsystem shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
+        shoulderSubsystem.initTele();
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
-        TankKinematics.WheelVelocities<Time> wheelVels = new TankKinematics(2).inverse(
+        MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
                 PoseVelocity2dDual.constant(powers, 1));
 
         double maxPowerMag = 1;
@@ -235,12 +243,10 @@ public final class TankDrive {
             maxPowerMag = Math.max(maxPowerMag, power.value());
         }
 
-        for (DcMotorEx m : leftMotors) {
-            m.setPower(wheelVels.left.get(0) / maxPowerMag);
-        }
-        for (DcMotorEx m : rightMotors) {
-            m.setPower(wheelVels.right.get(0) / maxPowerMag);
-        }
+        leftFront.setPower(wheelVels.leftFront.get(0) / maxPowerMag);
+        leftBack.setPower(wheelVels.leftBack.get(0) / maxPowerMag);
+        rightBack.setPower(wheelVels.rightBack.get(0) / maxPowerMag);
+        rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
     }
 
     public final class FollowTrajectoryAction implements Action {
@@ -275,41 +281,43 @@ public final class TankDrive {
             }
 
             if (t >= timeTrajectory.duration) {
-                for (DcMotorEx m : leftMotors) {
-                    m.setPower(0);
-                }
-                for (DcMotorEx m : rightMotors) {
-                    m.setPower(0);
-                }
+                leftFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
 
                 return false;
             }
 
-            DualNum<Time> x = timeTrajectory.profile.get(t);
-
-            Pose2dDual<Arclength> txWorldTarget = timeTrajectory.path.get(x.value(), 3);
+            Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
             targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
 
-            updatePoseEstimate();
+            PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
-            PoseVelocity2dDual<Time> command = new RamseteController(kinematics.trackWidth, PARAMS.ramseteZeta, PARAMS.ramseteBBar)
-                    .compute(x, txWorldTarget, pose);
+            PoseVelocity2dDual<Time> command = new HolonomicController(
+                    PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
+                    PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
+            )
+                    .compute(txWorldTarget, pose, robotVelRobot);
             driveCommandWriter.write(new DriveCommandMessage(command));
 
-            TankKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
+            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
+
             final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS,
                     PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
-            double leftPower = feedforward.compute(wheelVels.left) / voltage;
-            double rightPower = feedforward.compute(wheelVels.right) / voltage;
-            tankCommandWriter.write(new TankCommandMessage(voltage, leftPower, rightPower));
+            double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+            double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
+            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+            double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+            mecanumCommandWriter.write(new MecanumCommandMessage(
+                    voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
+            ));
 
-            for (DcMotorEx m : leftMotors) {
-                m.setPower(leftPower);
-            }
-            for (DcMotorEx m : rightMotors) {
-                m.setPower(rightPower);
-            }
+            leftFront.setPower(leftFrontPower);
+            leftBack.setPower(leftBackPower);
+            rightBack.setPower(rightBackPower);
+            rightFront.setPower(rightFrontPower);
 
             p.put("x", pose.position.x);
             p.put("y", pose.position.y);
@@ -365,12 +373,10 @@ public final class TankDrive {
             }
 
             if (t >= turn.duration) {
-                for (DcMotorEx m : leftMotors) {
-                    m.setPower(0);
-                }
-                for (DcMotorEx m : rightMotors) {
-                    m.setPower(0);
-                }
+                leftFront.setPower(0);
+                leftBack.setPower(0);
+                rightBack.setPower(0);
+                rightFront.setPower(0);
 
                 return false;
             }
@@ -380,29 +386,29 @@ public final class TankDrive {
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
 
-            PoseVelocity2dDual<Time> command = new PoseVelocity2dDual<>(
-                    Vector2dDual.constant(new Vector2d(0, 0), 3),
-                    txWorldTarget.heading.velocity().plus(
-                            PARAMS.turnGain * pose.heading.minus(txWorldTarget.heading.value()) +
-                            PARAMS.turnVelGain * (robotVelRobot.angVel - txWorldTarget.heading.velocity().value())
-                    )
-            );
+            PoseVelocity2dDual<Time> command = new HolonomicController(
+                    PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
+                    PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
+            )
+                    .compute(txWorldTarget, pose, robotVelRobot);
             driveCommandWriter.write(new DriveCommandMessage(command));
 
-            TankKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
+            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
             double voltage = voltageSensor.getVoltage();
             final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS,
                     PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
-            double leftPower = feedforward.compute(wheelVels.left) / voltage;
-            double rightPower = feedforward.compute(wheelVels.right) / voltage;
-            tankCommandWriter.write(new TankCommandMessage(voltage, leftPower, rightPower));
+            double leftFrontPower = feedforward.compute(wheelVels.leftFront) / voltage;
+            double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
+            double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
+            double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
+            mecanumCommandWriter.write(new MecanumCommandMessage(
+                    voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
+            ));
 
-            for (DcMotorEx m : leftMotors) {
-                m.setPower(leftPower);
-            }
-            for (DcMotorEx m : rightMotors) {
-                m.setPower(rightPower);
-            }
+            leftFront.setPower(feedforward.compute(wheelVels.leftFront) / voltage);
+            leftBack.setPower(feedforward.compute(wheelVels.leftBack) / voltage);
+            rightBack.setPower(feedforward.compute(wheelVels.rightBack) / voltage);
+            rightFront.setPower(feedforward.compute(wheelVels.rightFront) / voltage);
 
             Canvas c = p.fieldOverlay();
             drawPoseHistory(c);
@@ -440,7 +446,7 @@ public final class TankDrive {
         return twist.velocity().value();
     }
 
-    private void drawPoseHistory(Canvas c) {
+    public void drawPoseHistory(Canvas c) {
         double[] xPoints = new double[poseHistory.size()];
         double[] yPoints = new double[poseHistory.size()];
 
@@ -457,7 +463,7 @@ public final class TankDrive {
         c.strokePolyline(xPoints, yPoints);
     }
 
-    private static void drawRobot(Canvas c, Pose2d t) {
+    public static void drawRobot(Canvas c, Pose2d t) {
         final double ROBOT_RADIUS = 9;
 
         c.setStrokeWidth(1);

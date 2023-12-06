@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive.PARAMS;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -63,7 +63,7 @@ public class StrafeXInchesPID extends CommandBase {
         MatchConfig.telemetryPacket.put("StrafeXInchesPID velocity", clippedVelocity);
 
         //Strafe the velocity provided by the PID
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, clippedVelocity, 0);
+        driveSubsystem.mecanumDriveSpeedControl(0, clippedVelocity, 0);
     }
 
     @Override
@@ -73,10 +73,10 @@ public class StrafeXInchesPID extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, 0, 0);
+        driveSubsystem.mecanumDriveSpeedControl(0, 0, 0);
     }
 
     private double convertInchesToEncoderCounts(double inches) {
-        return inches * MotorParametersRR.lateralInPerTick;
+        return inches * PARAMS.lateralInPerTick;
     }
 }

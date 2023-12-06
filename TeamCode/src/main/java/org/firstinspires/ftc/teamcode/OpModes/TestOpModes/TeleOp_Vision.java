@@ -126,7 +126,6 @@ public class TeleOp_Vision extends LinearOpMode
 
             //Add DriveTrain Telemetry
             if (gamepad1.right_trigger>.1) {
-                Robot.getInstance().getDriveSubsystem().DriverStationTelemetry();
                 Robot.getInstance().getGyroSubsystem().DriverStationTelemetry();
             }
 

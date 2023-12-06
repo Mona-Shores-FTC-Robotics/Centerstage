@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.util.Range;
 
-import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona.MotorParametersRR;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive.PARAMS;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
 
@@ -51,7 +51,7 @@ public class DriveXInchesPID extends CommandBase {
         double currentEncoderCount = driveSubsystem.getCurrentEncoderCount();
         double output = pidController.calculate(currentEncoderCount);
         double clippedOutput = Range.clip(output, -.3, .3);
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(clippedOutput, 0, 0); // Drive forward/backward
+        driveSubsystem.mecanumDriveSpeedControl(clippedOutput, 0, 0); // Drive forward/backward
     }
 
     @Override
@@ -61,12 +61,12 @@ public class DriveXInchesPID extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(0, 0, 0); // Stop the robot
+        driveSubsystem.mecanumDriveSpeedControl(0, 0, 0); // Stop the robot
     }
 
     private double convertInchesToEncoderCounts(double inches) {
         // Conversion logic here based on your robot's specific configuration
         // Example: return inches * ENCODER_COUNTS_PER_INCH;
-        return inches * MotorParametersRR.inPerTick;
+        return inches * PARAMS.inPerTick;
     }
 }

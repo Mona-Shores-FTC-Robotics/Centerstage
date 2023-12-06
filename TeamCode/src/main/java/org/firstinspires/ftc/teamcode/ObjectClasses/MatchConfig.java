@@ -42,9 +42,9 @@ public class MatchConfig {
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Gyro Yaw Angle Absolute (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentAbsoluteYawDegrees, 5, 2));
         Robot.getInstance().getActiveOpMode().telemetry.addLine("Gyro Yaw Angle Relative (Degrees)" + JavaUtil.formatNumber(Robot.getInstance().getGyroSubsystem().currentRelativeYawDegrees, 5, 2));
         Robot.getInstance().getActiveOpMode().telemetry.addData("Current Drive/Turn/Strafe", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ",
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.current_drive_ramp,
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.current_strafe_ramp,
-                Robot.getInstance().getDriveSubsystem().mecanumDrive.current_turn_ramp);
+                Robot.getInstance().getDriveSubsystem().current_drive_ramp,
+                Robot.getInstance().getDriveSubsystem().current_strafe_ramp,
+                Robot.getInstance().getDriveSubsystem().current_turn_ramp);
 
         Robot.getInstance().getActiveOpMode().telemetry.update();
     }

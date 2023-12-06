@@ -8,7 +8,7 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive;
 
 import java.util.Arrays;
 
@@ -17,7 +17,7 @@ public class MakeLineToXAction {
 
     private double xTarget;
 
-    private MecanumDriveMona drive;
+    private MecanumDrive drive;
     public VelConstraint overrideVelConstraint;
     public AccelConstraint overrideAccelConstraint;
 

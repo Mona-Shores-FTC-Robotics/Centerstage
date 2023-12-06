@@ -6,8 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.TurnPIDController;
 
@@ -22,7 +21,7 @@ public class TurnToAction implements Action{
     public static double ERROR_THRESHOLD = 1;
 
     private double currentAngle;
-    private final MecanumDriveMona mecanumDrive;
+    private final MecanumDrive mecanumDrive;
     double turn;
     int turnCompleteCounter;
 
@@ -38,7 +37,7 @@ public class TurnToAction implements Action{
     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
         currentAngle = Math.toDegrees(Robot.getInstance().getGyroSubsystem().getCurrentRelativeYawRadians());
         turn=turnPIDController.update(currentAngle);
-        mecanumDrive.mecanumDriveSpeedControl(0, 0, turn);
+        Robot.getInstance().getDriveSubsystem().mecanumDriveSpeedControl(0, 0, turn);
 
         telemetryPacket.put("turn error", turnPIDController.error);
         telemetryPacket.put("current angle", currentAngle);

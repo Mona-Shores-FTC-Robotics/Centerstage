@@ -60,7 +60,7 @@ public class AutoDriveToBackDropAction implements Action {
         }
 
         //Run Speed Control using the AprilTag autodrive values
-        driveSubsystem.mecanumDrive.mecanumDriveSpeedControl(driveSubsystem.mecanumDrive.aprilTagDrive, driveSubsystem.mecanumDrive.aprilTagStrafe, driveSubsystem.mecanumDrive.aprilTagTurn);
+        driveSubsystem.mecanumDriveSpeedControl(driveSubsystem.aprilTagDrive, driveSubsystem.aprilTagStrafe, driveSubsystem.aprilTagTurn);
 
         //Update our pose estimate
         Robot.getInstance().getDriveSubsystem().mecanumDrive.updatePoseEstimate();

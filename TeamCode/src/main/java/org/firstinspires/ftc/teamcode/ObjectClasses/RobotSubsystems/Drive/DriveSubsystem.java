@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.GamepadHandling;
 import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.Roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 
@@ -94,7 +95,7 @@ public class DriveSubsystem extends SubsystemBase {
     public Canvas c;
 
     public DriveSubsystem(HardwareMap hardwareMap) {
-        mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
+
     }
 
     private GamepadHandling gamepadHandling;
@@ -106,6 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
         aprilTagAutoDriving =false;
         fieldOrientedControl=false;
         currentState = DriveStates.MANUAL_DRIVE;
+        mecanumDrive = new MecanumDrive(Robot.getInstance().getActiveOpMode().hardwareMap, new Pose2d(0,0,0));
     }
 
     public void periodic(){
