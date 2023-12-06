@@ -73,12 +73,11 @@ public class DriveSubsystem extends SubsystemBase {
 
   // AprilTag Driving Variables
     private boolean overrideAprilTagDriving = false;
-    public double drive, strafe, turn;
-    public double aprilTagDrive, aprilTagStrafe, aprilTagTurn;
+    public double drive=0, strafe=0, turn=0;
+    public double aprilTagDrive=0, aprilTagStrafe=0, aprilTagTurn=0;
     public double last_drive=0, last_strafe=0, last_turn=0;
     public double current_drive_ramp = 0, current_strafe_ramp=0, current_turn_ramp=0;
-
-    public double leftFrontTargetSpeed, rightFrontTargetSpeed, leftBackTargetSpeed, rightBackTargetSpeed;
+    public double leftFrontTargetSpeed=0, rightFrontTargetSpeed=0, leftBackTargetSpeed=0, rightBackTargetSpeed=0;
 
     public ElapsedTime aprilTagTimeoutTimer = new ElapsedTime();
 
@@ -108,10 +107,15 @@ public class DriveSubsystem extends SubsystemBase {
         fieldOrientedControl=false;
         currentState = DriveStates.MANUAL_DRIVE;
         mecanumDrive = new MecanumDrive(Robot.getInstance().getActiveOpMode().hardwareMap, new Pose2d(0,0,0));
+        overrideAprilTagDriving = false;
+        drive=0; strafe=0; turn=0;
+        aprilTagDrive=0; aprilTagStrafe=0; aprilTagTurn=0;
+        last_drive=0; last_strafe=0; last_turn=0;
+        current_drive_ramp = 0; current_strafe_ramp=0; current_turn_ramp=0;
+        leftFrontTargetSpeed=0; rightFrontTargetSpeed=0; leftBackTargetSpeed=0; rightBackTargetSpeed=0;
     }
 
     public void periodic(){
-
         //If the vision subsystem has a pose ready for us (because we are at the backdrop)
         // AND the driver set the resetHeading flag (this is the SHARE button right now)
         //      then:
