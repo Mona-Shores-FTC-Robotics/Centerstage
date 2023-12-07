@@ -43,25 +43,25 @@
 
             //////////////////////////////////////////////////////////
             //                                                      //
-            // RIGHT BUMPER - Slow Mode                             //
+            // RIGHT BUMPER - Slow Mode Zero Heading                //
             //                                                      //
             //////////////////////////////////////////////////////////
             //todo test the new slowmode with power control and slower front wheel movement
             gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                    .whenHeld(slowModeCommand, true);
-
-            //////////////////////////////////////////////////////////
-            //                                                      //
-            // LEFT BUMPER - backupPath                             //
-            //                                                      //
-            //////////////////////////////////////////////////////////
-            //TODO test the constant heading slow mode
-            gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                     .whenHeld(slowModeZeroHeadingCommand, true);
 
             //////////////////////////////////////////////////////////
             //                                                      //
-            //  Y BUTTON                                            //
+            // LEFT BUMPER - Slow Mode (wheel speeds different      //
+            //                                                      //
+            //////////////////////////////////////////////////////////
+            //TODO test the constant heading slow mode
+            gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                    .whenHeld(slowModeCommand, true);
+
+            //////////////////////////////////////////////////////////
+            //                                                      //
+            //  Y BUTTON  - backup path                             //
             //                                                      //
             //////////////////////////////////////////////////////////
             // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead

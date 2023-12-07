@@ -107,6 +107,9 @@ public class TeleOp_CenterStage extends LinearOpMode
 
         Robot.getInstance().getLiftSlideSubsystem().setDeliverHeight(LiftSlideSubsystem.LiftStates.LOW);
 
+        //default to april tag driving off
+        Robot.getInstance().getDriveSubsystem().setOverrideAprilTagDriving(true);
+
         while (opModeIsActive())
         {
             //Reset the timer for the loop timer
