@@ -19,6 +19,7 @@
     import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.RoadRunnerActionToCommand;
     import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
     import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeCommand;
+    import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveCommands.SlowModeConstantHeadingCommand;
     import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
     import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
     import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionSubsystem;
@@ -26,6 +27,7 @@
     public class CenterstageDriverBindings {
         public Command defaultDriveCommand;
         public Command slowModeCommand;
+        public Command slowModeZeroHeadingCommand;
         public Command backupFromBackdropCommand;
 
         public CenterstageDriverBindings(GamepadEx gamepad) {
@@ -44,7 +46,7 @@
             // RIGHT BUMPER - Slow Mode                             //
             //                                                      //
             //////////////////////////////////////////////////////////
-
+            //todo test the new slowmode with power control and slower front wheel movement
             gamepad.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                     .whenHeld(slowModeCommand, true);
 
@@ -53,16 +55,19 @@
             // LEFT BUMPER - backupPath                             //
             //                                                      //
             //////////////////////////////////////////////////////////
-
-            // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
+            //TODO test the constant heading slow mode
             gamepad.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                    .whenPressed(backupFromBackdropCommand);
+                    .whenHeld(slowModeZeroHeadingCommand, true);
 
             //////////////////////////////////////////////////////////
             //                                                      //
             //  Y BUTTON                                            //
             //                                                      //
             //////////////////////////////////////////////////////////
+            // moves straight back and rotates us toward the wing - can be cancelled to easily grab from the neutral stacks instead
+            //TODO test the backup autonomatically button on both alliance colors
+            gamepad.getGamepadButton(GamepadKeys.Button.Y)
+                    .whenPressed(backupFromBackdropCommand);
 
             //////////////////////////////////////////////////////////
             //                                                      //
@@ -180,6 +185,11 @@
                     gamepad::getLeftX,
                     gamepad::getRightX
             );
+
+            slowModeZeroHeadingCommand = new SlowModeConstantHeadingCommand(Robot.getInstance().getDriveSubsystem(),
+                    gamepad::getLeftY,
+                    gamepad::getLeftX,
+                    0);
 
             backupFromBackdropCommand = new InstantCommand(()->{
                 if (MatchConfig.finalAllianceColor == RED) {

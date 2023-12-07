@@ -48,6 +48,7 @@ public final class MecanumDriveMona {
         public double MAX_MOTOR_SPEED_RPS = 435.0 / 60.0;
         public double TICKS_PER_REV = 384.5;
         public double MAX_SPEED_TICK_PER_SEC = MAX_MOTOR_SPEED_RPS * TICKS_PER_REV;
+        public double SLOW_POWER_CONTROL_FRONT_WHEEL_FACTOR=.7;
     }
 
     public static DriveSubsystem.ParamsMona MotorParameters = new DriveSubsystem.ParamsMona();
@@ -285,7 +286,7 @@ public final class MecanumDriveMona {
     }
 
 
-    public void mecanumDrivePowerControl (){
+    public void mecanumDrivePowerControl (double drive, double strafe, double turn){
         double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
         double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
         double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
@@ -302,7 +303,24 @@ public final class MecanumDriveMona {
     }
 
 
+    public void mecanumDrivePowerControlSlowFront (double drive, double strafe, double turn){
+        double dPercent = abs(drive) / (abs(drive) + abs(strafe) + abs(turn));
+        double sPercent = abs(strafe) / (abs(drive) + abs(turn) + abs(strafe));
+        double tPercent = abs(turn) / (abs(drive) + abs(turn) + abs(strafe));
 
+        double leftFrontPower = ((drive * dPercent) + (strafe * sPercent) + (turn * tPercent));
+        double rightFrontPower = ((drive * dPercent) + (-strafe * sPercent) + (-turn * tPercent));
+        double leftBackPower = ((drive * dPercent) + (-strafe * sPercent) + (turn * tPercent));
+        double rightBackPower = ((drive * dPercent) + (strafe * sPercent) + (-turn * tPercent));
+
+        double adjustedLeftFrontPower = leftFrontPower* DriveTrainConstants.SLOW_POWER_CONTROL_FRONT_WHEEL_FACTOR;
+        double adjustedRightFrontPower = rightFrontPower* DriveTrainConstants.SLOW_POWER_CONTROL_FRONT_WHEEL_FACTOR;
+
+        leftFront.setPower(adjustedLeftFrontPower);
+        rightFront.setPower(adjustedRightFrontPower);
+        leftBack.setPower(leftBackPower);
+        rightBack.setPower(rightBackPower);
+    }
 }
 
 
