@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.Cli
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.MoveClimberArmCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.End_Game.ReleaseDroneCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeCommands.ChangeIntakePowerCommand;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeSubsystem;
 
 public class PitModeDriverBindings {
 
@@ -22,6 +24,7 @@ public class PitModeDriverBindings {
     ClimberSubsystem climberSubsystem = Robot.getInstance().getClimberSubsystem();
     ShoulderSubsystem shoulderSubsystem = Robot.getInstance().getShoulderSubsystem();
     GripperSubsystem gripperSubsystem = Robot.getInstance().getGripperSubsystem();
+    IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
 
     public PitModeDriverBindings(GamepadEx gamepad) {
 
@@ -78,5 +81,14 @@ public class PitModeDriverBindings {
                         );
 
 
+        //////////////////////////////////////////////////////////
+        //                                                      //
+        // X Button- Run intake slow                            //
+        //                                                      //
+        //////////////////////////////////////////////////////////
+
+        gamepad.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_SLOW, IntakeSubsystem.IntakeStates.INTAKE_SLOW))
+                .whenReleased(new ChangeIntakePowerCommand(intakeSubsystem, IntakeSubsystem.IntakeStates.INTAKE_OFF, IntakeSubsystem.IntakeStates.INTAKE_OFF));
     }
 }

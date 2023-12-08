@@ -15,7 +15,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public static class IntakeParameters {
         public double INTAKE_ON_POWER = 1;
         public double INTAKE_REVERSE_POWER = -1;
-        public double INTAKE_SLOW_POWER = .2;
+        public double INTAKE_SLOW_POWER = .4;
         public double INTAKE_OFF_POWER = 0;
         public double KICKBACK_TIMER_THRESHOLD_MS=100;
     }
@@ -23,7 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public enum IntakeStates {
         INTAKE_ON (30, 1),
-        INTAKE_SLOW(30, .2),
+        INTAKE_SLOW(30, .4),
         INTAKE_REVERSE (-150,-1),
         INTAKE_OFF (0, 0);
 

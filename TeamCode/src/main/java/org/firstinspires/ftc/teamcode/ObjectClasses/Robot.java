@@ -97,6 +97,7 @@ public class Robot {
                 climberSubsystem = new ClimberSubsystem(hardwareMap, "climb", "climbWinch");
                 shoulderSubsystem = new ShoulderSubsystem(hardwareMap, "shoulder");
                 gripperSubsystem = new GripperSubsystem(hardwareMap, "endeffector");
+                intakeSubsystem = new IntakeSubsystem(hardwareMap, "intake", "intake2");
                 break;
             }
         }
