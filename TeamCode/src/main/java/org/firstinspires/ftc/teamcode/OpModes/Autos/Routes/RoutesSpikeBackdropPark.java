@@ -134,8 +134,8 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_R), TANGENT_TOWARD_RED)
                 .splineToLinearHeading(BLUE_STAGEDOOR_ENTRANCE, TANGENT_TOWARD_BACKSTAGE)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .waitSeconds(11)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -146,8 +146,8 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_L), TANGENT_TOWARD_BLUE)
                 .splineToLinearHeading(RED_STAGEDOOR_ENTRANCE, TANGENT_TOWARD_BACKSTAGE)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_RIGHT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -158,8 +158,8 @@ public class RoutesSpikeBackdropPark {
                 .stopAndAdd(retractPusherToStopPushingPurplePixel)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_RIGHT), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_RIGHT,LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -170,8 +170,8 @@ public class RoutesSpikeBackdropPark {
                 .setReversed(true)
                 .splineToConstantHeading(PoseToVector(RED_AUDIENCE_SPIKE_C), FACE_TOWARD_BLUE, overrideVelConstraint, overrideAccelConstraint) //WAS Redaudiencespike Right and tangent toward blue
                 .splineToLinearHeading(new Pose2d(PoseToVector(RED_STAGEDOOR_ENTRANCE), FACE_TOWARD_BACKSTAGE), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
-                .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_LEFT), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_LEFT, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -184,8 +184,8 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(BLUE_SAFE_STRAFE, TANGENT_TOWARD_RED)
                 .splineToConstantHeading(PoseToVector(BLUE_NEUTRAL_PIXEL_STAGEDOOR), TANGENT_TOWARD_BACKSTAGE)
                 .splineToConstantHeading(PoseToVector(BLUE_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(BLUE_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE)
-                .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(BLUE_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(BLUE_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -197,8 +197,8 @@ public class RoutesSpikeBackdropPark {
                 .splineToLinearHeading(RED_SAFE_STRAFE, TANGENT_TOWARD_BLUE, overrideVelConstraint, overrideAccelConstraint)
                 .splineToConstantHeading(PoseToVector(RED_NEUTRAL_PIXEL_STAGEDOOR), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .splineToConstantHeading(PoseToVector(RED_STAGEDOOR_ENTRANCE), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
+                .waitSeconds(9.2)
                 .splineToConstantHeading(PoseToVector(RED_THROUGH_DOOR), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
-                .waitSeconds(10)
                 .splineToConstantHeading(PoseToVector(RED_BACKDROP_CENTER), TANGENT_TOWARD_BACKSTAGE, overrideVelConstraint, overrideAccelConstraint)
                 .stopAndAdd(new ActionsForSpikeBackdrop().ScoreWithTwoHeightsAndBackup(RED_BACKDROP_CENTER, LiftSlideSubsystem.LiftStates.AUTO_HIGH, LiftSlideSubsystem.LiftStates.AUTO_MID))
                 .build();
@@ -222,18 +222,17 @@ public class RoutesSpikeBackdropPark {
 
         public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, LiftSlideSubsystem.LiftStates firstHeight, LiftSlideSubsystem.LiftStates secondHeight) {
             return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
-                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(firstHeight))
-                    .waitSeconds(.2)
+                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(secondHeight))
+                    .waitSeconds(.4)
                     .lineToX(start_pose.position.x+5.5, overrideVelConstraint, overrideAccelConstraint)
-                    .waitSeconds(.2)
-                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(secondHeight))
-                    .waitSeconds(.2)
+                    .waitSeconds(.4)
                     .stopAndAdd( new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN))
-                    .waitSeconds(.5)
+                    .waitSeconds(.6)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(firstHeight))
-                    .waitSeconds(.3)
+                    .waitSeconds(.5)
                     .lineToX(start_pose.position.x)
                     .stopAndAdd(new MakeSpikeBackdropParkActions().MakeRetractArmAction())
+                    .waitSeconds(1)
                     .build();
         }
 

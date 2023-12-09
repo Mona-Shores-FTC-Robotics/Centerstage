@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -77,6 +78,44 @@ public class DriveSubsystem extends SubsystemBase {
         public double lateralVelGain =1.1;
         public double headingVelGain =1.1; // shared with turn
 
+    }
+
+    public static class Params {
+        // IMU orientation
+        // TODO: fill in these values based on
+        //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
+        public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+        // drive model parameters
+        public double inPerTick = 0.0305; // 49/1560
+        public double lateralInPerTick = .0256; //50 / 1514.75 ticks
+        public double trackWidthTicks = 624.8247603544618;
+
+        // feedforward parameters (in tick units)
+        public double kS = 1.95 ;  //2.360937080803133
+        public double kV = 00.003 ;   //00.0039788419156885114
+        public double kA = 0.00000005; //.0001
+
+        // path profile parameters (in inches)
+        public double maxWheelVel = 25;
+        public double minProfileAccel = -30;
+        public double maxProfileAccel = 30;
+
+        // turn profile parameters (in radians)
+        public double maxAngVel = Math.PI; // shared with path
+        public double maxAngAccel = Math.PI;
+
+        // path controller gains
+        public double axialGain = 18;
+        public double lateralGain = 2.4;
+        public double headingGain = 1.2; // shared with turn
+
+        public double axialVelGain = 0;
+        public double lateralVelGain = .05;
+        public double headingVelGain = .05; // shared with turn
     }
 
     public static class ParamsRRMona20245 {

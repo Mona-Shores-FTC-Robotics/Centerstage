@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSpikeStraightUpTheMiddle;
+import org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper;
 
 @Autonomous(name = "Super Auto")
 public class Super_Auto extends LinearOpMode {
@@ -43,7 +44,6 @@ public class Super_Auto extends LinearOpMode {
     public void runOpMode() {
         //Reset the Singleton CommandScheduler and Robot
         CommandScheduler.getInstance().reset();
-
 
         //Initialize the Game-pads
         GamepadHandling gamepadHandling = new GamepadHandling(this);
@@ -60,7 +60,7 @@ public class Super_Auto extends LinearOpMode {
         MatchConfig.CheckRobotConfig(hardwareMap);
 
         //Build all the routes so we can select one quickly later
-        RoutesSpikeStraightUpTheMiddle.BuildRoutes();
+        RoutesSuper.BuildRoutes();
 
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry

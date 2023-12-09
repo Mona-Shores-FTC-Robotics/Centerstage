@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.Autos;
+package org.firstinspires.ftc.teamcode.OpModes.Disabled;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 

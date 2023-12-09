@@ -22,7 +22,7 @@ public class PosesForRouteSuper {
     public double neutralApproachOrientation;
     public double leaveNeutralTangent;
     public double leaveSpikeTangent;
-    public Pose2d spikePosePast;
+    public Pose2d spikePose;
     public Pose2d spikePoseDrop;
     public double startingTangent;
 
@@ -40,13 +40,13 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = BLUE_BACKDROP_LEFT;
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        spikePosePast = BLUE_AUDIENCE_SPIKE_L_PAST;
+                        spikePose = BLUE_AUDIENCE_SPIKE_L;
                         spikePoseDrop = BLUE_AUDIENCE_SPIKE_L_DROP;
                         neutralApproachOrientation = TANGENT_TOWARD_RED;
                         leaveSpikeTangent = Math.toRadians(0);
                         startingTangent = TANGENT_TOWARD_RED;
                     } else {
-                        spikePosePast = BLUE_BACKSTAGE_SPIKE_L_PAST;
+                        spikePose = BLUE_BACKSTAGE_SPIKE_L;
                         spikePoseDrop = BLUE_BACKSTAGE_SPIKE_L_DROP;
                         neutralApproachOrientation = TANGENT_TOWARD_RED;
                         leaveSpikeTangent = Math.toRadians(180);
@@ -58,14 +58,14 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = BLUE_BACKDROP_RIGHT;
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        spikePosePast = BLUE_AUDIENCE_SPIKE_R_PAST;
+                        spikePose = BLUE_AUDIENCE_SPIKE_R;
                         spikePoseDrop = BLUE_AUDIENCE_SPIKE_R_DROP;
                         neutralApproachOrientation = Math.toRadians(0);
                         leaveSpikeTangent = Math.toRadians(0);
                         startingTangent = Math.toRadians(-130);
 
                     } else {
-                        spikePosePast = BLUE_BACKSTAGE_SPIKE_R_PAST;
+                        spikePose = BLUE_BACKSTAGE_SPIKE_R;
                         spikePoseDrop = BLUE_BACKSTAGE_SPIKE_R_DROP;
                         neutralApproachOrientation = TANGENT_TOWARD_RED;
                         leaveSpikeTangent = Math.toRadians(180);
@@ -78,7 +78,7 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = BLUE_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePose = BLUE_BACKDROP_RIGHT;
-                        spikePosePast = BLUE_AUDIENCE_SPIKE_C_PAST;
+                        spikePose = BLUE_AUDIENCE_SPIKE_C;
                         spikePoseDrop = BLUE_AUDIENCE_SPIKE_C_DROP;
                         neutralApproachOrientation = TANGENT_TOWARD_RED;
                         leaveSpikeTangent = Math.toRadians(180);
@@ -86,7 +86,7 @@ public class PosesForRouteSuper {
                     } else
                     {
                         additionalPixelScorePose = BLUE_BACKDROP_LEFT;
-                        spikePosePast = BLUE_BACKSTAGE_SPIKE_C_PAST;
+                        spikePose = BLUE_BACKSTAGE_SPIKE_C;
                         spikePoseDrop = BLUE_BACKSTAGE_SPIKE_C_DROP;
                         neutralApproachOrientation =Math.toRadians(-105);
                         leaveSpikeTangent = Math.toRadians(180);
@@ -104,14 +104,14 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = RED_BACKDROP_LEFT;
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        spikePosePast = RED_AUDIENCE_SPIKE_L_PAST;
+                        spikePose = RED_AUDIENCE_SPIKE_L;
                         spikePoseDrop = RED_AUDIENCE_SPIKE_L_DROP;
                         neutralApproachOrientation = Math.toRadians(75);
                         leaveSpikeTangent = Math.toRadians(0);
                         startingTangent = TANGENT_TOWARD_BLUE;
                     } else {
-                        spikePosePast = RED_BACKSTAGE_SPIKE_L_PAST;
-                        spikePoseDrop = RED_BACKSTAGE_SPIKE_L_DROP;
+                        spikePose = RED_BACKSTAGE_SPIKE_L;
+                        spikePoseDrop = RED_BACKSTAGE_SPIKE_L;
                         neutralApproachOrientation = Math.toRadians(105);
                         leaveSpikeTangent = Math.toRadians(180);
                         startingTangent = TANGENT_TOWARD_BLUE;
@@ -122,13 +122,13 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = RED_BACKDROP_RIGHT;
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        spikePosePast = RED_AUDIENCE_SPIKE_R_PAST;
+                        spikePose = RED_AUDIENCE_SPIKE_R;
                         spikePoseDrop = RED_AUDIENCE_SPIKE_R_DROP;
                         neutralApproachOrientation = Math.toRadians(105);
                         leaveSpikeTangent = Math.toRadians(180);
                         startingTangent = TANGENT_TOWARD_BLUE;
                     } else {
-                        spikePosePast = RED_BACKSTAGE_SPIKE_R_PAST;
+                        spikePose = RED_BACKSTAGE_SPIKE_R;
                         spikePoseDrop = RED_BACKSTAGE_SPIKE_R_DROP;
                         neutralApproachOrientation = Math.toRadians(105);
                         leaveSpikeTangent = Math.toRadians(180);
@@ -141,13 +141,13 @@ public class PosesForRouteSuper {
                     firstPixelScorePose = RED_BACKDROP_CENTER;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePose = RED_BACKDROP_LEFT;
-                        spikePosePast = RED_AUDIENCE_SPIKE_C_PAST;
+                        spikePose = RED_AUDIENCE_SPIKE_C;
                         spikePoseDrop = RED_AUDIENCE_SPIKE_C_DROP;
                         neutralApproachOrientation = Math.toRadians(45);
                         leaveSpikeTangent = Math.toRadians(180);
                         startingTangent = TANGENT_TOWARD_BLUE;
                     } else {
-                        spikePosePast = RED_BACKSTAGE_SPIKE_C_PAST;
+                        spikePose = RED_BACKSTAGE_SPIKE_C;
                         spikePoseDrop = RED_BACKSTAGE_SPIKE_C_DROP;
                         additionalPixelScorePose = RED_BACKDROP_RIGHT;
                         neutralApproachOrientation = Math.toRadians(105);
