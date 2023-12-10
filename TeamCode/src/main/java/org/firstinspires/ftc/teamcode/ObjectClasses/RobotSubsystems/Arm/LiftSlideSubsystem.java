@@ -60,7 +60,6 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public int ticks;
 
         static {
-
             MAX.ticks = liftSlideHeights.MAX_HEIGHT_TICKETS;
             HIGH.ticks = liftSlideHeights.HIGH_HEIGHT_TICKS;
             MID.ticks = liftSlideHeights.MID_HEIGHT_TICKS;;
@@ -127,6 +126,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
     }
 
     public void init (){
+        SetLiftHeights();
         //This Direction works better because the string doesn't coil up in the other direction on the spool
         liftSlide.setDirection(DcMotorSimple.Direction.REVERSE);
         liftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -140,17 +140,13 @@ public class LiftSlideSubsystem extends SubsystemBase {
         currentState = LiftStates.ZERO;
         liftSlide.setTargetPosition(currentState.ticks);
         liftSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
     }
 
     public void periodic(){
 
+        SetLiftHeights();
 
-        LiftStates.HOME.setLiftHeightTicks(liftSlideHeights.HOME_HEIGHT_TICKS);
-        LiftStates.SAFE.setLiftHeightTicks(liftSlideHeights.SAFE_HEIGHT_TICKS);
-        LiftStates.LOW.setLiftHeightTicks(liftSlideHeights.LOW_HEIGHT_TICKS);
-        LiftStates.MID.setLiftHeightTicks(liftSlideHeights.MID_HEIGHT_TICKS);
-        LiftStates.HIGH.setLiftHeightTicks(liftSlideHeights.HIGH_HEIGHT_TICKS);
-        LiftStates.MAX.setLiftHeightTicks(liftSlideHeights.MAX_HEIGHT_TICKETS);
 
         //this is the one call per loop to get the currentPosition from the lift motor
         currentTicks = liftSlide.getCurrentPosition();
@@ -163,5 +159,19 @@ public class LiftSlideSubsystem extends SubsystemBase {
             MatchConfig.telemetryPacket.put("LiftSlide Target State", targetState);
             MatchConfig.telemetryPacket.put("LiftSlide Target Ticks", targetTicks);
         }
+    }
+
+    public void SetLiftHeights() {
+        LiftStates.HOME.setLiftHeightTicks(liftSlideHeights.HOME_HEIGHT_TICKS);
+        LiftStates.SAFE.setLiftHeightTicks(liftSlideHeights.SAFE_HEIGHT_TICKS);
+        LiftStates.LOW.setLiftHeightTicks(liftSlideHeights.LOW_HEIGHT_TICKS);
+        LiftStates.MID.setLiftHeightTicks(liftSlideHeights.MID_HEIGHT_TICKS);
+        LiftStates.HIGH.setLiftHeightTicks(liftSlideHeights.HIGH_HEIGHT_TICKS);
+        LiftStates.MAX.setLiftHeightTicks(liftSlideHeights.MAX_HEIGHT_TICKETS);
+        LiftStates.AUTO_LOW.setLiftHeightTicks(liftSlideHeights.AUTO_LOW_HEIGHT_TICKS);
+        LiftStates.AUTO_MID.setLiftHeightTicks(liftSlideHeights.AUTO_MID_HEIGHT_TICKS);
+        LiftStates.AUTO_HIGH.setLiftHeightTicks(liftSlideHeights.AUTO_HIGH_HEIGHT_TICKS);
+        LiftStates.ZERO.setLiftHeightTicks(liftSlideHeights.ZERO_HEIGHT_TICKS);
+
     }
 }

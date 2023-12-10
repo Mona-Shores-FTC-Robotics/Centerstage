@@ -43,7 +43,7 @@ public class Pickup_Test_Auto extends LinearOpMode {
 
     private Action testRoute;
 
-    public static int DISTANCE_TO_PIXEL_STACK_FROM_STAGING;
+
 
     @Override
     public void runOpMode() {
@@ -66,7 +66,7 @@ public class Pickup_Test_Auto extends LinearOpMode {
 
         //Build all the routes so we can select one quickly later
         RoutesSuper.BuildRoutes();
-
+        Robot.getInstance().getShoulderSubsystem().initTele();
         while (opModeInInit()) {
             // Add Vision Init Processor Telemetry
             VisionTelemetry.telemetryForInitProcessing();
@@ -100,6 +100,7 @@ public class Pickup_Test_Auto extends LinearOpMode {
 
         MatchConfig.timestampTimer = new ElapsedTime();
         MatchConfig.timestampTimer.reset();
+
 
 
         Actions.runBlocking(testRoute);

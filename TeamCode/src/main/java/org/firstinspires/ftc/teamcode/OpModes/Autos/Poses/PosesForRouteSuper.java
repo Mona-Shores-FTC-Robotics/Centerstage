@@ -15,6 +15,7 @@ public class PosesForRouteSuper {
     public Pose2d firstPixelScorePose;
     public Pose2d additionalPixelScorePose;
     public Pose2d neutralStagingPose;
+
     public Pose2d neutralPickupPose;
     public Pose2d audienceStartPose;
     public Pose2d backstageStartPose;
@@ -190,14 +191,14 @@ public class PosesForRouteSuper {
             startingPose = BLUE_BACKSTAGE_START_POSE;
             parkPose = BLUE_CORNER_PARK;
             leaveNeutralTangent = Math.toRadians(75);
-            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
-            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
+            neutralStagingPose = BLUE_NEUTRAL_STAGING;
+            neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
         } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
-            startingPose = BLUE_AUDIENCE_START_POSE;
+            startingPose = BLUE_NEUTRAL_STAGING;
             parkPose = BLUE_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
-            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
-            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
+            neutralStagingPose = BLUE_NEUTRAL_STAGING;
+            neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
             parkPose = RED_CORNER_PARK;

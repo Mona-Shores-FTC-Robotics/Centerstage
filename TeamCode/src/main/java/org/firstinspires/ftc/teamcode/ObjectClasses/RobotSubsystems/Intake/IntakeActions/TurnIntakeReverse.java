@@ -22,7 +22,7 @@ public class TurnIntakeReverse implements Action {
         telemetryPacket.addLine("Intake Reverse Action");
         IntakeSubsystem intakeSubsystem = Robot.getInstance().getIntakeSubsystem();
 
-        intakeSubsystem.intake1.setDirection(DcMotor.Direction.REVERSE);
+        intakeSubsystem.intake1.setDirection(DcMotor.Direction.FORWARD);
         intakeSubsystem.intake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeSubsystem.currentIntake1State = IntakeSubsystem.IntakeStates.INTAKE_REVERSE;
         intakeSubsystem.intake1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

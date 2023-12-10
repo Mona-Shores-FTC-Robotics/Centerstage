@@ -35,6 +35,7 @@ public class MoveLiftSlideActionFinishImmediate implements Action {
     }
 
         public void init() {
+        Robot.getInstance().getLiftSlideSubsystem().SetLiftHeights();
         hasNotInit=false;
         //When the command is first run set the targetState of the subsystem to the targetState and set the target ticks to the target ticks of that state
             Robot.getInstance().getLiftSlideSubsystem().setTargetState(targetState);

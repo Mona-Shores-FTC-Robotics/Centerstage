@@ -5,20 +5,23 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.L
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
-import static org.firstinspires.ftc.teamcode.OpModes.TestOpModes.Pickup_Test_Auto.DISTANCE_TO_PIXEL_STACK_FROM_STAGING;
 
-
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
@@ -27,10 +30,13 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeReverse;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeSlow;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeSlowReverse;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
-import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteStraight;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteSuper;
+
+import java.util.Arrays;
+
 
 public class RoutesSuper {
     static MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
@@ -59,10 +65,45 @@ public class RoutesSuper {
         AUTO_LOW, AUTO_MID, AUTO_HIGH, MAX, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
     }
 
+    public static VelConstraint overrideVelConstraint;
+    public static AccelConstraint overrideAccelConstraint;
+    public static TurnConstraints overrideTurnConstraint;
+
+    public static VelConstraint overrideVelConstraint2;
+    public static AccelConstraint overrideAccelConstraint2;
+
+    public static double VELOCITY_OVERRIDE = 10;
+    public static double ACCELERATION_OVERRIDE = 15;
+    public static double TURN_OVERRIDE=30;
+
     public static void BuildRoutes() {
+
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(VELOCITY_OVERRIDE),
+                        new AngularVelConstraint(VELOCITY_OVERRIDE)
+                ));
+
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-ACCELERATION_OVERRIDE, ACCELERATION_OVERRIDE);
+
+        overrideVelConstraint2 =
+                new MinVelConstraint(Arrays.asList(
+                        Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(8),
+                        new AngularVelConstraint(8)
+                ));
+
+        overrideAccelConstraint2 = new ProfileAccelConstraint(-10, 10);
+
+
+
+        overrideTurnConstraint = new TurnConstraints(
+                Math.toRadians(30), -Math.toRadians(TURN_OVERRIDE), Math.toRadians(TURN_OVERRIDE));
+
+
         PosesForRouteSuper blueTestRoutePoses = new PosesForRouteSuper(BLUE, AUDIENCE, CENTER);
         blueTestRoute = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
-                .stopAndAdd(new RouteBuilder().PickupPixelsTest(blueTestRoutePoses, blueTestRoutePoses.neutralStagingPose))
+                .stopAndAdd(new RouteBuilder().PickupPixels(blueTestRoutePoses, blueTestRoutePoses.neutralStagingPose))
                 .build();
 
         //////////
@@ -143,7 +184,7 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingByWall(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
+                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.parkPose))
                 .waitSeconds(1)
@@ -194,7 +235,7 @@ public class RoutesSuper {
             return backDropStagingToNeutralStaging;
         }
 
-        public Action NeutralStagingToBackdropStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
+        public Action NeutralStagingToBackdropStaging(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
@@ -226,10 +267,10 @@ public class RoutesSuper {
             return backDropStagingToNeutralStaging;
         }
 
-        public Action PickupPixels(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
+        public Action PickupPixelsOLD(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
             SequentialAction pickupPixels = new SequentialAction(
                     new TurnIntakeOn(),
-                    new RouteBuilder().AutoDriveToNeutralStack(posesForRouteSuper, neutralPixelStagingPose),
+                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new SleepAction(.5),
                     new ParallelAction(
                             new TurnIntakeOff(),
@@ -237,23 +278,22 @@ public class RoutesSuper {
             return pickupPixels;
         }
 
-        public Action PickupPixelsTest(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
+        public Action PickupPixels(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
             SequentialAction pickupPixels = new SequentialAction(
-                    new RouteBuilder().AutoDriveToNeutralStack(posesForRouteSuper, neutralPixelStagingPose),
-                    new SleepAction(1),
+                    new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
+                    new TurnIntakeSlowReverse(),
+                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new TurnIntakeOn(),
-                    new SleepAction(1),
-                    new TurnIntakeReverse(),
-                    new SleepAction(1),
-                    new TurnIntakeOn(),
-                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper));
+                    new SleepAction(.1),
+                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper),
+                    new SleepAction(4));
             return pickupPixels;
         }
 
 
         public Action PickupPixelsTest2(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
             SequentialAction pickupPixels = new SequentialAction(
-                    new RouteBuilder().AutoDriveToNeutralStack(posesForRouteSuper, neutralPixelStagingPose),
+                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new SleepAction(1),
                     new TurnIntakeSlow(),
                     new SleepAction(1),
@@ -266,15 +306,15 @@ public class RoutesSuper {
 
         private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteSuper) {
             Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralPickupPose)
-                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x)
+                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x, overrideVelConstraint, overrideAccelConstraint)
                     .build();
             return autoDriveFromNeutralStack;
         }
 
-        public Action AutoDriveToNeutralStack(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
-            Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(neutralPixelStagingPose)
+        public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
+            Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(posesForRouteSuper.neutralPickupPose.position.x-DISTANCE_TO_PIXEL_STACK_FROM_STAGING)
+                    .lineToX(endPose.position.x, overrideVelConstraint, overrideAccelConstraint)
                     .build();
             return autoDriveToNeutralStack;
         }

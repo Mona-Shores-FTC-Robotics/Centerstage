@@ -14,11 +14,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public static class IntakeParameters {
         public double INTAKE_ON_POWER = 1;
-        public double INTAKE_REVERSE_POWER = -1;
+        public double INTAKE_REVERSE_POWER = -.6;
         public double INTAKE_SLOW_POWER = .4;
         public double INTAKE_SLOW_REVERSE_POWER = -.4;
         public double INTAKE_SUPER_SLOW_POWER = .2;
-        public double INTAKE_SUPER_SLOW_REVERSE_POWER = -.4;
+        public double INTAKE_SUPER_SLOW_REVERSE_POWER = -.2;
         public double INTAKE_OFF_POWER = 0;
     }
     public static IntakeParameters intakeParameters = new IntakeParameters();

@@ -48,6 +48,7 @@ public class FieldConstants {
     public static double TANGENT_TOWARD_RED = Math.toRadians(270);
     public static double TANGENT_315_DEGREES = Math.toRadians(315);
 
+    public static int DISTANCE_TO_PIXEL_STACK_FROM_STAGING=2;
     /////////////////
     // START POSES //
     /////////////////
@@ -156,7 +157,9 @@ public class FieldConstants {
     public static Pose2d BLUE_NEUTRAL_PIXEL_CENTERSPIKE = new Pose2d(-64.281 + HALF_ROBOT_LENGTH, 23.469, FACE_TOWARD_BACKSTAGE);
     public static Pose2d BLUE_NEUTRAL_PIXEL_TRUSS = new Pose2d(-64.281 + HALF_ROBOT_LENGTH, 35.469, FACE_TOWARD_BACKSTAGE);
 
-    public static Pose2d BLUE_NEUTRAL_PIXEL_PICKUP = new Pose2d(-TILE * 2 - HALF_TILE, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_PICKUP = new Pose2d(-TILE * 2 - HALF_TILE-DISTANCE_TO_PIXEL_STACK_FROM_STAGING, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_PIXEL_PICKUP_TOWARD_WALL_MORE = new Pose2d(-TILE * 2 - HALF_TILE-DISTANCE_TO_PIXEL_STACK_FROM_STAGING-4, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
+    public static Pose2d BLUE_NEUTRAL_STAGING = new Pose2d(-2 * TILE + 10, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     ///////////////////
     // Parking Poses //
@@ -169,7 +172,6 @@ public class FieldConstants {
     public static Pose2d BLUE_MIDDLE_PARK = new Pose2d(2 * TILE, HALF_TILE, FACE_225_DEGREES);
 
     public static Pose2d RED_NEUTRAL_STAGING = new Pose2d(-2 * TILE + 10, -TILE - HALF_TILE, FACE_TOWARD_BACKSTAGE);
-    public static Pose2d BLUE_NEUTRAL_STAGING = new Pose2d(-2 * TILE + 10, TILE + HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
     public static Pose2d BLUE_BACKSTAGE_START_LANE_A = new Pose2d(TILE, HALF_FIELD - THREE_QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d RED_BACKSTAGE_START_LANE_F = new Pose2d(TILE, -HALF_FIELD + THREE_QUARTER_TILE, FACE_TOWARD_BACKSTAGE);
