@@ -16,23 +16,34 @@ public class IntakeSubsystem extends SubsystemBase {
         public double INTAKE_ON_POWER = 1;
         public double INTAKE_REVERSE_POWER = -1;
         public double INTAKE_SLOW_POWER = .4;
+        public double INTAKE_SLOW_REVERSE_POWER = -.4;
+        public double INTAKE_SUPER_SLOW_POWER = .2;
+        public double INTAKE_SUPER_SLOW_REVERSE_POWER = -.4;
         public double INTAKE_OFF_POWER = 0;
-        public double KICKBACK_TIMER_THRESHOLD_MS=100;
     }
     public static IntakeParameters intakeParameters = new IntakeParameters();
 
     public enum IntakeStates {
-        INTAKE_ON (30, 1),
-        INTAKE_SLOW(30, .4),
-        INTAKE_REVERSE (-150,-1),
-        INTAKE_OFF (0, 0);
+        INTAKE_OFF,
+        INTAKE_ON,
+        INTAKE_REVERSE,
+        INTAKE_SLOW,
+        INTAKE_SLOW_REVERSE,
+        INTAKE_SUPER_SLOW,
+        INTAKE_SUPER_SLOW_REVERSE;
 
-        public double velocity;
+        static {
+            INTAKE_OFF.power = intakeParameters.INTAKE_OFF_POWER;
+            INTAKE_ON.power = intakeParameters.INTAKE_ON_POWER;
+            INTAKE_REVERSE.power = intakeParameters.INTAKE_REVERSE_POWER;
+            INTAKE_SLOW.power = intakeParameters.INTAKE_SLOW_POWER;
+            INTAKE_SLOW_REVERSE.power = intakeParameters.INTAKE_SLOW_REVERSE_POWER;
+            INTAKE_SUPER_SLOW.power = intakeParameters.INTAKE_SUPER_SLOW_POWER;
+            INTAKE_SUPER_SLOW_REVERSE.power = intakeParameters.INTAKE_SUPER_SLOW_REVERSE_POWER;
+        }
+
         public double power;
 
-        IntakeStates(double vel, double pow) {
-            this.velocity = vel; this.power = pow;
-        }
         void SetStatePower(double pow){
             this.power = pow;
         }

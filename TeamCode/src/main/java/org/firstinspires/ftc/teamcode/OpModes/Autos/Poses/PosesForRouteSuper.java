@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Visio
 
 import com.acmerobotics.roadrunner.Pose2d;
 
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+
 public class PosesForRouteSuper {
     public Pose2d startingPose;
     public Pose2d backdropStagingPose;
@@ -25,6 +27,8 @@ public class PosesForRouteSuper {
     public Pose2d spikePose;
     public Pose2d spikePoseDrop;
     public double startingTangent;
+    public LiftSlideSubsystem.LiftStates firstPixelScoreHeight;
+    public  LiftSlideSubsystem.LiftStates  additionalPixelPixelScoreHeight;
 
 
     public PosesForRouteSuper(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
@@ -206,6 +210,8 @@ public class PosesForRouteSuper {
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
+            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
         }
     }
 

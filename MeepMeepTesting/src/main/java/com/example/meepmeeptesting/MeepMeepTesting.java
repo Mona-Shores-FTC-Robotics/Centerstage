@@ -29,7 +29,7 @@ public class MeepMeepTesting {
 
     public static TeamPropLocation teamPropLocation = TeamPropLocation.LEFT;
 
-    public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_BACKDROP_PARK;
+    public static RoutesToRun routesToRunSelection = RoutesToRun.SUPER  ;
 
     /** Set which robots should show up **/
     public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
