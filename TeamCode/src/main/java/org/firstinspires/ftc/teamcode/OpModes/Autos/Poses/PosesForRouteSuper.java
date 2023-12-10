@@ -193,25 +193,31 @@ public class PosesForRouteSuper {
             leaveNeutralTangent = Math.toRadians(75);
             neutralStagingPose = BLUE_NEUTRAL_STAGING;
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
+            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
             startingPose = BLUE_NEUTRAL_STAGING;
             parkPose = BLUE_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralStagingPose = BLUE_NEUTRAL_STAGING;
             neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
+            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
+            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
             parkPose = RED_CORNER_PARK;
             leaveNeutralTangent = Math.toRadians(-75);
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
+            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
             parkPose = RED_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
-            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
+            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
             additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
         }
     }
