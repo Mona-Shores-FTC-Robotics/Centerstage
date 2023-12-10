@@ -285,8 +285,7 @@ public class RoutesSuper {
                     new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new TurnIntakeOn(),
                     new SleepAction(.1),
-                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper),
-                    new SleepAction(4));
+                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper));
             return pickupPixels;
         }
 
