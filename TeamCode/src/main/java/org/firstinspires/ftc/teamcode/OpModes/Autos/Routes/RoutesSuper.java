@@ -282,6 +282,7 @@ public class RoutesSuper {
             SequentialAction pickupPixels = new SequentialAction(
                     new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
                     new TurnIntakeSlowReverse(),
+                    //we need to be closer to the blue wall by like 2-5 inches and maybe drive in just a tad more
                     new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new TurnIntakeOn(),
                     new SleepAction(.1),
