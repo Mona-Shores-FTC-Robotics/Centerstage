@@ -169,7 +169,8 @@ public class PosesForRouteSuper {
 
             backdropStagingPose = BLUE_BACKDROP_STAGING;
             backstageStartPose = SUPER_BLUE_BACKSTAGE_START_POSE;
-            audienceStartPose = SUPER_BLUE_AUDIENCE_START_POSE;
+//            audienceStartPose = SUPER_BLUE_AUDIENCE_START_POSE;
+            audienceStartPose = BLUE_NEUTRAL_STAGING;
             backstageStageDoorPose = SUPER_BLUE_STAGEDOOR_BY_BACKDROP;
             audienceStageDoorPose = BLUE_STAGEDOOR_ENTRANCE;
             parkOrientation = FACE_45_DEGREES;
@@ -193,11 +194,12 @@ public class PosesForRouteSuper {
             neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
             neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
         } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
-            startingPose = BLUE_AUDIENCE_START_POSE;
+//            startingPose = BLUE_AUDIENCE_START_POSE;
+            startingPose = BLUE_NEUTRAL_STAGING;
             parkPose = BLUE_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
-            neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
-            neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
+            neutralStagingPose = BLUE_NEUTRAL_STAGING;
+            neutralPickupPose = BLUE_NEUTRAL_PIXEL_PICKUP;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
             parkPose = RED_CORNER_PARK;

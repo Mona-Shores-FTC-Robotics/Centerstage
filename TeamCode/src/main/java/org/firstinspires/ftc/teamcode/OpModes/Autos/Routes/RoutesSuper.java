@@ -5,14 +5,20 @@ import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.L
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
-import static org.firstinspires.ftc.teamcode.OpModes.TestOpModes.Pickup_Test_Auto.DISTANCE_TO_PIXEL_STACK_FROM_STAGING;
 
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TurnConstraints;
+import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
@@ -32,6 +38,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelP
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteStraight;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteSuper;
 
+import java.util.Arrays;
+@Config
 public class RoutesSuper {
     static MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
@@ -59,7 +67,27 @@ public class RoutesSuper {
         AUTO_LOW, AUTO_MID, AUTO_HIGH, MAX, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
     }
 
+    public static VelConstraint overrideVelConstraint;
+    public static AccelConstraint overrideAccelConstraint;
+    public static TurnConstraints overrideTurnConstraint;
+    public static int DISTANCE_TO_PIXEL_STACK_FROM_STAGING=5;
+    public static double VELOCITY_OVERRIDE = 15;
+    public static double ACCELERATION_OVERRIDE = 20;
+    public static double TURN_OVERRIDE=30;
+
     public static void BuildRoutes() {
+
+        overrideVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        Robot.getInstance().getDriveSubsystem().mecanumDrive.kinematics.new WheelVelConstraint(VELOCITY_OVERRIDE),
+                        new AngularVelConstraint(VELOCITY_OVERRIDE)
+                ));
+
+        overrideAccelConstraint = new ProfileAccelConstraint(-ACCELERATION_OVERRIDE, ACCELERATION_OVERRIDE);
+
+        overrideTurnConstraint = new TurnConstraints(
+                Math.toRadians(30), -Math.toRadians(TURN_OVERRIDE), Math.toRadians(TURN_OVERRIDE));
+
         PosesForRouteSuper blueTestRoutePoses = new PosesForRouteSuper(BLUE, AUDIENCE, CENTER);
         blueTestRoute = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
                 .stopAndAdd(new RouteBuilder().PickupPixelsTest(blueTestRoutePoses, blueTestRoutePoses.neutralStagingPose))
@@ -274,7 +302,7 @@ public class RoutesSuper {
         public Action AutoDriveToNeutralStack(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(neutralPixelStagingPose)
                     .setReversed(true)
-                    .lineToX(posesForRouteSuper.neutralPickupPose.position.x-DISTANCE_TO_PIXEL_STACK_FROM_STAGING)
+                    .lineToX(posesForRouteSuper.neutralPickupPose.position.x-DISTANCE_TO_PIXEL_STACK_FROM_STAGING, overrideVelConstraint, overrideAccelConstraint)
                     .build();
             return autoDriveToNeutralStack;
         }

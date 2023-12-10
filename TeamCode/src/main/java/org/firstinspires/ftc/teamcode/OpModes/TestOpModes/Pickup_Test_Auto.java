@@ -43,7 +43,7 @@ public class Pickup_Test_Auto extends LinearOpMode {
 
     private Action testRoute;
 
-    public static int DISTANCE_TO_PIXEL_STACK_FROM_STAGING;
+
 
     @Override
     public void runOpMode() {
