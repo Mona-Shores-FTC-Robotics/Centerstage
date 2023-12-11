@@ -3,6 +3,11 @@ package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.LiftStates.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem.*;
+
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.TeamPropLocation.*;
 
@@ -63,14 +68,12 @@ public class RoutesSuper {
 
     public static VelConstraint overrideVelConstraint;
     public static AccelConstraint overrideAccelConstraint;
-    public static TurnConstraints overrideTurnConstraint;
 
     public static VelConstraint overrideVelConstraint2;
     public static AccelConstraint overrideAccelConstraint2;
 
     public static double VELOCITY_OVERRIDE = 10;
     public static double ACCELERATION_OVERRIDE = 15;
-    public static double TURN_OVERRIDE=30;
 
     public static void BuildRoutes() {
 
@@ -265,9 +268,8 @@ public class RoutesSuper {
 
         public Action PickupPixels(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
             SequentialAction pickupPixels = new SequentialAction(
-                    new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
+                    new ActuateGripperAction(GripperStates.OPEN),
                     new TurnIntakeSlowReverse(),
-                    //we need to be closer to the blue wall by like 2-5 inches and maybe drive in just a tad more
                     new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
                     new TurnIntakeOn(),
                     new SleepAction(.1),
@@ -304,19 +306,19 @@ public class RoutesSuper {
             return autoDriveToNeutralStack;
         }
 
-        public Action ScorePixelAction(Pose2d scorePose, LiftSlideSubsystem.LiftStates scoreHeight) {
+        public Action ScorePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
             SequentialAction scorePixel =
                     new SequentialAction(
-                            new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
+                            new ActuateGripperAction(GripperStates.CLOSED),
                             new SleepAction(.2),
                             new SequentialAction(
-                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
+                                            new RotateShoulderAction(ShoulderStates.BACKDROP),
                                             new SleepAction(.35),
                                             new MoveLiftSlideActionFinishImmediate(scoreHeight)
                                     ),
                             new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
                             new SleepAction(.4),
-                            new ActuateGripperAction(GripperSubsystem.GripperStates.OPEN),
+                            new ActuateGripperAction(GripperStates.OPEN),
                             new SleepAction(.4),
                             new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
                             new SleepAction(.8),
@@ -325,33 +327,33 @@ public class RoutesSuper {
                                     new SequentialAction(
                                             new SleepAction(.9),
                                             new ParallelAction(
-                                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                                                    new RotateShoulderAction(ShoulderStates.HALFWAY),
+                                                    new ActuateGripperAction(GripperStates.CLOSED),
+                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
                                             new SleepAction(.8),
-                                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME),
+                                            new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.250),
-                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+                                            new RotateShoulderAction(ShoulderStates.INTAKE)
                                     )
                             )
                     );
             return scorePixel;
         }
 
-        public Action ScoreOnePixelAction(Pose2d scorePose, LiftSlideSubsystem.LiftStates scoreHeight) {
+        public Action ScoreOnePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
             SequentialAction scorePixel =
                     new SequentialAction(
-                            new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
+                            new ActuateGripperAction(GripperStates.CLOSED),
                             new SleepAction(.2),
                             new SequentialAction(
-                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.BACKDROP),
+                                    new RotateShoulderAction(ShoulderStates.BACKDROP),
                                     new SleepAction(.35),
                                     new MoveLiftSlideActionFinishImmediate(scoreHeight)
                             ),
                             new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
                             new SleepAction(.4),
-                            new ActuateGripperAction(GripperSubsystem.GripperStates.ONE_PIXEL_RELEASE_POSITION),
+                            new ActuateGripperAction(GripperStates.ONE_PIXEL_RELEASE_POSITION),
                             new SleepAction(.4),
                             new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
                             new SleepAction(.8),
@@ -360,14 +362,14 @@ public class RoutesSuper {
                                     new SequentialAction(
                                             new SleepAction(.9),
                                             new ParallelAction(
-                                                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                                                    new RotateShoulderAction(ShoulderStates.HALFWAY),
+                                                    new ActuateGripperAction(GripperStates.CLOSED),
+                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
                                             new SleepAction(.8),
-                                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME),
+                                            new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.25),
-                                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+                                            new RotateShoulderAction(ShoulderStates.INTAKE)
                                     )
                             )
                     );
@@ -375,7 +377,7 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
-            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
@@ -386,7 +388,7 @@ public class RoutesSuper {
         }
 
         private Action PushTeamPropAndNeutralStage(PosesForRouteSuper posesForRouteSuper) {
-            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
 
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())

@@ -48,6 +48,41 @@ public class MeepMeepTesting {
     public enum SideOfField {BACKSTAGE, AUDIENCE}
     public enum LiftStates {
         AUTO_LOW, AUTO_MID, AUTO_HIGH, MAX, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL}
+
+    public enum GripperStates {
+        REST (0.5),
+        CLOSED (.55),
+        OPEN (.47),
+        ONE_PIXEL_RELEASE_POSITION (.495);
+        public double position;
+        GripperStates(double pos) {
+            this.position = pos;
+        }
+        void SetState(double pos){
+            this.position = pos;
+        }
+    }
+
+    public enum ShoulderStates {
+        REST (.5),
+        INTAKE (0.565),
+        HALFWAY(.4),
+        BACKDROP (.2),
+        STARTING_POSITION (.565);
+
+        public double position;
+        ShoulderStates(double p) {
+            this.position = p;
+        }
+        void SetState(double pos){
+            this.position = pos;
+        }
+    }
+    public enum PixelPusherStates {
+        NOT_PUSHING,
+        PUSHING;
+    }
+
     enum RoutesToRun {SPIKE_ONLY, SPIKE_BACKDROP_PARK, SPIKE_BACKDROP_PARK_IMPROVED, SPIKE_PICKUP1_BACKDROP_PARK, SPIKE_STRAIGHT, SUPER}
 
     public static void main(String[] args) {

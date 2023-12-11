@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Autos.Poses;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.*;
 
 import com.acmerobotics.roadrunner.Pose2d;
 
@@ -28,8 +29,8 @@ public class PosesForRouteSuper {
     public Pose2d spikePose;
     public Pose2d spikePoseDrop;
     public double startingTangent;
-    public LiftSlideSubsystem.LiftStates firstPixelScoreHeight;
-    public  LiftSlideSubsystem.LiftStates  additionalPixelPixelScoreHeight;
+    public LiftStates firstPixelScoreHeight;
+    public  LiftStates  additionalPixelPixelScoreHeight;
 
 
     public PosesForRouteSuper(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
@@ -192,32 +193,32 @@ public class PosesForRouteSuper {
             leaveNeutralTangent = Math.toRadians(75);
             neutralStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
             neutralPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
-            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
-            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
+            firstPixelScoreHeight = LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
             startingPose = BLUE_NEUTRAL_STAGING;
             parkPose = BLUE_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
-            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
-            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
+            firstPixelScoreHeight = LiftStates.AUTO_MID;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
             parkPose = RED_CORNER_PARK;
             leaveNeutralTangent = Math.toRadians(-75);
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
-            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_LOW;
-            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
+            firstPixelScoreHeight = LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
         } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
             parkPose = RED_MIDDLE_PARK;
             leaveNeutralTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralStagingPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
             neutralPickupPose = SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR_PICKUP;
-            firstPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
-            additionalPixelPixelScoreHeight = LiftSlideSubsystem.LiftStates.AUTO_MID;
+            firstPixelScoreHeight = LiftStates.AUTO_MID;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
         }
     }
 
