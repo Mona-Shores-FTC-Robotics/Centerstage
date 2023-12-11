@@ -223,21 +223,21 @@ public class RoutesSpikeStraightUpTheMiddle {
                                     new MoveLiftSlideActionFinishImmediate(scoreHeight)
                             ),
                             new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.4),
+                            new SleepAction(.6),
                             new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.4),
+                            new SleepAction(.7),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.8),
+                            new SleepAction(.7),
                             new ParallelAction(
                                     new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromBackDrop(scorePose),
                                     new SequentialAction(
-                                            new SleepAction(.9),
-                            new ParallelAction(
+                                            new SleepAction(.4),
+                                            new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperStates.CLOSED),
                                                     new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
-                                            new SleepAction(.8),
+                                            new SleepAction(.5),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.250),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)
