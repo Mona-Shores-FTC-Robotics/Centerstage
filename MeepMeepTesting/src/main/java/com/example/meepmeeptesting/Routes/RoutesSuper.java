@@ -159,12 +159,12 @@ public class RoutesSuper {
     public Action SuperBackstage(PosesForRouteSuper posesForRouteSuper) {
         Action superBackstageAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRouteSuper))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.yellowPixelScorePose))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.parkPose))
+                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalWhitePixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+//                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.parkPose))
                 .waitSeconds(1)
                 .build();
         return superBackstageAuto;
@@ -174,11 +174,12 @@ public class RoutesSuper {
         Action superAudienceAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalPixelScorePose))
-                .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalWhitePixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.parkPose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.parkPose))
+                .waitSeconds(1)
                 .build();
         return superAudienceAuto;
     }
@@ -368,7 +369,7 @@ public class RoutesSuper {
                     .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScorePose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScorePose.heading.log())
                     .build();
             return pushTeamPropAndStage;
         }
@@ -395,8 +396,8 @@ public class RoutesSuper {
 
         public Action StrafeToPlaceFirstPixel(PosesForRouteSuper posesForRouteSuper) {
 
-            Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalPixelScorePose)
-                    .strafeTo(PoseToVector(posesForRouteSuper.firstPixelScorePose))
+            Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalWhitePixelScorePose)
+                    .strafeTo(PoseToVector(posesForRouteSuper.yellowPixelScorePose))
                     .build();
             return strafe;
         }
