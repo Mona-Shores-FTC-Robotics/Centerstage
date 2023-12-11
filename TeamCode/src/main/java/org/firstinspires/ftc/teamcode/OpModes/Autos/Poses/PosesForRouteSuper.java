@@ -167,7 +167,6 @@ public class PosesForRouteSuper {
 
     public void SetAlliancePoses(AllianceColor allianceColor) {
         if (allianceColor == AllianceColor.BLUE) {
-
             backdropStagingPose = BLUE_BACKDROP_STAGING;
             backstageStartPose = SUPER_BLUE_BACKSTAGE_START_POSE;
             audienceStartPose = SUPER_BLUE_AUDIENCE_START_POSE;

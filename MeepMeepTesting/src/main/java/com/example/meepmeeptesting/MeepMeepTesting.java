@@ -27,14 +27,14 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
+    public static TeamPropLocation teamPropLocation = TeamPropLocation.LEFT;
 
     public static RoutesToRun routesToRunSelection = RoutesToRun.SUPER;
 
     /** Set which robots should show up **/
-    public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
     public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
-    public static boolean SHOW_RED_AUDIENCE_BOT = false;
+    public static boolean SHOW_RED_AUDIENCE_BOT = true;
     public static boolean SHOW_RED_BACKSTAGE_BOT = true;
 
     public static DriveShim roadRunnerDrive;
