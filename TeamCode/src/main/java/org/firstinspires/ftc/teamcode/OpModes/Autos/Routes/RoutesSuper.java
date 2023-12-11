@@ -61,10 +61,6 @@ public class RoutesSuper {
 
     public static Action blueTestRoute;
 
-    public enum LiftStates {
-        AUTO_LOW, AUTO_MID, AUTO_HIGH, MAX, HIGH, MID, LOW, SAFE, HOME, ZERO, MANUAL;
-    }
-
     public static VelConstraint overrideVelConstraint;
     public static AccelConstraint overrideAccelConstraint;
     public static TurnConstraints overrideTurnConstraint;
@@ -84,7 +80,6 @@ public class RoutesSuper {
                         new AngularVelConstraint(VELOCITY_OVERRIDE)
                 ));
 
-
         overrideAccelConstraint = new ProfileAccelConstraint(-ACCELERATION_OVERRIDE, ACCELERATION_OVERRIDE);
 
         overrideVelConstraint2 =
@@ -94,12 +89,6 @@ public class RoutesSuper {
                 ));
 
         overrideAccelConstraint2 = new ProfileAccelConstraint(-10, 10);
-
-
-
-        overrideTurnConstraint = new TurnConstraints(
-                Math.toRadians(30), -Math.toRadians(TURN_OVERRIDE), Math.toRadians(TURN_OVERRIDE));
-
 
         PosesForRouteSuper blueTestRoutePoses = new PosesForRouteSuper(BLUE, AUDIENCE, CENTER);
         blueTestRoute = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
@@ -200,10 +189,6 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
-//                .stopAndAdd(new RoutesSuper.RouteBuilder().BackdropStagingToNeutralStagingThroughStageDoor(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
-//                .stopAndAdd(new RoutesSuper.RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.secondNeutralStagingPose))
-//                .stopAndAdd(new RoutesSuper.RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
-//                .stopAndAdd(new RoutesSuper.RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.parkPose))
                 .build();
         return superAudienceAuto;
@@ -421,28 +406,12 @@ public class RoutesSuper {
         }
 
         public Action StrafeToPlaceFirstPixel(PosesForRouteSuper posesForRouteSuper) {
-
             Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalPixelScorePose)
                     .strafeTo(PoseToVector(posesForRouteSuper.firstPixelScorePose))
                     .build();
             return strafe;
         }
 
-        public static class ActionsForSpikeBackdrop {
-            public Action ScoreAndBackup(Pose2d start_pose, LiftStates liftHeight) {
-                return roadRunnerDrive.actionBuilder(start_pose)
-                        .lineToX(TILE * 2 + 7)
-                        .lineToX(TILE * 2 - 5.5)
-                        .build();
-            }
-
-            public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, LiftStates firstHeight, LiftStates secondHeight) {
-                return roadRunnerDrive.actionBuilder(start_pose)
-                        .lineToX(TILE * 2 + 7)
-                        .lineToX(TILE * 2 - 2)
-                        .build();
-            }
-        }
     }
 }
 
