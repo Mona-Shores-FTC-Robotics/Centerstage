@@ -159,7 +159,7 @@ public class RoutesSuper {
     public Action SuperBackstage(PosesForRouteSuper posesForRouteSuper) {
         Action superBackstageAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRouteSuper))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.yellowPixelScorePose))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
                 .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalWhitePixelScorePose))

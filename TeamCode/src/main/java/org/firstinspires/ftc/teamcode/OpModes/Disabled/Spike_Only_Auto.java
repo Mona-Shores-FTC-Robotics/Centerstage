@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.MatchConfig;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionTelemetry;
 
-@Disabled
 @Autonomous(name = "Spike Only Auto")
 public class Spike_Only_Auto extends LinearOpMode {
 

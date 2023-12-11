@@ -6,7 +6,6 @@ import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R;
-import static com.example.meepmeeptesting.Constants.FACE_TOWARD_BLUE;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R;
@@ -72,7 +71,7 @@ public class PosesForRouteSuper {
     public double leaveNeutralTangent;
     public double leaveSpikeTangent;
     public Pose2d spikePose;
-    public LiftStates firstPixelScoreHeight;
+    public LiftStates yellowPixelScoreHeight;
     public LiftStates  additionalPixelPixelScoreHeight;
 
 
@@ -102,7 +101,7 @@ public class PosesForRouteSuper {
                     //////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = BLUE_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
                         leaveSpikeTangent = Math.toRadians(135);
@@ -117,7 +116,7 @@ public class PosesForRouteSuper {
                     ////////////////////////////////////////////
                     else {
                         startingPose = BLUE_BACKSTAGE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = BLUE_BACKSTAGE_SPIKE_L;
                         neutralApproachOrientation = Math.toRadians(-105);
@@ -141,7 +140,7 @@ public class PosesForRouteSuper {
                     ////////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = BLUE_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = BLUE_AUDIENCE_SPIKE_R;
                         leaveSpikeTangent = Math.toRadians(45);
@@ -156,7 +155,7 @@ public class PosesForRouteSuper {
                     //////////////////////////////////////////////
                     else {
                         startingPose = BLUE_BACKSTAGE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = BLUE_BACKSTAGE_SPIKE_R;
                         neutralApproachOrientation = Math.toRadians(-105);
@@ -180,7 +179,7 @@ public class PosesForRouteSuper {
                     //////////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = BLUE_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalWhitePixelScorePose = BLUE_BACKDROP_RIGHT;
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
@@ -198,7 +197,7 @@ public class PosesForRouteSuper {
                     {
                         startingPose = BLUE_BACKSTAGE_START_POSE;
                         parkPose = BLUE_CORNER_PARK;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalWhitePixelScorePose = BLUE_BACKDROP_LEFT;
                         spikePose = BLUE_BACKSTAGE_SPIKE_C;
@@ -236,7 +235,7 @@ public class PosesForRouteSuper {
                     ////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = RED_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_AUDIENCE_SPIKE_L;
                         leaveSpikeTangent = Math.toRadians(-45);
@@ -252,7 +251,7 @@ public class PosesForRouteSuper {
                     else {
                         startingPose = RED_BACKSTAGE_START_POSE;
                         parkPose = RED_CORNER_PARK;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_BACKSTAGE_SPIKE_L;
                         neutralApproachOrientation = Math.toRadians(105);
@@ -275,7 +274,7 @@ public class PosesForRouteSuper {
                     //////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = RED_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_AUDIENCE_SPIKE_R;
                         leaveSpikeTangent = Math.toRadians(215);
@@ -291,7 +290,7 @@ public class PosesForRouteSuper {
                     ////////////////////////////////////////////
                     else {
                         startingPose = RED_BACKSTAGE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_BACKSTAGE_SPIKE_R;
                         leaveSpikeTangent = Math.toRadians(180);
@@ -315,7 +314,7 @@ public class PosesForRouteSuper {
                     ////////////////////////////////////////////
                     if (sideOfField == SideOfField.AUDIENCE) {
                         startingPose = RED_AUDIENCE_START_POSE;
-                        firstPixelScoreHeight = LiftStates.AUTO_MID;
+                        yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalWhitePixelScorePose = RED_BACKDROP_LEFT;
                         spikePose = RED_AUDIENCE_SPIKE_C;
@@ -332,7 +331,7 @@ public class PosesForRouteSuper {
                     else {
                         startingPose = RED_BACKSTAGE_START_POSE;
                         parkPose = RED_CORNER_PARK;
-                        firstPixelScoreHeight = LiftStates.AUTO_LOW;
+                        yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_BACKSTAGE_SPIKE_C;
                         additionalWhitePixelScorePose = RED_BACKDROP_RIGHT;
