@@ -20,16 +20,12 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOff;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeOn;
@@ -37,7 +33,6 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.Intak
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeSlow;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Intake.IntakeActions.TurnIntakeSlowReverse;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
-import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
 import org.firstinspires.ftc.teamcode.OpModes.Autos.Poses.PosesForRouteSuper;
 
 import java.util.Arrays;
@@ -173,12 +168,12 @@ public class RoutesSuper {
     public Action SuperBackstage(PosesForRouteSuper posesForRouteSuper) {
         Action superBackstageAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRouteSuper))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.firstPixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.firstPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.yellowPixelScorePose))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalPixelScorePose))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.parkPose))
+                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalWhitePixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+//                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.parkPose))
                 .waitSeconds(1)
                 .build();
         return superBackstageAuto;
@@ -188,11 +183,12 @@ public class RoutesSuper {
         Action superAudienceAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
-                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalPixelScorePose))
-                .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalWhitePixelScorePose))
+                .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
-                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
-                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.parkPose))
+                .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
+                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.parkPose))
+                .waitSeconds(1)
                 .build();
         return superAudienceAuto;
     }
@@ -216,8 +212,8 @@ public class RoutesSuper {
         public Action BackdropStagingToNeutralStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(scorePose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStartPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStartPose), TANGENT_TOWARD_AUDIENCE)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_AUDIENCE)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), TANGENT_TOWARD_AUDIENCE)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation)
                     .build();
             return backDropStagingToNeutralStaging;
@@ -227,8 +223,8 @@ public class RoutesSuper {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStartPose), posesForRouteSuper.backdropApproachOrientation)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStartPose), TANGENT_TOWARD_BACKSTAGE)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), posesForRouteSuper.backdropApproachOrientation)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_BACKSTAGE)
                     .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE)
                     .build();
             return neutralStagingToBackdropStaging;
@@ -320,7 +316,7 @@ public class RoutesSuper {
                             new SleepAction(.4),
                             new ActuateGripperAction(GripperStates.OPEN),
                             new SleepAction(.4),
-                            new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
                             new SleepAction(.8),
                             new ParallelAction(
                                     new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
@@ -355,7 +351,7 @@ public class RoutesSuper {
                             new SleepAction(.4),
                             new ActuateGripperAction(GripperStates.ONE_PIXEL_RELEASE_POSITION),
                             new SleepAction(.4),
-                            new MoveLiftSlideActionFinishImmediate(AUTO_HIGH),
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
                             new SleepAction(.8),
                             new ParallelAction(
                                     new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
@@ -382,7 +378,7 @@ public class RoutesSuper {
                     .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.firstPixelScorePose, posesForRouteSuper.firstPixelScorePose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScorePose.heading.log())
                     .build();
             return pushTeamPropAndStage;
         }
@@ -408,8 +404,8 @@ public class RoutesSuper {
         }
 
         public Action StrafeToPlaceFirstPixel(PosesForRouteSuper posesForRouteSuper) {
-            Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalPixelScorePose)
-                    .strafeTo(PoseToVector(posesForRouteSuper.firstPixelScorePose))
+            Action strafe = roadRunnerDrive.actionBuilder(posesForRouteSuper.additionalWhitePixelScorePose)
+                    .strafeTo(PoseToVector(posesForRouteSuper.yellowPixelScorePose))
                     .build();
             return strafe;
         }

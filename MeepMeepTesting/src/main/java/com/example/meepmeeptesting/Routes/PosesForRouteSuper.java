@@ -13,14 +13,11 @@ import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
-import static com.example.meepmeeptesting.Constants.RED_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.MeepMeepTesting.*;
-
-
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
