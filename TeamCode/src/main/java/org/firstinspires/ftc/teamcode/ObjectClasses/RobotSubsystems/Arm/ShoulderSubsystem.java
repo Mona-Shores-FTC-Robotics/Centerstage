@@ -15,7 +15,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         public double INTAKE_REST = .5;
         public double INTAKE_VALUE = 0.565;
         public double STARTING_POSITION = .565;
-        public double BACKDROP_VALUE = .2;
+        public double BACKDROP_VALUE = .195;
         public double HALFWAY = .4;
     }
 
@@ -26,7 +26,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         public double INTAKE_REST = .5;
         public double INTAKE_VALUE = 0.565;
         public double STARTING_POSITION = .6;
-        public double BACKDROP_VALUE = .2;
+        public double BACKDROP_VALUE = .195;
         public double HALFWAY = .4;
     }
 
@@ -36,7 +36,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         REST (.5),
         INTAKE (0.565),
         HALFWAY(.4),
-        BACKDROP (.2),
+        BACKDROP (.195),
         STARTING_POSITION (.565);
 
         public double position;

@@ -161,7 +161,7 @@
             //                                                      //
             //////////////////////////////////////////////////////////
             SequentialCommandGroup flyDrone = new SequentialCommandGroup(
-                    new WaitCommand(1000),
+                    new WaitCommand(500),
                     new ReleaseDroneCommand(Robot.getInstance().getDroneSubsystem(), DroneSubsystem.DroneDeployState.FLY));
 
             Trigger rightTriggerDown = new Trigger(() -> gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3);

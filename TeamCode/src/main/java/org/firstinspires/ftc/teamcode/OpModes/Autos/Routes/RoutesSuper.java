@@ -226,6 +226,7 @@ public class RoutesSuper {
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), posesForRouteSuper.backdropApproachOrientation)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_BACKSTAGE)
                     .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE)
+                    .stopAndAdd(new TurnIntakeOff())
                     .build();
             return neutralStagingToBackdropStaging;
         }
@@ -309,25 +310,25 @@ public class RoutesSuper {
                             new SleepAction(.2),
                             new SequentialAction(
                                             new RotateShoulderAction(ShoulderStates.BACKDROP),
-                                            new SleepAction(.35),
+                                            new SleepAction(.2),
                                             new MoveLiftSlideActionFinishImmediate(scoreHeight)
                                     ),
                             new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.4),
+                            new SleepAction(.45),
                             new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.4),
+                            new SleepAction(.55),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.8),
+                            new SleepAction(.3),
                             new ParallelAction(
                                     new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
                                     new SequentialAction(
-                                            new SleepAction(.9),
+                                            new SleepAction(.6),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperStates.CLOSED),
                                                     new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
-                                            new SleepAction(.8),
+                                            new SleepAction(.4),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.250),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)

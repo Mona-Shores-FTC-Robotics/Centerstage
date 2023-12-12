@@ -15,7 +15,7 @@ public final class GripperSubsystem extends SubsystemBase {
         public GripperStates GRIPPER_STARTING_STATE = GripperStates.OPEN;
         public double REST_POSITION = .5;
         public double OPEN_POSITION = .47;
-        public double ONE_PIXEL_RELEASE_POSITION=.495;
+        public double ONE_PIXEL_RELEASE_POSITION=0.49;
         public double CLOSED_POSITION = .55;
     }
     public static GripperSubsystem.GripperParameters20245 gripperParameters20245 = new GripperSubsystem.GripperParameters20245();
@@ -25,7 +25,7 @@ public final class GripperSubsystem extends SubsystemBase {
         public GripperStates GRIPPER_STARTING_STATE = GripperStates.OPEN;
         public double REST_POSITION = .5;
         public double OPEN_POSITION = .45;
-        public double ONE_PIXEL_RELEASE_POSITION=.507;
+        public double ONE_PIXEL_RELEASE_POSITION=0.49;
         public double CLOSED_POSITION = .55;
     }
     public static GripperSubsystem.GripperParameters19429 gripperParameters19429 = new GripperSubsystem.GripperParameters19429();
@@ -35,7 +35,7 @@ public final class GripperSubsystem extends SubsystemBase {
         REST (0.5),
         CLOSED (.55),
         OPEN (.47),
-        ONE_PIXEL_RELEASE_POSITION (.495);
+        ONE_PIXEL_RELEASE_POSITION (0.49);
         public double position;
         GripperStates(double pos) {
             this.position = pos;
