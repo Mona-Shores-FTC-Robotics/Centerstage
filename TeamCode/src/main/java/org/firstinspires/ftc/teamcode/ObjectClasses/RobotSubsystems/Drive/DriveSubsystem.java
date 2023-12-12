@@ -45,6 +45,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double P =0; // default = 10
         public double D =0; // default = 0
         public double I =0; // default = 3
+        //todo maybe up this value
         public double F =8; // default = 0
     }
 
