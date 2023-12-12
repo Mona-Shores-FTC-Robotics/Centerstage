@@ -228,7 +228,7 @@ public class PosesForRouteSuper {
                 ////////////////////////////////
                 case LEFT: {
                     yellowPixelScorePose = RED_BACKDROP_LEFT;
-                    additionalWhitePixelScorePose = RED_BACKDROP_CENTER;
+                    additionalWhitePixelScorePose = RED_BACKDROP_RIGHT;
 
                     ////////////////////////////////////////
                     //RED LEFT AUDIENCE RED LEFT AUDIENCE //

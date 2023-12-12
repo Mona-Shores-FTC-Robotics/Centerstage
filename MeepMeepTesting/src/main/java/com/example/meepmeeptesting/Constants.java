@@ -22,6 +22,9 @@ public final class Constants {
     ROBOT_VISION
   }
 
+
+  public static double BACKSTAGE_ROBOT_WAIT_TIME = 4.5;
+  public static double AUDIENCE_ROBOT_WAIT_TIME = 0;
     public static double END_GAME_TIME = 90;
 
   public static double ROBOT_LENGTH = 18.0;

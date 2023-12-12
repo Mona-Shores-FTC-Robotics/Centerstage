@@ -3,6 +3,8 @@ package com.example.meepmeeptesting.Routes;
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 import static com.example.meepmeeptesting.Constants.*;
+import static com.example.meepmeeptesting.MeepMeepTesting.*;
+import static com.example.meepmeeptesting.MeepMeepTesting.LiftStates.*;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.blueAudienceBotRight;
@@ -15,9 +17,7 @@ import static com.example.meepmeeptesting.MeepMeepRobots.redAudienceBotRight;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBot;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotLeft;
 import static com.example.meepmeeptesting.MeepMeepRobots.redBackstageBotRight;
-import static com.example.meepmeeptesting.Routes.RoutesSpikeBackdropParkImproved.LiftStates.AUTO_HIGH;
-import static com.example.meepmeeptesting.Routes.RoutesSpikeBackdropParkImproved.LiftStates.AUTO_LOW;
-import static com.example.meepmeeptesting.Routes.RoutesSpikeBackdropParkImproved.LiftStates.AUTO_MID;
+import static com.example.meepmeeptesting.MeepMeepTesting.LiftStates.AUTO_LOW;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -189,7 +189,7 @@ public class RoutesSpikeBackdropPark {
     }
 
     public static class ActionsForSpikeBackdrop {
-        public Action ScoreAndBackup(Pose2d start_pose, RoutesSpikeBackdropParkImproved.LiftStates liftHeight) {
+        public Action ScoreAndBackup(Pose2d start_pose, LiftStates liftHeight) {
             return roadRunnerDrive.actionBuilder(start_pose)
 //                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(liftHeight))
                     .waitSeconds(.5)
@@ -204,7 +204,7 @@ public class RoutesSpikeBackdropPark {
                     .build();
         }
 
-        public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, RoutesSpikeBackdropParkImproved.LiftStates firstHeight, RoutesSpikeBackdropParkImproved.LiftStates secondHeight) {
+        public Action ScoreWithTwoHeightsAndBackup(Pose2d start_pose, LiftStates firstHeight, LiftStates secondHeight) {
             return roadRunnerDrive.actionBuilder(start_pose)
 //                    .stopAndAdd(new MakeSpikeBackdropParkActions().MakeReadyToScorePixelAction(firstHeight))
                     .waitSeconds(.2)
@@ -267,3 +267,4 @@ public class RoutesSpikeBackdropPark {
         }
 
 }
+

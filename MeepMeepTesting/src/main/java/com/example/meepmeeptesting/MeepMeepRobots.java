@@ -34,7 +34,7 @@ public class MeepMeepRobots {
 
         blueBackstageBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(25, 30, Math.toRadians(180), Math.toRadians(180), 600)
+                .setConstraints(25, 30, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeBlueDark())
                 .setDimensions(11.5,17.625)
                 .build();
@@ -118,7 +118,7 @@ public class MeepMeepRobots {
 
         roadRunnerBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(30, 30, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(30, 50, Math.toRadians(180), Math.toRadians(180), 15)
                 .setColorScheme(new ColorSchemeRedLight())
                 .setDimensions(11.5,17.625)
                 .build();

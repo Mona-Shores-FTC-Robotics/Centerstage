@@ -3,6 +3,8 @@ package com.example.meepmeeptesting.Routes;
 //import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.*;
 //import static org.firstinspires.ftc.teamcode.OpModes.Basic_Auto.roadRunnerDrive;
 
+import static com.example.meepmeeptesting.Constants.AUDIENCE_ROBOT_WAIT_TIME;
+import static com.example.meepmeeptesting.Constants.BACKSTAGE_ROBOT_WAIT_TIME;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_NEUTRAL_STAGING;
@@ -36,8 +38,12 @@ import static com.example.meepmeeptesting.MeepMeepTesting.*;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.VelConstraint;
@@ -45,6 +51,8 @@ import com.example.meepmeeptesting.MeepMeepTesting;
 import com.noahbres.meepmeep.roadrunner.DriveShim;
 
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public class RoutesSuper {
     private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
@@ -67,22 +75,29 @@ public class RoutesSuper {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static Action blueTestRoute;
+    public static double SLOW_VELOCITY_OVERRIDE = 10;
+    public static double SLOW_ACCELERATION_OVERRIDE = 15;
+    public static double FAST_VELOCITY_OVERRIDE = 40;
+    public static double FAST_ACCELERATION_OVERRIDE = 40;
+    public static double SUPER_FAST_VELOCITY_OVERRIDE = 40;
+    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 40;
 
-    public static VelConstraint overrideVelConstraint;
-    public static AccelConstraint overrideAccelConstraint;
-    public static VelConstraint overrideVelConstraint2;
-    public static AccelConstraint overrideAccelConstraint2;
-
-    public static double VELOCITY_OVERRIDE = 10;
-    public static double ACCELERATION_OVERRIDE = 15;
+    public static VelConstraint slowVelocity;
+    public static AccelConstraint slowAcceleration;
+    public static VelConstraint fastVelocity;
+    public static AccelConstraint fastAcceleration;
+    public static VelConstraint superFastVelocity;
+    public static AccelConstraint superFastAcceleration;
 
     public static void BuildRoutes() {
+        slowAcceleration = new ProfileAccelConstraint(-SLOW_ACCELERATION_OVERRIDE, SLOW_ACCELERATION_OVERRIDE);
+        slowVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(SLOW_VELOCITY_OVERRIDE)));
 
-        PosesForRouteSuper blueTestRoutePoses = new PosesForRouteSuper(BLUE, AUDIENCE, CENTER);
-        blueTestRoute = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
-                .stopAndAdd(new RouteBuilder().PickupPixels(blueTestRoutePoses, blueTestRoutePoses.neutralStagingPose))
-                .build();
+        fastAcceleration = new ProfileAccelConstraint(-FAST_ACCELERATION_OVERRIDE, FAST_ACCELERATION_OVERRIDE);
+        fastVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(FAST_VELOCITY_OVERRIDE)));
+
+        superFastAcceleration = new ProfileAccelConstraint(-SUPER_FAST_ACCELERATION_OVERRIDE, SUPER_FAST_ACCELERATION_OVERRIDE);
+        superFastVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(SUPER_FAST_VELOCITY_OVERRIDE)));
 
         //////////
         // LEFT //
@@ -162,6 +177,7 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStagingByWall(posesForRouteSuper, posesForRouteSuper.yellowPixelScorePose))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
+                .waitSeconds(BACKSTAGE_ROBOT_WAIT_TIME)
                 .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalWhitePixelScorePose))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
 //                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.parkPose))
@@ -174,6 +190,7 @@ public class RoutesSuper {
         Action superAudienceAuto = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                 .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteSuper, posesForRouteSuper.neutralStagingPose))
+                .waitSeconds(AUDIENCE_ROBOT_WAIT_TIME)
                 .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingThroughStageDoor(posesForRouteSuper,posesForRouteSuper.additionalWhitePixelScorePose))
                 .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
@@ -187,7 +204,7 @@ public class RoutesSuper {
     public static class RouteBuilder {
         Action AutoDriveToBackDrop(Pose2d scorePose) {
             Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(scorePose)
-                    .lineToX(scorePose.position.x+SCORE_DISTANCE)
+                    .lineToX(scorePose.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToBackdrop;
         }
@@ -195,7 +212,7 @@ public class RoutesSuper {
         Action AutoDriveFromBackDrop(Pose2d scorePose) {
             Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(new Pose2d(scorePose.position.x+SCORE_DISTANCE, scorePose.position.y, scorePose.heading.log()))
                     .setReversed(true)
-                    .lineToX(scorePose.position.x)
+                    .lineToX(scorePose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromBackdrop;
         }
@@ -203,9 +220,9 @@ public class RoutesSuper {
         public Action BackdropStagingToNeutralStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(scorePose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation, superFastVelocity, superFastAcceleration)
                     .build();
             return backDropStagingToNeutralStaging;
         }
@@ -214,9 +231,9 @@ public class RoutesSuper {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), posesForRouteSuper.backdropApproachOrientation)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_BACKSTAGE)
-                    .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), posesForRouteSuper.backdropApproachOrientation, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
                     .build();
             return neutralStagingToBackdropStaging;
         }
@@ -225,9 +242,9 @@ public class RoutesSuper {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), posesForRouteSuper.backdropApproachOrientation)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_BACKSTAGE)
-                    .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), posesForRouteSuper.backdropApproachOrientation, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
                     .build();
             return neutralStagingToBackdropStaging;
         }
@@ -235,22 +252,11 @@ public class RoutesSuper {
         public Action BackdropStagingToNeutralStagingThroughStageDoor(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(scorePose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), TANGENT_TOWARD_AUDIENCE)
-                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(posesForRouteSuper.neutralStagingPose), posesForRouteSuper.neutralApproachOrientation, superFastVelocity, superFastAcceleration)
                     .build();
             return backDropStagingToNeutralStaging;
-        }
-
-        public Action PickupPixelsOLD(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
-            SequentialAction pickupPixels = new SequentialAction(
-                    new TurnIntakeOn(),
-                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
-                    new SleepAction(.5),
-                    new ParallelAction(
-                            new TurnIntakeOff(),
-                            new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper)));
-            return pickupPixels;
         }
 
         public Action PickupPixels(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
@@ -264,23 +270,9 @@ public class RoutesSuper {
             return pickupPixels;
         }
 
-
-        public Action PickupPixelsTest2(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
-            SequentialAction pickupPixels = new SequentialAction(
-                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
-                    new SleepAction(1),
-                    new TurnIntakeSlow(),
-                    new SleepAction(1),
-                    new TurnIntakeReverse(),
-                    new SleepAction(1),
-                    new TurnIntakeOn(),
-                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper));
-            return pickupPixels;
-        }
-
         private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteSuper) {
             Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralPickupPose)
-                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x, overrideVelConstraint, overrideAccelConstraint)
+                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromNeutralStack;
         }
@@ -288,7 +280,7 @@ public class RoutesSuper {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(endPose.position.x, overrideVelConstraint, overrideAccelConstraint)
+                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }
@@ -300,25 +292,25 @@ public class RoutesSuper {
                             new SleepAction(.2),
                             new SequentialAction(
                                     new RotateShoulderAction(ShoulderStates.BACKDROP),
-                                            new SleepAction(.35),
+                                            new SleepAction(.2),
                                             new MoveLiftSlideActionFinishImmediate(scoreHeight)
                                     ),
                             new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.4),
+                            new SleepAction(.45),
                             new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.4),
+                            new SleepAction(.55),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.8),
+                            new SleepAction(.3),
                     new ParallelAction(
                                     new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
                                     new SequentialAction(
-                                            new SleepAction(.9),
+                                            new SleepAction(.6),
                     new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperStates.CLOSED),
                                                     new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
-                                            new SleepAction(.8),
+                                            new SleepAction(.4),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.250),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)
@@ -353,7 +345,7 @@ public class RoutesSuper {
                                                     new ActuateGripperAction(GripperStates.CLOSED),
                                                     new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
-                                            new SleepAction(.8),
+                                            new SleepAction(.4),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.25),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)
@@ -366,10 +358,10 @@ public class RoutesSuper {
         private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
             Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
-                    .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log(), superFastVelocity, superFastAcceleration)
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
-                    .splineToLinearHeading(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScorePose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScorePose.heading.log(), superFastVelocity, superFastAcceleration)
                     .build();
             return pushTeamPropAndStage;
         }
@@ -377,11 +369,11 @@ public class RoutesSuper {
         private Action PushTeamPropAndNeutralStage(PosesForRouteSuper posesForRouteSuper) {
             Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
-                    .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log())
+                    .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log(), superFastVelocity, superFastAcceleration)
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
                     .setReversed(true)
                     .setTangent(posesForRouteSuper.leaveSpikeTangent)
-                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, posesForRouteSuper.neutralApproachOrientation)
+                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, posesForRouteSuper.neutralApproachOrientation, superFastVelocity, superFastAcceleration)
                     .build();
             return pushTeamPropAndStage;
         }
