@@ -87,6 +87,8 @@ public class RoutesSpikeOnly {
 
         redAudienceBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_AUDIENCE_START_POSE)
                 .splineToLinearHeading(RED_AUDIENCE_SPIKE_C, FACE_TOWARD_BLUE)
+                .setReversed(true)
+                .splineToLinearHeading(RED_AUDIENCE_START_POSE, FACE_TOWARD_RED)
                 .build();
 
         redBackstageBotTeamPropCenterRoute = roadRunnerDrive.actionBuilder(RED_BACKSTAGE_START_POSE)
