@@ -44,22 +44,22 @@ public class RoutesSpikeStraightUpTheMiddle {
     private static DriveShim roadRunnerDrive = MeepMeepTesting.roadRunnerDrive;
 
     //Variables to store routes for team prop center for all four start locations
-    private static Action redAudienceBotTeamPropCenterRoute;
-    private static Action redBackstageBotTeamPropCenterRoute;
-    private static Action blueBackstageBotTeamPropCenterRoute;
-    private static Action blueAudienceBotTeamPropCenterRoute;
+    public static Action redAudienceBotTeamPropCenterRoute;
+    public static Action redBackstageBotTeamPropCenterRoute;
+    public static Action blueBackstageBotTeamPropCenterRoute;
+    public static Action blueAudienceBotTeamPropCenterRoute;
 
     //Variables to store routes for team prop left for all four start locations
-    private static Action redBackstageBotTeamPropLeftRoute;
-    private static Action blueAudienceBotTeamPropLeftRoute;
-    private static Action redAudienceBotTeamPropLeftRoute;
-    private static Action blueBackstageBotTeamPropLeftRoute;
+    public static Action redBackstageBotTeamPropLeftRoute;
+    public static Action blueAudienceBotTeamPropLeftRoute;
+    public static Action redAudienceBotTeamPropLeftRoute;
+    public static Action blueBackstageBotTeamPropLeftRoute;
 
     //Variables to store routes for team prop right for all four start locations
-    private static Action redBackstageBotTeamPropRightRoute;
-    private static Action redAudienceBotTeamPropRightRoute;
-    private static Action blueBackstageBotTeamPropRightRoute;
-    private static Action blueAudienceBotTeamPropRightRoute;
+    public static Action redBackstageBotTeamPropRightRoute;
+    public static Action redAudienceBotTeamPropRightRoute;
+    public static Action blueBackstageBotTeamPropRightRoute;
+    public static Action blueAudienceBotTeamPropRightRoute;
 
     public static VelConstraint overrideVelConstraint;
     public static AccelConstraint overrideAccelConstraint;
@@ -215,21 +215,21 @@ public class RoutesSpikeStraightUpTheMiddle {
                                     new MoveLiftSlideActionFinishImmediate(scoreHeight)
                             ),
                             new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.4),
+                            new SleepAction(.6),
                             new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.4),
+                            new SleepAction(.7),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.8),
+                            new SleepAction(.7),
                             new ParallelAction(
                                     new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromBackDrop(scorePose),
                                     new SequentialAction(
-                                            new SleepAction(.9),
+                                            new SleepAction(.4),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperStates.CLOSED),
                                                     new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
-                                            new SleepAction(.8),
+                                            new SleepAction(.5),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.250),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)
