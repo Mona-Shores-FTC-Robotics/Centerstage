@@ -72,7 +72,41 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
+    public static double SLOW_VELOCITY_OVERRIDE = 10;
+    public static double SLOW_ACCELERATION_OVERRIDE = 15;
+    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
+
+    public static double FAST_VELOCITY_OVERRIDE = 40;
+    public static double FAST_ACCELERATION_OVERRIDE = 40;
+    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
+    public static double SUPER_FAST_VELOCITY_OVERRIDE = 70;
+    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 90;
+    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
+    public static VelConstraint slowVelocity;
+    public static AccelConstraint slowAcceleration;
+    public static VelConstraint fastVelocity;
+    public static AccelConstraint fastAcceleration;
+    public static VelConstraint superFastVelocity;
+    public static AccelConstraint superFastAcceleration;
     public static void BuildRoutes() {
+        MecanumDriveMona mecanumDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
+
+        slowVelocity = new MinVelConstraint(Arrays.asList(
+                mecanumDrive.kinematics.new WheelVelConstraint(SLOW_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(SLOW_ANGULAR_VELOCITY_OVERRIDE)));
+        slowAcceleration = new ProfileAccelConstraint(-SLOW_ACCELERATION_OVERRIDE, SLOW_ACCELERATION_OVERRIDE);
+
+        fastVelocity = new MinVelConstraint(Arrays.asList(
+                mecanumDrive.kinematics.new WheelVelConstraint(FAST_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(FAST_ANGULAR_VELOCITY_OVERRIDE)));
+        fastAcceleration = new ProfileAccelConstraint(-FAST_ACCELERATION_OVERRIDE, FAST_ACCELERATION_OVERRIDE);
+
+        superFastVelocity = new MinVelConstraint(Arrays.asList(
+                mecanumDrive.kinematics.new WheelVelConstraint(SUPER_FAST_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE)));
+        superFastAcceleration = new ProfileAccelConstraint(-SUPER_FAST_ACCELERATION_OVERRIDE, SUPER_FAST_ACCELERATION_OVERRIDE);
 
         /** BLUE BACKSTAGE RIGHT **/
         PosesForRouteStraight blueBackstageRightPoses = new PosesForRouteStraight(BLUE, BACKSTAGE, RIGHT);
@@ -151,7 +185,7 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static class RouteBuilder {
         Action AutoDriveToBackDrop(Pose2d scorePose) {
             Action autoDriveToBackdrop = roadRunnerDrive.actionBuilder(scorePose)
-                    .lineToX(scorePose.position.x+SCORE_DISTANCE)
+                    .lineToX(scorePose.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToBackdrop;
         }
@@ -165,40 +199,51 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         public Action BackdropStagingToNeutralStaging(Pose2d scorePose, Pose2d neutralStagingPose, double approachTangent) {
-            Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(scorePose)
+            Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(new Pose2d(scorePose.position.x+SCORE_DISTANCE, scorePose.position.y, scorePose.heading.log()))
                     .setReversed(true)
                     .setTangent(approachTangent)
-                    .splineToLinearHeading(neutralStagingPose, TANGENT_TOWARD_AUDIENCE)
+                    .splineToLinearHeading(neutralStagingPose, TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
                     .build();
             return backDropStagingToNeutralStaging;
         }
 
         public Action NeutralStagingToBackdropStaging(Pose2d startPose, Pose2d endPose, double approachTangent) {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(startPose)
-                    .setTangent(TANGENT_TOWARD_BACKSTAGE)
                     .setReversed(false)
-                    .splineToConstantHeading(PoseToVector(endPose), approachTangent)
+                    .splineToConstantHeading(PoseToVector(endPose), approachTangent, superFastVelocity, superFastAcceleration)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.CLOSED))
                     .stopAndAdd(new TurnIntakeOff())
                     .build();
             return neutralStagingToBackdropStaging;
         }
 
-        public Action PickupPixels(Pose2d neutralPixelStagingPose, Pose2d neutralPickupPose) {
+        public Action PickupPixels(Pose2d neutralPixelStagingPose, Pose2d neutralPickupPose, double approachEndPose) {
             SequentialAction pickupPixels = new SequentialAction(
                     new ActuateGripperAction(GripperStates.OPEN),
                     new TurnIntakeSlowReverse(),
                     new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, neutralPickupPose),
                     new TurnIntakeOn(),
                     new SleepAction(.1),
-                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromNeutralStack(neutralPickupPose, neutralPixelStagingPose));
+                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromNeutralStack(neutralPickupPose, neutralPixelStagingPose, approachEndPose));
             return pickupPixels;
         }
 
-        private Action AutoDriveFromNeutralStack(Pose2d startPose, Pose2d endPose) {
+        public Action StrafeAndPickupPixelsFromStack(Pose2d neutralPixelStagingPose, Pose2d stackStagingPose, Pose2d stackPickupPose, double approachEndPose) {
+            SequentialAction pickupPixels = new SequentialAction(
+                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().StrafeToTrussStack(neutralPixelStagingPose, stackStagingPose),
+                    new ActuateGripperAction(GripperStates.OPEN),
+                    new TurnIntakeSlowReverse(),
+                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToNeutralStack(stackStagingPose, stackPickupPose),
+                    new TurnIntakeOn(),
+                    new SleepAction(.1),
+                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromNeutralStack(stackPickupPose, neutralPixelStagingPose, approachEndPose));
+            return pickupPixels;
+        }
+
+        private Action AutoDriveFromNeutralStack(Pose2d startPose, Pose2d endPose, double approachEndPose) {
             Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(false)
-                    .lineToX(endPose.position.x)
+                    .splineToConstantHeading(PoseToVector(endPose), approachEndPose, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromNeutralStack;
         }
@@ -206,32 +251,31 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(endPose), TANGENT_TOWARD_AUDIENCE)
-//                    .lineToX(endPose.position.x, overrideVelConstraint, overrideAccelConstraint)
+//                    .splineToConstantHeading(PoseToVector(endPose), TANGENT_TOWARD_AUDIENCE)
+                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }
 
-        public Action ScorePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
+        public Action ScorePixelAction(Pose2d scoreStaging, LiftStates scoreHeight, double scoreLeaveTangent, Pose2d neutralStagingPose) {
             SequentialAction scorePixel =
                     new SequentialAction(
-                            new ActuateGripperAction(GripperStates.CLOSED),
-                            new SleepAction(.2),
-                            new SequentialAction(
-                                    new RotateShoulderAction(ShoulderStates.BACKDROP),
-                                    new SleepAction(.35),
-                                    new MoveLiftSlideActionFinishImmediate(scoreHeight)
-                            ),
-                            new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.6),
-                            new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.7),
-                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.7),
                             new ParallelAction(
-                                    new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveFromBackDrop(scorePose),
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                                new RotateShoulderAction(ShoulderStates.BACKDROP)),
+                            new SleepAction(.15),
+                            new MoveLiftSlideActionFinishImmediate(scoreHeight),
+                            new SleepAction(.15),
+                            new RoutesSpikeStraightUpTheMiddle.RouteBuilder().AutoDriveToBackDrop(scoreStaging),
+                            new SleepAction(.5),
+                            new ActuateGripperAction(GripperStates.OPEN),
+                            new SleepAction(.5),
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
+                            new SleepAction(.2),
+                            new ParallelAction(
+                                    new RouteBuilder().BackdropStagingToNeutralStaging(scoreStaging, neutralStagingPose, scoreLeaveTangent),
                                     new SequentialAction(
-                                            new SleepAction(.4),
+                                            new SleepAction(.7),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
                                                     new ActuateGripperAction(GripperStates.CLOSED),
@@ -289,11 +333,17 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .build();
             return strafe;
         }
+        public Action StrafeToTrussStack(Pose2d startPose, Pose2d endPose) {
+            Action strafe = roadRunnerDrive.actionBuilder(startPose)
+                    .strafeTo(PoseToVector(endPose))
+                    .build();
+            return strafe;
+        }
         private Action PushTeamPropAndBackdropStage(Pose2d startPose, Pose2d spikePose, Pose2d scorePose) {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(startPose)
-                    .splineToLinearHeading(spikePose, spikePose.heading.log())
+                    .splineToLinearHeading(spikePose, spikePose.heading.log(), fastVelocity, fastAcceleration)
                     .setReversed(true)
-                    .splineToLinearHeading(scorePose, scorePose.heading.log())
+                    .splineToLinearHeading(scorePose, scorePose.heading.log(), fastVelocity, fastAcceleration)
                     .build();
             return pushTeamPropAndStage;
         }
@@ -302,12 +352,12 @@ public class RoutesSpikeStraightUpTheMiddle {
             Action dropPurple = new ActuateGripperAction(GripperStates.CLOSED);
 
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
-                    .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log())
+                    .splineToLinearHeading(posesForRouteStraight.spikePose, posesForRouteStraight.spikePose.heading.log(), fastVelocity, fastAcceleration)
                     .stopAndAdd(dropPurple)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(posesForRouteStraight.neutralStagingPose), posesForRouteStraight.neutralPickupPose.heading.log())
+                    .splineToConstantHeading(PoseToVector(posesForRouteStraight.neutralTrussStagingPose), posesForRouteStraight.neutralTrussPickupPose.heading.log(), fastVelocity, fastAcceleration)
                     .stopAndAdd(new RotateShoulderAction(ShoulderStates.INTAKE))
-                    .turnTo(posesForRouteStraight.neutralPickupPose.heading.log())
+                    .turnTo(posesForRouteStraight.neutralTrussPickupPose.heading.log())
                     .build();
             return pushTeamPropAndStage;
         }
@@ -323,15 +373,13 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action PushPropScoreFive(PosesForRouteStraight posesForRouteStraight) {
             Action pushPropScoreFive = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndBackdropStage(posesForRouteStraight.startingPose, posesForRouteStraight.spikePose, posesForRouteStraight.yellowPixelScorePose))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.yellowPixelScorePose, posesForRouteStraight.yellowPixelScoreHeight))
-                    .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRouteStraight.yellowPixelScorePose, posesForRouteStraight.neutralStagingPose, posesForRouteStraight.yellowPixelLeaveTangent))
-                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralStagingPose, posesForRouteStraight.neutralPickupPose))
-                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight))
-//                    .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.neutralStagingPose, posesForRouteStraight.additionalPixelScorePoseLeaveTangent))
-//                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralStagingPose, posesForRouteStraight.neutralPickupPose))
-//                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
-//                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.yellowPixelScorePose, posesForRouteStraight.yellowPixelScoreHeight, posesForRouteStraight.yellowPixelLeaveTangent, posesForRouteStraight.offsetNeutralStagingPose))
+                    .stopAndAdd(new RouteBuilder().StrafeAndPickupPixelsFromStack(posesForRouteStraight.offsetNeutralStagingPose, posesForRouteStraight.neutralTrussStagingPose, posesForRouteStraight.neutralTrussPickupPose, posesForRouteStraight.approachOffsetNeutralStagingTangent))
+                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.offsetNeutralStagingPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight, posesForRouteStraight.additionalPixelScorePoseLeaveTangent, posesForRouteStraight.offsetNeutralStagingPose))
+                    .stopAndAdd(new RouteBuilder().StrafeAndPickupPixelsFromStack(posesForRouteStraight.offsetNeutralStagingPose, posesForRouteStraight.neutralCenterSpikeStagingPose, posesForRouteStraight.neutralCenterSpikePickupPose, posesForRouteStraight.approachOffsetNeutralStagingTangent))
+                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.offsetNeutralStagingPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight, posesForRouteStraight.yellowPixelLeaveTangent, posesForRouteStraight.additionalPixelScorePose))
 //                    .stopAndAdd(new RouteBuilder().Park(posesForRouteStraight))
                     .build();
             return pushPropScoreFive;
@@ -340,14 +388,14 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action PushPropScoreSix(PosesForRouteStraight posesForRouteStraight) {
             Action pushPropScoreFive = roadRunnerDrive.actionBuilder(posesForRouteStraight.startingPose)
                     .stopAndAdd(new RouteBuilder().PushTeamPropAndNeutralStage(posesForRouteStraight))
-                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralStagingPose, posesForRouteStraight.neutralPickupPose))
-                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
+                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralTrussStagingPose, posesForRouteStraight.neutralTrussPickupPose, posesForRouteStraight.approachTrussStagingTangent))
+                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralTrussPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
                     .stopAndAdd(new RouteBuilder().ScoreOnePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight))
                     .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.yellowPixelScorePose))
-                    .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRouteStraight.yellowPixelScorePose, posesForRouteStraight.neutralStagingPose, posesForRouteStraight.yellowPixelLeaveTangent))
-                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralStagingPose, posesForRouteStraight.neutralPickupPose))
-                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
-                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight))
+                    .stopAndAdd(new RouteBuilder().BackdropStagingToNeutralStaging(posesForRouteStraight.yellowPixelScorePose, posesForRouteStraight.neutralTrussStagingPose, posesForRouteStraight.yellowPixelLeaveTangent))
+                    .stopAndAdd(new RouteBuilder().PickupPixels(posesForRouteStraight.neutralTrussStagingPose, posesForRouteStraight.neutralTrussPickupPose, posesForRouteStraight.approachTrussStagingTangent))
+                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteStraight.neutralTrussPickupPose, posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelScorePoseApproachTangent))
+                    .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteStraight.additionalPixelScorePose, posesForRouteStraight.additionalPixelPixelScoreHeight, posesForRouteStraight.additionalPixelScorePoseLeaveTangent, posesForRouteStraight.backdropStagingPose))
                     .stopAndAdd(new RouteBuilder().Park(posesForRouteStraight))
                     .build();
             return pushPropScoreFive;
