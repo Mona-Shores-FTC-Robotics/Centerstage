@@ -75,12 +75,18 @@ public class RoutesSuper {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
+
     public static double SLOW_VELOCITY_OVERRIDE = 10;
     public static double SLOW_ACCELERATION_OVERRIDE = 15;
+    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
+
     public static double FAST_VELOCITY_OVERRIDE = 40;
     public static double FAST_ACCELERATION_OVERRIDE = 40;
+    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
     public static double SUPER_FAST_VELOCITY_OVERRIDE = 40;
     public static double SUPER_FAST_ACCELERATION_OVERRIDE = 40;
+    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
 
     public static VelConstraint slowVelocity;
     public static AccelConstraint slowAcceleration;
@@ -91,13 +97,21 @@ public class RoutesSuper {
 
     public static void BuildRoutes() {
         slowAcceleration = new ProfileAccelConstraint(-SLOW_ACCELERATION_OVERRIDE, SLOW_ACCELERATION_OVERRIDE);
-        slowVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(SLOW_VELOCITY_OVERRIDE)));
+        slowVelocity = new MinVelConstraint(Arrays.asList(
+                new MecanumKinematics(15).new WheelVelConstraint(SLOW_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(SLOW_ANGULAR_VELOCITY_OVERRIDE)));
+
 
         fastAcceleration = new ProfileAccelConstraint(-FAST_ACCELERATION_OVERRIDE, FAST_ACCELERATION_OVERRIDE);
-        fastVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(FAST_VELOCITY_OVERRIDE)));
+        fastVelocity = new MinVelConstraint(Arrays.asList(
+                new MecanumKinematics(15).new WheelVelConstraint(FAST_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(FAST_ANGULAR_VELOCITY_OVERRIDE)));
 
         superFastAcceleration = new ProfileAccelConstraint(-SUPER_FAST_ACCELERATION_OVERRIDE, SUPER_FAST_ACCELERATION_OVERRIDE);
-        superFastVelocity = new MinVelConstraint(Arrays.asList(new MecanumKinematics(15).new WheelVelConstraint(SUPER_FAST_VELOCITY_OVERRIDE)));
+        superFastVelocity = new MinVelConstraint(Arrays.asList(
+                new MecanumKinematics(15).new WheelVelConstraint(SUPER_FAST_VELOCITY_OVERRIDE),
+                new AngularVelConstraint(SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE)));
+
 
         //////////
         // LEFT //
