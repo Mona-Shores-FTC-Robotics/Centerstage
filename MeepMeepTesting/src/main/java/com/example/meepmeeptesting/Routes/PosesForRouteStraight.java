@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting.Routes;
 
 import static com.example.meepmeeptesting.Constants.*;
+import static com.example.meepmeeptesting.MeepMeepTesting.*;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
@@ -46,10 +47,10 @@ public class PosesForRouteStraight {
     public double intermediateTangent;
 
 
-    public MeepMeepTesting.LiftStates yellowPixelScoreHeight;
-    public MeepMeepTesting.LiftStates additionalPixelPixelScoreHeight;
+    public LiftStates yellowPixelScoreHeight;
+    public LiftStates additionalPixelPixelScoreHeight;
 
-    PosesForRouteStraight(MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField, MeepMeepTesting.TeamPropLocation teamPropLocation){
+    public PosesForRouteStraight(AllianceColor allianceColor, SideOfField sideOfField, TeamPropLocation teamPropLocation){
 
 
         SetDeliverLocationPoses(teamPropLocation, allianceColor, sideOfField);
@@ -57,15 +58,15 @@ public class PosesForRouteStraight {
         SetAlliancePoses(allianceColor);
     }
 
-    public void SetDeliverLocationPoses(MeepMeepTesting.TeamPropLocation teamPropLocation, MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField) {
-        if (allianceColor == MeepMeepTesting.AllianceColor.BLUE) {
+    public void SetDeliverLocationPoses(TeamPropLocation teamPropLocation, AllianceColor allianceColor, SideOfField sideOfField) {
+        if (allianceColor == AllianceColor.BLUE) {
             switch (teamPropLocation) {
                 case LEFT: {
                     yellowPixelScorePose = BLUE_BACKDROP_LEFT;
                     yellowPixelLeaveTangent = Math.toRadians(195);
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                     } else {
@@ -79,7 +80,7 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(165);
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = BLUE_AUDIENCE_SPIKE_R;
                     } else {
@@ -92,7 +93,7 @@ public class PosesForRouteStraight {
                 default: {
                     yellowPixelScorePose = BLUE_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(175);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(5);
                         additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_LEFT;
                         additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
@@ -113,7 +114,7 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(195);
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = RED_AUDIENCE_SPIKE_L;
                     } else {
@@ -127,7 +128,7 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = RED_AUDIENCE_SPIKE_R;
                     } else{
@@ -141,7 +142,7 @@ public class PosesForRouteStraight {
                 default: {
                     yellowPixelScorePose = RED_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(185);
-                    if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+                    if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
                         additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
                         additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
@@ -159,8 +160,8 @@ public class PosesForRouteStraight {
         }
     }
 
-    public void SetAlliancePoses(MeepMeepTesting.AllianceColor allianceColor) {
-        if (allianceColor == MeepMeepTesting.AllianceColor.BLUE) {
+    public void SetAlliancePoses(AllianceColor allianceColor) {
+        if (allianceColor == AllianceColor.BLUE) {
             backdropStagingPose = BLUE_BACKDROP_STAGING;
             neutralTrussStagingPose = BLUE_NEUTRAL_PIXEL_TRUSS;
             neutralTrussPickupPose = BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
@@ -198,26 +199,27 @@ public class PosesForRouteStraight {
         }
     }
 
-    private void SetStartingPose(MeepMeepTesting.AllianceColor allianceColor, MeepMeepTesting.SideOfField sideOfField) {
+    private void SetStartingPose(AllianceColor allianceColor, SideOfField sideOfField) {
 
 
-        if (allianceColor == MeepMeepTesting.AllianceColor.BLUE && sideOfField == MeepMeepTesting.SideOfField.BACKSTAGE) {
+        if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = BLUE_BACKSTAGE_START_POSE;
-            yellowPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_LOW;
-            additionalPixelPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
-        } else if (allianceColor == MeepMeepTesting.AllianceColor.BLUE && sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+            yellowPixelScoreHeight = LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
+        } else if (allianceColor == AllianceColor.BLUE && sideOfField == SideOfField.AUDIENCE) {
             startingPose = BLUE_AUDIENCE_START_POSE;
-            yellowPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
-            additionalPixelPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
-        } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.BACKSTAGE) {
+            yellowPixelScoreHeight = LiftStates.AUTO_MID;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
+        } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.BACKSTAGE) {
             startingPose = RED_BACKSTAGE_START_POSE;
-            yellowPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_LOW;
-            additionalPixelPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
-        } else if (allianceColor == MeepMeepTesting.AllianceColor.RED && sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
+            yellowPixelScoreHeight = LiftStates.AUTO_LOW;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
+        } else if (allianceColor == AllianceColor.RED && sideOfField == SideOfField.AUDIENCE) {
             startingPose = RED_AUDIENCE_START_POSE;
-            yellowPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
-            additionalPixelPixelScoreHeight = MeepMeepTesting.LiftStates.AUTO_MID;
+            yellowPixelScoreHeight = LiftStates.AUTO_MID;
+            additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
         }
     }
 
 }
+
