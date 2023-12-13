@@ -25,15 +25,15 @@ public class MeepMeepTesting {
      *      SPIKE_PICKUP1_BACKDROP_PICKUP2_BACKDROP_PARK
      **/
 
-    public static TeamPropLocation teamPropLocation = TeamPropLocation.RIGHT;
+    public static TeamPropLocation teamPropLocation = TeamPropLocation.CENTER;
 
     public static RoutesToRun routesToRunSelection = RoutesToRun.SPIKE_STRAIGHT;
 
     /** Set which robots should show up **/
-    public static boolean SHOW_BLUE_AUDIENCE_BOT = false;
-    public static boolean SHOW_BLUE_BACKSTAGE_BOT = true;
-    public static boolean SHOW_RED_AUDIENCE_BOT = false;
-    public static boolean SHOW_RED_BACKSTAGE_BOT = true;
+    public static boolean SHOW_BLUE_AUDIENCE_BOT = true;
+    public static boolean SHOW_BLUE_BACKSTAGE_BOT = false;
+    public static boolean SHOW_RED_AUDIENCE_BOT = true;
+    public static boolean SHOW_RED_BACKSTAGE_BOT = false;
 
     public static DriveShim roadRunnerDrive;
     public enum TeamPropLocation {LEFT, CENTER, RIGHT, ALL}
@@ -51,7 +51,7 @@ public class MeepMeepTesting {
         REST (0.5),
         CLOSED (.55),
         OPEN (.47),
-        ONE_PIXEL_RELEASE_POSITION (.495);
+        ONE_PIXEL_RELEASE_POSITION (.490);
         public double position;
         GripperStates(double pos) {
             this.position = pos;
@@ -63,7 +63,7 @@ public class MeepMeepTesting {
 
     public enum ShoulderStates {
         REST (.5),
-        INTAKE (0.565),
+        INTAKE (0.54),
         HALFWAY(.4),
         BACKDROP (.2),
         STARTING_POSITION (.565);

@@ -1,14 +1,11 @@
 package com.example.meepmeeptesting.Routes;
 
 import static com.example.meepmeeptesting.Constants.*;
-import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_SPIKE_R_DROP;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_CENTER;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_LEFT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKDROP_STAGING;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_L_DROP;
-import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_SPIKE_R_DROP;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_MIDDLE_PARK;
 import static com.example.meepmeeptesting.Constants.FACE_315_DEGREES;
@@ -32,18 +29,21 @@ public class PosesForRouteStraight {
     public Pose2d additionalPixelScorePose;
     public double additionalPixelScorePoseApproachTangent;
     public double additionalPixelScorePoseLeaveTangent;
-    public Pose2d offsetNeutralStagingPose;
     public double approachOffsetNeutralStagingTangent;
     public Pose2d neutralTrussStagingPose;
     public double approachTrussStagingTangent;
     public Pose2d neutralTrussPickupPose;
     public Pose2d neutralCenterSpikeStagingPose;
     public Pose2d neutralCenterSpikePickupPose;
-    public double approacCenterSpikeStagingStagingTangent;
+    public Pose2d neutralPixelIntermediatePose;
+    public double neutralApproachTangent;
+    public double approachCenterSpikeStagingStagingTangent;
+    public double neutralLeaveTangent;
     public Pose2d parkPose;
     public double parkOrientation;
     public Pose2d spikePose;
-
+    public Pose2d intermediatePose;
+    public double intermediateTangent;
 
 
     public MeepMeepTesting.LiftStates yellowPixelScoreHeight;
@@ -66,11 +66,11 @@ public class PosesForRouteStraight {
                     additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        spikePose = BLUE_AUDIENCE_SPIKE_L_DROP;
+                        spikePose = BLUE_AUDIENCE_SPIKE_L;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                     } else {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = BLUE_BACKSTAGE_SPIKE_L_DROP;
+                        spikePose = BLUE_BACKSTAGE_SPIKE_L;
                     }
                     break;
                 }
@@ -81,10 +81,10 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = BLUE_AUDIENCE_SPIKE_R_DROP;
+                        spikePose = BLUE_AUDIENCE_SPIKE_R;
                     } else {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = BLUE_BACKSTAGE_SPIKE_R_DROP;
+                        spikePose = BLUE_BACKSTAGE_SPIKE_R;
                     }
                     break;
                 }
@@ -93,15 +93,15 @@ public class PosesForRouteStraight {
                     yellowPixelScorePose = BLUE_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(15);
-                        additionalPixelScorePose = BLUE_BACKDROP_LEFT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(195);
-                        spikePose = BLUE_AUDIENCE_SPIKE_C_DROP;
-                    } else {
-                        additionalPixelScorePose = BLUE_BACKDROP_LEFT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(185);
                         additionalPixelScorePoseApproachTangent = Math.toRadians(5);
-                        spikePose = BLUE_BACKSTAGE_SPIKE_C_DROP;
+                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_LEFT;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
+                        spikePose = BLUE_AUDIENCE_SPIKE_C;
+                    } else {
+                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_LEFT;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(5);
+                        spikePose = BLUE_BACKSTAGE_SPIKE_C;
                     }
                     break;
                 }
@@ -115,23 +115,23 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = RED_AUDIENCE_SPIKE_L_DROP;
+                        spikePose = RED_AUDIENCE_SPIKE_L;
                     } else {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = RED_BACKSTAGE_SPIKE_L_DROP;
+                        spikePose = RED_BACKSTAGE_SPIKE_L;
                     }
                     break;
                 }
                 case RIGHT: {
                     yellowPixelScorePose = RED_BACKDROP_RIGHT;
-                    yellowPixelLeaveTangent = Math.toRadians(165);
+                    yellowPixelLeaveTangent = Math.toRadians(175);
                     additionalPixelScorePose = RED_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        spikePose = RED_AUDIENCE_SPIKE_R_DROP;
+                        spikePose = RED_AUDIENCE_SPIKE_R;
                     } else{
-                        spikePose = RED_BACKSTAGE_SPIKE_R_DROP;
+                        spikePose = RED_BACKSTAGE_SPIKE_R;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                     }
 
@@ -142,16 +142,16 @@ public class PosesForRouteStraight {
                     yellowPixelScorePose = RED_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(185);
                     if (sideOfField == MeepMeepTesting.SideOfField.AUDIENCE) {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-10);
-                        additionalPixelScorePose = RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(170);
-                        spikePose = RED_AUDIENCE_SPIKE_C_DROP;
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        spikePose = RED_AUDIENCE_SPIKE_C;
                     } else
                     {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-10);
-                        additionalPixelScorePose = RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(170);
-                        spikePose = RED_BACKSTAGE_SPIKE_C_DROP;
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        spikePose = RED_BACKSTAGE_SPIKE_C;
                     }
                     break;
                 }
@@ -161,30 +161,40 @@ public class PosesForRouteStraight {
 
     public void SetAlliancePoses(MeepMeepTesting.AllianceColor allianceColor) {
         if (allianceColor == MeepMeepTesting.AllianceColor.BLUE) {
-            offsetNeutralStagingPose= BLUE_OFFSET_NEUTRAL_PIXEL_STAGING;
             backdropStagingPose = BLUE_BACKDROP_STAGING;
-            neutralTrussStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
-            neutralTrussPickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
+            neutralTrussStagingPose = BLUE_NEUTRAL_PIXEL_TRUSS;
+            neutralTrussPickupPose = BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
             parkPose = BLUE_MIDDLE_PARK;
             parkOrientation = FACE_45_DEGREES;
             neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
             neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
             approachOffsetNeutralStagingTangent = TANGENT_TOWARD_BLUE;
             approachTrussStagingTangent = TANGENT_TOWARD_BACKSTAGE;
-            approacCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralPixelIntermediatePose = BLUE_MIDDLE_OF_SPIKES;
+            neutralLeaveTangent = TANGENT_TOWARD_BLUE;
+            neutralApproachTangent = TANGENT_TOWARD_RED;
+            intermediatePose = BLUE_MIDDLE_OF_SPIKES;
+            intermediateTangent = FACE_TOWARD_BACKSTAGE;
+
 
         } else {
-            offsetNeutralStagingPose= RED_OFFSET_NEUTRAL_PIXEL_STAGING;
             backdropStagingPose = RED_BACKDROP_STAGING;
-            neutralTrussStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
-            neutralTrussPickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
+            neutralTrussStagingPose = RED_NEUTRAL_PIXEL_TRUSS;
+            neutralTrussPickupPose = RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
             parkPose = RED_MIDDLE_PARK;
             parkOrientation = FACE_315_DEGREES;
             neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
             neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
             approachOffsetNeutralStagingTangent = TANGENT_TOWARD_RED;
             approachTrussStagingTangent = TANGENT_TOWARD_BACKSTAGE;
-            approacCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralPixelIntermediatePose = RED_MIDDLE_OF_SPIKES;
+            neutralLeaveTangent = TANGENT_TOWARD_RED;
+            neutralApproachTangent = TANGENT_TOWARD_BLUE;
+            intermediatePose = RED_MIDDLE_OF_SPIKES;;
+            intermediateTangent = FACE_TOWARD_BACKSTAGE;
+
         }
     }
 
