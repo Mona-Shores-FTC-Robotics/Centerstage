@@ -14,7 +14,7 @@ public final class GripperSubsystem extends SubsystemBase {
 
         public GripperStates GRIPPER_STARTING_STATE = GripperStates.OPEN;
         public double REST_POSITION = .5;
-        public double OPEN_POSITION = .47;
+        public double OPEN_POSITION = 0.45;
         public double ONE_PIXEL_RELEASE_POSITION=0.49;
         public double CLOSED_POSITION = .55;
     }
@@ -34,7 +34,7 @@ public final class GripperSubsystem extends SubsystemBase {
     public enum GripperStates {
         REST (0.5),
         CLOSED (.55),
-        OPEN (.47),
+        OPEN (0.45),
         ONE_PIXEL_RELEASE_POSITION (0.49);
         public double position;
         GripperStates(double pos) {
