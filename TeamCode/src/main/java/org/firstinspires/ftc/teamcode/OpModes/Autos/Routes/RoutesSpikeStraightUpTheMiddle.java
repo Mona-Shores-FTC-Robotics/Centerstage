@@ -201,7 +201,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .afterDisp(1.5, new ActuateGripperAction(GripperStates.CLOSED))
                     .afterDisp(1.6, new TurnIntakeOff())
                     .afterDisp(1.8, ExtendLift(LiftStates.AUTO_MID))
-                    .splineToConstantHeading(PoseToVector(endPose), approachTangent, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(endPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
                     .build();
             return neutralStagingToBackdropStaging;
         }
@@ -227,7 +227,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(endPose, TANGENT_TOWARD_AUDIENCE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }

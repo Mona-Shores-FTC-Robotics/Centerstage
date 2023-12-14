@@ -254,7 +254,8 @@ public class RoutesSpikeStraightUpTheMiddle {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(endPose, TANGENT_TOWARD_AUDIENCE, slowVelocity, slowAcceleration)
+//                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }
