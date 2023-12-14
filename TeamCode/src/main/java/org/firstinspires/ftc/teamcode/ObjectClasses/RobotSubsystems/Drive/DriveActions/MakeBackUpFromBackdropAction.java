@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.DriveActions;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_SPIKE_R;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_PIXEL_TRUSS;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.PoseToVector;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_SPIKE_L;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.SUPER_RED_NEUTRAL_PIXEL_TRUSS;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.TANGENT_TOWARD_AUDIENCE;
 
@@ -54,7 +54,7 @@ public class MakeBackUpFromBackdropAction {
         } else {
             t = drive.actionBuilder(drive.pose)
                     .setReversed(true)
-                    .splineToConstantHeading(PoseToVector(BLUE_NEUTRAL_PIXEL_TRUSS), TANGENT_TOWARD_AUDIENCE)
+                    .splineToConstantHeading(PoseToVector(SUPER_BLUE_NEUTRAL_PIXEL_TRUSS), TANGENT_TOWARD_AUDIENCE)
                     .splineToConstantHeading(PoseToVector(BLUE_AUDIENCE_SPIKE_R), TANGENT_TOWARD_AUDIENCE)
                     .turn(Math.toRadians(83))
                     .build();
