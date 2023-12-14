@@ -294,7 +294,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScoreOnePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
             SequentialAction scorePixel =
-                                    new SequentialAction(
+                    new SequentialAction(
                             new ActuateGripperAction(GripperStates.CLOSED),
                             new SleepAction(.2),
                             new SequentialAction(
@@ -306,6 +306,8 @@ public class RoutesSpikeStraightUpTheMiddle {
                             new SleepAction(.4),
                             new ActuateGripperAction(GripperStates.ONE_PIXEL_RELEASE_POSITION),
                             new SleepAction(.4),
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                            new SleepAction(.2),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
                             new SleepAction(.8),
                             new ParallelAction(
@@ -314,9 +316,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                                             new SleepAction(.9),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
-                                            ),
+                                                    new ActuateGripperAction(GripperStates.CLOSED)),
                                             new SleepAction(.8),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
                                             new SleepAction(.25),
