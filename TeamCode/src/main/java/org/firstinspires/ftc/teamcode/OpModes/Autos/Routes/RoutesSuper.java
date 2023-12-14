@@ -365,8 +365,7 @@ public class RoutesSuper {
                                             new SleepAction(.9),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
+                                                    new ActuateGripperAction(GripperStates.CLOSED)
                                             ),
                                             new SleepAction(.4),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),

@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.Gamepads.Bindings;
 
+import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -13,6 +16,9 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.ActuateGripperCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.DefaultLiftSlideCommand;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmCommands.MoveLiftSlideCommand;
@@ -198,6 +204,14 @@ public class CenterstageOperatorBindings {
         //                                                      //
         //////////////////////////////////////////////////////////
 
+
+
+        Trigger rightTriggerDown = new Trigger(() -> operatorGamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.3);
+        rightTriggerDown
+                        .whenActive(new InstantCommand(()-> {
+                            new MakeOperatorCombinationCommands().PutArmAway().schedule(false);
+                        }));
+
         //////////////////////////////////////////////////////////
         //                                                      //
         //  OPTIONS BUTTON                                      //
@@ -239,8 +253,7 @@ public class CenterstageOperatorBindings {
                                     new RotateShoulderCommand(shoulderSubsystem,
                                             ShoulderSubsystem.ShoulderStates.HALFWAY),
                                     new ActuateGripperCommand(gripperSubsystem,
-                                            GripperSubsystem.GripperStates.CLOSED),
-                                    new MoveLiftSlideCommand(liftSlideSubsystem, LiftSlideSubsystem.LiftStates.SAFE)
+                                            GripperSubsystem.GripperStates.CLOSED)
                             ),
                             new WaitCommand(250),
                             new MoveLiftSlideCommand(liftSlideSubsystem, LiftSlideSubsystem.LiftStates.HOME),
