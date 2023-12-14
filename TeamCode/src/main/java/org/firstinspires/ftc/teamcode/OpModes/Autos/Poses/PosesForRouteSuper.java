@@ -135,7 +135,7 @@ public class PosesForRouteSuper {
                         startingPose = BLUE_AUDIENCE_START_POSE;
                         yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = BLUE_BACKDROP_RIGHT;
+                        additionalWhitePixelScorePose = SUPER_BLUE_BACKDROP_RIGHT;
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                         leaveSpikeTangent = Math.toRadians(135);
                         neutralApproachOrientation = Math.toRadians(-105);
@@ -153,7 +153,7 @@ public class PosesForRouteSuper {
                         parkPose = BLUE_CORNER_PARK;
                         yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = BLUE_BACKDROP_LEFT;
+                        additionalWhitePixelScorePose = SUPER_BLUE_BACKDROP_LEFT;
                         spikePose = BLUE_BACKSTAGE_SPIKE_C;
                         neutralApproachOrientation =Math.toRadians(-105);
                         leaveSpikeTangent = Math.toRadians(180);
@@ -270,7 +270,7 @@ public class PosesForRouteSuper {
                         startingPose = RED_AUDIENCE_START_POSE;
                         yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = RED_BACKDROP_LEFT;
+                        additionalWhitePixelScorePose = SUPER_RED_BACKDROP_LEFT;
                         spikePose = RED_AUDIENCE_SPIKE_C;
                         leaveSpikeTangent = Math.toRadians(-135);
                         neutralApproachOrientation = Math.toRadians(105);
@@ -288,7 +288,7 @@ public class PosesForRouteSuper {
                         yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_BACKSTAGE_SPIKE_C;
-                        additionalWhitePixelScorePose = RED_BACKDROP_RIGHT;
+                        additionalWhitePixelScorePose = SUPER_RED_BACKDROP_RIGHT;
                         neutralApproachOrientation = Math.toRadians(105);
                         leaveSpikeTangent = Math.toRadians(180);
                         leaveNeutralTangent = Math.toRadians(-75);
