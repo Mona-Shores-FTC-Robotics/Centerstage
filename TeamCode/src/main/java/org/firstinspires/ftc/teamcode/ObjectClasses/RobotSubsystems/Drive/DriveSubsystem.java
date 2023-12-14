@@ -46,7 +46,7 @@ public class DriveSubsystem extends SubsystemBase {
         public double D =0; // default = 0
         public double I =0; // default = 3
         //todo maybe up this value
-        public double F =8; // default = 0
+        public double F =11; // default = 0
     }
 
     public static class ParamsRRMona {

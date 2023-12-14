@@ -14,7 +14,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 public class FieldConstants {
 
     // TIME CONSTANTS
-    public static double BACKSTAGE_ROBOT_WAIT_TIME = 3;
+    public static double BACKSTAGE_ROBOT_WAIT_TIME = 2;
   public static double AUDIENCE_ROBOT_WAIT_TIME = 4.5;
 
     public static double END_GAME_TIME = 90;
