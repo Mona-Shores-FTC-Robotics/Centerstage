@@ -235,9 +235,9 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
-                    .waitSeconds(.2)
+                    .waitSeconds(.4)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
-                    .afterTime(.5, RetractLift())
+                    .afterTime(.4, RetractLift())
                     .strafeToLinearHeading(PoseToVector(neutralStagingPose), neutralStagingApproachTangent,  superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
@@ -264,7 +264,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .stopAndAdd(new TurnIntakeOn())
                     .waitSeconds(.2)
                     .setReversed(false)
-                    .splineToConstantHeading(PoseToVector(intermediateStagingPose), approachStagingTangent, fastVelocity, fastAcceleration)
+                    .splineToConstantHeading(PoseToVector(intermediateStagingPose), approachStagingTangent, fastVelocity, slowAcceleration)
                     .afterTime(.1, new TurnIntakeReverse())
                     .afterTime(.1, new TurnIntakeOff())
                     .afterTime(1.2, new ActuateGripperAction(GripperStates.CLOSED))

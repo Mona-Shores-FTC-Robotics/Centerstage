@@ -253,7 +253,8 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .waitSeconds(.2)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
                     .afterTime(.5, RetractLift())
-                    .strafeToLinearHeading(PoseToVector(neutralStagingPose), neutralStagingApproachTangent,  superFastVelocity, superFastAcceleration)
+                    .setReversed(true)
+                    .splineToLinearHeading(neutralStagingPose, neutralStagingApproachTangent,  superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
         }

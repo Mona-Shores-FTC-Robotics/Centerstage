@@ -82,11 +82,11 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = SUPER_BLUE_BACKDROP_LEFT;
+                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_LEFT;
                         additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                     } else {
-                        additionalPixelScorePose = SUPER_BLUE_BACKDROP_RIGHT;
+                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_RIGHT;
                         additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = BLUE_BACKSTAGE_SPIKE_C;
@@ -130,13 +130,13 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = SUPER_RED_BACKDROP_LEFT;
+                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_LEFT;
                         additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else
                     {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = SUPER_RED_BACKDROP_RIGHT;
+                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
                         additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
                         spikePose = RED_BACKSTAGE_SPIKE_C;
                     }
