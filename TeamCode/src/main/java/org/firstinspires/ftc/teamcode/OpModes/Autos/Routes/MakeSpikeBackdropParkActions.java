@@ -33,18 +33,21 @@ public class MakeSpikeBackdropParkActions {
                 );
     }
 
+
     public Action MakeRetractArmAction() {
         return new SequentialAction(
                 new ParallelAction(
-                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE),
+                        new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
                         new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
-                        new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY)
+                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
                 ),
-                new SleepAction(.5),
-                new ParallelAction(
-                        new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE),
-                        new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME)
-                )
+                new SleepAction(.25),
+                new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE_VALUE_STAGING),
+                new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME),
+                new SleepAction(.25),
+                new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
         );
     }
+
+
 }

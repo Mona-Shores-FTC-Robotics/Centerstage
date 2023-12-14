@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.bl
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueBackstageBotTeamPropLeftRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueBackstageBotTeamPropRightRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redAudienceBotTeamPropCenterRoute;
+import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redAudienceBotTeamPropLeftRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redAudienceBotTeamPropRightRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redBackstageBotTeamPropCenterRoute;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.redBackstageBotTeamPropLeftRoute;
@@ -115,7 +116,7 @@ public class Super_Auto extends LinearOpMode {
         if (allianceColor == InitVisionProcessor.AllianceColor.RED && sideOfField == InitVisionProcessor.SideOfField.AUDIENCE) {
             Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = RED_AUDIENCE_START_POSE;
             if (teamPropLoc == InitVisionProcessor.TeamPropLocation.LEFT) {
-                selectedRoute = redAudienceBotTeamPropCenterRoute;
+                selectedRoute = redAudienceBotTeamPropLeftRoute;
             } else if (teamPropLoc == InitVisionProcessor.TeamPropLocation.RIGHT) {
                 selectedRoute = redAudienceBotTeamPropRightRoute;
             } else {

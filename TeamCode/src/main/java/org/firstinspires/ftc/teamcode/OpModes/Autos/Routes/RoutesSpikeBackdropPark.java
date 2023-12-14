@@ -6,8 +6,11 @@ import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.MinVelConstraint;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.VelConstraint;
 
@@ -16,6 +19,8 @@ import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperS
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Drive.MecanumDriveMona;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.ActuatePixelPusherAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem;
@@ -241,6 +246,21 @@ public class RoutesSpikeBackdropPark {
             return Robot.getInstance().getDriveSubsystem().mecanumDrive.actionBuilder(start_pose)
                     .lineToX(start_pose.position.x+6)
                     .build();
+        }
+
+        public Action RetractLift() {
+            return new SequentialAction(
+                    new ParallelAction(
+                            new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.HALFWAY),
+                            new ActuateGripperAction(GripperSubsystem.GripperStates.CLOSED),
+                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                    ),
+                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE_VALUE_STAGING),
+                    new SleepAction(.25),
+                    new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.HOME),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderSubsystem.ShoulderStates.INTAKE)
+            );
         }
 
 

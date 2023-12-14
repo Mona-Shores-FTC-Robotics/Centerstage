@@ -24,6 +24,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.VelConstraint;
 
 import org.firstinspires.ftc.teamcode.ObjectClasses.Robot;
+import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.ActuateGripperAction;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.MoveLiftSlideActionFinishImmediate;
 import org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions.RotateShoulderAction;
@@ -214,6 +215,7 @@ public class RoutesSuper {
         Action AutoDriveFromBackDrop(Pose2d scorePose) {
             Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(new Pose2d(scorePose.position.x+SCORE_DISTANCE, scorePose.position.y, scorePose.heading.log()))
                     .setReversed(true)
+                    .afterTime(.8, RetractLift())
                     .lineToX(scorePose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromBackdrop;
@@ -244,6 +246,8 @@ public class RoutesSuper {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
+                    .afterTime(.5, new TurnIntakeReverse())
+                    .afterTime(1.5, new TurnIntakeOff())
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), posesForRouteSuper.backdropApproachOrientation, superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
@@ -318,22 +322,7 @@ public class RoutesSuper {
                             new SleepAction(.55),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
                             new SleepAction(.3),
-                            new ParallelAction(
-                                    new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
-                                    new SequentialAction(
-                                            new SleepAction(.6),
-                                            new ParallelAction(
-                                                    new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED)
-                                            ),
-                                            new SleepAction(.2),
-                                            new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
-                                            new SleepAction(.3),
-                                            new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
-                                            new SleepAction(.6),
-                                            new RotateShoulderAction(ShoulderStates.INTAKE)
-                                    )
-                            )
+                            new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose)
                     );
             return scorePixel;
         }
@@ -410,6 +399,23 @@ public class RoutesSuper {
             return strafe;
         }
 
+        public Action RetractLift() {
+            return new SequentialAction(
+                    new ParallelAction(
+                            new RotateShoulderAction(ShoulderStates.HALFWAY),
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                    ),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
+                    new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderStates.INTAKE)
+            );
+        }
+
+
     }
+
 }
 

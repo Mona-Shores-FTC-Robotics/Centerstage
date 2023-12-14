@@ -171,7 +171,7 @@ public class PosesForRouteSuper {
                 //BLUE CENTER BLUE CENTER BLUE CENTER //
                 ////////////////////////////////////////
                 case CENTER:
-                default: {
+                {
                     yellowPixelScorePose = BLUE_BACKDROP_CENTER;
 
                     //////////////////////////////////////////////
@@ -306,7 +306,7 @@ public class PosesForRouteSuper {
                 //RED CENTER RED CENTER RED CENTER  //
                 //////////////////////////////////////
                 case CENTER:
-                default: {
+                {
                     yellowPixelScorePose = RED_BACKDROP_CENTER;
 
                     ////////////////////////////////////////////

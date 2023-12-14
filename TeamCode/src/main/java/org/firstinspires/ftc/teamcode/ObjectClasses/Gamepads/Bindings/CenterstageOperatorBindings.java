@@ -253,9 +253,12 @@ public class CenterstageOperatorBindings {
                                     new RotateShoulderCommand(shoulderSubsystem,
                                             ShoulderSubsystem.ShoulderStates.HALFWAY),
                                     new ActuateGripperCommand(gripperSubsystem,
-                                            GripperSubsystem.GripperStates.CLOSED)
+                                            GripperSubsystem.GripperStates.CLOSED),
+                                    new MoveLiftSlideCommand(liftSlideSubsystem,
+                                            LiftSlideSubsystem.LiftStates.SAFE)
                             ),
-                            new WaitCommand(250),
+                    new WaitCommand(250),
+                            new RotateShoulderCommand(shoulderSubsystem, ShoulderSubsystem.ShoulderStates.INTAKE_VALUE_STAGING),
                             new MoveLiftSlideCommand(liftSlideSubsystem, LiftSlideSubsystem.LiftStates.HOME),
                             new WaitCommand(250),
                             new RotateShoulderCommand(shoulderSubsystem,

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ScoringArmActions;
 
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.liftSlideParameters;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -66,12 +68,16 @@ public class MoveLiftSlideActionFinishImmediate implements Action {
 
         //if the target ticks are higher than the current ticks, then use EXTENSION_POWER
         if (targetTicks > currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.EXTENSION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P, liftSlideParameters.VEL_I, liftSlideParameters.VEL_D, liftSlideParameters.VEL_F);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(liftSlideParameters.EXTENSION_LIFT_POWER);
         }
 
         //if the target ticks are lower than the current ticks, then use RETRACTION_POWER
         if (targetTicks < currentTicks) {
-            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(LiftSlideSubsystem.liftSlideParameters.RETRACTION_LIFT_POWER);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setVelocityPIDFCoefficients(liftSlideParameters.VEL_P_DOWN, liftSlideParameters.VEL_I_DOWN, liftSlideParameters.VEL_D_DOWN, liftSlideParameters.VEL_F_DOWN);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPositionPIDFCoefficients(liftSlideParameters.POS_P_DOWN);
+            Robot.getInstance().getLiftSlideSubsystem().liftSlide.setPower(liftSlideParameters.RETRACTION_LIFT_POWER);
         }
 
         //Set the target position using the targetTicks
