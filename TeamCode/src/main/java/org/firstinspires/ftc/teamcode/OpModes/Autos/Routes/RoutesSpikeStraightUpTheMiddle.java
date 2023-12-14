@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Autos.Routes;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.AllianceColor.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.GripperSubsystem.*;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.PurplePixelPusher.PixelPusherSubsystem.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.ShoulderSubsystem.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Arm.LiftSlideSubsystem.*;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.RobotSubsystems.Vision.VisionProcessors.InitVisionProcessor.SideOfField.*;
@@ -206,7 +207,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAndBackdropStage(Pose2d startPose, Pose2d spikePose, Pose2d scorePose) {
-            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(startPose)
                     .splineToLinearHeading(spikePose, spikePose.heading.log(), fastVelocity, fastAcceleration)
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
@@ -307,7 +308,7 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
         private Action PushTeamPropAudienceAndGoToBackdrop(Pose2d startPose, Pose2d spikePose, Pose2d scorePose, Pose2d intermediatePose) {
-            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherSubsystem.PixelPusherStates.NOT_PUSHING);
+            Action retractPusherToStopPushingPurplePixel = new ActuatePixelPusherAction(PixelPusherStates.NOT_PUSHING);
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(startPose)
                     .splineToLinearHeading(spikePose, spikePose.heading.log(), fastVelocity, fastAcceleration)
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
@@ -358,6 +359,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ExtendLift(LiftStates scoreHeight) {
             Action extendLift = new SequentialAction(
+                    new ActuateGripperAction(GripperStates.CLOSED),
                     new ParallelAction(
                             new ActuateGripperAction(GripperStates.CLOSED),
                             new RotateShoulderAction(ShoulderStates.BACKDROP)),
@@ -369,8 +371,7 @@ public class RoutesSpikeStraightUpTheMiddle {
             return new SequentialAction(
                     new ParallelAction(
                             new RotateShoulderAction(ShoulderStates.HALFWAY),
-                            new ActuateGripperAction(GripperStates.CLOSED),
-                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                     ),
                     new SleepAction(.4),
                     new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
@@ -380,19 +381,6 @@ public class RoutesSpikeStraightUpTheMiddle {
             );
         }
 
-        public Action RetractLiftSafe() {
-            return new SequentialAction(
-                    new ParallelAction(
-                            new RotateShoulderAction(ShoulderStates.HALFWAY),
-                            new ActuateGripperAction(GripperStates.CLOSED),
-                            new MoveLiftSlideActionFinishImmediate(LiftSlideSubsystem.LiftStates.SAFE)
-                    ),
-                    new SleepAction(.2),
-                    new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
-                    new SleepAction(.2),
-                    new RotateShoulderAction(ShoulderStates.INTAKE)
-            );
-        }
 
     }
 

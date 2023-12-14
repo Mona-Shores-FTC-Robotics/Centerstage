@@ -232,7 +232,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelAndNeutralPixelStageWithIntermediate(Pose2d scoreStaging, Pose2d intermediatePose, Pose2d neutralStagingPose, double neutralStagingApproachTangent) {
             Action scorePixelAndNeutralStageWithIntermediatePose = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.4)
@@ -240,7 +240,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .afterTime(.5, RetractLift())
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(intermediatePose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
-                    .splineToConstantHeading(PoseToVector(neutralStagingPose), TANGENT_TOWARD_AUDIENCE,  superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(neutralStagingPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
         }
@@ -248,14 +248,14 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelAndNeutralPixelStage(Pose2d scoreStaging, Pose2d neutralStagingPose, double neutralStagingApproachTangent) {
             Action scorePixelAndNeutralStageWithIntermediatePose = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.4)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
                     .afterTime(.5, RetractLift())
                     .setReversed(true)
-                    .splineToLinearHeading(neutralStagingPose, neutralStagingApproachTangent,  superFastVelocity, superFastAcceleration)
+                    .splineToLinearHeading(neutralStagingPose, neutralStagingApproachTangent, superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
         }
@@ -308,14 +308,14 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelActionAndPark(Pose2d scoreStaging, LiftStates scoreHeight, double scoreLeaveTangent, Pose2d parkPose) {
             Action scorePixelAndPark = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.2)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
                     .afterTime(.7, RetractLift())
                     .setReversed(true)
-                    .splineToLinearHeading(parkPose,scoreLeaveTangent, superFastVelocity, superFastAcceleration)
+                    .splineToLinearHeading(parkPose, scoreLeaveTangent, superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndPark;
         }
@@ -449,34 +449,31 @@ public class RoutesSpikeStraightUpTheMiddle {
         }
 
 
-
         public Action ExtendLift(LiftStates scoreHeight) {
             Action extendLift = new SequentialAction(
+                    new ActuateGripperAction(GripperStates.CLOSED),
                     new ParallelAction(
-                            new RouteBuilder.ActuateGripperAction(GripperStates.CLOSED),
-                            new RouteBuilder.RotateShoulderAction(ShoulderStates.BACKDROP)),
-                    new RouteBuilder.MoveLiftSlideActionFinishImmediate(scoreHeight));
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                            new RotateShoulderAction(ShoulderStates.BACKDROP)),
+                    new MoveLiftSlideActionFinishImmediate(scoreHeight));
             return extendLift;
         }
 
 
         public Action RetractLift() {
             return new SequentialAction(
-                                    new ParallelAction(
-                                        new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                        new ActuateGripperAction(GripperStates.CLOSED)
-                                    ),
-                                    new SleepAction(.2),
-                                    new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
-                                    new SleepAction(.8),
-                                    new RotateShoulderAction(ShoulderStates.INTAKE)
-                    );
+                    new ParallelAction(
+                            new RotateShoulderAction(ShoulderStates.HALFWAY),
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
+                    ),
+                    new SleepAction(.4),
+                    new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
+                    new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderStates.INTAKE)
+            );
         }
     }
-
-    /**
-     * METHODS TO SET SIMPLE ROUTES FOR ALL TEAM PROP LOCATIONS
-     **/
 
     public static void setTeamPropCenterRoutes() {
         blueBackstageBot.runAction(blueBackstageBotTeamPropCenterRoute);
