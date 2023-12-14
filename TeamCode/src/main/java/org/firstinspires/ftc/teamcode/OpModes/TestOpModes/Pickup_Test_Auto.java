@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.TestOpModes;
 
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_BACKSTAGE_START_POSE;
-import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_STAGING;
+import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.BLUE_NEUTRAL_PIXEL_TRUSS;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_AUDIENCE_START_POSE;
 import static org.firstinspires.ftc.teamcode.ObjectClasses.Constants.FieldConstants.RED_BACKSTAGE_START_POSE;
 import static org.firstinspires.ftc.teamcode.OpModes.Autos.Routes.RoutesSuper.blueAudienceBotTeamPropCenterRoute;
@@ -83,7 +83,7 @@ public class Pickup_Test_Auto extends LinearOpMode {
         telemetry.update();
 
         //Test Conditions
-        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_NEUTRAL_STAGING;
+        Robot.getInstance().getDriveSubsystem().mecanumDrive.pose = BLUE_NEUTRAL_PIXEL_TRUSS;
         allianceColor = MatchConfig.finalAllianceColor = InitVisionProcessor.AllianceColor.BLUE;
         sideOfField = MatchConfig.finalSideOfField = InitVisionProcessor.SideOfField.AUDIENCE;
         teamPropLoc = MatchConfig.finalTeamPropLocation = InitVisionProcessor.TeamPropLocation.CENTER;
