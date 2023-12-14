@@ -191,12 +191,12 @@ public class RoutesSpikeStraightUpTheMiddle {
                             posesForRouteStraight.neutralPixelIntermediatePose,
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.approachIntermediateStagingFromBackdropTangent))
-                    .stopAndAdd(new RouteBuilder().PickupPixels(
+                    .stopAndAdd(new RouteBuilder().PickupPixelsConstantHeading(
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.neutralCenterSpikePickupPose,
-                            posesForRouteStraight.intermediatePose))
-                    .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingWithIntermediate(
+                            posesForRouteStraight.approachTrussPickupFromStagingTangent,
                             posesForRouteStraight.intermediatePose,
+                            posesForRouteStraight.approachIntermediateStagingFromPickupTangent,
                             posesForRouteStraight.backdropStagingPose,
                             posesForRouteStraight.additionalPixelScorePose,
                             posesForRouteStraight.additionalPixelScorePoseApproachTangent))

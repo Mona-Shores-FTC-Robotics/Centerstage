@@ -193,7 +193,7 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStaging(posesForRouteSuper, posesForRouteSuper.additionalWhitePixelScorePose))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
 //                .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.additionalWhitePixelScorePose, posesForRouteSuper.parkPose))
-                .waitSeconds(1)
+                .waitSeconds(1.1)
                 .build();
         return superBackstageAuto;
     }
@@ -208,7 +208,7 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.parkPose))
-                .waitSeconds(1)
+                .waitSeconds(1.1)
                 .build();
         return superAudienceAuto;
     }
@@ -224,6 +224,7 @@ public class RoutesSuper {
         Action AutoDriveFromBackDrop(Pose2d scorePose) {
             Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(new Pose2d(scorePose.position.x+SCORE_DISTANCE, scorePose.position.y, scorePose.heading.log()))
                     .setReversed(true)
+                    .afterTime(.8, RetractLift())
                     .lineToX(scorePose.position.x, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromBackdrop;
@@ -254,6 +255,8 @@ public class RoutesSuper {
             Action neutralStagingToBackdropStaging = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralStagingPose)
                     .setReversed(false)
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
+                    .afterTime(.5, new TurnIntakeReverse())
+                    .afterTime(1.5, new TurnIntakeOff())
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audienceStageDoorPose), posesForRouteSuper.backdropApproachOrientation, superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstageStageDoorPose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
@@ -284,7 +287,7 @@ public class RoutesSuper {
 
         private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteSuper) {
             Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralPickupPose)
-                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, TANGENT_TOWARD_BACKSTAGE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromNeutralStack;
         }
@@ -292,7 +295,7 @@ public class RoutesSuper {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(endPose, TANGENT_TOWARD_AUDIENCE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }
@@ -303,7 +306,7 @@ public class RoutesSuper {
                             new ActuateGripperAction(GripperStates.CLOSED),
                             new SleepAction(.2),
                             new SequentialAction(
-                                    new RotateShoulderAction(ShoulderStates.BACKDROP),
+                                            new RotateShoulderAction(ShoulderStates.BACKDROP),
                                             new SleepAction(.2),
                                             new MoveLiftSlideActionFinishImmediate(scoreHeight)
                                     ),
@@ -406,32 +409,19 @@ public class RoutesSuper {
             return strafe;
         }
 
-        ////////////////////////////////
-        // PLACEHOLDER ACTIONS        //
-        ///////////////////////////////
-
-        private class TurnIntakeOn implements Action {
-            @Override
-            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
-                return false;
-            }
-        }
-
-        private class TurnIntakeOff implements Action {
-            @Override
-            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
-                return false;
-            }
-        }
-
-        private class RotateShoulderAction implements Action {
-            public RotateShoulderAction(ShoulderStates state) {
-            }
-
-            @Override
-            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
-                return false;
-            }
+        public Action RetractLift() {
+            return new SequentialAction(
+                    new ParallelAction(
+                            new RotateShoulderAction(ShoulderStates.HALFWAY),
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                            new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
+                    ),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
+                    new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
+                    new SleepAction(.25),
+                    new RotateShoulderAction(ShoulderStates.INTAKE)
+            );
         }
 
         private class ActuateGripperAction implements Action {
@@ -484,6 +474,32 @@ public class RoutesSuper {
                 return false;
             }
         }
+
+        private class RotateShoulderAction implements Action {
+            public RotateShoulderAction(ShoulderStates state) {
+            }
+
+            @Override
+            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
+                return false;
+            }
+        }
+
+        private class TurnIntakeOn implements Action {
+            @Override
+            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
+                return false;
+            }
+        }
+
+
+        private class TurnIntakeOff implements Action {
+            @Override
+            public boolean run(@NotNull TelemetryPacket telemetryPacket) {
+                return false;
+            }
+        }
+
     }
             /**
              * METHODS TO SET SIMPLE ROUTES FOR ALL TEAM PROP LOCATIONS

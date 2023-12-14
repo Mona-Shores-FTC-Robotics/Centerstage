@@ -12,8 +12,12 @@ import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_SPIKE_R;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_C;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_L;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_SPIKE_R;
+import static com.example.meepmeeptesting.Constants.SUPER_BLUE_BACKDROP_LEFT;
+import static com.example.meepmeeptesting.Constants.SUPER_BLUE_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.SUPER_BLUE_STAGEDOOR_ENTRANCE;
+import static com.example.meepmeeptesting.Constants.SUPER_RED_BACKDROP_LEFT;
+import static com.example.meepmeeptesting.Constants.SUPER_RED_BACKDROP_RIGHT;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_NEUTRAL_PIXEL_STAGEDOOR;
 import static com.example.meepmeeptesting.Constants.SUPER_RED_STAGEDOOR_ENTRANCE;
 import static com.example.meepmeeptesting.MeepMeepTesting.*;
@@ -94,7 +98,7 @@ public class PosesForRouteSuper {
                 ///////////////////////////////////
                 case LEFT: {
                     yellowPixelScorePose = BLUE_BACKDROP_LEFT;
-                    additionalWhitePixelScorePose = BLUE_BACKDROP_RIGHT;
+                    additionalWhitePixelScorePose = BLUE_BACKDROP_CENTER;
 
                     //////////////////////////////////////////
                     //BLUE LEFT AUDIENCE BLUE LEFT AUDIENCE //
@@ -181,7 +185,7 @@ public class PosesForRouteSuper {
                         startingPose = BLUE_AUDIENCE_START_POSE;
                         yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = BLUE_BACKDROP_RIGHT;
+                        additionalWhitePixelScorePose = SUPER_BLUE_BACKDROP_RIGHT;
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                         leaveSpikeTangent = Math.toRadians(135);
                         neutralApproachOrientation = Math.toRadians(-105);
@@ -199,7 +203,7 @@ public class PosesForRouteSuper {
                         parkPose = BLUE_CORNER_PARK;
                         yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = BLUE_BACKDROP_LEFT;
+                        additionalWhitePixelScorePose = SUPER_BLUE_BACKDROP_LEFT;
                         spikePose = BLUE_BACKSTAGE_SPIKE_C;
                         neutralApproachOrientation =Math.toRadians(-105);
                         leaveSpikeTangent = Math.toRadians(180);
@@ -228,7 +232,7 @@ public class PosesForRouteSuper {
                 ////////////////////////////////
                 case LEFT: {
                     yellowPixelScorePose = RED_BACKDROP_LEFT;
-                    additionalWhitePixelScorePose = RED_BACKDROP_RIGHT;
+                    additionalWhitePixelScorePose = RED_BACKDROP_CENTER;
 
                     ////////////////////////////////////////
                     //RED LEFT AUDIENCE RED LEFT AUDIENCE //
@@ -316,7 +320,7 @@ public class PosesForRouteSuper {
                         startingPose = RED_AUDIENCE_START_POSE;
                         yellowPixelScoreHeight = LiftStates.AUTO_MID;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
-                        additionalWhitePixelScorePose = RED_BACKDROP_LEFT;
+                        additionalWhitePixelScorePose = SUPER_RED_BACKDROP_LEFT;
                         spikePose = RED_AUDIENCE_SPIKE_C;
                         leaveSpikeTangent = Math.toRadians(-135);
                         neutralApproachOrientation = Math.toRadians(105);
@@ -334,7 +338,7 @@ public class PosesForRouteSuper {
                         yellowPixelScoreHeight = LiftStates.AUTO_LOW;
                         additionalPixelPixelScoreHeight = LiftStates.AUTO_MID;
                         spikePose = RED_BACKSTAGE_SPIKE_C;
-                        additionalWhitePixelScorePose = RED_BACKDROP_RIGHT;
+                        additionalWhitePixelScorePose = SUPER_RED_BACKDROP_RIGHT;
                         neutralApproachOrientation = Math.toRadians(105);
                         leaveSpikeTangent = Math.toRadians(180);
                         leaveNeutralTangent = Math.toRadians(-75);

@@ -65,6 +65,8 @@ public class PosesForRouteStraight {
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(172);
                     neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
+//                    neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
+//                    neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
@@ -83,6 +85,8 @@ public class PosesForRouteStraight {
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(188);
                     neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
+//                    neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
+//                    neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = BLUE_AUDIENCE_SPIKE_R;
@@ -125,6 +129,8 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                     neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
+//                    neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
+//                    neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = RED_AUDIENCE_SPIKE_L;
@@ -142,6 +148,8 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                     neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
+//                    neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
+//                    neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
 
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(188);
                     if (sideOfField == SideOfField.AUDIENCE) {
@@ -187,8 +195,6 @@ public class PosesForRouteStraight {
             neutralTrussPickupPose = BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
             parkPose = BLUE_MIDDLE_PARK;
             parkOrientation = FACE_45_DEGREES;
-            neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
-            neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
             approachTrussPickupFromStagingTangent = TANGENT_TOWARD_AUDIENCE;
             approachIntermediateStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;
             approachCenterSpikeStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;
@@ -206,8 +212,6 @@ public class PosesForRouteStraight {
             parkPose = RED_MIDDLE_PARK;
             parkOrientation = FACE_315_DEGREES;
 
-            neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
-            neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
             approachIntermediateStagingFromBackdropTangent= TANGENT_TOWARD_AUDIENCE;
             approachTrussPickupFromStagingTangent = TANGENT_TOWARD_AUDIENCE;
             approachIntermediateStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;

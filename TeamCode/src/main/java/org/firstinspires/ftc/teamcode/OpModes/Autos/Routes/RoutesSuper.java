@@ -199,7 +199,7 @@ public class RoutesSuper {
                 .stopAndAdd(new RouteBuilder().StrafeToPlaceFirstPixel(posesForRouteSuper))
                 .stopAndAdd(new RouteBuilder().ScorePixelAction(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.additionalPixelPixelScoreHeight))
                 .stopAndAdd(new RouteBuilder().Park(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.parkPose))
-                .waitSeconds(1)
+                .waitSeconds(3)
                 .build();
         return superAudienceAuto;
     }
@@ -278,22 +278,10 @@ public class RoutesSuper {
         }
 
 
-        public Action PickupPixelsTest2(PosesForRouteSuper posesForRouteSuper, Pose2d neutralPixelStagingPose) {
-            SequentialAction pickupPixels = new SequentialAction(
-                    new RouteBuilder().AutoDriveToNeutralStack(neutralPixelStagingPose, posesForRouteSuper.neutralPickupPose),
-                    new SleepAction(1),
-                    new TurnIntakeSlow(),
-                    new SleepAction(1),
-                    new TurnIntakeReverse(),
-                    new SleepAction(1),
-                    new TurnIntakeOn(),
-                    new RouteBuilder().AutoDriveFromNeutralStack(posesForRouteSuper));
-            return pickupPixels;
-        }
 
         private Action AutoDriveFromNeutralStack(PosesForRouteSuper posesForRouteSuper) {
             Action autoDriveFromNeutralStack = roadRunnerDrive.actionBuilder(posesForRouteSuper.neutralPickupPose)
-                    .lineToX(posesForRouteSuper.neutralStagingPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(posesForRouteSuper.neutralStagingPose, TANGENT_TOWARD_BACKSTAGE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveFromNeutralStack;
         }
@@ -301,7 +289,7 @@ public class RoutesSuper {
         public Action AutoDriveToNeutralStack(Pose2d startPose, Pose2d endPose) {
             Action autoDriveToNeutralStack = roadRunnerDrive.actionBuilder(startPose)
                     .setReversed(true)
-                    .lineToX(endPose.position.x, slowVelocity, slowAcceleration)
+                    .splineToLinearHeading(endPose, TANGENT_TOWARD_AUDIENCE, slowVelocity, slowAcceleration)
                     .build();
             return autoDriveToNeutralStack;
         }
@@ -349,7 +337,8 @@ public class RoutesSuper {
                                             new SleepAction(.9),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED)
+                                                    new ActuateGripperAction(GripperStates.CLOSED),
+                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                                             ),
                                             new SleepAction(.4),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
