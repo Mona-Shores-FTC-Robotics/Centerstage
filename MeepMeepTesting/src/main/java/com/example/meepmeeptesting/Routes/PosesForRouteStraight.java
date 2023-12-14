@@ -25,25 +25,34 @@ public class PosesForRouteStraight {
     public Pose2d backdropStagingPose;
     public Pose2d yellowPixelScorePose;
     public double yellowPixelLeaveTangent;
+
     public Pose2d additionalPixelStagingPose;
     public Pose2d additionalPixelScorePose;
     public double additionalPixelScorePoseApproachTangent;
     public double additionalPixelScorePoseLeaveTangent;
-    public double approachOffsetNeutralStagingTangent;
+
+
     public Pose2d neutralTrussStagingPose;
-    public double approachTrussStagingTangent;
     public Pose2d neutralTrussPickupPose;
+    public double approachTrussPickupFromStagingTangent;
+    public double approachIntermediateStagingFromPickupTangent;
+    public double approachIntermediateStagingFromBackdropTangent;
+    public double approachTrussStagingFromIntermediateTangent;
+
     public Pose2d neutralCenterSpikeStagingPose;
     public Pose2d neutralCenterSpikePickupPose;
+    public double approachCenterSpikeStagingFromPickupTangent;
+    public double approachCenterSpikePickupFromStagingTangent;
+
+    public Pose2d intermediatePose;
+    public double intermediateTangent;
     public Pose2d neutralPixelIntermediatePose;
-    public double neutralApproachTangent;
-    public double approachCenterSpikeStagingStagingTangent;
-    public double neutralLeaveTangent;
+    public double neutralLeaveTangentFromPickup;
+
     public Pose2d parkPose;
     public double parkOrientation;
     public Pose2d spikePose;
-    public Pose2d intermediatePose;
-    public double intermediateTangent;
+
 
 
     public LiftStates yellowPixelScoreHeight;
@@ -90,7 +99,7 @@ public class PosesForRouteStraight {
                 }
                 case CENTER:
                 default: {
-                    yellowPixelScorePose = UP_THE_MID_BLUE_BACKDROP_STAGING_CENTER;
+                    yellowPixelScorePose = BLUE_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
@@ -168,12 +177,15 @@ public class PosesForRouteStraight {
             parkOrientation = FACE_45_DEGREES;
             neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
             neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
-            approachOffsetNeutralStagingTangent = TANGENT_TOWARD_BLUE;
-            approachTrussStagingTangent = TANGENT_TOWARD_BACKSTAGE;
-            approachCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachTrussPickupFromStagingTangent = TANGENT_TOWARD_AUDIENCE;
+            approachIntermediateStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachIntermediateStagingFromBackdropTangent = TANGENT_TOWARD_AUDIENCE;
+            approachTrussStagingFromIntermediateTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachCenterSpikeStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachCenterSpikePickupFromStagingTangent = Math.toRadians(15);
             neutralPixelIntermediatePose = BLUE_MIDDLE_OF_SPIKES;
-            neutralLeaveTangent = Math.toRadians(30);
-            neutralApproachTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralLeaveTangentFromPickup = Math.toRadians(30);
+
             intermediatePose = BLUE_MIDDLE_OF_SPIKES;
             intermediateTangent = FACE_TOWARD_BACKSTAGE;
 
@@ -186,12 +198,15 @@ public class PosesForRouteStraight {
             parkOrientation = FACE_315_DEGREES;
             neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
             neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
-            approachOffsetNeutralStagingTangent = TANGENT_TOWARD_RED;
-            approachTrussStagingTangent = TANGENT_TOWARD_BACKSTAGE;
-            approachCenterSpikeStagingStagingTangent = Math.toRadians(-15);
+            approachTrussPickupFromStagingTangent = TANGENT_TOWARD_AUDIENCE;
+            approachIntermediateStagingFromBackdropTangent = TANGENT_TOWARD_AUDIENCE;
+            approachIntermediateStagingFromPickupTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachTrussStagingFromIntermediateTangent = TANGENT_TOWARD_BACKSTAGE;
+            approachCenterSpikeStagingFromPickupTangent = Math.toRadians(-15);
+            approachCenterSpikePickupFromStagingTangent = Math.toRadians(-15);
             neutralPixelIntermediatePose = RED_MIDDLE_OF_SPIKES;
-            neutralLeaveTangent =  Math.toRadians(-15);
-            neutralApproachTangent = TANGENT_TOWARD_BLUE;
+            neutralLeaveTangentFromPickup =  Math.toRadians(-15);
+
             intermediatePose = RED_MIDDLE_OF_SPIKES;;
             intermediateTangent = FACE_TOWARD_BACKSTAGE;
 
