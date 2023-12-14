@@ -329,12 +329,13 @@ public class RoutesSuper {
                                             new SleepAction(.6),
                                             new ParallelAction(
                                                     new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
+                                                    new ActuateGripperAction(GripperStates.CLOSED)
                                             ),
-                                            new SleepAction(.4),
+                                            new SleepAction(.2),
+                                            new RotateShoulderAction(ShoulderStates.INTAKE_VALUE_STAGING),
+                                            new SleepAction(.3),
                                             new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
-                                            new SleepAction(.250),
+                                            new SleepAction(.6),
                                             new RotateShoulderAction(ShoulderStates.INTAKE)
                                     )
                             )

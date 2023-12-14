@@ -17,6 +17,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         public double STARTING_POSITION = .565;
         public double BACKDROP_VALUE = .195;
         public double HALFWAY = .4;
+        public double INTAKE_VALUE_STAGING=.45;
     }
 
     public static ShoulderParameters20245 shoulderParameters20245 = new ShoulderParameters20245();
@@ -24,7 +25,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static class ShoulderParameters19429 {
 
         public double INTAKE_REST = .5;
-        public double INTAKE_VALUE = 0.565;
+        public double INTAKE_VALUE = 0.53;
+        public double INTAKE_VALUE_STAGING = 0.45;
         public double STARTING_POSITION = .6;
         public double BACKDROP_VALUE = .195;
         public double HALFWAY = .4;
@@ -34,9 +36,10 @@ public class ShoulderSubsystem extends SubsystemBase {
 
     public enum ShoulderStates {
         REST (.5),
-        INTAKE (0.565),
+        INTAKE (0.53),
         HALFWAY(.4),
         BACKDROP (.195),
+        INTAKE_VALUE_STAGING (0.45),
         STARTING_POSITION (.565);
 
         public double position;

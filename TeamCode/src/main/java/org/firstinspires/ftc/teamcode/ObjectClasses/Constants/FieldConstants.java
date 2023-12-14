@@ -91,7 +91,6 @@ public class FieldConstants {
     // SPIKE POSES //
     /////////////////
 
-
     //Center Prop
     public static Pose2d RED_BACKSTAGE_SPIKE_C = new Pose2d(HALF_TILE, -TILE - HALF_TILE + 2, FACE_TOWARD_BLUE);
     public static Pose2d RED_AUDIENCE_SPIKE_C = new Pose2d(-TILE - HALF_TILE, -TILE - HALF_TILE + 1, FACE_TOWARD_BLUE);
