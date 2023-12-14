@@ -208,7 +208,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.neutralCenterSpikePickupPose,
                             posesForRouteStraight.approachTrussPickupFromStagingTangent,
-                            posesForRouteStraight.intermediatePose,
+                            posesForRouteStraight.intermediatePoseDoor,
                             posesForRouteStraight.approachIntermediateStagingFromPickupTangent,
                             posesForRouteStraight.backdropStagingPose,
                             posesForRouteStraight.additionalPixelScorePose,
