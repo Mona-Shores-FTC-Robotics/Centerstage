@@ -206,9 +206,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .stopAndAdd(new RouteBuilder().PickupPixels(
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.neutralCenterSpikePickupPose,
-                            posesForRouteStraight.approachCenterSpikePickupFromStagingTangent,
-                            posesForRouteStraight.intermediatePose,
-                            posesForRouteStraight.approachCenterSpikeStagingFromPickupTangent))
+                            posesForRouteStraight.intermediatePose))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingWithIntermediate(
                             posesForRouteStraight.intermediatePose,
                             posesForRouteStraight.backdropStagingPose,
@@ -260,7 +258,7 @@ public class RoutesSpikeStraightUpTheMiddle {
             return scorePixelAndNeutralStageWithIntermediatePose;
         }
 
-        public Action PickupPixels(Pose2d neutralPixelStagingPose, Pose2d neutralPickupPose, double approachPickupTangent, Pose2d intermediateStagingPose, double approachStagingTangent) {
+        public Action PickupPixels(Pose2d neutralPixelStagingPose, Pose2d neutralPickupPose, Pose2d intermediateStagingPose) {
             Action pickupPixels = roadRunnerDrive.actionBuilder(neutralPixelStagingPose)
                     .afterTime(.1, new ActuateGripperAction(GripperStates.OPEN))
                     .afterTime(.1, new TurnIntakeSlowReverse())
@@ -345,9 +343,8 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .stopAndAdd(new RouteBuilder().PickupPixels(
                             posesForRouteStraight.neutralTrussStagingPose,
                             posesForRouteStraight.neutralTrussPickupPose,
-                            posesForRouteStraight.approachTrussPickupFromStagingTangent,
-                            posesForRouteStraight.intermediatePose,
-                            posesForRouteStraight.approachIntermediateStagingFromPickupTangent))
+                            posesForRouteStraight.intermediatePose
+                            ))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingWithIntermediate(
                             posesForRouteStraight.neutralTrussStagingPose,
                             posesForRouteStraight.additionalPixelScorePose,
@@ -362,9 +359,8 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .stopAndAdd(new RouteBuilder().PickupPixels(
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.neutralCenterSpikePickupPose,
-                            posesForRouteStraight.approachCenterSpikePickupFromStagingTangent,
-                            posesForRouteStraight.intermediatePose,
-                            posesForRouteStraight.approachCenterSpikeStagingFromPickupTangent))
+                            posesForRouteStraight.intermediatePose
+                            ))
                     .stopAndAdd(new RouteBuilder().NeutralStagingToBackdropStagingWithIntermediate(
                             posesForRouteStraight.neutralCenterSpikeStagingPose,
                             posesForRouteStraight.additionalPixelScorePose,
