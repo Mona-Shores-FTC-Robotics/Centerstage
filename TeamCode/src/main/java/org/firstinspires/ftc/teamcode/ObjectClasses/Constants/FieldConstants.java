@@ -14,11 +14,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 public class FieldConstants {
 
     // TIME CONSTANTS
+
+  public static double SCORE_DISTANCE = 7.8;
     public static double BACKSTAGE_ROBOT_WAIT_TIME = 2;
   public static double AUDIENCE_ROBOT_WAIT_TIME = 4.5;
 
     public static double END_GAME_TIME = 90;
-
 
     public static double ROBOT_LENGTH = 18.0;
     public static double HALF_ROBOT_LENGTH = ROBOT_LENGTH / 2;
@@ -137,33 +138,19 @@ public class FieldConstants {
     public static Pose2d RED_BACKSTAGE_SPIKE_L_DROP = new Pose2d(TILE - THREE_QUARTER_TILE + 2, -TILE - HALF_TILE + 4.6, Math.toRadians(150));
 
     public static Pose2d RED_AUDIENCE_SPIKE_L = new Pose2d(-TILE - THREE_QUARTER_TILE + 2, -TILE - HALF_TILE, FACE_135_DEGREES);
-    public static Pose2d RED_AUDIENCE_SPIKE_L_PAST = new Pose2d(-TILE - THREE_QUARTER_TILE, -TILE - HALF_TILE + 2.2, Math.toRadians(120));
-    public static Pose2d RED_AUDIENCE_SPIKE_L_DROP = new Pose2d(-TILE - THREE_QUARTER_TILE, -TILE - HALF_TILE + 2.2, Math.toRadians(120));
 
 
     public static Pose2d BLUE_BACKSTAGE_SPIKE_L = flipYAxis(RED_BACKSTAGE_SPIKE_R);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_L_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_R_PAST);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_L_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_R_DROP);
 
     public static Pose2d BLUE_AUDIENCE_SPIKE_L = flipYAxis(RED_AUDIENCE_SPIKE_R);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_L_PAST = flipYAxis(RED_AUDIENCE_SPIKE_R_PAST);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_L_DROP = flipYAxis(RED_AUDIENCE_SPIKE_R_DROP);
 
     public static Pose2d BLUE_AUDIENCE_SPIKE_R = flipYAxis(RED_AUDIENCE_SPIKE_L);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_R_PAST = flipYAxis(RED_AUDIENCE_SPIKE_L_PAST);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_R_DROP = flipYAxis(RED_AUDIENCE_SPIKE_L_DROP);
 
     public static Pose2d BLUE_BACKSTAGE_SPIKE_R = flipYAxis(RED_BACKSTAGE_SPIKE_L);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_R_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_L_PAST);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_R_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_L_DROP);
 
     public static Pose2d BLUE_BACKSTAGE_SPIKE_C = flipYAxis(RED_BACKSTAGE_SPIKE_C);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_C_PAST = flipYAxis(RED_BACKSTAGE_SPIKE_C_PAST);
-    public static Pose2d BLUE_BACKSTAGE_SPIKE_C_DROP = flipYAxis(RED_BACKSTAGE_SPIKE_C_DROP);
 
     public static Pose2d BLUE_AUDIENCE_SPIKE_C = flipYAxis(RED_AUDIENCE_SPIKE_C);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_C_PAST = flipYAxis(RED_AUDIENCE_SPIKE_C_PAST);
-    public static Pose2d BLUE_AUDIENCE_SPIKE_C_DROP = flipYAxis(RED_AUDIENCE_SPIKE_C_DROP);
 
     ///////////////////////////////
     // NEUTRAL PIXEL STACK POSES //
@@ -253,7 +240,6 @@ public class FieldConstants {
     public static Pose2d SUPER_RED_STAGEDOOR_BY_BACKDROP = new Pose2d(TILE + QUARTER_TILE, -HALF_TILE, FACE_TOWARD_BACKSTAGE);
     public static Pose2d SUPER_BLUE_STAGEDOOR_BY_BACKDROP = new Pose2d(TILE + QUARTER_TILE, HALF_TILE, FACE_TOWARD_BACKSTAGE);
 
-    public static double SCORE_DISTANCE = 8.5;
 
     public static Pose2d flipYAxis(Pose2d pose) {
         Pose2d output = new Pose2d(pose.position.x, -pose.position.y, -pose.heading.log());
