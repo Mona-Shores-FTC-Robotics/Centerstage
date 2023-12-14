@@ -76,8 +76,8 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static double FAST_ACCELERATION_OVERRIDE = 40;
     public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
 
-    public static double SUPER_FAST_VELOCITY_OVERRIDE = 70;
-    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 60;
+    public static double SUPER_FAST_VELOCITY_OVERRIDE = 50;
+    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 50;
     public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
 
     public static VelConstraint slowVelocity;

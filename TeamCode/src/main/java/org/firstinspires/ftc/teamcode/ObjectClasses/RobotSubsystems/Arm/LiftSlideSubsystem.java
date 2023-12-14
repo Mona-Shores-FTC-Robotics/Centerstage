@@ -38,7 +38,7 @@ public class LiftSlideSubsystem extends SubsystemBase {
         public int ZERO_HEIGHT_TICKS=0;
         public int HOME_HEIGHT_TICKS=0;
         public int SAFE_HEIGHT_TICKS=25;
-        public int AUTO_LOW_HEIGHT_TICKS=990;
+        public int AUTO_LOW_HEIGHT_TICKS=950;
         public int AUTO_MID_HEIGHT_TICKS=1450;
         public int AUTO_HIGH_HEIGHT_TICKS=1700;
 

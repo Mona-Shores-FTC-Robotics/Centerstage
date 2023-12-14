@@ -46,7 +46,7 @@ public class PosesForRouteStraight {
                 case LEFT: {
                     yellowPixelScorePose = BLUE_BACKDROP_LEFT;
                     yellowPixelLeaveTangent = Math.toRadians(195);
-                    additionalPixelScorePose = BLUE_BACKDROP_CENTER;
+                    additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         spikePose = BLUE_AUDIENCE_SPIKE_L;
@@ -60,7 +60,7 @@ public class PosesForRouteStraight {
                 case RIGHT: {
                     yellowPixelScorePose = BLUE_BACKDROP_RIGHT;
                     yellowPixelLeaveTangent = Math.toRadians(165);
-                    additionalPixelScorePose = BLUE_BACKDROP_CENTER;
+                    additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
@@ -73,7 +73,7 @@ public class PosesForRouteStraight {
                 }
                 case CENTER:
                 default: {
-                    yellowPixelScorePose = BLUE_BACKDROP_CENTER;
+                    yellowPixelScorePose = UP_THE_MID_BLUE_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(5);
@@ -94,7 +94,7 @@ public class PosesForRouteStraight {
                 case LEFT: {
                     yellowPixelScorePose = RED_BACKDROP_LEFT;
                     yellowPixelLeaveTangent = Math.toRadians(195);
-                    additionalPixelScorePose = RED_BACKDROP_CENTER;
+                    additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
@@ -108,7 +108,7 @@ public class PosesForRouteStraight {
                 case RIGHT: {
                     yellowPixelScorePose = RED_BACKDROP_RIGHT;
                     yellowPixelLeaveTangent = Math.toRadians(175);
-                    additionalPixelScorePose = RED_BACKDROP_CENTER;
+                    additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_CENTER;
                     additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
@@ -122,17 +122,17 @@ public class PosesForRouteStraight {
                 case CENTER:
                 default: {
                     yellowPixelScorePose = RED_BACKDROP_CENTER;
-                    yellowPixelLeaveTangent = Math.toRadians(185);
+                    yellowPixelLeaveTangent = Math.toRadians(180);
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(-10);
                         additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(170);
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else
                     {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(-10);
                         additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(170);
                         spikePose = RED_BACKSTAGE_SPIKE_C;
                     }
                     break;
@@ -154,8 +154,8 @@ public class PosesForRouteStraight {
             approachTrussStagingTangent = TANGENT_TOWARD_BACKSTAGE;
             approachCenterSpikeStagingStagingTangent = TANGENT_TOWARD_BACKSTAGE;
             neutralPixelIntermediatePose = BLUE_MIDDLE_OF_SPIKES;
-            neutralLeaveTangent = TANGENT_TOWARD_BLUE;
-            neutralApproachTangent = TANGENT_TOWARD_RED;
+            neutralLeaveTangent = TANGENT_TOWARD_BACKSTAGE;
+            neutralApproachTangent = TANGENT_TOWARD_BACKSTAGE;
             intermediatePose = BLUE_MIDDLE_OF_SPIKES;
             intermediateTangent = FACE_TOWARD_BACKSTAGE;
 

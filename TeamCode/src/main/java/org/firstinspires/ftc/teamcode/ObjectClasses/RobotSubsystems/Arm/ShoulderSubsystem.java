@@ -13,8 +13,8 @@ public class ShoulderSubsystem extends SubsystemBase {
     public static class ShoulderParameters20245 {
 
         public double INTAKE_REST = .5;
-        public double INTAKE_VALUE = 0.565;
-        public double STARTING_POSITION = .565;
+        public double INTAKE_VALUE = 0.53;
+        public double STARTING_POSITION = 0.53;
         public double BACKDROP_VALUE = .195;
         public double HALFWAY = .4;
         public double INTAKE_VALUE_STAGING=.45;
@@ -40,7 +40,7 @@ public class ShoulderSubsystem extends SubsystemBase {
         HALFWAY(.4),
         BACKDROP (.195),
         INTAKE_VALUE_STAGING (0.45),
-        STARTING_POSITION (.565);
+        STARTING_POSITION (.53);
 
         public double position;
         ShoulderStates(double p) {

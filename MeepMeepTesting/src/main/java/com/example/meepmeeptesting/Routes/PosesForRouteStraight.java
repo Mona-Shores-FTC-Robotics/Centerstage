@@ -143,15 +143,15 @@ public class PosesForRouteStraight {
                     yellowPixelScorePose = RED_BACKDROP_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(185);
                     if (sideOfField == SideOfField.AUDIENCE) {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else
                     {
-                        additionalPixelScorePoseApproachTangent = Math.toRadians(-5);
+                        additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                         spikePose = RED_BACKSTAGE_SPIKE_C;
                     }
                     break;
