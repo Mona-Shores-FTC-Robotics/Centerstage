@@ -221,16 +221,7 @@ public class RoutesSuper {
             return autoDriveToBackdrop;
         }
 
-        Action AutoDriveFromBackDrop(Pose2d scorePose) {
-            Action autoDriveFromBackdrop = roadRunnerDrive.actionBuilder(new Pose2d(scorePose.position.x+SCORE_DISTANCE, scorePose.position.y, scorePose.heading.log()))
-                    .setReversed(true)
-                    .afterTime(.8, RetractLift())
-                    .lineToX(scorePose.position.x, slowVelocity, slowAcceleration)
-                    .build();
-            return autoDriveFromBackdrop;
-        }
-
-        public Action BackdropStagingToNeutralStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
+          public Action BackdropStagingToNeutralStagingByWall(PosesForRouteSuper posesForRouteSuper, Pose2d scorePose) {
             Action backDropStagingToNeutralStaging = roadRunnerDrive.actionBuilder(scorePose)
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
@@ -246,6 +237,7 @@ public class RoutesSuper {
                     .setTangent(posesForRouteSuper.leaveNeutralTangent)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.audiencePathPose), posesForRouteSuper.backdropApproachOrientation, superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(posesForRouteSuper.backstagePathPose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
+                    .afterTime(1.1, ExtendLift(LiftStates.AUTO_LOW))
                     .splineToConstantHeading(PoseToVector(scorePose), TANGENT_TOWARD_BACKSTAGE, superFastVelocity, superFastAcceleration)
                     .build();
             return neutralStagingToBackdropStaging;
@@ -300,74 +292,33 @@ public class RoutesSuper {
             return autoDriveToNeutralStack;
         }
 
-        public Action ScorePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
-            SequentialAction scorePixel =
-                    new SequentialAction(
-                            new ActuateGripperAction(GripperStates.CLOSED),
-                            new SleepAction(.2),
-                            new SequentialAction(
-                                            new RotateShoulderAction(ShoulderStates.BACKDROP),
-                                            new SleepAction(.2),
-                                            new MoveLiftSlideActionFinishImmediate(scoreHeight)
-                                    ),
-                            new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.45),
-                            new ActuateGripperAction(GripperStates.OPEN),
-                            new SleepAction(.55),
-                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.3),
-                    new ParallelAction(
-                                    new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
-                                    new SequentialAction(
-                                            new SleepAction(.6),
-                    new ParallelAction(
-                                                    new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
-                                            ),
-                                            new SleepAction(.4),
-                                            new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
-                                            new SleepAction(.250),
-                                            new RotateShoulderAction(ShoulderStates.INTAKE)
-                                    )
-                            )
-            );
+        public Action ScorePixelAction(Pose2d scoreStaging, LiftStates scoreHeight) {
+            Action scorePixel = roadRunnerDrive.actionBuilder(scoreStaging)
+                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .waitSeconds(.2)
+                    .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
+                    .waitSeconds(.4)
+                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
+                    .setReversed(true)
+                    .afterTime(.8, RetractLift())
+                    .lineToX(scoreStaging.position.x, slowVelocity, slowAcceleration)
+                    .build();
             return scorePixel;
         }
 
-        public Action ScoreOnePixelAction(Pose2d scorePose, LiftStates scoreHeight) {
-            SequentialAction scorePixel =
-                    new SequentialAction(
-                            new ActuateGripperAction(GripperStates.CLOSED),
-                    new SleepAction(.2),
-                            new SequentialAction(
-                                    new RotateShoulderAction(ShoulderStates.BACKDROP),
-                                    new SleepAction(.35),
-                                    new MoveLiftSlideActionFinishImmediate(scoreHeight)
-                            ),
-                            new RoutesSuper.RouteBuilder().AutoDriveToBackDrop(scorePose),
-                            new SleepAction(.4),
-                            new ActuateGripperAction(GripperStates.ONE_PIXEL_RELEASE_POSITION),
-                            new SleepAction(.4),
-                            new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH),
-                            new SleepAction(.8),
-                            new ParallelAction(
-                                    new RoutesSuper.RouteBuilder().AutoDriveFromBackDrop(scorePose),
-                                    new SequentialAction(
-                                            new SleepAction(.9),
-                    new ParallelAction(
-                                                    new RotateShoulderAction(ShoulderStates.HALFWAY),
-                                                    new ActuateGripperAction(GripperStates.CLOSED),
-                                                    new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
-                                            ),
-                                            new SleepAction(.4),
-                                            new MoveLiftSlideActionFinishImmediate(LiftStates.HOME),
-                                            new SleepAction(.25),
-                                            new RotateShoulderAction(ShoulderStates.INTAKE)
-                                    )
-                            )
-            );
+        public Action ScoreOnePixelAction(Pose2d scoreStaging, LiftStates scoreHeight) {
+            Action scorePixel = roadRunnerDrive.actionBuilder(scoreStaging)
+                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .waitSeconds(.2)
+                    .stopAndAdd(new ActuateGripperAction(GripperStates.ONE_PIXEL_RELEASE_POSITION))
+                    .waitSeconds(.4)
+                    .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
+                    .setReversed(true)
+                    .afterTime(.8, RetractLift())
+                    .lineToX(scoreStaging.position.x, slowVelocity, slowAcceleration)
+                    .build();
             return scorePixel;
+
         }
 
         private Action PushTeamPropAndBackdropStage(PosesForRouteSuper posesForRouteSuper) {
@@ -375,6 +326,7 @@ public class RoutesSuper {
             Action pushTeamPropAndStage = roadRunnerDrive.actionBuilder(posesForRouteSuper.startingPose)
                     .splineToLinearHeading(posesForRouteSuper.spikePose, posesForRouteSuper.spikePose.heading.log(), superFastVelocity, superFastAcceleration)
                     .stopAndAdd(retractPusherToStopPushingPurplePixel)
+                    .afterTime(1.6, ExtendLift(LiftStates.AUTO_LOW))
                     .setReversed(true)
                     .splineToLinearHeading(posesForRouteSuper.yellowPixelScorePose, posesForRouteSuper.yellowPixelScorePose.heading.log(), superFastVelocity, superFastAcceleration)
                     .build();
@@ -409,11 +361,21 @@ public class RoutesSuper {
             return strafe;
         }
 
+
+        public Action ExtendLift(LiftStates scoreHeight) {
+            Action extendLift = new SequentialAction(
+                    new ParallelAction(
+                            new ActuateGripperAction(GripperStates.CLOSED),
+                            new RotateShoulderAction(ShoulderStates.BACKDROP)),
+                    new MoveLiftSlideActionFinishImmediate(scoreHeight));
+            return extendLift;
+        }
+
         public Action RetractLift() {
             return new SequentialAction(
                     new ParallelAction(
-                            new RotateShoulderAction(ShoulderStates.HALFWAY),
                             new ActuateGripperAction(GripperStates.CLOSED),
+                            new RotateShoulderAction(ShoulderStates.HALFWAY),
                             new MoveLiftSlideActionFinishImmediate(LiftStates.SAFE)
                     ),
                     new SleepAction(.25),
