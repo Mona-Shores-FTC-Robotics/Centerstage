@@ -7,7 +7,6 @@ import static com.example.meepmeeptesting.Constants.AUDIENCE_ROBOT_WAIT_TIME;
 import static com.example.meepmeeptesting.Constants.BACKSTAGE_ROBOT_WAIT_TIME;
 import static com.example.meepmeeptesting.Constants.BLUE_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.BLUE_BACKSTAGE_START_POSE;
-import static com.example.meepmeeptesting.Constants.BLUE_NEUTRAL_STAGING;
 import static com.example.meepmeeptesting.Constants.PoseToVector;
 import static com.example.meepmeeptesting.Constants.RED_AUDIENCE_START_POSE;
 import static com.example.meepmeeptesting.Constants.RED_BACKSTAGE_START_POSE;

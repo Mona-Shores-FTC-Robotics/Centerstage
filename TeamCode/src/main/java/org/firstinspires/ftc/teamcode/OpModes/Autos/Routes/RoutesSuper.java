@@ -101,11 +101,6 @@ public class RoutesSuper {
         superFastAcceleration = new ProfileAccelConstraint(-SUPER_FAST_ACCELERATION_OVERRIDE, SUPER_FAST_ACCELERATION_OVERRIDE);
 
 
-        PosesForRouteSuper blueTestRoutePoses = new PosesForRouteSuper(BLUE, AUDIENCE, CENTER);
-        blueTestRoute = roadRunnerDrive.actionBuilder(BLUE_NEUTRAL_STAGING)
-                .stopAndAdd(new RouteBuilder().PickupPixels(blueTestRoutePoses, blueTestRoutePoses.neutralStagingPose))
-                .build();
-
         //////////
         // LEFT //
         //////////
