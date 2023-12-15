@@ -23,8 +23,19 @@ public final class Constants {
   }
 
   public static double SCORE_DISTANCE = 7.8;
-  public static double BACKSTAGE_ROBOT_WAIT_TIME = 2;
-  public static double AUDIENCE_ROBOT_WAIT_TIME = .3;
+
+
+  //Backstage robot is out of the way of the backdrop at 9.5 seconds
+  //Backstage robot is ready to pause at 16 seconds with its two white pixels
+  //Backstage robot needs seconds 9 seconds to fully complete
+  //Wait time can be 0-5 seconds
+
+  public static double BACKSTAGE_ROBOT_WAIT_TIME = 5;
+
+  //Audience robot is ready to pause Stage Door at 10 seconds.
+  //Audience robot needs 13 seconds to fully complete
+  //Wait time can be 0-7
+  public static double AUDIENCE_ROBOT_WAIT_TIME = 7;
 
 
   public static double END_GAME_TIME = 90;

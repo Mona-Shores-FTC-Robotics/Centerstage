@@ -16,8 +16,6 @@ public class FieldConstants {
     // TIME CONSTANTS
 
   public static double SCORE_DISTANCE = 7.8;
-  public static double BACKSTAGE_ROBOT_WAIT_TIME = 2;
-  public static double AUDIENCE_ROBOT_WAIT_TIME = .3;
 
     public static double END_GAME_TIME = 90;
 

@@ -41,6 +41,31 @@ import java.util.Arrays;
 
 
 public class RoutesSuper {
+
+    //Backstage robot is out of the way of the backdrop at 9.5 seconds
+    //Backstage robot is ready to pause at 16 seconds with its two white pixels
+    //Backstage robot needs seconds 9 seconds to fully complete
+    //Realistically with overrides set how they are, wait time can be 0-5 seconds
+
+    public static double BACKSTAGE_ROBOT_WAIT_TIME = 5;
+
+    //Audience robot is ready to pause Stage Door at 10 seconds.
+    //Audience robot needs 13 seconds to fully complete
+    //Realistically with overrides set how they are, wait time can be 0-7 seconds
+    public static double AUDIENCE_ROBOT_WAIT_TIME = 7;
+
+    public static double SLOW_VELOCITY_OVERRIDE = 10;
+    public static double SLOW_ACCELERATION_OVERRIDE = 15;
+    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
+
+    public static double FAST_VELOCITY_OVERRIDE = 40;
+    public static double FAST_ACCELERATION_OVERRIDE = 40;
+    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
+    public static double SUPER_FAST_VELOCITY_OVERRIDE = 40;
+    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 40;
+    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
     static MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
     //Variables to store routes for team prop center for all four start locations
@@ -61,17 +86,6 @@ public class RoutesSuper {
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
 
-    public static double SLOW_VELOCITY_OVERRIDE = 10;
-    public static double SLOW_ACCELERATION_OVERRIDE = 15;
-    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
-
-    public static double FAST_VELOCITY_OVERRIDE = 40;
-    public static double FAST_ACCELERATION_OVERRIDE = 40;
-    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
-
-    public static double SUPER_FAST_VELOCITY_OVERRIDE = 40;
-    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 40;
-    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
 
     public static VelConstraint slowVelocity;
     public static AccelConstraint slowAcceleration;
@@ -79,6 +93,8 @@ public class RoutesSuper {
     public static AccelConstraint fastAcceleration;
     public static VelConstraint superFastVelocity;
     public static AccelConstraint superFastAcceleration;
+
+
 
     public static Action blueTestRoute;
 

@@ -87,6 +87,14 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static AccelConstraint superFastAcceleration;
 
     public static void BuildRoutes() {
+
+        //No reason to run the Audience side of this
+        //The Backstage autos are very good for working with partners that can only place a purple pixel, or who inconsistently place yellow pixel.
+        //Our robot is crossing the left Audience side spike at 18.5 seconds
+        //We are fully clear of the Audience side spike zone by 22.5 seconds
+        //If a team can place the purple pixel within 8-10 seconds, they should be able to do so after we have completed our tasks by putting a sleep in their code.
+        // if they need more time we might be able to speed up slightly by adjusting overrides
+
         slowAcceleration = new ProfileAccelConstraint(-SLOW_ACCELERATION_OVERRIDE, SLOW_ACCELERATION_OVERRIDE);
         slowVelocity = new MinVelConstraint(Arrays.asList(
                 new MecanumKinematics(15).new WheelVelConstraint(SLOW_VELOCITY_OVERRIDE),

@@ -39,6 +39,26 @@ import java.util.Arrays;
 
 
 public class RoutesSpikeStraightUpTheMiddle {
+
+    //No reason to run the Audience side of this
+    //The Backstage autos are very good for working with partners that can only place a purple pixel, or who inconsistently place yellow pixel.
+    //Our robot is crossing the left Audience side spike at 18.5 seconds
+    //We are fully clear of the Audience side spike zone by 22.5 seconds
+    //If a team can place the purple pixel within 8-10 seconds, they should be able to do so after we have completed our tasks by putting a sleep in their code.
+    // if they need more time we might be able to speed up slightly by adjusting overrides
+
+    public static double SLOW_VELOCITY_OVERRIDE = 12;
+    public static double SLOW_ACCELERATION_OVERRIDE = 15;
+    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
+
+    public static double FAST_VELOCITY_OVERRIDE = 46;
+    public static double FAST_ACCELERATION_OVERRIDE = 46;
+    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
+    public static double SUPER_FAST_VELOCITY_OVERRIDE = 60;
+    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 60;
+    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
+
     static MecanumDriveMona roadRunnerDrive = Robot.getInstance().getDriveSubsystem().mecanumDrive;
 
     //Variables to store routes for team prop center for all four start locations
@@ -58,18 +78,6 @@ public class RoutesSpikeStraightUpTheMiddle {
     public static Action redAudienceBotTeamPropRightRoute;
     public static Action blueBackstageBotTeamPropRightRoute;
     public static Action blueAudienceBotTeamPropRightRoute;
-
-    public static double SLOW_VELOCITY_OVERRIDE = 12;
-    public static double SLOW_ACCELERATION_OVERRIDE = 15;
-    public static double SLOW_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(45);
-
-    public static double FAST_VELOCITY_OVERRIDE = 46;
-    public static double FAST_ACCELERATION_OVERRIDE = 46;
-    public static double FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
-
-    public static double SUPER_FAST_VELOCITY_OVERRIDE = 60;
-    public static double SUPER_FAST_ACCELERATION_OVERRIDE = 60;
-    public static double SUPER_FAST_ANGULAR_VELOCITY_OVERRIDE = Math.toRadians(90);
 
     public static VelConstraint slowVelocity;
     public static AccelConstraint slowAcceleration;
