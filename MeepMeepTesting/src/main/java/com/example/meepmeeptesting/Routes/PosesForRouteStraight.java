@@ -79,7 +79,6 @@ public class PosesForRouteStraight {
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(172);
                     neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
-                    //todo This has to be changed if you want to go for the second stack
 //                    neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
 //                    neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
@@ -100,7 +99,6 @@ public class PosesForRouteStraight {
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(188);
                     neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
-                    //todo This has to be changed if you want to go for the second stack
 //                    neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
 //                    neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
@@ -118,15 +116,15 @@ public class PosesForRouteStraight {
                     yellowPixelIntermediate = UP_THE_MID_BLUE_BACKDROP_STAGING_CENTER;
                     yellowPixelLeaveTangent = Math.toRadians(175);
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(180);
-                    neutralCenterSpikeStagingPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE;
-                    neutralCenterSpikePickupPose = BLUE_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
+                    neutralCenterSpikeStagingPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS;
+                    neutralCenterSpikePickupPose = SUPER_BLUE_NEUTRAL_PIXEL_TRUSS_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_LEFT;
+                        additionalPixelScorePose =BLUE_BACKDROP_CENTER ;
                         additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                         spikePose = BLUE_AUDIENCE_SPIKE_C;
                     } else {
-                        additionalPixelScorePose = UP_THE_MID_BLUE_BACKDROP_RIGHT;
+                        additionalPixelScorePose = BLUE_BACKDROP_CENTER;
                         additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
                         spikePose = BLUE_BACKSTAGE_SPIKE_C;
@@ -145,7 +143,6 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                     neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
-                    //todo This has to be changed if you want to go for the second stack
 //                    neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
 //                    neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
@@ -165,7 +162,6 @@ public class PosesForRouteStraight {
                     additionalPixelScorePoseLeaveTangent = TANGENT_TOWARD_AUDIENCE;
                     neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
                     neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
-                    //todo This has to be changed if you want to go for the second stack
 //                    neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
 //                    neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
 
@@ -186,18 +182,18 @@ public class PosesForRouteStraight {
                     yellowPixelLeaveTangent = Math.toRadians(180);
                     yellowPixelIntermediate = UP_THE_MID_RED_BACKDROP_STAGING_CENTER;
                     approachTrussStagingFromIntermediateTangent = Math.toRadians(180);
-                    neutralCenterSpikeStagingPose = RED_NEUTRAL_PIXEL_CENTERSPIKE;
-                    neutralCenterSpikePickupPose = RED_NEUTRAL_PIXEL_CENTERSPIKE_PICKUP;
+                    neutralCenterSpikeStagingPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS;
+                    neutralCenterSpikePickupPose = SUPER_RED_NEUTRAL_PIXEL_TRUSS_PICKUP;
                     if (sideOfField == SideOfField.AUDIENCE) {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_LEFT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePose = RED_BACKDROP_CENTER;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                         spikePose = RED_AUDIENCE_SPIKE_C;
                     } else
                     {
                         additionalPixelScorePoseApproachTangent = Math.toRadians(0);
-                        additionalPixelScorePose = UP_THE_MID_RED_BACKDROP_RIGHT;
-                        additionalPixelScorePoseLeaveTangent = Math.toRadians(175);
+                        additionalPixelScorePose = RED_BACKDROP_CENTER;
+                        additionalPixelScorePoseLeaveTangent = Math.toRadians(180);
                         spikePose = RED_BACKSTAGE_SPIKE_C;
                     }
                     break;
