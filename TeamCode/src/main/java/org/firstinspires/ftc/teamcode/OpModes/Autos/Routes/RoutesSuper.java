@@ -47,12 +47,12 @@ public class RoutesSuper {
     //Backstage robot needs seconds 9 seconds to fully complete
     //Realistically with overrides set how they are, wait time can be 0-5 seconds
 
-    public static double BACKSTAGE_ROBOT_WAIT_TIME = 5;
+    public static double BACKSTAGE_ROBOT_WAIT_TIME = 1.5;
 
     //Audience robot is ready to pause Stage Door at 10 seconds.
     //Audience robot needs 13 seconds to fully complete
-    //Realistically with overrides set how they are, wait time can be 0-7 seconds
-    public static double AUDIENCE_ROBOT_WAIT_TIME = 7;
+    //Realistically with overrides set how they are, wait time can be 0-4 seconds
+    public static double AUDIENCE_ROBOT_WAIT_TIME = 4;
 
     public static double SLOW_VELOCITY_OVERRIDE = 10;
     public static double SLOW_ACCELERATION_OVERRIDE = 15;
