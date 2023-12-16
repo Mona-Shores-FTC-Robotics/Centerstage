@@ -240,7 +240,7 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelAndNeutralPixelStageWithIntermediate(Pose2d scoreStaging, Pose2d intermediatePose, Pose2d neutralStagingPose, double neutralStagingApproachTangent) {
             Action scorePixelAndNeutralStageWithIntermediatePose = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.4)
@@ -248,7 +248,7 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .afterTime(.5, RetractLift())
                     .setReversed(true)
                     .splineToConstantHeading(PoseToVector(intermediatePose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
-                    .splineToConstantHeading(PoseToVector(neutralStagingPose), TANGENT_TOWARD_AUDIENCE, superFastVelocity, superFastAcceleration)
+                    .splineToConstantHeading(PoseToVector(neutralStagingPose), TANGENT_TOWARD_AUDIENCE,  superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
         }
@@ -256,14 +256,14 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelAndNeutralPixelStage(Pose2d scoreStaging, Pose2d neutralStagingPose, double neutralStagingApproachTangent) {
             Action scorePixelAndNeutralStageWithIntermediatePose = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.4)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
                     .afterTime(.5, RetractLift())
                     .setReversed(true)
-                    .splineToLinearHeading(neutralStagingPose, neutralStagingApproachTangent, superFastVelocity, superFastAcceleration)
+                    .splineToLinearHeading(neutralStagingPose, neutralStagingApproachTangent,  superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndNeutralStageWithIntermediatePose;
         }
@@ -297,7 +297,6 @@ public class RoutesSpikeStraightUpTheMiddle {
                     .afterTime(1.4, ExtendLift(LiftStates.AUTO_MID))
                     .splineToConstantHeading(PoseToVector(stagingScorePose), Math.toRadians(0), superFastVelocity, superFastAcceleration)
                     .splineToConstantHeading(PoseToVector(scorePose), approachScoreTangent)
-
                     .build();
             return pickupPixels;
         }
@@ -316,14 +315,14 @@ public class RoutesSpikeStraightUpTheMiddle {
 
         public Action ScorePixelActionAndPark(Pose2d scoreStaging, LiftStates scoreHeight, double scoreLeaveTangent, Pose2d parkPose) {
             Action scorePixelAndPark = roadRunnerDrive.actionBuilder(scoreStaging)
-                    .lineToX(scoreStaging.position.x + SCORE_DISTANCE, slowVelocity, slowAcceleration)
+                    .lineToX(scoreStaging.position.x+SCORE_DISTANCE, slowVelocity, slowAcceleration)
                     .waitSeconds(.2)
                     .stopAndAdd(new ActuateGripperAction(GripperStates.OPEN))
                     .waitSeconds(.2)
                     .stopAndAdd(new MoveLiftSlideActionFinishImmediate(LiftStates.AUTO_HIGH))
                     .afterTime(.7, RetractLift())
                     .setReversed(true)
-                    .splineToLinearHeading(parkPose, scoreLeaveTangent, superFastVelocity, superFastAcceleration)
+                    .splineToLinearHeading(parkPose,scoreLeaveTangent, superFastVelocity, superFastAcceleration)
                     .build();
             return scorePixelAndPark;
         }
